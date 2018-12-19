@@ -2,6 +2,7 @@ package com.ruoyi.web.controller.system;
 
 import java.util.List;
 
+import com.ruoyi.common.page.TableDataInfo;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -19,7 +20,6 @@ import com.ruoyi.common.utils.ExcelUtil;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.framework.shiro.service.SysPasswordService;
 import com.ruoyi.framework.util.ShiroUtils;
-import com.ruoyi.framework.web.page.TableDataInfo;
 import com.ruoyi.system.domain.SysUser;
 import com.ruoyi.system.service.ISysPostService;
 import com.ruoyi.system.service.ISysRoleService;
@@ -34,7 +34,7 @@ import com.ruoyi.framework.web.base.BaseController;
 @Controller
 @RequestMapping("/system/user")
 public class SysUserController extends BaseController {
-    private String prefix = "system/user";
+    private String prefix = "system/user" ;
 
     @Autowired
     private ISysUserService userService;
@@ -51,7 +51,7 @@ public class SysUserController extends BaseController {
     @RequiresPermissions("system:user:view")
     @GetMapping()
     public String user() {
-        return prefix + "/user";
+        return prefix + "/user" ;
     }
 
     @RequiresPermissions("system:user:list")
@@ -80,7 +80,7 @@ public class SysUserController extends BaseController {
     public String add(ModelMap mmap) {
         mmap.put("roles", roleService.selectRoleAll());
         mmap.put("posts", postService.selectPostAll());
-        return prefix + "/add";
+        return prefix + "/add" ;
     }
 
     /**
@@ -109,7 +109,7 @@ public class SysUserController extends BaseController {
         mmap.put("user", userService.selectUserById(userId));
         mmap.put("roles", roleService.selectRolesByUserId(userId));
         mmap.put("posts", postService.selectPostsByUserId(userId));
-        return prefix + "/edit";
+        return prefix + "/edit" ;
     }
 
     /**
@@ -133,7 +133,7 @@ public class SysUserController extends BaseController {
     @GetMapping("/resetPwd/{userId}")
     public String resetPwd(@PathVariable("userId") Long userId, ModelMap mmap) {
         mmap.put("user", userService.selectUserById(userId));
-        return prefix + "/resetPwd";
+        return prefix + "/resetPwd" ;
     }
 
     @RequiresPermissions("system:user:resetPwd")

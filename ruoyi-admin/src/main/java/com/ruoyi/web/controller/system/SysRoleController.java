@@ -1,6 +1,8 @@
 package com.ruoyi.web.controller.system;
 
 import java.util.List;
+
+import com.ruoyi.common.page.TableDataInfo;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -16,37 +18,33 @@ import com.ruoyi.common.base.AjaxResult;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.ExcelUtil;
 import com.ruoyi.framework.util.ShiroUtils;
-import com.ruoyi.framework.web.page.TableDataInfo;
 import com.ruoyi.system.domain.SysRole;
 import com.ruoyi.system.service.ISysRoleService;
 import com.ruoyi.framework.web.base.BaseController;
 
 /**
  * 角色信息
- * 
+ *
  * @author ruoyi
  */
 @Controller
 @RequestMapping("/system/role")
-public class SysRoleController extends BaseController
-{
-    private String prefix = "system/role";
+public class SysRoleController extends BaseController {
+    private String prefix = "system/role" ;
 
     @Autowired
     private ISysRoleService roleService;
 
     @RequiresPermissions("system:role:view")
     @GetMapping()
-    public String role()
-    {
-        return prefix + "/role";
+    public String role() {
+        return prefix + "/role" ;
     }
 
     @RequiresPermissions("system:role:list")
     @PostMapping("/list")
     @ResponseBody
-    public TableDataInfo list(SysRole role)
-    {
+    public TableDataInfo list(SysRole role) {
         startPage();
         List<SysRole> list = roleService.selectRoleList(role);
         return getDataTable(list);
@@ -56,8 +54,7 @@ public class SysRoleController extends BaseController
     @RequiresPermissions("system:role:export")
     @PostMapping("/export")
     @ResponseBody
-    public AjaxResult export(SysRole role)
-    {
+    public AjaxResult export(SysRole role) {
         List<SysRole> list = roleService.selectRoleList(role);
         ExcelUtil<SysRole> util = new ExcelUtil<SysRole>(SysRole.class);
         return util.exportExcel(list, "role");
@@ -67,9 +64,8 @@ public class SysRoleController extends BaseController
      * 新增角色
      */
     @GetMapping("/add")
-    public String add()
-    {
-        return prefix + "/add";
+    public String add() {
+        return prefix + "/add" ;
     }
 
     /**
@@ -80,8 +76,7 @@ public class SysRoleController extends BaseController
     @PostMapping("/add")
     @Transactional(rollbackFor = Exception.class)
     @ResponseBody
-    public AjaxResult addSave(SysRole role)
-    {
+    public AjaxResult addSave(SysRole role) {
         role.setCreateBy(ShiroUtils.getLoginName());
         ShiroUtils.clearCachedAuthorizationInfo();
         return toAjax(roleService.insertRole(role));
@@ -92,10 +87,9 @@ public class SysRoleController extends BaseController
      * 修改角色
      */
     @GetMapping("/edit/{roleId}")
-    public String edit(@PathVariable("roleId") Long roleId, ModelMap mmap)
-    {
+    public String edit(@PathVariable("roleId") Long roleId, ModelMap mmap) {
         mmap.put("role", roleService.selectRoleById(roleId));
-        return prefix + "/edit";
+        return prefix + "/edit" ;
     }
 
     /**
@@ -106,8 +100,7 @@ public class SysRoleController extends BaseController
     @PostMapping("/edit")
     @Transactional(rollbackFor = Exception.class)
     @ResponseBody
-    public AjaxResult editSave(SysRole role)
-    {
+    public AjaxResult editSave(SysRole role) {
         role.setUpdateBy(ShiroUtils.getLoginName());
         ShiroUtils.clearCachedAuthorizationInfo();
         return toAjax(roleService.updateRole(role));
@@ -117,10 +110,9 @@ public class SysRoleController extends BaseController
      * 新增数据权限
      */
     @GetMapping("/rule/{roleId}")
-    public String rule(@PathVariable("roleId") Long roleId, ModelMap mmap)
-    {
+    public String rule(@PathVariable("roleId") Long roleId, ModelMap mmap) {
         mmap.put("role", roleService.selectRoleById(roleId));
-        return prefix + "/rule";
+        return prefix + "/rule" ;
     }
 
     /**
@@ -131,8 +123,7 @@ public class SysRoleController extends BaseController
     @PostMapping("/rule")
     @Transactional(rollbackFor = Exception.class)
     @ResponseBody
-    public AjaxResult ruleSave(SysRole role)
-    {
+    public AjaxResult ruleSave(SysRole role) {
         role.setUpdateBy(ShiroUtils.getLoginName());
         return toAjax(roleService.updateRule(role));
     }
@@ -141,14 +132,10 @@ public class SysRoleController extends BaseController
     @Log(title = "角色管理", businessType = BusinessType.DELETE)
     @PostMapping("/remove")
     @ResponseBody
-    public AjaxResult remove(String ids)
-    {
-        try
-        {
+    public AjaxResult remove(String ids) {
+        try {
             return toAjax(roleService.deleteRoleByIds(ids));
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             return error(e.getMessage());
         }
     }
@@ -158,8 +145,7 @@ public class SysRoleController extends BaseController
      */
     @PostMapping("/checkRoleNameUnique")
     @ResponseBody
-    public String checkRoleNameUnique(SysRole role)
-    {
+    public String checkRoleNameUnique(SysRole role) {
         return roleService.checkRoleNameUnique(role);
     }
 
@@ -168,8 +154,7 @@ public class SysRoleController extends BaseController
      */
     @PostMapping("/checkRoleKeyUnique")
     @ResponseBody
-    public String checkRoleKeyUnique(SysRole role)
-    {
+    public String checkRoleKeyUnique(SysRole role) {
         return roleService.checkRoleKeyUnique(role);
     }
 
@@ -177,8 +162,7 @@ public class SysRoleController extends BaseController
      * 选择菜单树
      */
     @GetMapping("/selectMenuTree")
-    public String selectMenuTree()
-    {
-        return prefix + "/tree";
+    public String selectMenuTree() {
+        return prefix + "/tree" ;
     }
 }
