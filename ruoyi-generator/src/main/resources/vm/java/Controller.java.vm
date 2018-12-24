@@ -1,6 +1,4 @@
-package
-
-    ${basePackage}.web.controller.${moduleName};
+package ${basePackage}.web.controller.${moduleName};
 
 import java.util.List;
 

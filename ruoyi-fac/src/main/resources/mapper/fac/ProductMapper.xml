@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.fac.mapper.ProductMapper">
+    
+    <resultMap type="Product" id="ProductResult">
+        <result property="id"    column="id"    />
+        <result property="sort"    column="sort"    />
+        <result property="name"    column="name"    />
+        <result property="price"    column="price"    />
+        <result property="sales"    column="sales"    />
+        <result property="status"    column="status"    />
+        <result property="categoryId"    column="category_id"    />
+        <result property="businessId"    column="business_id"    />
+        <result property="originalPrice"    column="original_price"    />
+        <result property="inventoryQuantity"    column="inventory_quantity"    />
+        <result property="limitQuantity"    column="limit_quantity"    />
+        <result property="vmBuyerQuantity"    column="vm_buyer_quantity"    />
+        <result property="distribution"    column="distribution"    />
+        <result property="bonusPoints"    column="bonus_points"    />
+        <result property="rushStart"    column="rush_start"    />
+        <result property="rushEnd"    column="rush_end"    />
+        <result property="writeoffStart"    column="writeoff_start"    />
+        <result property="writeoffEnd"    column="writeoff_end"    />
+        <result property="picture"    column="picture"    />
+        <result property="introduction"    column="introduction"    />
+        <result property="shipMode"    column="ship_mode"    />
+        <result property="shipCost"    column="ship_cost"    />
+        <result property="upperShelf"    column="upper_shelf"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="operatorId"    column="operator_id"    />
+        <result property="operatorName"    column="operator_name"    />
+        <result property="isDeleted"    column="is_deleted"    />
+    </resultMap>
+	
+	<sql id="selectProductVo">
+        select id, sort, name, price, sales, status, category_id, business_id, original_price, inventory_quantity, limit_quantity, vm_buyer_quantity, distribution, bonus_points, rush_start, rush_end, writeoff_start, writeoff_end, picture, introduction, ship_mode, ship_cost, upper_shelf, create_time, update_time, operator_id, operator_name, is_deleted from fac_product
+    </sql>
+	
+    <select id="selectProductList" parameterType="Product" resultMap="ProductResult">
+        <include refid="selectProductVo"/>
+        <where>  
+            <if test="id != null "> and id = #{id}</if>
+             <if test="sort != null "> and sort = #{sort}</if>
+             <if test="name != null  and name != '' "> and name = #{name}</if>
+             <if test="price != null "> and price = #{price}</if>
+             <if test="sales != null "> and sales = #{sales}</if>
+             <if test="status != null "> and status = #{status}</if>
+             <if test="categoryId != null "> and category_id = #{categoryId}</if>
+             <if test="businessId != null "> and business_id = #{businessId}</if>
+             <if test="originalPrice != null "> and original_price = #{originalPrice}</if>
+             <if test="inventoryQuantity != null "> and inventory_quantity = #{inventoryQuantity}</if>
+             <if test="limitQuantity != null "> and limit_quantity = #{limitQuantity}</if>
+             <if test="vmBuyerQuantity != null "> and vm_buyer_quantity = #{vmBuyerQuantity}</if>
+             <if test="distribution != null "> and distribution = #{distribution}</if>
+             <if test="bonusPoints != null "> and bonus_points = #{bonusPoints}</if>
+             <if test="rushStart != null "> and rush_start = #{rushStart}</if>
+             <if test="rushEnd != null "> and rush_end = #{rushEnd}</if>
+             <if test="writeoffStart != null "> and writeoff_start = #{writeoffStart}</if>
+             <if test="writeoffEnd != null "> and writeoff_end = #{writeoffEnd}</if>
+             <if test="picture != null  and picture != '' "> and picture = #{picture}</if>
+             <if test="introduction != null  and introduction != '' "> and introduction = #{introduction}</if>
+             <if test="shipMode != null "> and ship_mode = #{shipMode}</if>
+             <if test="shipCost != null "> and ship_cost = #{shipCost}</if>
+             <if test="upperShelf != null "> and upper_shelf = #{upperShelf}</if>
+             <if test="createTime != null "> and create_time = #{createTime}</if>
+             <if test="updateTime != null "> and update_time = #{updateTime}</if>
+             <if test="operatorId != null "> and operator_id = #{operatorId}</if>
+             <if test="operatorName != null  and operatorName != '' "> and operator_name = #{operatorName}</if>
+             <if test="isDeleted != null "> and is_deleted = #{isDeleted}</if>
+         </where>
+    </select>
+    
+    <select id="selectProductById" parameterType="Long" resultMap="ProductResult">
+        <include refid="selectProductVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertProduct" parameterType="Product">
+        insert into fac_product
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null  ">id,</if>
+			<if test="sort != null  ">sort,</if>
+			<if test="name != null  and name != ''  ">name,</if>
+			<if test="price != null  ">price,</if>
+			<if test="sales != null  ">sales,</if>
+			<if test="status != null  ">status,</if>
+			<if test="categoryId != null  ">category_id,</if>
+			<if test="businessId != null  ">business_id,</if>
+			<if test="originalPrice != null  ">original_price,</if>
+			<if test="inventoryQuantity != null  ">inventory_quantity,</if>
+			<if test="limitQuantity != null  ">limit_quantity,</if>
+			<if test="vmBuyerQuantity != null  ">vm_buyer_quantity,</if>
+			<if test="distribution != null  ">distribution,</if>
+			<if test="bonusPoints != null  ">bonus_points,</if>
+			<if test="rushStart != null  ">rush_start,</if>
+			<if test="rushEnd != null  ">rush_end,</if>
+			<if test="writeoffStart != null  ">writeoff_start,</if>
+			<if test="writeoffEnd != null  ">writeoff_end,</if>
+			<if test="picture != null  and picture != ''  ">picture,</if>
+			<if test="introduction != null  and introduction != ''  ">introduction,</if>
+			<if test="shipMode != null  ">ship_mode,</if>
+			<if test="shipCost != null  ">ship_cost,</if>
+			<if test="upperShelf != null  ">upper_shelf,</if>
+			<if test="createTime != null  ">create_time,</if>
+			<if test="updateTime != null  ">update_time,</if>
+			<if test="operatorId != null  ">operator_id,</if>
+			<if test="operatorName != null  and operatorName != ''  ">operator_name,</if>
+			<if test="isDeleted != null  ">is_deleted,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null  ">#{id},</if>
+			<if test="sort != null  ">#{sort},</if>
+			<if test="name != null  and name != ''  ">#{name},</if>
+			<if test="price != null  ">#{price},</if>
+			<if test="sales != null  ">#{sales},</if>
+			<if test="status != null  ">#{status},</if>
+			<if test="categoryId != null  ">#{categoryId},</if>
+			<if test="businessId != null  ">#{businessId},</if>
+			<if test="originalPrice != null  ">#{originalPrice},</if>
+			<if test="inventoryQuantity != null  ">#{inventoryQuantity},</if>
+			<if test="limitQuantity != null  ">#{limitQuantity},</if>
+			<if test="vmBuyerQuantity != null  ">#{vmBuyerQuantity},</if>
+			<if test="distribution != null  ">#{distribution},</if>
+			<if test="bonusPoints != null  ">#{bonusPoints},</if>
+			<if test="rushStart != null  ">#{rushStart},</if>
+			<if test="rushEnd != null  ">#{rushEnd},</if>
+			<if test="writeoffStart != null  ">#{writeoffStart},</if>
+			<if test="writeoffEnd != null  ">#{writeoffEnd},</if>
+			<if test="picture != null  and picture != ''  ">#{picture},</if>
+			<if test="introduction != null  and introduction != ''  ">#{introduction},</if>
+			<if test="shipMode != null  ">#{shipMode},</if>
+			<if test="shipCost != null  ">#{shipCost},</if>
+			<if test="upperShelf != null  ">#{upperShelf},</if>
+			<if test="createTime != null  ">#{createTime},</if>
+			<if test="updateTime != null  ">#{updateTime},</if>
+			<if test="operatorId != null  ">#{operatorId},</if>
+			<if test="operatorName != null  and operatorName != ''  ">#{operatorName},</if>
+			<if test="isDeleted != null  ">#{isDeleted},</if>
+         </trim>
+    </insert>
+	 
+    <update id="updateProduct" parameterType="Product">
+        update fac_product
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="sort != null  ">sort = #{sort},</if>
+            <if test="name != null  and name != ''  ">name = #{name},</if>
+            <if test="price != null  ">price = #{price},</if>
+            <if test="sales != null  ">sales = #{sales},</if>
+            <if test="status != null  ">status = #{status},</if>
+            <if test="categoryId != null  ">category_id = #{categoryId},</if>
+            <if test="businessId != null  ">business_id = #{businessId},</if>
+            <if test="originalPrice != null  ">original_price = #{originalPrice},</if>
+            <if test="inventoryQuantity != null  ">inventory_quantity = #{inventoryQuantity},</if>
+            <if test="limitQuantity != null  ">limit_quantity = #{limitQuantity},</if>
+            <if test="vmBuyerQuantity != null  ">vm_buyer_quantity = #{vmBuyerQuantity},</if>
+            <if test="distribution != null  ">distribution = #{distribution},</if>
+            <if test="bonusPoints != null  ">bonus_points = #{bonusPoints},</if>
+            <if test="rushStart != null  ">rush_start = #{rushStart},</if>
+            <if test="rushEnd != null  ">rush_end = #{rushEnd},</if>
+            <if test="writeoffStart != null  ">writeoff_start = #{writeoffStart},</if>
+            <if test="writeoffEnd != null  ">writeoff_end = #{writeoffEnd},</if>
+            <if test="picture != null  and picture != ''  ">picture = #{picture},</if>
+            <if test="introduction != null  and introduction != ''  ">introduction = #{introduction},</if>
+            <if test="shipMode != null  ">ship_mode = #{shipMode},</if>
+            <if test="shipCost != null  ">ship_cost = #{shipCost},</if>
+            <if test="upperShelf != null  ">upper_shelf = #{upperShelf},</if>
+            <if test="createTime != null  ">create_time = #{createTime},</if>
+            <if test="updateTime != null  ">update_time = #{updateTime},</if>
+            <if test="operatorId != null  ">operator_id = #{operatorId},</if>
+            <if test="operatorName != null  and operatorName != ''  ">operator_name = #{operatorName},</if>
+            <if test="isDeleted != null  ">is_deleted = #{isDeleted},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+	<delete id="deleteProductById" parameterType="Long">
+        delete from fac_product where id = #{id}
+    </delete>
+	
+    <delete id="deleteProductByIds" parameterType="String">
+        delete from fac_product where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

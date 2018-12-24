@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.fac.mapper.ChannelMapper">
+    
+    <resultMap type="Channel" id="ChannelResult">
+        <result property="id"    column="id"    />
+        <result property="name"    column="name"    />
+        <result property="address"    column="address"    />
+        <result property="phoneNumber"    column="phone_number"    />
+        <result property="channelUserId"    column="channel_user_id"    />
+        <result property="status"    column="status"    />
+        <result property="qrcode"    column="qrcode"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="operatorId"    column="operator_id"    />
+        <result property="operatorName"    column="operator_name"    />
+        <result property="isDeleted"    column="is_deleted"    />
+    </resultMap>
+	
+	<sql id="selectChannelVo">
+        select id, name, address, phone_number, channel_user_id, status, qrcode, create_time, update_time, operator_id, operator_name, is_deleted from fac_channel
+    </sql>
+	
+    <select id="selectChannelList" parameterType="Channel" resultMap="ChannelResult">
+        <include refid="selectChannelVo"/>
+        <where>  
+            <if test="id != null "> and id = #{id}</if>
+             <if test="name != null  and name != '' "> and name = #{name}</if>
+             <if test="address != null  and address != '' "> and address = #{address}</if>
+             <if test="phoneNumber != null  and phoneNumber != '' "> and phone_number = #{phoneNumber}</if>
+             <if test="channelUserId != null "> and channel_user_id = #{channelUserId}</if>
+             <if test="status != null "> and status = #{status}</if>
+             <if test="qrcode != null  and qrcode != '' "> and qrcode = #{qrcode}</if>
+             <if test="createTime != null "> and create_time = #{createTime}</if>
+             <if test="updateTime != null "> and update_time = #{updateTime}</if>
+             <if test="operatorId != null "> and operator_id = #{operatorId}</if>
+             <if test="operatorName != null  and operatorName != '' "> and operator_name = #{operatorName}</if>
+             <if test="isDeleted != null "> and is_deleted = #{isDeleted}</if>
+         </where>
+    </select>
+    
+    <select id="selectChannelById" parameterType="Integer" resultMap="ChannelResult">
+        <include refid="selectChannelVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertChannel" parameterType="Channel">
+        insert into fac_channel
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null  ">id,</if>
+			<if test="name != null  and name != ''  ">name,</if>
+			<if test="address != null  and address != ''  ">address,</if>
+			<if test="phoneNumber != null  and phoneNumber != ''  ">phone_number,</if>
+			<if test="channelUserId != null  ">channel_user_id,</if>
+			<if test="status != null  ">status,</if>
+			<if test="qrcode != null  and qrcode != ''  ">qrcode,</if>
+			<if test="createTime != null  ">create_time,</if>
+			<if test="updateTime != null  ">update_time,</if>
+			<if test="operatorId != null  ">operator_id,</if>
+			<if test="operatorName != null  and operatorName != ''  ">operator_name,</if>
+			<if test="isDeleted != null  ">is_deleted,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null  ">#{id},</if>
+			<if test="name != null  and name != ''  ">#{name},</if>
+			<if test="address != null  and address != ''  ">#{address},</if>
+			<if test="phoneNumber != null  and phoneNumber != ''  ">#{phoneNumber},</if>
+			<if test="channelUserId != null  ">#{channelUserId},</if>
+			<if test="status != null  ">#{status},</if>
+			<if test="qrcode != null  and qrcode != ''  ">#{qrcode},</if>
+			<if test="createTime != null  ">#{createTime},</if>
+			<if test="updateTime != null  ">#{updateTime},</if>
+			<if test="operatorId != null  ">#{operatorId},</if>
+			<if test="operatorName != null  and operatorName != ''  ">#{operatorName},</if>
+			<if test="isDeleted != null  ">#{isDeleted},</if>
+         </trim>
+    </insert>
+	 
+    <update id="updateChannel" parameterType="Channel">
+        update fac_channel
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null  and name != ''  ">name = #{name},</if>
+            <if test="address != null  and address != ''  ">address = #{address},</if>
+            <if test="phoneNumber != null  and phoneNumber != ''  ">phone_number = #{phoneNumber},</if>
+            <if test="channelUserId != null  ">channel_user_id = #{channelUserId},</if>
+            <if test="status != null  ">status = #{status},</if>
+            <if test="qrcode != null  and qrcode != ''  ">qrcode = #{qrcode},</if>
+            <if test="createTime != null  ">create_time = #{createTime},</if>
+            <if test="updateTime != null  ">update_time = #{updateTime},</if>
+            <if test="operatorId != null  ">operator_id = #{operatorId},</if>
+            <if test="operatorName != null  and operatorName != ''  ">operator_name = #{operatorName},</if>
+            <if test="isDeleted != null  ">is_deleted = #{isDeleted},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+	<delete id="deleteChannelById" parameterType="Integer">
+        delete from fac_channel where id = #{id}
+    </delete>
+	
+    <delete id="deleteChannelByIds" parameterType="String">
+        delete from fac_channel where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.fac.mapper.ProductCategoryMapper">
+    
+    <resultMap type="ProductCategory" id="ProductCategoryResult">
+        <result property="id"    column="id"    />
+        <result property="sort"    column="sort"    />
+        <result property="name"    column="name"    />
+        <result property="picture"    column="picture"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="operatorId"    column="operator_id"    />
+        <result property="operatorName"    column="operator_name"    />
+        <result property="isDeleted"    column="is_deleted"    />
+    </resultMap>
+	
+	<sql id="selectProductCategoryVo">
+        select id, sort, name, picture, create_time, update_time, operator_id, operator_name, is_deleted from fac_product_category
+    </sql>
+	
+    <select id="selectProductCategoryList" parameterType="ProductCategory" resultMap="ProductCategoryResult">
+        <include refid="selectProductCategoryVo"/>
+        <where>  
+            <if test="id != null "> and id = #{id}</if>
+             <if test="sort != null "> and sort = #{sort}</if>
+             <if test="name != null  and name != '' "> and name = #{name}</if>
+             <if test="picture != null  and picture != '' "> and picture = #{picture}</if>
+             <if test="createTime != null "> and create_time = #{createTime}</if>
+             <if test="updateTime != null "> and update_time = #{updateTime}</if>
+             <if test="operatorId != null "> and operator_id = #{operatorId}</if>
+             <if test="operatorName != null  and operatorName != '' "> and operator_name = #{operatorName}</if>
+             <if test="isDeleted != null "> and is_deleted = #{isDeleted}</if>
+         </where>
+    </select>
+    
+    <select id="selectProductCategoryById" parameterType="Integer" resultMap="ProductCategoryResult">
+        <include refid="selectProductCategoryVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertProductCategory" parameterType="ProductCategory">
+        insert into fac_product_category
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null  ">id,</if>
+			<if test="sort != null  ">sort,</if>
+			<if test="name != null  and name != ''  ">name,</if>
+			<if test="picture != null  and picture != ''  ">picture,</if>
+			<if test="createTime != null  ">create_time,</if>
+			<if test="updateTime != null  ">update_time,</if>
+			<if test="operatorId != null  ">operator_id,</if>
+			<if test="operatorName != null  and operatorName != ''  ">operator_name,</if>
+			<if test="isDeleted != null  ">is_deleted,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null  ">#{id},</if>
+			<if test="sort != null  ">#{sort},</if>
+			<if test="name != null  and name != ''  ">#{name},</if>
+			<if test="picture != null  and picture != ''  ">#{picture},</if>
+			<if test="createTime != null  ">#{createTime},</if>
+			<if test="updateTime != null  ">#{updateTime},</if>
+			<if test="operatorId != null  ">#{operatorId},</if>
+			<if test="operatorName != null  and operatorName != ''  ">#{operatorName},</if>
+			<if test="isDeleted != null  ">#{isDeleted},</if>
+         </trim>
+    </insert>
+	 
+    <update id="updateProductCategory" parameterType="ProductCategory">
+        update fac_product_category
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="sort != null  ">sort = #{sort},</if>
+            <if test="name != null  and name != ''  ">name = #{name},</if>
+            <if test="picture != null  and picture != ''  ">picture = #{picture},</if>
+            <if test="createTime != null  ">create_time = #{createTime},</if>
+            <if test="updateTime != null  ">update_time = #{updateTime},</if>
+            <if test="operatorId != null  ">operator_id = #{operatorId},</if>
+            <if test="operatorName != null  and operatorName != ''  ">operator_name = #{operatorName},</if>
+            <if test="isDeleted != null  ">is_deleted = #{isDeleted},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+	<delete id="deleteProductCategoryById" parameterType="Integer">
+        delete from fac_product_category where id = #{id}
+    </delete>
+	
+    <delete id="deleteProductCategoryByIds" parameterType="String">
+        delete from fac_product_category where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>
