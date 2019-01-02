@@ -1,6 +1,7 @@
 -- --------------------------
 -- 1、商品信息表
 -- --------------------------
+drop table if exists `fac_product`;
 CREATE TABLE `fac_product` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `sort` tinyint(2) NOT NULL COMMENT '排序',
