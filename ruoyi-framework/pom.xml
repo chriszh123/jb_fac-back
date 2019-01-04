@@ -134,6 +134,11 @@
 			<groupId>net.java.dev.jna</groupId>
 			<artifactId>jna-platform</artifactId>
 		</dependency>
+        <dependency>
+            <groupId>com.ruoyi</groupId>
+            <artifactId>ruoyi-fac</artifactId>
+            <version>3.1</version>
+        </dependency>
 
     </dependencies>
     
