@@ -1,5 +1,6 @@
 package com.ruoyi.fac.domain;
 
+import com.ruoyi.common.annotation.Excel;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ruoyi.common.base.BaseEntity;
@@ -20,10 +21,12 @@ public class ProductCategory extends BaseEntity {
     /**
      * 排序
      */
+    @Excel(name = "排序")
     private Integer sort;
     /**
      * 类目名称
      */
+    @Excel(name = "类目名称")
     private String name;
     /**
      * 图片
@@ -36,6 +39,7 @@ public class ProductCategory extends BaseEntity {
     /**
      * 操作者姓名
      */
+    @Excel(name = "创建者")
     private String operatorName;
     /**
      * 是否删除

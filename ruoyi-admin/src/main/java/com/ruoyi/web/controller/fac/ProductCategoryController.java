@@ -2,8 +2,11 @@ package
 
         com.ruoyi.web.controller.fac;
 
+import java.util.Date;
 import java.util.List;
 
+import com.ruoyi.framework.util.ShiroUtils;
+import com.ruoyi.system.domain.SysUser;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -83,6 +86,16 @@ public class ProductCategoryController extends BaseController {
     @PostMapping("/add")
     @ResponseBody
     public AjaxResult addSave(ProductCategory productCategory) {
+        SysUser user = ShiroUtils.getSysUser();
+        if (user != null) {
+            productCategory.setOperatorId(user.getUserId());
+            productCategory.setOperatorName(user.getUserName());
+            productCategory.setCreateBy(user.getUserName());
+        }
+        Date nowDate = new Date();
+        productCategory.setCreateTime(nowDate);
+        productCategory.setUpdateTime(nowDate);
+        productCategory.setIsDeleted(0);
         return toAjax(productCategoryService.insertProductCategory(productCategory));
     }
 
@@ -104,6 +117,12 @@ public class ProductCategoryController extends BaseController {
     @PostMapping("/edit")
     @ResponseBody
     public AjaxResult editSave(ProductCategory productCategory) {
+        SysUser user = ShiroUtils.getSysUser();
+        if (user != null) {
+            productCategory.setUpdateBy(user.getUserName());
+        }
+        Date nowDate = new Date();
+        productCategory.setUpdateTime(nowDate);
         return toAjax(productCategoryService.updateProductCategory(productCategory));
     }
 
