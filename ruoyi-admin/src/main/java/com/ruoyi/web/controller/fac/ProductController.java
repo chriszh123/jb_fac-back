@@ -1,7 +1,10 @@
 package com.ruoyi.web.controller.fac;
 
+import java.util.Date;
 import java.util.List;
 
+import com.ruoyi.framework.util.ShiroUtils;
+import com.ruoyi.system.domain.SysUser;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -19,6 +22,7 @@ import com.ruoyi.framework.web.base.BaseController;
 import com.ruoyi.common.page.TableDataInfo;
 import com.ruoyi.common.base.AjaxResult;
 import com.ruoyi.common.utils.ExcelUtil;
+import com.ruoyi.fac.enums.ProductStatus;
 
 /**
  * 商品 信息操作处理
@@ -81,6 +85,14 @@ public class ProductController extends BaseController {
     @PostMapping("/add")
     @ResponseBody
     public AjaxResult addSave(Product product) {
+        SysUser user = ShiroUtils.getSysUser();
+        if (user != null) {
+            product.setOperatorId(user.getUserId());
+            product.setOperatorName(user.getUserName());
+        }
+        Date now = new Date();
+        product.setCreateTime(now);
+        product.setUpdateTime(now);
         return toAjax(productService.insertProduct(product));
     }
 
@@ -102,6 +114,17 @@ public class ProductController extends BaseController {
     @PostMapping("/edit")
     @ResponseBody
     public AjaxResult editSave(Product product) {
+        SysUser user = ShiroUtils.getSysUser();
+        if (user != null) {
+            product.setOperatorId(user.getUserId());
+            product.setOperatorName(user.getUserName());
+        }
+        Date now = new Date();
+        product.setCreateTime(now);
+        product.setUpdateTime(now);
+        if (product.getStatus() == null) {
+            product.setStatus(ProductStatus.LOWER_SHELF.getValue());
+        }
         return toAjax(productService.updateProduct(product));
     }
 

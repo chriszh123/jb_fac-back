@@ -1,191 +1,236 @@
 <!DOCTYPE HTML>
-<html  lang="zh" xmlns:th="http://www.thymeleaf.org">
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
 <meta charset="utf-8">
 <head th:include="include :: header"></head>
+<link th:href="@{/ajax/libs/datapicker/bootstrap-datetimepicker.min.css}" rel="stylesheet"/>
 <body class="white-bg">
-    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
-        <form class="form-horizontal m" id="form-product-edit" th:object="${product}">
-            <input id="id" name="id" th:field="*{id}"  type="hidden">
-			<div class="form-group">	
-				<label class="col-sm-3 control-label">排序：</label>
-				<div class="col-sm-8">
-					<input id="sort" name="sort" th:field="*{sort}" class="form-control" type="text">
-				</div>
-			</div>
-			<div class="form-group">	
-				<label class="col-sm-3 control-label">商品名称：</label>
-				<div class="col-sm-8">
-					<input id="name" name="name" th:field="*{name}" class="form-control" type="text">
-				</div>
-			</div>
-			<div class="form-group">	
-				<label class="col-sm-3 control-label">售价(抢购价)：</label>
-				<div class="col-sm-8">
-					<input id="price" name="price" th:field="*{price}" class="form-control" type="text">
-				</div>
-			</div>
-			<div class="form-group">	
-				<label class="col-sm-3 control-label">销量：</label>
-				<div class="col-sm-8">
-					<input id="sales" name="sales" th:field="*{sales}" class="form-control" type="text">
-				</div>
-			</div>
-			<div class="form-group">	
-				<label class="col-sm-3 control-label">状态：</label>
-				<div class="col-sm-8">
-					<input id="status" name="status" th:field="*{status}" class="form-control" type="text">
-				</div>
-			</div>
-			<div class="form-group">	
-				<label class="col-sm-3 control-label">商品类目：</label>
-				<div class="col-sm-8">
-					<input id="categoryId" name="categoryId" th:field="*{categoryId}" class="form-control" type="text">
-				</div>
-			</div>
-			<div class="form-group">	
-				<label class="col-sm-3 control-label">所属商家：</label>
-				<div class="col-sm-8">
-					<input id="businessId" name="businessId" th:field="*{businessId}" class="form-control" type="text">
-				</div>
-			</div>
-			<div class="form-group">	
-				<label class="col-sm-3 control-label">原价：</label>
-				<div class="col-sm-8">
-					<input id="originalPrice" name="originalPrice" th:field="*{originalPrice}" class="form-control" type="text">
-				</div>
-			</div>
-			<div class="form-group">	
-				<label class="col-sm-3 control-label">库存数量：</label>
-				<div class="col-sm-8">
-					<input id="inventoryQuantity" name="inventoryQuantity" th:field="*{inventoryQuantity}" class="form-control" type="text">
-				</div>
-			</div>
-			<div class="form-group">	
-				<label class="col-sm-3 control-label">每人限购数量：</label>
-				<div class="col-sm-8">
-					<input id="limitQuantity" name="limitQuantity" th:field="*{limitQuantity}" class="form-control" type="text">
-				</div>
-			</div>
-			<div class="form-group">	
-				<label class="col-sm-3 control-label">虚拟购买人数：</label>
-				<div class="col-sm-8">
-					<input id="vmBuyerQuantity" name="vmBuyerQuantity" th:field="*{vmBuyerQuantity}" class="form-control" type="text">
-				</div>
-			</div>
-			<div class="form-group">	
-				<label class="col-sm-3 control-label">分销奖金：</label>
-				<div class="col-sm-8">
-					<input id="distribution" name="distribution" th:field="*{distribution}" class="form-control" type="text">
-				</div>
-			</div>
-			<div class="form-group">	
-				<label class="col-sm-3 control-label">奖励积分：</label>
-				<div class="col-sm-8">
-					<input id="bonusPoints" name="bonusPoints" th:field="*{bonusPoints}" class="form-control" type="text">
-				</div>
-			</div>
-			<div class="form-group">	
-				<label class="col-sm-3 control-label">抢购开始时间：</label>
-				<div class="col-sm-8">
-					<input id="rushStart" name="rushStart" th:field="*{rushStart}" class="form-control" type="text">
-				</div>
-			</div>
-			<div class="form-group">	
-				<label class="col-sm-3 control-label">抢购结束时间：</label>
-				<div class="col-sm-8">
-					<input id="rushEnd" name="rushEnd" th:field="*{rushEnd}" class="form-control" type="text">
-				</div>
-			</div>
-			<div class="form-group">	
-				<label class="col-sm-3 control-label">核销开始时间：</label>
-				<div class="col-sm-8">
-					<input id="writeoffStart" name="writeoffStart" th:field="*{writeoffStart}" class="form-control" type="text">
-				</div>
-			</div>
-			<div class="form-group">	
-				<label class="col-sm-3 control-label">核销结束时间：</label>
-				<div class="col-sm-8">
-					<input id="writeoffEnd" name="writeoffEnd" th:field="*{writeoffEnd}" class="form-control" type="text">
-				</div>
-			</div>
-			<div class="form-group">	
-				<label class="col-sm-3 control-label">商品图片：</label>
-				<div class="col-sm-8">
-					<input id="picture" name="picture" th:field="*{picture}" class="form-control" type="text">
-				</div>
-			</div>
-			<div class="form-group">	
-				<label class="col-sm-3 control-label">商品介绍内容url：</label>
-				<div class="col-sm-8">
-					<input id="introduction" name="introduction" th:field="*{introduction}" class="form-control" type="text">
-				</div>
-			</div>
-			<div class="form-group">	
-				<label class="col-sm-3 control-label">发货方式：</label>
-				<div class="col-sm-8">
-					<input id="shipMode" name="shipMode" th:field="*{shipMode}" class="form-control" type="text">
-				</div>
-			</div>
-			<div class="form-group">	
-				<label class="col-sm-3 control-label">运费：</label>
-				<div class="col-sm-8">
-					<input id="shipCost" name="shipCost" th:field="*{shipCost}" class="form-control" type="text">
-				</div>
-			</div>
-			<div class="form-group">	
-				<label class="col-sm-3 control-label">上架：</label>
-				<div class="col-sm-8">
-					<input id="upperShelf" name="upperShelf" th:field="*{upperShelf}" class="form-control" type="text">
-				</div>
-			</div>
-			<div class="form-group">	
-				<label class="col-sm-3 control-label">创建时间：</label>
-				<div class="col-sm-8">
-					<input id="createTime" name="createTime" th:field="*{createTime}" class="form-control" type="text">
-				</div>
-			</div>
-			<div class="form-group">	
-				<label class="col-sm-3 control-label">最近更新时间：</label>
-				<div class="col-sm-8">
-					<input id="updateTime" name="updateTime" th:field="*{updateTime}" class="form-control" type="text">
-				</div>
-			</div>
-			<div class="form-group">	
-				<label class="col-sm-3 control-label">操作者ID：</label>
-				<div class="col-sm-8">
-					<input id="operatorId" name="operatorId" th:field="*{operatorId}" class="form-control" type="text">
-				</div>
-			</div>
-			<div class="form-group">	
-				<label class="col-sm-3 control-label">操作者姓名：</label>
-				<div class="col-sm-8">
-					<input id="operatorName" name="operatorName" th:field="*{operatorName}" class="form-control" type="text">
-				</div>
-			</div>
-			<div class="form-group">	
-				<label class="col-sm-3 control-label">是否删除：</label>
-				<div class="col-sm-8">
-					<input id="isDeleted" name="isDeleted" th:field="*{isDeleted}" class="form-control" type="text">
-				</div>
-			</div>
-		</form>
-    </div>
-    <div th:include="include::footer"></div>
-    <script type="text/javascript">
-		var prefix = ctx + "fac/product"
-		$("#form-product-edit").validate({
-			rules:{
-				xxxx:{
-					required:true,
-				},
-			}
-		});
-		
-		function submitHandler() {
-	        if ($.validate.form()) {
-	            $.operate.save(prefix + "/edit", $('#form-product-edit').serialize());
-	        }
-	    }
-	</script>
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+    <form class="form-horizontal m" id="form-product-edit" th:object="${product}">
+        <input id="id" name="id" th:field="*{id}" type="hidden">
+        <div class="form-group">
+            <label class="col-sm-3 control-label">商品名称：</label>
+            <div class="col-sm-8">
+                <input id="name" name="name" th:field="*{name}" class="form-control" type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">商品类目：</label>
+            <div class="col-sm-8">
+                <select id="categoryId" name="categoryId" class="form-control m-b" th:field="*{categoryId}"
+                        th:with="productCategorys=${@ps.getProductCategorys()}">
+                    <option value="">请选择...</option>
+                    <option th:each="pc : ${productCategorys}" th:text="${pc.name}" th:value="${pc.id}"></option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label">所属商家：</label>
+            <div class="col-sm-8">
+                <select id="businessId" name="businessId" class="form-control m-b" th:field="*{businessId}"
+                        th:with="businesses=${@ps.getBusinesses()}">
+                    <option value="">请选择...</option>
+                    <option th:each="bs : ${businesses}" th:text="${bs.name}" th:value="${bs.id}"></option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">原价：</label>
+            <div class="col-sm-8">
+                <input id="originalPrice" name="originalPrice" th:field="*{originalPrice}" class="form-control"
+                       type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">抢购价：</label>
+            <div class="col-sm-8">
+                <input id="price" name="price" th:field="*{price}" class="form-control" type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">库存数量：</label>
+            <div class="col-sm-8">
+                <input id="inventoryQuantity" name="inventoryQuantity" th:field="*{inventoryQuantity}"
+                       class="form-control" type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">每人限购数量：</label>
+            <div class="col-sm-8">
+                <input id="limitQuantity" name="limitQuantity" th:field="*{limitQuantity}" class="form-control"
+                       type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">虚拟购买人数：</label>
+            <div class="col-sm-8">
+                <input id="vmBuyerQuantity" name="vmBuyerQuantity" th:field="*{vmBuyerQuantity}" class="form-control"
+                       type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">分销奖金：</label>
+            <div class="col-sm-8">
+                <input id="distribution" name="distribution" th:field="*{distribution}" class="form-control"
+                       type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">奖励积分：</label>
+            <div class="col-sm-8">
+                <input id="bonusPoints" name="bonusPoints" th:field="*{bonusPoints}" class="form-control" type="text">
+            </div>
+        </div>
+        <div class="form-group form-inline">
+            <label class="col-sm-3 control-label">抢购开始时间：</label>
+            <div class="col-sm-3 input-group date" style="margin-left: 15px;"><span class="input-group-addon"><i
+                    class="fa fa-calendar"></i></span>
+                <input type="text" class="form-control" id="rushStart" name="rushStart" th:field="*{rushStart}" value=""
+                       placeholder="选择开始日期">
+            </div>
+            <label>至</label>
+            <div class="col-sm-3 input-group date"><span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                <input type="text" class="form-control" id="rushEnd" name="rushEnd" th:field="*{rushEnd}" value=""
+                       placeholder="选择结束日期">
+            </div>
+        </div>
+        <div class="form-group form-inline">
+            <label class="col-sm-3 control-label">核销开始时间：</label>
+            <div class="col-sm-3 input-group date" style="margin-left: 15px;"><span class="input-group-addon"><i
+                    class="fa fa-calendar"></i></span>
+                <input type="text" class="form-control" id="writeoffStart" name="writeoffStart"
+                       th:field="*{writeoffStart}" value=""
+                       placeholder="选择开始日期">
+            </div>
+            <label>至</label>
+            <div class="col-sm-3 input-group date"><span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                <input type="text" class="form-control" id="writeoffEnd" name="writeoffEnd" th:field="*{writeoffEnd}"
+                       value=""
+                       placeholder="选择结束日期">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">商品图片：</label>
+            <div class="col-sm-8">
+                <input id="picture" name="picture" th:field="*{picture}" class="form-control" type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">商品介绍内容url：</label>
+            <div class="col-sm-8">
+                <input id="introduction" name="introduction" th:field="*{introduction}" class="form-control"
+                       type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">发货方式：</label>
+            <div class="col-sm-8">
+                <label class="radio-box"> <input type="radio" name="shipMode" value="1"
+                                                 th:checked="${product.shipMode == 1 ? true : false}"/> 送货上门 </label>
+                <label class="radio-box"> <input type="radio" name="shipMode" value="2"
+                                                 th:checked="${product.shipMode == 2 ? true : false}"/> 核销码 </label>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">运费：</label>
+            <div class="col-sm-8">
+                <input id="shipCost" name="shipCost" th:field="*{shipCost}" class="form-control" type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">排序：</label>
+            <div class="col-sm-8">
+                <input id="sort" name="sort" th:field="*{sort}" class="form-control" type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">上架：</label>
+            <div class="col-sm-8">
+                <div class="onoffswitch">
+                    <input type="checkbox" th:checked="${product.status == 1 ? true : false}"
+                           class="onoffswitch-checkbox" value="1" id="status"
+                           name="status">
+                    <label class="onoffswitch-label" for="status">
+                        <span class="onoffswitch-inner"></span>
+                        <span class="onoffswitch-switch"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<div th:include="include::footer"></div>
+<script th:src="@{/ajax/libs//datapicker/bootstrap-datetimepicker.min.js}"></script>
+<script th:src="@{/ajax/libs//datapicker/bootstrap-datetimepicker.zh-CN.js}"></script>
+<script type="text/javascript">
+    var prefix = ctx + "fac/product"
+
+    $(".input-group.date").datetimepicker({
+        format: 'yyyy-mm-dd hh:ii',
+        todayBtn: "linked",
+        keyboardNavigation: !1,
+        forceParse: !1,
+        calendarWeeks: !0,
+        autoclose: !0,
+        initialDate: new Date(),
+        language: "zh-CN"
+    });
+
+    $("#form-product-edit").validate({
+        rules: {
+            name: {
+                required: true,
+                maxlength: 500
+            },
+            categoryId: {
+                required: true
+            },
+            businessId: {
+                required: true
+            },
+            originalPrice: {
+                required: true,
+                number: true
+            },
+            price: {
+                required: true,
+                number: true
+            },
+            inventoryQuantity: {
+                required: true,
+                digits: true
+            },
+            limitQuantity: {
+                required: true,
+                digits: true
+            },
+            vmBuyerQuantity: {
+                required: true,
+                digits: true
+            },
+            distribution: {
+                required: true,
+                number: true
+            },
+            bonusPoints: {
+                required: true,
+                digits: true
+            },
+            shipCost: {
+                number: true
+            },
+            sort: {
+                required: true,
+                digits: true
+            }
+        }
+    });
+
+    function submitHandler() {
+        if ($.validate.form()) {
+            $.operate.save(prefix + "/edit", $('#form-product-edit').serialize());
+        }
+    }
+</script>
 </body>
 </html>

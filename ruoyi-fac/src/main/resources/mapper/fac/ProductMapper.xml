@@ -130,7 +130,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			<if test="introduction != null  and introduction != ''  ">#{introduction},</if>
 			<if test="shipMode != null  ">#{shipMode},</if>
 			<if test="shipCost != null  ">#{shipCost},</if>
-			<if test="upperShelf != null  ">#{upperShelf},</if>
 			<if test="createTime != null  ">#{createTime},</if>
 			<if test="updateTime != null  ">#{updateTime},</if>
 			<if test="operatorId != null  ">#{operatorId},</if>
