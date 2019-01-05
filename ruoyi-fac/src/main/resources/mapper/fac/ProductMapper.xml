@@ -27,7 +27,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="introduction"    column="introduction"    />
         <result property="shipMode"    column="ship_mode"    />
         <result property="shipCost"    column="ship_cost"    />
-        <result property="upperShelf"    column="upper_shelf"    />
         <result property="createTime"    column="create_time"    />
         <result property="updateTime"    column="update_time"    />
         <result property="operatorId"    column="operator_id"    />
@@ -36,7 +35,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 	
 	<sql id="selectProductVo">
-        select id, sort, name, price, sales, status, category_id, business_id, original_price, inventory_quantity, limit_quantity, vm_buyer_quantity, distribution, bonus_points, rush_start, rush_end, writeoff_start, writeoff_end, picture, introduction, ship_mode, ship_cost, upper_shelf, create_time, update_time, operator_id, operator_name, is_deleted from fac_product
+        select id, sort, name, price, sales, status, category_id, business_id, original_price, inventory_quantity, limit_quantity, vm_buyer_quantity, distribution, bonus_points, rush_start, rush_end, writeoff_start, writeoff_end, picture, introduction, ship_mode, ship_cost, create_time, update_time, operator_id, operator_name, is_deleted from fac_product
     </sql>
 	
     <select id="selectProductList" parameterType="Product" resultMap="ProductResult">
@@ -64,7 +63,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
              <if test="introduction != null  and introduction != '' "> and introduction = #{introduction}</if>
              <if test="shipMode != null "> and ship_mode = #{shipMode}</if>
              <if test="shipCost != null "> and ship_cost = #{shipCost}</if>
-             <if test="upperShelf != null "> and upper_shelf = #{upperShelf}</if>
              <if test="createTime != null "> and create_time = #{createTime}</if>
              <if test="updateTime != null "> and update_time = #{updateTime}</if>
              <if test="operatorId != null "> and operator_id = #{operatorId}</if>
@@ -103,7 +101,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			<if test="introduction != null  and introduction != ''  ">introduction,</if>
 			<if test="shipMode != null  ">ship_mode,</if>
 			<if test="shipCost != null  ">ship_cost,</if>
-			<if test="upperShelf != null  ">upper_shelf,</if>
 			<if test="createTime != null  ">create_time,</if>
 			<if test="updateTime != null  ">update_time,</if>
 			<if test="operatorId != null  ">operator_id,</if>
@@ -166,7 +163,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="introduction != null  and introduction != ''  ">introduction = #{introduction},</if>
             <if test="shipMode != null  ">ship_mode = #{shipMode},</if>
             <if test="shipCost != null  ">ship_cost = #{shipCost},</if>
-            <if test="upperShelf != null  ">upper_shelf = #{upperShelf},</if>
             <if test="createTime != null  ">create_time = #{createTime},</if>
             <if test="updateTime != null  ">update_time = #{updateTime},</if>
             <if test="operatorId != null  ">operator_id = #{operatorId},</if>

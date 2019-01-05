@@ -35,7 +35,7 @@ public class Product extends BaseEntity {
      */
     private Integer sales;
     /**
-     * 状态
+     * 上架状态
      */
     private Integer status;
     /**
@@ -102,10 +102,6 @@ public class Product extends BaseEntity {
      * 运费
      */
     private BigDecimal shipCost;
-    /**
-     * 上架
-     */
-    private Integer upperShelf;
     /**
      * 操作者ID
      */
@@ -295,14 +291,6 @@ public class Product extends BaseEntity {
         return shipCost;
     }
 
-    public void setUpperShelf(Integer upperShelf) {
-        this.upperShelf = upperShelf;
-    }
-
-    public Integer getUpperShelf() {
-        return upperShelf;
-    }
-
     public void setOperatorId(Long operatorId) {
         this.operatorId = operatorId;
     }
@@ -352,7 +340,6 @@ public class Product extends BaseEntity {
                 .append("introduction", getIntroduction())
                 .append("shipMode", getShipMode())
                 .append("shipCost", getShipCost())
-                .append("upperShelf", getUpperShelf())
                 .append("createTime", getCreateTime())
                 .append("updateTime", getUpdateTime())
                 .append("operatorId", getOperatorId())
