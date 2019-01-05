@@ -1,5 +1,6 @@
 package com.ruoyi.fac.domain;
 
+import com.ruoyi.common.annotation.Excel;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ruoyi.common.base.BaseEntity;
@@ -16,38 +17,47 @@ public class Business extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
     /**  */
+    @Excel(name = "商家ID")
     private Integer id;
     /**
      * 商家名称
      */
+    @Excel(name = "商家名称")
     private String name;
     /**
      * 联系人1
      */
+    @Excel(name = "联系人1")
     private String contacts1;
     /**
      * 联系人2
      */
+    @Excel(name = "联系人2")
     private String contacts2;
     /**
      * 联系人3
      */
+    @Excel(name = "联系人3")
     private String contacts3;
     /**
      * 电话1
      */
+    @Excel(name = "电话1")
     private String phoneNumber1;
     /**
      * 电话2
      */
+    @Excel(name = "电话2")
     private String phoneNumber2;
     /**
      * 电话3
      */
+    @Excel(name = "电话3")
     private String phoneNumber3;
     /**
      * 地址
      */
+    @Excel(name = "地址")
     private String address;
     /**
      * 登录名

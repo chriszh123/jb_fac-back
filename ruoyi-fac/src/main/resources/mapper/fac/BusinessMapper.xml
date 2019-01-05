@@ -1,103 +1,104 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
-PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.fac.mapper.BusinessMapper">
-    
+
     <resultMap type="Business" id="BusinessResult">
-        <result property="id"    column="id"    />
-        <result property="name"    column="name"    />
-        <result property="contacts1"    column="contacts1"    />
-        <result property="contacts2"    column="contacts2"    />
-        <result property="contacts3"    column="contacts3"    />
-        <result property="phoneNumber1"    column="phone_number1"    />
-        <result property="phoneNumber2"    column="phone_number2"    />
-        <result property="phoneNumber3"    column="phone_number3"    />
-        <result property="address"    column="address"    />
-        <result property="loginName"    column="login_name"    />
-        <result property="loginPwd"    column="login_pwd"    />
-        <result property="secret"    column="secret"    />
-        <result property="createTime"    column="create_time"    />
-        <result property="updateTime"    column="update_time"    />
-        <result property="operatorId"    column="operator_id"    />
-        <result property="operatorName"    column="operator_name"    />
-        <result property="isDeleted"    column="is_deleted"    />
+        <result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="contacts1" column="contacts1"/>
+        <result property="contacts2" column="contacts2"/>
+        <result property="contacts3" column="contacts3"/>
+        <result property="phoneNumber1" column="phone_number1"/>
+        <result property="phoneNumber2" column="phone_number2"/>
+        <result property="phoneNumber3" column="phone_number3"/>
+        <result property="address" column="address"/>
+        <result property="loginName" column="login_name"/>
+        <result property="loginPwd" column="login_pwd"/>
+        <result property="secret" column="secret"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="operatorId" column="operator_id"/>
+        <result property="operatorName" column="operator_name"/>
+        <result property="isDeleted" column="is_deleted"/>
     </resultMap>
-	
-	<sql id="selectBusinessVo">
+
+    <sql id="selectBusinessVo">
         select id, name, contacts1, contacts2, contacts3, phone_number1, phone_number2, phone_number3, address, login_name, login_pwd, secret, create_time, update_time, operator_id, operator_name, is_deleted from fac_business
     </sql>
-	
+
     <select id="selectBusinessList" parameterType="Business" resultMap="BusinessResult">
         <include refid="selectBusinessVo"/>
-        <where>  
-            <if test="id != null "> and id = #{id}</if>
-             <if test="name != null  and name != '' "> and name = #{name}</if>
-             <if test="contacts1 != null  and contacts1 != '' "> and contacts1 = #{contacts1}</if>
-             <if test="contacts2 != null  and contacts2 != '' "> and contacts2 = #{contacts2}</if>
-             <if test="contacts3 != null  and contacts3 != '' "> and contacts3 = #{contacts3}</if>
-             <if test="phoneNumber1 != null  and phoneNumber1 != '' "> and phone_number1 = #{phoneNumber1}</if>
-             <if test="phoneNumber2 != null  and phoneNumber2 != '' "> and phone_number2 = #{phoneNumber2}</if>
-             <if test="phoneNumber3 != null  and phoneNumber3 != '' "> and phone_number3 = #{phoneNumber3}</if>
-             <if test="address != null  and address != '' "> and address = #{address}</if>
-             <if test="loginName != null  and loginName != '' "> and login_name = #{loginName}</if>
-             <if test="loginPwd != null  and loginPwd != '' "> and login_pwd = #{loginPwd}</if>
-             <if test="secret != null "> and secret = #{secret}</if>
-             <if test="createTime != null "> and create_time = #{createTime}</if>
-             <if test="updateTime != null "> and update_time = #{updateTime}</if>
-             <if test="operatorId != null "> and operator_id = #{operatorId}</if>
-             <if test="operatorName != null  and operatorName != '' "> and operator_name = #{operatorName}</if>
-             <if test="isDeleted != null "> and is_deleted = #{isDeleted}</if>
-         </where>
+        <where>
+            <if test="id != null ">and id = #{id}</if>
+            <if test="name != null  and name != '' ">and name like "%"#{name}"%"</if>
+            <if test="contacts1 != null  and contacts1 != '' ">and contacts1 = #{contacts1}</if>
+            <if test="contacts2 != null  and contacts2 != '' ">and contacts2 = #{contacts2}</if>
+            <if test="contacts3 != null  and contacts3 != '' ">and contacts3 = #{contacts3}</if>
+            <if test="phoneNumber1 != null  and phoneNumber1 != '' ">and phone_number1 = #{phoneNumber1}</if>
+            <if test="phoneNumber2 != null  and phoneNumber2 != '' ">and phone_number2 = #{phoneNumber2}</if>
+            <if test="phoneNumber3 != null  and phoneNumber3 != '' ">and phone_number3 = #{phoneNumber3}</if>
+            <if test="address != null  and address != '' ">and address = #{address}</if>
+            <if test="loginName != null  and loginName != '' ">and login_name = #{loginName}</if>
+            <if test="loginPwd != null  and loginPwd != '' ">and login_pwd = #{loginPwd}</if>
+            <if test="secret != null ">and secret = #{secret}</if>
+            <if test="createTime != null ">and create_time = #{createTime}</if>
+            <if test="updateTime != null ">and update_time = #{updateTime}</if>
+            <if test="operatorId != null ">and operator_id = #{operatorId}</if>
+            <if test="operatorName != null  and operatorName != '' ">and operator_name = #{operatorName}</if>
+            <if test="isDeleted != null ">and is_deleted = #{isDeleted}</if>
+        </where>
+        ORDER by create_time DESC
     </select>
-    
+
     <select id="selectBusinessById" parameterType="Integer" resultMap="BusinessResult">
         <include refid="selectBusinessVo"/>
         where id = #{id}
     </select>
-        
+
     <insert id="insertBusiness" parameterType="Business">
         insert into fac_business
-		<trim prefix="(" suffix=")" suffixOverrides=",">
-			<if test="id != null  ">id,</if>
-			<if test="name != null  and name != ''  ">name,</if>
-			<if test="contacts1 != null  and contacts1 != ''  ">contacts1,</if>
-			<if test="contacts2 != null  and contacts2 != ''  ">contacts2,</if>
-			<if test="contacts3 != null  and contacts3 != ''  ">contacts3,</if>
-			<if test="phoneNumber1 != null  and phoneNumber1 != ''  ">phone_number1,</if>
-			<if test="phoneNumber2 != null  and phoneNumber2 != ''  ">phone_number2,</if>
-			<if test="phoneNumber3 != null  and phoneNumber3 != ''  ">phone_number3,</if>
-			<if test="address != null  and address != ''  ">address,</if>
-			<if test="loginName != null  and loginName != ''  ">login_name,</if>
-			<if test="loginPwd != null  and loginPwd != ''  ">login_pwd,</if>
-			<if test="secret != null  ">secret,</if>
-			<if test="createTime != null  ">create_time,</if>
-			<if test="updateTime != null  ">update_time,</if>
-			<if test="operatorId != null  ">operator_id,</if>
-			<if test="operatorName != null  and operatorName != ''  ">operator_name,</if>
-			<if test="isDeleted != null  ">is_deleted,</if>
-         </trim>
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null  ">id,</if>
+            <if test="name != null  and name != ''  ">name,</if>
+            <if test="contacts1 != null  and contacts1 != ''  ">contacts1,</if>
+            <if test="contacts2 != null  and contacts2 != ''  ">contacts2,</if>
+            <if test="contacts3 != null  and contacts3 != ''  ">contacts3,</if>
+            <if test="phoneNumber1 != null  and phoneNumber1 != ''  ">phone_number1,</if>
+            <if test="phoneNumber2 != null  and phoneNumber2 != ''  ">phone_number2,</if>
+            <if test="phoneNumber3 != null  and phoneNumber3 != ''  ">phone_number3,</if>
+            <if test="address != null  and address != ''  ">address,</if>
+            <if test="loginName != null  and loginName != ''  ">login_name,</if>
+            <if test="loginPwd != null  and loginPwd != ''  ">login_pwd,</if>
+            <if test="secret != null  ">secret,</if>
+            <if test="createTime != null  ">create_time,</if>
+            <if test="updateTime != null  ">update_time,</if>
+            <if test="operatorId != null  ">operator_id,</if>
+            <if test="operatorName != null  and operatorName != ''  ">operator_name,</if>
+            <if test="isDeleted != null  ">is_deleted,</if>
+        </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
-			<if test="id != null  ">#{id},</if>
-			<if test="name != null  and name != ''  ">#{name},</if>
-			<if test="contacts1 != null  and contacts1 != ''  ">#{contacts1},</if>
-			<if test="contacts2 != null  and contacts2 != ''  ">#{contacts2},</if>
-			<if test="contacts3 != null  and contacts3 != ''  ">#{contacts3},</if>
-			<if test="phoneNumber1 != null  and phoneNumber1 != ''  ">#{phoneNumber1},</if>
-			<if test="phoneNumber2 != null  and phoneNumber2 != ''  ">#{phoneNumber2},</if>
-			<if test="phoneNumber3 != null  and phoneNumber3 != ''  ">#{phoneNumber3},</if>
-			<if test="address != null  and address != ''  ">#{address},</if>
-			<if test="loginName != null  and loginName != ''  ">#{loginName},</if>
-			<if test="loginPwd != null  and loginPwd != ''  ">#{loginPwd},</if>
-			<if test="secret != null  ">#{secret},</if>
-			<if test="createTime != null  ">#{createTime},</if>
-			<if test="updateTime != null  ">#{updateTime},</if>
-			<if test="operatorId != null  ">#{operatorId},</if>
-			<if test="operatorName != null  and operatorName != ''  ">#{operatorName},</if>
-			<if test="isDeleted != null  ">#{isDeleted},</if>
-         </trim>
+            <if test="id != null  ">#{id},</if>
+            <if test="name != null  and name != ''  ">#{name},</if>
+            <if test="contacts1 != null  and contacts1 != ''  ">#{contacts1},</if>
+            <if test="contacts2 != null  and contacts2 != ''  ">#{contacts2},</if>
+            <if test="contacts3 != null  and contacts3 != ''  ">#{contacts3},</if>
+            <if test="phoneNumber1 != null  and phoneNumber1 != ''  ">#{phoneNumber1},</if>
+            <if test="phoneNumber2 != null  and phoneNumber2 != ''  ">#{phoneNumber2},</if>
+            <if test="phoneNumber3 != null  and phoneNumber3 != ''  ">#{phoneNumber3},</if>
+            <if test="address != null  and address != ''  ">#{address},</if>
+            <if test="loginName != null  and loginName != ''  ">#{loginName},</if>
+            <if test="loginPwd != null  and loginPwd != ''  ">#{loginPwd},</if>
+            <if test="secret != null  ">#{secret},</if>
+            <if test="createTime != null  ">#{createTime},</if>
+            <if test="updateTime != null  ">#{updateTime},</if>
+            <if test="operatorId != null  ">#{operatorId},</if>
+            <if test="operatorName != null  and operatorName != ''  ">#{operatorName},</if>
+            <if test="isDeleted != null  ">#{isDeleted},</if>
+        </trim>
     </insert>
-	 
+
     <update id="updateBusiness" parameterType="Business">
         update fac_business
         <trim prefix="SET" suffixOverrides=",">
@@ -121,15 +122,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where id = #{id}
     </update>
 
-	<delete id="deleteBusinessById" parameterType="Integer">
+    <delete id="deleteBusinessById" parameterType="Integer">
         delete from fac_business where id = #{id}
     </delete>
-	
+
     <delete id="deleteBusinessByIds" parameterType="String">
-        delete from fac_business where id in 
+        update fac_business
+        set is_deleted = 1
+        where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>
     </delete>
-    
+
 </mapper>

@@ -7,13 +7,17 @@ import com.ruoyi.common.page.TableDataInfo;
 import com.ruoyi.common.utils.ExcelUtil;
 import com.ruoyi.fac.domain.Business;
 import com.ruoyi.fac.service.IBusinessService;
+import com.ruoyi.framework.shiro.service.SysPasswordService;
+import com.ruoyi.framework.util.ShiroUtils;
 import com.ruoyi.framework.web.base.BaseController;
+import com.ruoyi.system.domain.SysUser;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -29,6 +33,9 @@ public class BusinessController extends BaseController {
 
     @Autowired
     private IBusinessService businessService;
+
+    @Autowired
+    private SysPasswordService passwordService;
 
     @RequiresPermissions("fac:business:view")
     @GetMapping()
@@ -58,7 +65,7 @@ public class BusinessController extends BaseController {
     public AjaxResult export(Business business) {
         List<Business> list = businessService.selectBusinessList(business);
         ExcelUtil<Business> util = new ExcelUtil<Business>(Business.class);
-        return util.exportExcel(list, "business");
+        return util.exportExcel(list, "所有商家");
     }
 
     /**
@@ -77,6 +84,19 @@ public class BusinessController extends BaseController {
     @PostMapping("/add")
     @ResponseBody
     public AjaxResult addSave(Business business) {
+        SysUser user = ShiroUtils.getSysUser();
+        if (user != null) {
+            business.setCreateBy(user.getUserName());
+            business.setOperatorId(user.getUserId());
+            business.setOperatorName(user.getUserName());
+        }
+        Date nowDate = new Date();
+        business.setCreateTime(nowDate);
+        business.setUpdateTime(nowDate);
+        // 登录密码加密
+        String salt = ShiroUtils.randomSalt();
+        String loginPwd = passwordService.encryptPassword(business.getLoginName(), business.getLoginPwd(), salt);
+        business.setLoginPwd(loginPwd);
         return toAjax(businessService.insertBusiness(business));
     }
 
@@ -98,6 +118,19 @@ public class BusinessController extends BaseController {
     @PostMapping("/edit")
     @ResponseBody
     public AjaxResult editSave(Business business) {
+        SysUser user = ShiroUtils.getSysUser();
+        if (user != null) {
+            business.setCreateBy(user.getUserName());
+            business.setOperatorId(user.getUserId());
+            business.setOperatorName(user.getUserName());
+        }
+        Date nowDate = new Date();
+        business.setCreateTime(nowDate);
+        business.setUpdateTime(nowDate);
+        // 登录密码加密
+        String salt = ShiroUtils.randomSalt();
+        String loginPwd = passwordService.encryptPassword(business.getLoginName(), business.getLoginPwd(), salt);
+        business.setLoginPwd(loginPwd);
         return toAjax(businessService.updateBusiness(business));
     }
 

@@ -67,7 +67,7 @@ public class ProductCategoryController extends BaseController {
     public AjaxResult export(ProductCategory productCategory) {
         List<ProductCategory> list = productCategoryService.selectProductCategoryList(productCategory);
         ExcelUtil<ProductCategory> util = new ExcelUtil<ProductCategory>(ProductCategory.class);
-        return util.exportExcel(list, "productCategory");
+        return util.exportExcel(list, "商品类目");
     }
 
     /**
