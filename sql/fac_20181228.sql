@@ -74,18 +74,24 @@ CREATE TABLE `fac_product_writeoff` (
 -- --------------------------
 drop table if exists `fac_order`;
 CREATE TABLE `fac_order` (
-  `id` int(10) NOT NULL AUTO_INCREMENT,
-  `order_no` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '订单号,eg:201812231410342545',
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `order_no` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '订单号,eg:201812231410342545',
   `prod_id` bigint(20) DEFAULT NULL COMMENT '商品id',
-  `prod_name` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '商品名称',
+  `prod_name` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '商品名称',
   `price` decimal(5,2) NOT NULL COMMENT '金额',
   `status` tinyint(2) NOT NULL COMMENT '状态:1-已付款;2-待付款；3-已取消;4-未取消',
   `pay_time` datetime NOT NULL COMMENT '付款时间',
   `user_id` bigint(20) DEFAULT NULL COMMENT '买者用户id',
-  `user_name` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '买者用户名称',
+  `user_name` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '用户真实名称',
+  `nick_name` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '用户昵称',
+  `remark` varchar(1024) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '' COMMENT '备注',
+  `ship_id` bigint(20) NOT NULL DEFAULT 0 COMMENT '快递单号ID',
+  `ship_code` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '快递单号',
+  `remark_mngt` varchar(1024) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '' COMMENT '管理员备注',
+  `ship` tinyint(2) NOT NULL DEFAULT 2 COMMENT '是否发货:1-已发货;2-未发货',
   `cacel_id` bigint(20) DEFAULT NULL COMMENT '取消订单操作人id',
-  `cacel_name` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '取消订单操作人名称',
-  `cacel_time` datetime NOT NULL COMMENT '取消订单操作时间',
+  `cacel_name` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '取消订单操作人名称',
+  `cacel_time` datetime DEFAULT NULL COMMENT '取消订单操作时间',
   `create_time` datetime NOT NULL COMMENT '创建时间',
   `update_time` datetime NOT NULL COMMENT '最近更新时间',
   `operator_id` bigint(20) DEFAULT NULL COMMENT '操作者ID',
@@ -144,7 +150,7 @@ CREATE TABLE `fac_channel` (
 -- --------------------------
 drop table if exists `fac_buyer`;
 CREATE TABLE `fac_buyer` (
-  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `nick_name` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '用户昵称',
   `name` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '真实姓名 ',
   `phone_number` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '手机号',

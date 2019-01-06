@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.fac.mapper.OrderMapper">
+    
+    <resultMap type="Order" id="OrderResult">
+        <result property="id"    column="id"    />
+        <result property="orderNo"    column="order_no"    />
+        <result property="prodId"    column="prod_id"    />
+        <result property="prodName"    column="prod_name"    />
+        <result property="price"    column="price"    />
+        <result property="status"    column="status"    />
+        <result property="payTime"    column="pay_time"    />
+        <result property="userId"    column="user_id"    />
+        <result property="userName"    column="user_name"    />
+        <result property="nickName"    column="nick_name"    />
+        <result property="remark"    column="remark"    />
+        <result property="shipId"    column="ship_id"    />
+        <result property="shipCode"    column="ship_code"    />
+        <result property="remarkMngt"    column="remark_mngt"    />
+        <result property="ship"    column="ship"    />
+        <result property="cacelId"    column="cacel_id"    />
+        <result property="cacelName"    column="cacel_name"    />
+        <result property="cacelTime"    column="cacel_time"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="operatorId"    column="operator_id"    />
+        <result property="operatorName"    column="operator_name"    />
+        <result property="isDeleted"    column="is_deleted"    />
+    </resultMap>
+	
+	<sql id="selectOrderVo">
+        select id, order_no, prod_id, prod_name, price, status, pay_time, user_id, user_name, nick_name, remark, ship_id, ship_code, remark_mngt, ship, cacel_id, cacel_name, cacel_time, create_time, update_time, operator_id, operator_name, is_deleted from fac_order
+    </sql>
+	
+    <select id="selectOrderList" parameterType="Order" resultMap="OrderResult">
+        <include refid="selectOrderVo"/>
+        <where>  
+            <if test="id != null "> and id = #{id}</if>
+             <if test="orderNo != null  and orderNo != '' "> and order_no = #{orderNo}</if>
+             <if test="prodId != null "> and prod_id = #{prodId}</if>
+             <if test="prodName != null  and prodName != '' "> and prod_name = #{prodName}</if>
+             <if test="price != null "> and price = #{price}</if>
+             <if test="status != null "> and status = #{status}</if>
+             <if test="payTime != null "> and pay_time = #{payTime}</if>
+             <if test="userId != null "> and user_id = #{userId}</if>
+             <if test="userName != null  and userName != '' "> and user_name = #{userName}</if>
+             <if test="nickName != null  and nickName != '' "> and nick_name = #{nickName}</if>
+             <if test="remark != null  and remark != '' "> and remark = #{remark}</if>
+             <if test="shipId != null "> and ship_id = #{shipId}</if>
+             <if test="shipCode != null  and shipCode != '' "> and ship_code = #{shipCode}</if>
+             <if test="remarkMngt != null  and remarkMngt != '' "> and remark_mngt = #{remarkMngt}</if>
+             <if test="ship != null "> and ship = #{ship}</if>
+             <if test="cacelId != null "> and cacel_id = #{cacelId}</if>
+             <if test="cacelName != null  and cacelName != '' "> and cacel_name = #{cacelName}</if>
+             <if test="cacelTime != null "> and cacel_time = #{cacelTime}</if>
+             <if test="createTime != null "> and create_time = #{createTime}</if>
+             <if test="updateTime != null "> and update_time = #{updateTime}</if>
+             <if test="operatorId != null "> and operator_id = #{operatorId}</if>
+             <if test="operatorName != null  and operatorName != '' "> and operator_name = #{operatorName}</if>
+             <if test="isDeleted != null "> and is_deleted = #{isDeleted}</if>
+         </where>
+    </select>
+    
+    <select id="selectOrderById" resultMap="OrderResult">
+        <include refid="selectOrderVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertOrder" parameterType="Order">
+        insert into fac_order
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null  ">id,</if>
+			<if test="orderNo != null  and orderNo != ''  ">order_no,</if>
+			<if test="prodId != null  ">prod_id,</if>
+			<if test="prodName != null  and prodName != ''  ">prod_name,</if>
+			<if test="price != null  ">price,</if>
+			<if test="status != null  ">status,</if>
+			<if test="payTime != null  ">pay_time,</if>
+			<if test="userId != null  ">user_id,</if>
+			<if test="userName != null  and userName != ''  ">user_name,</if>
+			<if test="nickName != null  and nickName != ''  ">nick_name,</if>
+			<if test="remark != null  and remark != ''  ">remark,</if>
+			<if test="shipId != null  ">ship_id,</if>
+			<if test="shipCode != null  and shipCode != ''  ">ship_code,</if>
+			<if test="remarkMngt != null  and remarkMngt != ''  ">remark_mngt,</if>
+			<if test="ship != null  ">ship,</if>
+			<if test="cacelId != null  ">cacel_id,</if>
+			<if test="cacelName != null  and cacelName != ''  ">cacel_name,</if>
+			<if test="cacelTime != null  ">cacel_time,</if>
+			<if test="createTime != null  ">create_time,</if>
+			<if test="updateTime != null  ">update_time,</if>
+			<if test="operatorId != null  ">operator_id,</if>
+			<if test="operatorName != null  and operatorName != ''  ">operator_name,</if>
+			<if test="isDeleted != null  ">is_deleted,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null  ">#{id},</if>
+			<if test="orderNo != null  and orderNo != ''  ">#{orderNo},</if>
+			<if test="prodId != null  ">#{prodId},</if>
+			<if test="prodName != null  and prodName != ''  ">#{prodName},</if>
+			<if test="price != null  ">#{price},</if>
+			<if test="status != null  ">#{status},</if>
+			<if test="payTime != null  ">#{payTime},</if>
+			<if test="userId != null  ">#{userId},</if>
+			<if test="userName != null  and userName != ''  ">#{userName},</if>
+			<if test="nickName != null  and nickName != ''  ">#{nickName},</if>
+			<if test="remark != null  and remark != ''  ">#{remark},</if>
+			<if test="shipId != null  ">#{shipId},</if>
+			<if test="shipCode != null  and shipCode != ''  ">#{shipCode},</if>
+			<if test="remarkMngt != null  and remarkMngt != ''  ">#{remarkMngt},</if>
+			<if test="ship != null  ">#{ship},</if>
+			<if test="cacelId != null  ">#{cacelId},</if>
+			<if test="cacelName != null  and cacelName != ''  ">#{cacelName},</if>
+			<if test="cacelTime != null  ">#{cacelTime},</if>
+			<if test="createTime != null  ">#{createTime},</if>
+			<if test="updateTime != null  ">#{updateTime},</if>
+			<if test="operatorId != null  ">#{operatorId},</if>
+			<if test="operatorName != null  and operatorName != ''  ">#{operatorName},</if>
+			<if test="isDeleted != null  ">#{isDeleted},</if>
+         </trim>
+    </insert>
+	 
+    <update id="updateOrder" parameterType="Order">
+        update fac_order
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="orderNo != null  and orderNo != ''  ">order_no = #{orderNo},</if>
+            <if test="prodId != null  ">prod_id = #{prodId},</if>
+            <if test="prodName != null  and prodName != ''  ">prod_name = #{prodName},</if>
+            <if test="price != null  ">price = #{price},</if>
+            <if test="status != null  ">status = #{status},</if>
+            <if test="payTime != null  ">pay_time = #{payTime},</if>
+            <if test="userId != null  ">user_id = #{userId},</if>
+            <if test="userName != null  and userName != ''  ">user_name = #{userName},</if>
+            <if test="nickName != null  and nickName != ''  ">nick_name = #{nickName},</if>
+            <if test="remark != null  and remark != ''  ">remark = #{remark},</if>
+            <if test="shipId != null  ">ship_id = #{shipId},</if>
+            <if test="shipCode != null  and shipCode != ''  ">ship_code = #{shipCode},</if>
+            <if test="remarkMngt != null  and remarkMngt != ''  ">remark_mngt = #{remarkMngt},</if>
+            <if test="ship != null  ">ship = #{ship},</if>
+            <if test="cacelId != null  ">cacel_id = #{cacelId},</if>
+            <if test="cacelName != null  and cacelName != ''  ">cacel_name = #{cacelName},</if>
+            <if test="cacelTime != null  ">cacel_time = #{cacelTime},</if>
+            <if test="createTime != null  ">create_time = #{createTime},</if>
+            <if test="updateTime != null  ">update_time = #{updateTime},</if>
+            <if test="operatorId != null  ">operator_id = #{operatorId},</if>
+            <if test="operatorName != null  and operatorName != ''  ">operator_name = #{operatorName},</if>
+            <if test="isDeleted != null  ">is_deleted = #{isDeleted},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+	<delete id="deleteOrderById" parameterType="Long">
+        delete from fac_order where id = #{id}
+    </delete>
+
+    <delete id="deleteOrderByIds" parameterType="String">
+        UPDATE fac_order
+        set is_deleted = 0
+        where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <update id="cancelOrderByIds" parameterType="String">
+        UPDATE fac_order
+        set status = #{status}
+        where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+    
+</mapper>

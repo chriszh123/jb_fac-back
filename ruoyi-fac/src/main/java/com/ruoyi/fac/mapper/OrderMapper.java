@@ -7,7 +7,7 @@ import java.util.List;
  * 订单 数据层
  * 
  * @author ruoyi
- * @date 2018-12-24
+ * @date 2019-01-06
  */
 public interface OrderMapper 
 {
@@ -17,7 +17,7 @@ public interface OrderMapper
      * @param id 订单ID
      * @return 订单信息
      */
-	public Order selectOrderById(Integer id);
+	public Order selectOrderById(Long id);
 	
 	/**
      * 查询订单列表
@@ -49,7 +49,7 @@ public interface OrderMapper
      * @param id 订单ID
      * @return 结果
      */
-	public int deleteOrderById(Integer id);
+	public int deleteOrderById(Long id);
 	
 	/**
      * 批量删除订单
@@ -58,5 +58,13 @@ public interface OrderMapper
      * @return 结果
      */
 	public int deleteOrderByIds(String[] ids);
+
+	/**
+	 * 取消订单
+	 *
+	 * @param ids
+	 * @return 结果
+	 */
+	int cancelOrderByIds(String[] ids);
 	
 }

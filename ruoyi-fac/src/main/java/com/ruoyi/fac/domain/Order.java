@@ -11,13 +11,13 @@ import java.util.Date;
  * 订单表 fac_order
  *
  * @author ruoyi
- * @date 2018-12-24
+ * @date 2019-01-06
  */
 public class Order extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
     /**  */
-    private Integer id;
+    private Long id;
     /**
      * 订单号,eg:201812231410342545
      */
@@ -47,9 +47,29 @@ public class Order extends BaseEntity {
      */
     private Long userId;
     /**
-     * 买者用户名称
+     * 用户真实名称
      */
     private String userName;
+    /**
+     * 用户昵称
+     */
+    private String nickName;
+    /**
+     * 快递单号ID
+     */
+    private Long shipId;
+    /**
+     * 快递单号
+     */
+    private String shipCode;
+    /**
+     * 管理员备注
+     */
+    private String remarkMngt;
+    /**
+     * 是否发货:1-已发货;2-未发货
+     */
+    private Integer ship;
     /**
      * 取消订单操作人id
      */
@@ -75,11 +95,11 @@ public class Order extends BaseEntity {
      */
     private Integer isDeleted;
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
@@ -147,6 +167,46 @@ public class Order extends BaseEntity {
         return userName;
     }
 
+    public void setNickName(String nickName) {
+        this.nickName = nickName;
+    }
+
+    public String getNickName() {
+        return nickName;
+    }
+
+    public void setShipId(Long shipId) {
+        this.shipId = shipId;
+    }
+
+    public Long getShipId() {
+        return shipId;
+    }
+
+    public void setShipCode(String shipCode) {
+        this.shipCode = shipCode;
+    }
+
+    public String getShipCode() {
+        return shipCode;
+    }
+
+    public void setRemarkMngt(String remarkMngt) {
+        this.remarkMngt = remarkMngt;
+    }
+
+    public String getRemarkMngt() {
+        return remarkMngt;
+    }
+
+    public void setShip(Integer ship) {
+        this.ship = ship;
+    }
+
+    public Integer getShip() {
+        return ship;
+    }
+
     public void setCacelId(Long cacelId) {
         this.cacelId = cacelId;
     }
@@ -207,6 +267,12 @@ public class Order extends BaseEntity {
                 .append("payTime", getPayTime())
                 .append("userId", getUserId())
                 .append("userName", getUserName())
+                .append("nickName", getNickName())
+                .append("remark", getRemark())
+                .append("shipId", getShipId())
+                .append("shipCode", getShipCode())
+                .append("remarkMngt", getRemarkMngt())
+                .append("ship", getShip())
                 .append("cacelId", getCacelId())
                 .append("cacelName", getCacelName())
                 .append("cacelTime", getCacelTime())

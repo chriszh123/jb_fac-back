@@ -90,7 +90,7 @@ public class BuyerController extends BaseController {
      * 修改买者用户
      */
     @GetMapping("/edit/{id}")
-    public String edit(@PathVariable("id") Integer id, ModelMap mmap) {
+    public String edit(@PathVariable("id") Long id, ModelMap mmap) {
         Buyer buyer = buyerService.selectBuyerById(id);
         mmap.put("buyer", buyer);
         return prefix + "/edit";

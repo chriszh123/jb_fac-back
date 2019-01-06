@@ -4,6 +4,7 @@ package
 
 import java.util.List;
 
+import com.ruoyi.fac.vo.OrderVo;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -90,9 +91,9 @@ public class OrderController extends BaseController {
      * 修改订单
      */
     @GetMapping("/edit/{id}")
-    public String edit(@PathVariable("id") Integer id, ModelMap mmap) {
-        Order order = orderService.selectOrderById(id);
-        mmap.put("order", order);
+    public String edit(@PathVariable("id") Long id, ModelMap mmap) {
+        OrderVo orderVo = orderService.detailOrderById(id);
+        mmap.put("order", orderVo);
         return prefix + "/edit";
     }
 
@@ -116,6 +117,17 @@ public class OrderController extends BaseController {
     @ResponseBody
     public AjaxResult remove(String ids) {
         return toAjax(orderService.deleteOrderByIds(ids));
+    }
+
+    /**
+     * 取消订单
+     */
+    @RequiresPermissions("fac:order:cancel")
+    @Log(title = "订单", businessType = BusinessType.UPDATE)
+    @PostMapping("/cancel")
+    @ResponseBody
+    public AjaxResult cacel(String ids) {
+        return toAjax(orderService.cancelOrderByIds(ids));
     }
 
 }

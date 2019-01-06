@@ -27,7 +27,7 @@ public class BuyerServiceImpl implements IBuyerService
      * @return 买者用户信息
      */
     @Override
-	public Buyer selectBuyerById(Integer id)
+	public Buyer selectBuyerById(Long id)
 	{
 	    return buyerMapper.selectBuyerById(id);
 	}
