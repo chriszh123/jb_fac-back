@@ -128,7 +128,7 @@
   /**
    * @class core.func
    *
-   * func utils (for high-order func's arg)
+   * func util (for high-order func's arg)
    *
    * @singleton
    * @alternateClassName func
@@ -292,7 +292,7 @@
   /**
    * @class core.list
    *
-   * list utils
+   * list util
    *
    * @singleton
    * @alternateClassName list

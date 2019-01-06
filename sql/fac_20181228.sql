@@ -56,9 +56,11 @@ CREATE TABLE `fac_product_category` (
 drop table if exists `fac_product_writeoff`;
 CREATE TABLE `fac_product_writeoff` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
+  `product_id` bigint(20) NOT NULL COMMENT '商品ID',
+  `buyer_id` bigint(20) NOT NULL COMMENT '买者ID',
   `code` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '核销码',
   `writeoff_time` datetime NOT NULL COMMENT '核销时间',
-  `status` tinyint(2) NOT NULL COMMENT '核销状态',
+  `status` tinyint(2) NOT NULL COMMENT '核销状态:1-已核销,2-待核销',
   `create_time` datetime NOT NULL COMMENT '创建时间',
   `update_time` datetime NOT NULL COMMENT '最近更新时间',
   `operator_id` bigint(20) DEFAULT NULL COMMENT '操作者ID',

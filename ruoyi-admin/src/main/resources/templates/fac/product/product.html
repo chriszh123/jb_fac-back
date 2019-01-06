@@ -14,7 +14,21 @@
                             商品名称：<input type="text" name="name"/>
                         </li>
                         <li>
-                            商品类目：<input type="text" name="categoryId"/>
+                            商品类目：
+                            <select id="categoryId" name="categoryId"
+                                    th:with="productCategorys=${@ps.getProductCategorys()}">
+                                <option value="">请选择...</option>
+                                <option th:each="pc : ${productCategorys}" th:text="${pc.name}"
+                                        th:value="${pc.id}"></option>
+                            </select>
+                        </li>
+                        <li>
+                            商品状态：
+                            <select id="status" name="status">
+                                <option value="">请选择...</option>
+                                <option value="1">上架</option>
+                                <option value="2">下架</option>
+                            </select>
                         </li>
                         <li>
                             <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i
@@ -81,7 +95,7 @@
                 {
                     field: 'sort',
                     title: '排序',
-                    sortable: false
+                    sortable: true
                 },
                 {
                     field: 'price',
@@ -94,11 +108,6 @@
                     sortable: true
                 },
                 {
-                    field: 'categoryId',
-                    title: '商品类目',
-                    sortable: false
-                },
-                {
                     field: 'inventoryQuantity',
                     title: '库存数量',
                     sortable: true
@@ -106,7 +115,14 @@
                 {
                     field: 'status',
                     title: '状态',
-                    sortable: false
+                    sortable: false,
+                    formatter: function (value, row, index) {
+                        if (value == 1) {
+                            return "上架";
+                        } else {
+                            return "<span style='color: red;font-weight:bold;'>下架<span>";
+                        }
+                    }
                 },
                 {
                     title: '操作',
@@ -126,7 +142,8 @@
 
     // 跳转至核销记录查询页面
     var toWriteOff = function (productId) {
-        alert("productId = " + productId);
+        var url = prefix + '/toWriteOff/' + productId;
+        createMenuItem(url, "核销记录_" + productId);
     }
 </script>
 </body>

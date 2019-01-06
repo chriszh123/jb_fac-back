@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.fac.mapper.ProductWriteoffMapper">
+
+    <resultMap type="ProductWriteoff" id="ProductWriteoffResult">
+        <result property="id" column="id"/>
+        <result property="productId" column="product_id"/>
+        <result property="buyerId" column="buyer_id"/>
+        <result property="code" column="code"/>
+        <result property="writeoffTime" column="writeoff_time"/>
+        <result property="status" column="status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="operatorId" column="operator_id"/>
+        <result property="operatorName" column="operator_name"/>
+        <result property="isDeleted" column="is_deleted"/>
+    </resultMap>
+
+    <sql id="selectProductWriteoffVo">
+        select id, product_id, buyer_id, code, writeoff_time, status, create_time, update_time, operator_id, operator_name, is_deleted from fac_product_writeoff
+    </sql>
+
+    <select id="selectProductWriteoffList" parameterType="ProductWriteoff" resultMap="ProductWriteoffResult">
+        <include refid="selectProductWriteoffVo"/>
+        <where>
+            <if test="id != null ">and id = #{id}</if>
+            <if test="productId != null ">and product_id = #{productId}</if>
+            <if test="buyerId != null ">and buyer_id = #{buyerId}</if>
+            <if test="code != null  and code != '' ">and code = #{code}</if>
+            <if test="writeoffTime != null ">and writeoff_time = #{writeoffTime}</if>
+            <if test="status != null ">and status = #{status}</if>
+            <if test="createTime != null ">and create_time = #{createTime}</if>
+            <if test="updateTime != null ">and update_time = #{updateTime}</if>
+            <if test="operatorId != null ">and operator_id = #{operatorId}</if>
+            <if test="operatorName != null  and operatorName != '' ">and operator_name = #{operatorName}</if>
+            <if test="isDeleted != null ">and is_deleted = #{isDeleted}</if>
+        </where>
+        ORDER BY status ASC , create_time desc
+    </select>
+
+    <select id="selectProductWriteoffById" parameterType="Integer" resultMap="ProductWriteoffResult">
+        <include refid="selectProductWriteoffVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertProductWriteoff" parameterType="ProductWriteoff">
+        insert into fac_product_writeoff
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null  ">id,</if>
+            <if test="productId != null  ">product_id,</if>
+            <if test="buyerId != null  ">buyer_id,</if>
+            <if test="code != null  and code != ''  ">code,</if>
+            <if test="writeoffTime != null  ">writeoff_time,</if>
+            <if test="status != null  ">status,</if>
+            <if test="createTime != null  ">create_time,</if>
+            <if test="updateTime != null  ">update_time,</if>
+            <if test="operatorId != null  ">operator_id,</if>
+            <if test="operatorName != null  and operatorName != ''  ">operator_name,</if>
+            <if test="isDeleted != null  ">is_deleted,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null  ">#{id},</if>
+            <if test="productId != null  ">#{productId},</if>
+            <if test="buyerId != null  ">#{buyerId},</if>
+            <if test="code != null  and code != ''  ">#{code},</if>
+            <if test="writeoffTime != null  ">#{writeoffTime},</if>
+            <if test="status != null  ">#{status},</if>
+            <if test="createTime != null  ">#{createTime},</if>
+            <if test="updateTime != null  ">#{updateTime},</if>
+            <if test="operatorId != null  ">#{operatorId},</if>
+            <if test="operatorName != null  and operatorName != ''  ">#{operatorName},</if>
+            <if test="isDeleted != null  ">#{isDeleted},</if>
+        </trim>
+    </insert>
+
+    <update id="updateProductWriteoff" parameterType="ProductWriteoff">
+        update fac_product_writeoff
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="productId != null  ">product_id = #{productId},</if>
+            <if test="buyerId != null  ">buyer_id = #{buyerId},</if>
+            <if test="code != null  and code != ''  ">code = #{code},</if>
+            <if test="writeoffTime != null  ">writeoff_time = #{writeoffTime},</if>
+            <if test="status != null  ">status = #{status},</if>
+            <if test="createTime != null  ">create_time = #{createTime},</if>
+            <if test="updateTime != null  ">update_time = #{updateTime},</if>
+            <if test="operatorId != null  ">operator_id = #{operatorId},</if>
+            <if test="operatorName != null  and operatorName != ''  ">operator_name = #{operatorName},</if>
+            <if test="isDeleted != null  ">is_deleted = #{isDeleted},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteProductWriteoffById" parameterType="Integer">
+        delete from fac_product_writeoff where id = #{id}
+    </delete>
+
+    <delete id="deleteProductWriteoffByIds" parameterType="String">
+        delete from fac_product_writeoff where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

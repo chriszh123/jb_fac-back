@@ -1,0 +1,75 @@
+<!DOCTYPE HTML>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <!--查询区域-->
+        <div class="col-sm-12 search-collapse">
+            <form id="form-product-writeOff" th:object="${product}">
+                <div class="select-list">
+                    <ul>
+                        <li>
+                            已核销：<input type="text" id="writeOffed" name="writeOffed" th:field="*{writeOffed}"/>
+                        </li>
+                        <li>
+                            待核销：<input type="text" id="torWiteOff" name="torWiteOff" th:field="*{torWiteOff}"/>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <!--按钮区域-->
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table" data-mobile-responsive="true"></table>
+        </div>
+    </div>
+</div>
+<div th:include="include :: footer"></div>
+<script th:inline="javascript">
+    var prefix = ctx + "fac/productWriteoff";
+
+    $(function () {
+        var options = {
+            url: prefix + "/list",
+            exportUrl: prefix + "/export",
+            modalName: "商品",
+            search: false,
+            showExport: true,
+            queryParams: {
+                productId: [[${product.id}]]
+            },
+            columns: [{
+                checkbox: false
+            },
+                {
+                    field: 'id',
+                    title: '核销记录id',
+                    visible: false
+                },
+                {
+                    field: 'code',
+                    title: '核销码',
+                    sortable: true
+                },
+                {
+                    field: 'writeoffTime',
+                    title: '核销时间',
+                    sortable: true
+                },
+                {
+                    field: 'buyerId',
+                    title: '买者ID',
+                    sortable: true,
+                    formatter: function (value, row, index) {
+                        return value;
+                    }
+                }]
+        };
+        $.table.init(options);
+    });
+</script>
+</body>
+</html>

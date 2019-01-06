@@ -1,5 +1,7 @@
 package com.ruoyi.fac.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.ruoyi.common.annotation.Excel;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ruoyi.common.base.BaseEntity;
@@ -17,26 +19,32 @@ public class Product extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
     /**  */
+    @Excel(name = "商品")
     private Long id;
-    /**
-     * 排序
-     */
-    private Integer sort;
     /**
      * 商品名称
      */
+    @Excel(name = "商品名称")
     private String name;
+    /**
+     * 排序
+     */
+    @Excel(name = "排序")
+    private Integer sort;
     /**
      * 售价(抢购价)
      */
+    @Excel(name = "售价")
     private BigDecimal price;
     /**
      * 销量
      */
+    @Excel(name = "销量")
     private Integer sales;
     /**
      * 上架状态
      */
+    @Excel(name = "状态", readConverterExp = "1=上架,2=下架")
     private Integer status;
     /**
      * 商品类目
@@ -53,6 +61,7 @@ public class Product extends BaseEntity {
     /**
      * 库存数量
      */
+    @Excel(name = "库存数量")
     private Integer inventoryQuantity;
     /**
      * 每人限购数量
@@ -73,19 +82,27 @@ public class Product extends BaseEntity {
     /**
      * 抢购开始时间
      */
+    @Excel(name = "抢购开始时间", dateFormat = "yyyy-MM-dd HH:mm")
     private Date rushStart;
+    private String rushStartStr;
     /**
      * 抢购结束时间
      */
+    @Excel(name = "抢购结束时间", dateFormat = "yyyy-MM-dd HH:mm")
     private Date rushEnd;
+    private String rushEndStr;
     /**
      * 核销开始时间
      */
+    @Excel(name = "核销开始时间", dateFormat = "yyyy-MM-dd HH:mm")
     private Date writeoffStart;
+    private String writeoffStartStr;
     /**
      * 核销结束时间
      */
+    @Excel(name = "核销结束时间", dateFormat = "yyyy-MM-dd HH:mm")
     private Date writeoffEnd;
+    private String writeoffEndStr;
     /**
      * 商品图片
      */
@@ -97,6 +114,7 @@ public class Product extends BaseEntity {
     /**
      * 发货方式
      */
+    @Excel(name = "发货方式", readConverterExp = "1=送货上门,2=核销码")
     private Integer shipMode;
     /**
      * 运费
@@ -114,6 +132,14 @@ public class Product extends BaseEntity {
      * 是否删除
      */
     private Integer isDeleted;
+    /**
+     * 已核销
+     */
+    private Integer writeOffed = 0;
+    /**
+     * 待核销
+     */
+    private Integer torWiteOff = 0;
 
     public void setId(Long id) {
         this.id = id;
@@ -346,5 +372,53 @@ public class Product extends BaseEntity {
                 .append("operatorName", getOperatorName())
                 .append("isDeleted", getIsDeleted())
                 .toString();
+    }
+
+    public String getRushStartStr() {
+        return rushStartStr;
+    }
+
+    public void setRushStartStr(String rushStartStr) {
+        this.rushStartStr = rushStartStr;
+    }
+
+    public String getRushEndStr() {
+        return rushEndStr;
+    }
+
+    public void setRushEndStr(String rushEndStr) {
+        this.rushEndStr = rushEndStr;
+    }
+
+    public String getWriteoffStartStr() {
+        return writeoffStartStr;
+    }
+
+    public void setWriteoffStartStr(String writeoffStartStr) {
+        this.writeoffStartStr = writeoffStartStr;
+    }
+
+    public String getWriteoffEndStr() {
+        return writeoffEndStr;
+    }
+
+    public void setWriteoffEndStr(String writeoffEndStr) {
+        this.writeoffEndStr = writeoffEndStr;
+    }
+
+    public Integer getWriteOffed() {
+        return writeOffed;
+    }
+
+    public void setWriteOffed(Integer writeOffed) {
+        this.writeOffed = writeOffed;
+    }
+
+    public Integer getTorWiteOff() {
+        return torWiteOff;
+    }
+
+    public void setTorWiteOff(Integer torWiteOff) {
+        this.torWiteOff = torWiteOff;
     }
 }

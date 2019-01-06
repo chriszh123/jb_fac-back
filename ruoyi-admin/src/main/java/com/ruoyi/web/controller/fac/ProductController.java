@@ -66,7 +66,7 @@ public class ProductController extends BaseController {
     public AjaxResult export(Product product) {
         List<Product> list = productService.selectProductList(product);
         ExcelUtil<Product> util = new ExcelUtil<Product>(Product.class);
-        return util.exportExcel(list, "product");
+        return util.exportExcel(list, "商品列表");
     }
 
     /**
@@ -139,4 +139,13 @@ public class ProductController extends BaseController {
         return toAjax(productService.deleteProductByIds(ids));
     }
 
+    /**
+     * 修改商品
+     */
+    @GetMapping("/toWriteOff/{productId}")
+    public String toWriteOff(@PathVariable("productId") Long id, ModelMap mmap) {
+        Product product = productService.selectProductById(id);
+        mmap.put("product", product);
+        return prefix + "/writeOff";
+    }
 }

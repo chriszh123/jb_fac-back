@@ -7,7 +7,7 @@ import java.util.List;
  * 核销记录 数据层
  * 
  * @author ruoyi
- * @date 2018-12-24
+ * @date 2019-01-06
  */
 public interface ProductWriteoffMapper 
 {

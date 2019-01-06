@@ -1,5 +1,6 @@
 package com.ruoyi.fac.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ruoyi.common.base.BaseEntity;
@@ -10,7 +11,7 @@ import java.util.Date;
  * 核销记录表 fac_product_writeoff
  *
  * @author ruoyi
- * @date 2018-12-24
+ * @date 2019-01-06
  */
 public class ProductWriteoff extends BaseEntity {
     private static final long serialVersionUID = 1L;
@@ -18,12 +19,21 @@ public class ProductWriteoff extends BaseEntity {
     /**  */
     private Integer id;
     /**
+     * 商品ID
+     */
+    private Long productId;
+    /**
+     * 买者ID
+     */
+    private Long buyerId;
+    /**
      * 核销码
      */
     private String code;
     /**
      * 核销时间
      */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date writeoffTime;
     /**
      * 核销状态
@@ -48,6 +58,22 @@ public class ProductWriteoff extends BaseEntity {
 
     public Integer getId() {
         return id;
+    }
+
+    public void setProductId(Long productId) {
+        this.productId = productId;
+    }
+
+    public Long getProductId() {
+        return productId;
+    }
+
+    public void setBuyerId(Long buyerId) {
+        this.buyerId = buyerId;
+    }
+
+    public Long getBuyerId() {
+        return buyerId;
     }
 
     public void setCode(String code) {
@@ -102,6 +128,8 @@ public class ProductWriteoff extends BaseEntity {
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
                 .append("id", getId())
+                .append("productId", getProductId())
+                .append("buyerId", getBuyerId())
                 .append("code", getCode())
                 .append("writeoffTime", getWriteoffTime())
                 .append("status", getStatus())

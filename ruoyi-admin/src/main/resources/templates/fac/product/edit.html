@@ -83,14 +83,16 @@
         </div>
         <div class="form-group form-inline">
             <label class="col-sm-3 control-label">抢购开始时间：</label>
-            <div class="col-sm-3 input-group date" style="margin-left: 15px;"><span class="input-group-addon"><i
+            <div id="rushStartDate" class="col-sm-3 input-group date" style="margin-left: 15px;"><span
+                    class="input-group-addon"><i
                     class="fa fa-calendar"></i></span>
-                <input type="text" class="form-control" id="rushStart" name="rushStart" th:field="*{rushStart}" value=""
+                <input type="text" class="form-control" id="rushStart" name="rushStart" th:field="*{rushStartStr}"
+                       value=""
                        placeholder="选择开始日期">
             </div>
             <label>至</label>
             <div class="col-sm-3 input-group date"><span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                <input type="text" class="form-control" id="rushEnd" name="rushEnd" th:field="*{rushEnd}" value=""
+                <input type="text" class="form-control" id="rushEnd" name="rushEnd" th:field="*{rushEndStr}" value=""
                        placeholder="选择结束日期">
             </div>
         </div>
@@ -99,12 +101,12 @@
             <div class="col-sm-3 input-group date" style="margin-left: 15px;"><span class="input-group-addon"><i
                     class="fa fa-calendar"></i></span>
                 <input type="text" class="form-control" id="writeoffStart" name="writeoffStart"
-                       th:field="*{writeoffStart}" value=""
+                       th:field="*{writeoffStartStr}" value=""
                        placeholder="选择开始日期">
             </div>
             <label>至</label>
             <div class="col-sm-3 input-group date"><span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                <input type="text" class="form-control" id="writeoffEnd" name="writeoffEnd" th:field="*{writeoffEnd}"
+                <input type="text" class="form-control" id="writeoffEnd" name="writeoffEnd" th:field="*{writeoffEndStr}"
                        value=""
                        placeholder="选择结束日期">
             </div>
@@ -231,6 +233,12 @@
             $.operate.save(prefix + "/edit", $('#form-product-edit').serialize());
         }
     }
+
+    $(function () {
+        var rushStart = [[${product.status}]];
+        // alert("rushStart = " + rushStart);
+        // $("#rushStartDate").datetimepicker("setDate", rushStart);
+    });
 </script>
 </body>
 </html>
