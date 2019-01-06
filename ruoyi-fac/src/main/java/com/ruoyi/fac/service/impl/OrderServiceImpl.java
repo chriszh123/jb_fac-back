@@ -105,6 +105,7 @@ public class OrderServiceImpl implements IOrderService {
         Order order = this.orderMapper.selectOrderById(id);
         if (order != null) {
             orderVo.setId(order.getId().toString());
+            orderVo.setOrderNo(order.getOrderNo());
             orderVo.setUserName(order.getUserName());
             Buyer buyer = this.buyerMapper.selectBuyerById(order.getUserId());
             if (buyer != null) {

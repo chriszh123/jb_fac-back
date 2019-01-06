@@ -1,5 +1,6 @@
 package com.ruoyi.fac.domain;
 
+import com.ruoyi.common.annotation.Excel;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ruoyi.common.base.BaseEntity;
@@ -21,6 +22,7 @@ public class Order extends BaseEntity {
     /**
      * 订单号,eg:201812231410342545
      */
+    @Excel(name = "订单号")
     private String orderNo;
     /**
      * 商品id
@@ -29,18 +31,22 @@ public class Order extends BaseEntity {
     /**
      * 商品名称
      */
+    @Excel(name = "商品名称")
     private String prodName;
     /**
      * 金额
      */
+    @Excel(name = "金额")
     private BigDecimal price;
     /**
      * 状态:1-已付款;2-待付款；3-已取消;4-未取消
      */
+    @Excel(name = "状态", readConverterExp = "1=已付款,2=待付款,3=已取消,4=未取消")
     private Integer status;
     /**
      * 付款时间
      */
+    @Excel(name = "付款时间", dateFormat = "yyyy-MM-dd HH:mm:ss")
     private Date payTime;
     /**
      * 买者用户id
@@ -53,6 +59,7 @@ public class Order extends BaseEntity {
     /**
      * 用户昵称
      */
+    @Excel(name = "用户昵称")
     private String nickName;
     /**
      * 快递单号ID
@@ -61,14 +68,17 @@ public class Order extends BaseEntity {
     /**
      * 快递单号
      */
+    @Excel(name = "快递单号")
     private String shipCode;
     /**
      * 管理员备注
      */
+    @Excel(name = "管理员备注")
     private String remarkMngt;
     /**
      * 是否发货:1-已发货;2-未发货
      */
+    @Excel(name = "是否发货", readConverterExp = "1=已发货,2=未发货")
     private Integer ship;
     /**
      * 取消订单操作人id

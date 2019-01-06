@@ -65,7 +65,7 @@ public class OrderController extends BaseController {
     public AjaxResult export(Order order) {
         List<Order> list = orderService.selectOrderList(order);
         ExcelUtil<Order> util = new ExcelUtil<Order>(Order.class);
-        return util.exportExcel(list, "order");
+        return util.exportExcel(list, "订单");
     }
 
     /**

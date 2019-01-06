@@ -43,7 +43,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
          </where>
     </select>
     
-    <select id="selectBuyerById" parameterType="Integer" resultMap="BuyerResult">
+    <select id="selectBuyerById" parameterType="Long" resultMap="BuyerResult">
         <include refid="selectBuyerVo"/>
         where id = #{id}
     </select>
@@ -101,7 +101,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where id = #{id}
     </update>
 
-	<delete id="deleteBuyerById" parameterType="Integer">
+	<delete id="deleteBuyerById" parameterType="Long">
         delete from fac_buyer where id = #{id}
     </delete>
 	
