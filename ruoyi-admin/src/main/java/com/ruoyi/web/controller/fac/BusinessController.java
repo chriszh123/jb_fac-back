@@ -144,5 +144,4 @@ public class BusinessController extends BaseController {
     public AjaxResult remove(String ids) {
         return toAjax(businessService.deleteBusinessByIds(ids));
     }
-
 }

@@ -1,8 +1,9 @@
 package com.ruoyi.fac.domain;
 
+import com.ruoyi.common.annotation.Excel;
+import com.ruoyi.common.base.BaseEntity;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import com.ruoyi.common.base.BaseEntity;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -17,34 +18,42 @@ public class Buyer extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
     /**  */
-    private Integer id;
+    @Excel(name = "用户ID")
+    private Long id;
     /**
      * 用户昵称
      */
+    @Excel(name = "用户昵称")
     private String nickName;
     /**
      * 真实姓名
      */
+    @Excel(name = "真实姓名")
     private String name;
     /**
      * 手机号
      */
+    @Excel(name = "手机号")
     private String phoneNumber;
     /**
      * 余额:分销的奖金
      */
+    @Excel(name = "余额")
     private BigDecimal balance;
     /**
      * 积分
      */
+    @Excel(name = "积分")
     private Integer points;
     /**
      * 注册日期,第一次使用本产品时间
      */
+    @Excel(name = "注册日期", dateFormat = "yyyy-MM-dd HH:mm:ss")
     private Date registryTime;
     /**
      * 收获地址
      */
+    @Excel(name = "收获地址")
     private String harvestAddress;
     /**
      * 操作者ID
@@ -59,11 +68,11 @@ public class Buyer extends BaseEntity {
      */
     private Integer isDeleted;
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
