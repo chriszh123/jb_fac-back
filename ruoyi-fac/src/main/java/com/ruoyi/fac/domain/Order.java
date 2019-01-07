@@ -71,6 +71,11 @@ public class Order extends BaseEntity {
     @Excel(name = "快递单号")
     private String shipCode;
     /**
+     * 用户订单备注
+     */
+    @Excel(name = "用户订单备注")
+    private String orderRemark;
+    /**
      * 管理员备注
      */
     @Excel(name = "管理员备注")
@@ -263,6 +268,14 @@ public class Order extends BaseEntity {
 
     public Integer getIsDeleted() {
         return isDeleted;
+    }
+
+    public String getOrderRemark() {
+        return orderRemark;
+    }
+
+    public void setOrderRemark(String orderRemark) {
+        this.orderRemark = orderRemark;
     }
 
     @Override
