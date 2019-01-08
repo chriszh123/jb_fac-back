@@ -150,11 +150,13 @@ public class BuyerServiceImpl implements IBuyerService {
             node.put("name", business1.getName());
             node.put("title", business1.getName());
             node.put("type", FacConstant.NODE_FIELD_TYPE_BIZ);
+            node.put("checked", false);
             data.add(node);
             bizIds.add(business1.getId().toString());
         }
         // 商家对应商品
-        String[] bizIdsArr = (String[]) bizIds.toArray();
+        String[] bizIdsArr = new String[bizIds.size()];
+        bizIds.toArray(bizIdsArr);
         List<Product> products = this.productMapper.selectProducsByBizIds(bizIdsArr);
         if (CollectionUtils.isEmpty(products)) {
             return data;
@@ -172,22 +174,19 @@ public class BuyerServiceImpl implements IBuyerService {
         buyerBusiness.setUserId(buyer.getId());
         buyerBusiness.setIsDeleted(0);
         List<BuyerBusiness> buyerBusinesses = this.buyerBusinessMapper.selectBuyerBusinessList(buyerBusiness);
-        if (!CollectionUtils.isEmpty(buyerBusinesses)) {
-            for (Map.Entry<String, List<Product>> entry : biz2Prods.entrySet()) {
-                if (!data.contains(entry.getKey())) {
-                    continue;
-                }
-                for (Product product : entry.getValue()) {
-                    node = new HashMap<>(16);
-                    node.put("id", product.getId().toString());
-                    node.put("pId", entry.getKey());
-                    node.put("name", product.getName());
-                    node.put("title", product.getName());
-                    node.put("type", FacConstant.NODE_FIELD_TYPE_PROD);
-                    // 当前商品是否已购买
-                    node.put("checked", this.checkProdBuyed(product.getId().toString(), buyerBusinesses));
-                    data.add(node);
-                }
+        for (Map.Entry<String, List<Product>> entry : biz2Prods.entrySet()) {
+            for (Product product : entry.getValue()) {
+                node = new HashMap<>(16);
+                // 商品的Id值暂时用 "商家id + 商品ID"拼起来的值，防止给前端的树id重复
+                String prodId = entry.getKey() + product.getId().toString();
+                node.put("id", prodId);
+                node.put("pId", entry.getKey());
+                node.put("name", product.getName());
+                node.put("title", product.getName());
+                node.put("type", FacConstant.NODE_FIELD_TYPE_PROD);
+                // 当前商品是否已购买
+                node.put("checked", this.checkProdBuyed(product.getId().toString(), buyerBusinesses));
+                data.add(node);
             }
         }
 
