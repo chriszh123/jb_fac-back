@@ -68,6 +68,11 @@ public class Buyer extends BaseEntity {
      */
     private Integer isDeleted;
 
+    /**
+     * 当前用户绑定的商家商品
+     */
+    private String[] prodIds;
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -154,6 +159,14 @@ public class Buyer extends BaseEntity {
 
     public Integer getIsDeleted() {
         return isDeleted;
+    }
+
+    public String[] getProdIds() {
+        return prodIds;
+    }
+
+    public void setProdIds(String[] prodIds) {
+        this.prodIds = prodIds;
     }
 
     @Override

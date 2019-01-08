@@ -3,6 +3,7 @@ package com.ruoyi.fac.service;
 import com.ruoyi.fac.domain.Buyer;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 买者用户 服务层
@@ -50,4 +51,12 @@ public interface IBuyerService {
      * @return 结果
      */
     int deleteBuyerByIds(String ids);
+
+    /**
+     * 获取用户-商家商品数数据
+     *
+     * @param buyer
+     * @return
+     */
+    List<Map<String, Object>> bizProdTreeData(Buyer buyer);
 }

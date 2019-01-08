@@ -120,7 +120,7 @@ public class BuyerController extends BaseController {
      */
     @GetMapping("/bizProdTreeData")
     @ResponseBody
-    public List<Map<String, Object>> bizProdTreeData(SysRole role) {
+    public List<Map<String, Object>> bizProdTreeData(Buyer buyer) {
         List<Map<String, Object>> tree = new ArrayList<>();
         return tree;
     }

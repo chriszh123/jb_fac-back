@@ -59,4 +59,12 @@ public interface ProductMapper {
      */
     int deleteProductByIds(String[] ids);
 
+    /**
+     * 查询指定商家下的对应的商品
+     *
+     * @param bizIds 商家ids
+     * @return
+     */
+    List<Product> selectProducsByBizIds(String[] bizIds);
+
 }

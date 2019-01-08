@@ -756,6 +756,18 @@
                     return row[_column];
                 }).join();
             },
+            // 获取当前被勾选指定节点类型的节点集合:[nodeType-id-pId]
+            getCheckedNodes: function (column, nodeTypeField, nodeTypeValue) {
+                var _column = $.common.isEmpty(column) ? "id" : column;
+                var nodes = $._tree.getCheckedNodes(true);
+                return $.map(nodes, function (row) {
+                    if (nodeTypeValue == row[nodeTypeField]) {
+                        return (nodeTypeValue + "-" + row[_column] + "-" + row["pId"]);
+                    } else {
+                        return row[_column];
+                    }
+                }).join();
+            },
             // 不允许根父节点选择
             notAllowParents: function (_tree) {
                 var nodes = _tree.getSelectedNodes();

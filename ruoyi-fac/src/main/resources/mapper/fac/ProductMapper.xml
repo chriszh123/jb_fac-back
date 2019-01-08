@@ -184,4 +184,13 @@
         </foreach>
     </delete>
 
+    <select id="selectProducsByBizIds" parameterType="String" resultMap="ProductResult">
+        <include refid="selectProductVo"/>
+        where is_deleted = 0 and business_id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        order by create_time desc
+    </select>
+
 </mapper>
