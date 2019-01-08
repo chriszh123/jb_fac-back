@@ -69,7 +69,7 @@ public class Buyer extends BaseEntity {
     private Integer isDeleted;
 
     /**
-     * 当前用户绑定的商家商品
+     * 当前用户绑定的商家商品:[nodeType-id-pId,...]
      */
     private String[] prodIds;
 

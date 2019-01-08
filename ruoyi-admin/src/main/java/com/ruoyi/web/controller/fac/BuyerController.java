@@ -5,10 +5,13 @@ import com.ruoyi.common.base.AjaxResult;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.page.TableDataInfo;
 import com.ruoyi.common.utils.ExcelUtil;
+import com.ruoyi.fac.constant.FacConstant;
 import com.ruoyi.fac.domain.Buyer;
 import com.ruoyi.fac.service.IBuyerService;
+import com.ruoyi.framework.util.ShiroUtils;
 import com.ruoyi.framework.web.base.BaseController;
 import com.ruoyi.system.domain.SysRole;
+import com.ruoyi.system.domain.SysUser;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -16,6 +19,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -101,6 +105,13 @@ public class BuyerController extends BaseController {
     @PostMapping("/edit")
     @ResponseBody
     public AjaxResult editSave(Buyer buyer) {
+        SysUser user = ShiroUtils.getSysUser();
+        if (user != null) {
+            buyer.setOperatorName(user.getUserName());
+            buyer.setOperatorId(user.getUserId());
+        } else {
+            return AjaxResult.error(FacConstant.ERROR_MSG_LOGIN_USER_NULL);
+        }
         return toAjax(buyerService.updateBuyer(buyer));
     }
 
@@ -121,7 +132,7 @@ public class BuyerController extends BaseController {
     @GetMapping("/bizProdTreeData")
     @ResponseBody
     public List<Map<String, Object>> bizProdTreeData(Buyer buyer) {
-        List<Map<String, Object>> tree = new ArrayList<>();
+        List<Map<String, Object>> tree = this.buyerService.bizProdTreeData(buyer);
         return tree;
     }
 }

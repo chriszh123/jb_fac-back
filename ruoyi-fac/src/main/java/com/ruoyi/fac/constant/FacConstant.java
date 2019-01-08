@@ -21,4 +21,6 @@ public class FacConstant {
      * 树节点类型：商品
      */
     public static String NODE_FIELD_TYPE_PROD = "prod";
+
+    public static String ERROR_MSG_LOGIN_USER_NULL = "请先登录再继续操作";
 }

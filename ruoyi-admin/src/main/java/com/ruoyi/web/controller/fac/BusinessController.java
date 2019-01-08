@@ -5,6 +5,7 @@ import com.ruoyi.common.base.AjaxResult;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.page.TableDataInfo;
 import com.ruoyi.common.utils.ExcelUtil;
+import com.ruoyi.fac.constant.FacConstant;
 import com.ruoyi.fac.domain.Business;
 import com.ruoyi.fac.service.IBusinessService;
 import com.ruoyi.framework.shiro.service.SysPasswordService;
@@ -89,6 +90,8 @@ public class BusinessController extends BaseController {
             business.setCreateBy(user.getUserName());
             business.setOperatorId(user.getUserId());
             business.setOperatorName(user.getUserName());
+        } else {
+            return AjaxResult.error(FacConstant.ERROR_MSG_LOGIN_USER_NULL);
         }
         Date nowDate = new Date();
         business.setCreateTime(nowDate);
@@ -123,6 +126,8 @@ public class BusinessController extends BaseController {
             business.setCreateBy(user.getUserName());
             business.setOperatorId(user.getUserId());
             business.setOperatorName(user.getUserName());
+        } else {
+            return AjaxResult.error(FacConstant.ERROR_MSG_LOGIN_USER_NULL);
         }
         Date nowDate = new Date();
         business.setCreateTime(nowDate);

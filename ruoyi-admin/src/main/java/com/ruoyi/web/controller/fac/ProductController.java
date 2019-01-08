@@ -3,6 +3,7 @@ package com.ruoyi.web.controller.fac;
 import java.util.Date;
 import java.util.List;
 
+import com.ruoyi.fac.constant.FacConstant;
 import com.ruoyi.framework.util.ShiroUtils;
 import com.ruoyi.system.domain.SysUser;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -89,6 +90,8 @@ public class ProductController extends BaseController {
         if (user != null) {
             product.setOperatorId(user.getUserId());
             product.setOperatorName(user.getUserName());
+        } else {
+            return AjaxResult.error(FacConstant.ERROR_MSG_LOGIN_USER_NULL);
         }
         Date now = new Date();
         product.setCreateTime(now);
@@ -118,6 +121,8 @@ public class ProductController extends BaseController {
         if (user != null) {
             product.setOperatorId(user.getUserId());
             product.setOperatorName(user.getUserName());
+        } else {
+            return AjaxResult.error(FacConstant.ERROR_MSG_LOGIN_USER_NULL);
         }
         Date now = new Date();
         product.setCreateTime(now);

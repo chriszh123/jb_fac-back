@@ -55,9 +55,7 @@
         $.tree.init(options);
     });
 
-    var edit = function () {
-        var prodIds = $.tree.getCheckedNodes("id", "type", "prod");
-
+    var editPost = function (userId, prodIds) {
         $.ajax({
             cache: true,
             type: "POST",
@@ -79,7 +77,13 @@
     function submitHandler() {
         if ($.validate.form()) {
             // $.operate.save(prefix + "/edit", $('#form-buyer-edit').serialize());
-            edit();
+            
+            $.modal.confirm("确定要修改当前用户与商家商品绑定关系吗？", function () {
+                // [nodeType-id-pId,...]
+                var prodIds = $.tree.getCheckedNodes("id", "type", "prod");
+                var userId = $("#id").val();
+                editPost(userId, prodIds);
+            });
         }
     }
 </script>

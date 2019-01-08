@@ -5,6 +5,7 @@ package
 import java.util.Date;
 import java.util.List;
 
+import com.ruoyi.fac.constant.FacConstant;
 import com.ruoyi.framework.util.ShiroUtils;
 import com.ruoyi.system.domain.SysUser;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -91,6 +92,8 @@ public class ProductCategoryController extends BaseController {
             productCategory.setOperatorId(user.getUserId());
             productCategory.setOperatorName(user.getUserName());
             productCategory.setCreateBy(user.getUserName());
+        } else {
+            return AjaxResult.error(FacConstant.ERROR_MSG_LOGIN_USER_NULL);
         }
         Date nowDate = new Date();
         productCategory.setCreateTime(nowDate);
@@ -120,6 +123,10 @@ public class ProductCategoryController extends BaseController {
         SysUser user = ShiroUtils.getSysUser();
         if (user != null) {
             productCategory.setUpdateBy(user.getUserName());
+            productCategory.setOperatorId(user.getUserId());
+            productCategory.setOperatorName(user.getUserName());
+        } else {
+            return AjaxResult.error(FacConstant.ERROR_MSG_LOGIN_USER_NULL);
         }
         Date nowDate = new Date();
         productCategory.setUpdateTime(nowDate);

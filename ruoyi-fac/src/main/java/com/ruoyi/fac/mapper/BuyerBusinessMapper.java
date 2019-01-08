@@ -59,4 +59,8 @@ public interface BuyerBusinessMapper {
      */
     int deleteBuyerBusinessByIds(String[] ids);
 
+    int deleteBuyerBusinessByUserId(BuyerBusiness buyerBusiness);
+
+    int batchInsert(List<BuyerBusiness> list);
+
 }

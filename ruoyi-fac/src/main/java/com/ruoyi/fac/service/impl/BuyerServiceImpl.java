@@ -14,12 +14,10 @@ import com.ruoyi.fac.service.IBuyerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 买者用户 服务层实现
@@ -83,7 +81,37 @@ public class BuyerServiceImpl implements IBuyerService {
      */
     @Override
     public int updateBuyer(Buyer buyer) {
-        return buyerMapper.updateBuyer(buyer);
+        // 删除用户与商家商品关联表
+        BuyerBusiness buyerBusiness = new BuyerBusiness();
+        buyerBusiness.setUserId(buyer.getId());
+        this.buyerBusinessMapper.deleteBuyerBusinessByUserId(buyerBusiness);
+        // 批量插入新的用户与商家商品关联关系
+        if (!ObjectUtils.isEmpty(buyer.getProdIds())) {
+            List<BuyerBusiness> list = new ArrayList<>();
+            Date now = new Date();
+            String prodRef = null;
+            String[] prodRefArr = null;
+            for (int i = 0, size = buyer.getProdIds().length; i < size; i++) {
+                buyerBusiness = new BuyerBusiness();
+                // nodeType-id-pId
+                prodRef = buyer.getProdIds()[i];
+                prodRefArr = prodRef.split("-");
+                if (prodRefArr.length < 3 || !FacConstant.NODE_FIELD_TYPE_PROD.equals(prodRefArr[0])) {
+                    continue;
+                }
+                buyerBusiness.setUserId(buyer.getId());
+                buyerBusiness.setBusinessId(Long.valueOf(prodRefArr[2]));
+                buyerBusiness.setBusinessProdId(Long.valueOf(prodRefArr[1]));
+                buyerBusiness.setCreateTime(now);
+                buyerBusiness.setUpdateTime(now);
+                buyerBusiness.setOperatorId(buyer.getOperatorId());
+                buyerBusiness.setOperatorName(buyer.getOperatorName());
+                buyerBusiness.setIsDeleted(0);
+                list.add(buyerBusiness);
+            }
+            return this.buyerBusinessMapper.batchInsert(list);
+        }
+        return 0;
     }
 
     /**
@@ -157,7 +185,7 @@ public class BuyerServiceImpl implements IBuyerService {
                     node.put("title", product.getName());
                     node.put("type", FacConstant.NODE_FIELD_TYPE_PROD);
                     // 当前商品是否已购买
-                    node.put("checked", this.checkoutProdBuyed(product.getId().toString(), buyerBusinesses));
+                    node.put("checked", this.checkProdBuyed(product.getId().toString(), buyerBusinesses));
                     data.add(node);
                 }
             }
@@ -166,7 +194,7 @@ public class BuyerServiceImpl implements IBuyerService {
         return data;
     }
 
-    private boolean checkoutProdBuyed(String prodId, List<BuyerBusiness> buyerBusinesses) {
+    private boolean checkProdBuyed(String prodId, List<BuyerBusiness> buyerBusinesses) {
         if (StringUtils.isEmpty(prodId) || CollectionUtils.isEmpty(buyerBusinesses)) {
             return false;
         }
