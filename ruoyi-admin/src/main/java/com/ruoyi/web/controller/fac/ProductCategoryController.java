@@ -1,6 +1,4 @@
-package
-
-        com.ruoyi.web.controller.fac;
+package com.ruoyi.web.controller.fac;
 
 import java.util.Date;
 import java.util.List;
