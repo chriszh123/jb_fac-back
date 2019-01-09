@@ -89,11 +89,11 @@ public class BuyerServiceImpl implements IBuyerService {
         if (!ObjectUtils.isEmpty(buyer.getProdIds())) {
             List<BuyerBusiness> list = new ArrayList<>();
             Date now = new Date();
-            String prodRef = null;
+            String prodRef = null, prodId = null;
             String[] prodRefArr = null;
             for (int i = 0, size = buyer.getProdIds().length; i < size; i++) {
                 buyerBusiness = new BuyerBusiness();
-                // nodeType-id-pId
+                // nodeType-id-pId,商品id："商家id + 商品ID"
                 prodRef = buyer.getProdIds()[i];
                 prodRefArr = prodRef.split("-");
                 if (prodRefArr.length < 3 || !FacConstant.NODE_FIELD_TYPE_PROD.equals(prodRefArr[0])) {
@@ -101,7 +101,8 @@ public class BuyerServiceImpl implements IBuyerService {
                 }
                 buyerBusiness.setUserId(buyer.getId());
                 buyerBusiness.setBusinessId(Long.valueOf(prodRefArr[2]));
-                buyerBusiness.setBusinessProdId(Long.valueOf(prodRefArr[1]));
+                prodId = prodRefArr[1].substring(prodRefArr[1].length());
+                buyerBusiness.setBusinessProdId(Long.valueOf(prodId));
                 buyerBusiness.setCreateTime(now);
                 buyerBusiness.setUpdateTime(now);
                 buyerBusiness.setOperatorId(buyer.getOperatorId());
@@ -204,5 +205,4 @@ public class BuyerServiceImpl implements IBuyerService {
         }
         return false;
     }
-
 }

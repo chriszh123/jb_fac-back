@@ -4,6 +4,9 @@ package
 
 import java.util.List;
 
+import com.ruoyi.fac.constant.FacConstant;
+import com.ruoyi.framework.util.ShiroUtils;
+import com.ruoyi.system.domain.SysUser;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -64,7 +67,7 @@ public class CashController extends BaseController {
     public AjaxResult export(Cash cash) {
         List<Cash> list = cashService.selectCashList(cash);
         ExcelUtil<Cash> util = new ExcelUtil<Cash>(Cash.class);
-        return util.exportExcel(list, "cash");
+        return util.exportExcel(list, "提现");
     }
 
     /**
@@ -83,6 +86,13 @@ public class CashController extends BaseController {
     @PostMapping("/add")
     @ResponseBody
     public AjaxResult addSave(Cash cash) {
+        SysUser user = ShiroUtils.getSysUser();
+        if (user != null) {
+            cash.setOperatorName(user.getUserName());
+            cash.setOperatorId(user.getUserId());
+        } else {
+            return AjaxResult.error(FacConstant.ERROR_MSG_LOGIN_USER_NULL);
+        }
         return toAjax(cashService.insertCash(cash));
     }
 
@@ -104,6 +114,13 @@ public class CashController extends BaseController {
     @PostMapping("/edit")
     @ResponseBody
     public AjaxResult editSave(Cash cash) {
+        SysUser user = ShiroUtils.getSysUser();
+        if (user != null) {
+            cash.setOperatorName(user.getUserName());
+            cash.setOperatorId(user.getUserId());
+        } else {
+            return AjaxResult.error(FacConstant.ERROR_MSG_LOGIN_USER_NULL);
+        }
         return toAjax(cashService.updateCash(cash));
     }
 

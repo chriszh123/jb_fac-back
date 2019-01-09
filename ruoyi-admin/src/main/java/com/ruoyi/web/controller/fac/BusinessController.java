@@ -66,7 +66,7 @@ public class BusinessController extends BaseController {
     public AjaxResult export(Business business) {
         List<Business> list = businessService.selectBusinessList(business);
         ExcelUtil<Business> util = new ExcelUtil<Business>(Business.class);
-        return util.exportExcel(list, "所有商家");
+        return util.exportExcel(list, "商家");
     }
 
     /**
@@ -86,16 +86,13 @@ public class BusinessController extends BaseController {
     @ResponseBody
     public AjaxResult addSave(Business business) {
         SysUser user = ShiroUtils.getSysUser();
-        if (user != null) {
-            business.setCreateBy(user.getUserName());
-            business.setOperatorId(user.getUserId());
-            business.setOperatorName(user.getUserName());
-        } else {
+        if (user == null) {
             return AjaxResult.error(FacConstant.ERROR_MSG_LOGIN_USER_NULL);
         }
-        Date nowDate = new Date();
-        business.setCreateTime(nowDate);
-        business.setUpdateTime(nowDate);
+        business.setCreateBy(user.getUserName());
+        business.setOperatorId(user.getUserId());
+        business.setOperatorName(user.getUserName());
+
         // 登录密码加密
         String salt = ShiroUtils.randomSalt();
         String loginPwd = passwordService.encryptPassword(business.getLoginName(), business.getLoginPwd(), salt);
@@ -129,9 +126,7 @@ public class BusinessController extends BaseController {
         } else {
             return AjaxResult.error(FacConstant.ERROR_MSG_LOGIN_USER_NULL);
         }
-        Date nowDate = new Date();
-        business.setCreateTime(nowDate);
-        business.setUpdateTime(nowDate);
+
         // 登录密码加密
         String salt = ShiroUtils.randomSalt();
         String loginPwd = passwordService.encryptPassword(business.getLoginName(), business.getLoginPwd(), salt);

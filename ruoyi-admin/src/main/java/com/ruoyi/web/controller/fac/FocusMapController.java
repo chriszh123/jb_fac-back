@@ -4,6 +4,9 @@ package
 
 import java.util.List;
 
+import com.ruoyi.fac.constant.FacConstant;
+import com.ruoyi.framework.util.ShiroUtils;
+import com.ruoyi.system.domain.SysUser;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -64,7 +67,7 @@ public class FocusMapController extends BaseController {
     public AjaxResult export(FocusMap focusMap) {
         List<FocusMap> list = focusMapService.selectFocusMapList(focusMap);
         ExcelUtil<FocusMap> util = new ExcelUtil<FocusMap>(FocusMap.class);
-        return util.exportExcel(list, "focusMap");
+        return util.exportExcel(list, "焦点图");
     }
 
     /**
@@ -83,6 +86,13 @@ public class FocusMapController extends BaseController {
     @PostMapping("/add")
     @ResponseBody
     public AjaxResult addSave(FocusMap focusMap) {
+        SysUser user = ShiroUtils.getSysUser();
+        if (user != null) {
+            focusMap.setOperatorName(user.getUserName());
+            focusMap.setOperatorId(user.getUserId());
+        } else {
+            return AjaxResult.error(FacConstant.ERROR_MSG_LOGIN_USER_NULL);
+        }
         return toAjax(focusMapService.insertFocusMap(focusMap));
     }
 
@@ -104,6 +114,13 @@ public class FocusMapController extends BaseController {
     @PostMapping("/edit")
     @ResponseBody
     public AjaxResult editSave(FocusMap focusMap) {
+        SysUser user = ShiroUtils.getSysUser();
+        if (user != null) {
+            focusMap.setOperatorName(user.getUserName());
+            focusMap.setOperatorId(user.getUserId());
+        } else {
+            return AjaxResult.error(FacConstant.ERROR_MSG_LOGIN_USER_NULL);
+        }
         return toAjax(focusMapService.updateFocusMap(focusMap));
     }
 
