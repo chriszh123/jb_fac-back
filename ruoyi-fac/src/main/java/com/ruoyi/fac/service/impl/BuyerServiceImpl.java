@@ -101,7 +101,7 @@ public class BuyerServiceImpl implements IBuyerService {
                 }
                 buyerBusiness.setUserId(buyer.getId());
                 buyerBusiness.setBusinessId(Long.valueOf(prodRefArr[2]));
-                prodId = prodRefArr[1].substring(prodRefArr[1].length());
+                prodId = prodRefArr[1].substring(prodRefArr[2].length());
                 buyerBusiness.setBusinessProdId(Long.valueOf(prodId));
                 buyerBusiness.setCreateTime(now);
                 buyerBusiness.setUpdateTime(now);

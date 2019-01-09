@@ -9,6 +9,7 @@ import com.ruoyi.fac.mapper.CashMapper;
 import com.ruoyi.fac.domain.Cash;
 import com.ruoyi.fac.service.ICashService;
 import com.ruoyi.common.support.Convert;
+import org.springframework.util.CollectionUtils;
 
 /**
  * 买家提现记录 服务层实现
@@ -41,7 +42,16 @@ public class CashServiceImpl implements ICashService {
     @Override
     public List<Cash> selectCashList(Cash cash) {
         cash.setIsDeleted(0);
-        return cashMapper.selectCashList(cash);
+        List<Cash> cashList = this.cashMapper.selectCashList(cash);
+        if (!CollectionUtils.isEmpty(cashList)) {
+            for (Cash cash1 : cashList) {
+                // 失败场景下打款时间为空
+                if (cash1.getStatus().intValue() == 2) {
+                    cash1.setPayTime(null);
+                }
+            }
+        }
+        return cashList;
     }
 
     /**
@@ -69,6 +79,7 @@ public class CashServiceImpl implements ICashService {
     public int updateCash(Cash cash) {
         Date now = new Date();
         cash.setUpdateTime(now);
+        cash.setPayTime(now);
         return cashMapper.updateCash(cash);
     }
 

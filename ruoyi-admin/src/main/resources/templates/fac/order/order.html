@@ -48,6 +48,7 @@
     </div>
 </div>
 <div th:include="include :: footer"></div>
+<script th:src="@{/fac/fac_common.js}"></script>
 <script th:inline="javascript">
     var editFlag = [[${@permission.hasPermi('fac:order:edit')}]];
     var removeFlag = [[${@permission.hasPermi('fac:order:remove')}]];
@@ -89,15 +90,7 @@
                     title: '状态',
                     sortable: true,
                     formatter: function (value, row, index) {
-                        if (value == 1) {
-                            return "已付款";
-                        } else if (value == 2) {
-                            return "待付款";
-                        } else if (value == 3) {
-                            return "已取消";
-                        } else {
-                            return "未取消";
-                        }
+                        return ORDER_STATUS[value];
                     }
                 },
                 {
