@@ -29,11 +29,11 @@
         <where>
             <if test="id != null ">and id = #{id}</if>
             <if test="userId != null ">and user_id = #{userId}</if>
-            <if test="cash != null ">and cash = #{cash}</if>
-            <if test="receivingAccount != null  and receivingAccount != '' ">and receiving_account =
-                #{receivingAccount}
+            <if test="cash != null ">and cash LIKE "%"#{cash}"%"</if>
+            <if test="receivingAccount != null  and receivingAccount != '' ">and receiving_account LIKE
+                "%"#{receivingAccount}"%"
             </if>
-            <if test="phoneNumber != null  and phoneNumber != '' ">and phone_number = #{phoneNumber}</if>
+            <if test="phoneNumber != null  and phoneNumber != '' ">and phone_number LIKE "%"#{phoneNumber}"%"</if>
             <if test="applyTime != null ">and apply_time = #{applyTime}</if>
             <if test="payTime != null ">and pay_time = #{payTime}</if>
             <if test="status != null ">and status = #{status}</if>

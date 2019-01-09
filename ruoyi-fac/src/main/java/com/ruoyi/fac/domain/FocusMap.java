@@ -1,5 +1,6 @@
 package com.ruoyi.fac.domain;
 
+import com.ruoyi.common.annotation.Excel;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ruoyi.common.base.BaseEntity;
@@ -20,10 +21,12 @@ public class FocusMap extends BaseEntity {
     /**
      * 标题
      */
+    @Excel(name = "标题")
     private String title;
     /**
      * 显示顺序
      */
+    @Excel(name = "显示顺序")
     private Integer sort;
     /**
      * 图片
@@ -32,19 +35,18 @@ public class FocusMap extends BaseEntity {
     /**
      * 跳转类型:1-页面；2-商品；3-分类
      */
+    @Excel(name = "跳转类型", readConverterExp = "1=页面,2=商品,3=分类")
     private Integer jumpType;
     /**
      * 填写跳转类型对应的页面ID、商品ID或分类ID
      */
+    @Excel(name = "跳转参数")
     private String jumpParams;
     /**
      * 状态:1-显示；2-隐藏
      */
+    @Excel(name = "状态", readConverterExp = "1=显示,2=隐藏")
     private Integer status;
-    /**
-     * 图片预览
-     */
-    private String picView;
     /**
      * 操作者ID
      */
@@ -114,14 +116,6 @@ public class FocusMap extends BaseEntity {
         return status;
     }
 
-    public void setPicView(String picView) {
-        this.picView = picView;
-    }
-
-    public String getPicView() {
-        return picView;
-    }
-
     public void setOperatorId(Long operatorId) {
         this.operatorId = operatorId;
     }
@@ -156,7 +150,6 @@ public class FocusMap extends BaseEntity {
                 .append("jumpType", getJumpType())
                 .append("jumpParams", getJumpParams())
                 .append("status", getStatus())
-                .append("picView", getPicView())
                 .append("createTime", getCreateTime())
                 .append("updateTime", getUpdateTime())
                 .append("operatorId", getOperatorId())
