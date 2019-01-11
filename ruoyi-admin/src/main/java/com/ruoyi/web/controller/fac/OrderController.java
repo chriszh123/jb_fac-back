@@ -34,6 +34,7 @@ import com.ruoyi.common.utils.ExcelUtil;
 @RequestMapping("/fac/order")
 public class OrderController extends BaseController {
     private String prefix = "fac/order";
+    private String prefix_analysis = "fac/dataAnalysis";
 
     @Autowired
     private IOrderService orderService;
@@ -131,12 +132,28 @@ public class OrderController extends BaseController {
         return toAjax(orderService.cancelOrderByIds(ids));
     }
 
+    /**
+     * 数据分析-订单统计
+     */
+    @GetMapping("/orderAnalysis")
+    public String orderAnalysis() {
+        return prefix_analysis + "/orderAnalysis";
+    }
+
     @GetMapping("/queryRecentOrderInfo")
     @ResponseBody
     public OrderDiagramVo queryRecentOrderInfo(String startDate, String endDate) {
         // 默认当前一周日期内(Multiple X Axes)
         OrderDiagramVo vo = this.orderService.queryRecentOrderInfo(startDate, endDate);
         return vo;
+    }
+
+    /**
+     * 首页统计
+     */
+    @GetMapping("/homepage")
+    public String homepage() {
+        return prefix + "/homepage";
     }
 
     @GetMapping("/queryFacStaticInfo")

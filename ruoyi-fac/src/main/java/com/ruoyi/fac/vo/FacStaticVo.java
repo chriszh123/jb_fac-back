@@ -17,9 +17,13 @@ import java.io.Serializable;
 public class FacStaticVo implements Serializable {
     private static final long serialVersionUID = -6112792965818679247L;
 
-    // 统计项
+    /**
+     * 统计项
+     */
     private String[] staticXAxis;
-    // 各统计项数量
+    /**
+     * 各统计项数量
+     */
     private Integer[] staticData;
 
     public String[] getStaticXAxis() {

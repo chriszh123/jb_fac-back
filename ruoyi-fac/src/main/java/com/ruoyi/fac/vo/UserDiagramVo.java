@@ -16,9 +16,13 @@ import java.io.Serializable;
  **/
 public class UserDiagramVo implements Serializable {
     private static final long serialVersionUID = -3715675376121253351L;
-    // X日期值：统计日期：年月日
+    /**
+     * X日期值：统计日期：年月日
+     */
     private String[] xAxisData;
-    // 每日用户新增人数
+    /**
+     * 每日用户新增人数
+     */
     private String[] seriesUserData;
 
     public String[] getxAxisData() {

@@ -17,11 +17,17 @@ import java.io.Serializable;
 public class OrderDiagramVo implements Serializable {
     private static final long serialVersionUID = 6148950220057361230L;
 
-    // X日期值：统计日期：年月日
+    /**
+     * X日期值：统计日期：年月日
+     */
     private String[] xAxisData;
-    // 订单数量
+    /**
+     * 订单数量
+     */
     private String[] seriesOrderCount;
-    // 订单金额
+    /**
+     * 订单金额
+     */
     private String[] seriesOrderAmount;
 
     public String[] getxAxisData() {

@@ -32,6 +32,7 @@ import java.util.Map;
 @RequestMapping("/fac/buyer")
 public class BuyerController extends BaseController {
     private String prefix = "fac/buyer";
+    private String prefix_analysis = "fac/dataAnalysis";
 
     @Autowired
     private IBuyerService buyerService;
@@ -137,6 +138,14 @@ public class BuyerController extends BaseController {
     public List<Map<String, Object>> bizProdTreeData(Buyer buyer) {
         List<Map<String, Object>> tree = this.buyerService.bizProdTreeData(buyer);
         return tree;
+    }
+
+    /**
+     * 新增用户统计
+     */
+    @GetMapping("/userAnalysis")
+    public String userAnalysis() {
+        return prefix_analysis + "/userAnalysis";
     }
 
     @GetMapping("/queryRecentUserInfo")
