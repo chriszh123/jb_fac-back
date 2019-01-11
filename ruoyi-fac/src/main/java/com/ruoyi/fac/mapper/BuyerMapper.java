@@ -1,7 +1,9 @@
 package com.ruoyi.fac.mapper;
 
 import com.ruoyi.fac.domain.Buyer;
+import com.ruoyi.fac.domain.BuyerBusiness;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -59,4 +61,14 @@ public interface BuyerMapper {
      */
     int deleteBuyerByIds(String[] ids);
 
+    List<BuyerBusiness> queryRecentUserInfo(Date startDate, Date endDate);
+
+    /**
+     * 指定日期内的用户数
+     *
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    int countBuyers(Date startDate, Date endDate);
 }

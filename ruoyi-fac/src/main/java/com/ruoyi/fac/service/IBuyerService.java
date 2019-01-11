@@ -1,6 +1,7 @@
 package com.ruoyi.fac.service;
 
 import com.ruoyi.fac.domain.Buyer;
+import com.ruoyi.fac.vo.UserDiagramVo;
 
 import java.util.List;
 import java.util.Map;
@@ -59,4 +60,13 @@ public interface IBuyerService {
      * @return
      */
     List<Map<String, Object>> bizProdTreeData(Buyer buyer);
+
+    /**
+     * 查询指定日期内每日的新增人数
+     *
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    UserDiagramVo queryRecentUserInfo(String startDate, String endDate);
 }

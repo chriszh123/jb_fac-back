@@ -135,4 +135,16 @@
         </foreach>
     </delete>
 
+    <select id="countBusinesses" resultType="java.lang.Integer">
+        select count(*)
+        from fac_business
+        where is_deleted = 0
+        <if test="startDate != null">
+            and DATE_FORMAT(create_time,'%Y-%m-%d') &gt;= DATE_FORMAT(#{startDate},'%Y-%m-%d')
+        </if>
+        <if test="endDate != null">
+            and DATE_FORMAT(create_time,'%Y-%m-%d') &lt;= DATE_FORMAT(#{endDate},'%Y-%m-%d')
+        </if>
+    </select>
+
 </mapper>

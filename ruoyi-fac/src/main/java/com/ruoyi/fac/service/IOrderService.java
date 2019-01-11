@@ -1,6 +1,8 @@
 package com.ruoyi.fac.service;
 
 import com.ruoyi.fac.domain.Order;
+import com.ruoyi.fac.vo.FacStaticVo;
+import com.ruoyi.fac.vo.OrderDiagramVo;
 import com.ruoyi.fac.vo.OrderVo;
 
 import java.util.List;
@@ -67,4 +69,22 @@ public interface IOrderService {
      * @return
      */
     OrderVo detailOrderById(Long id);
+
+    /**
+     * 查询指定日期内的订单信息
+     *
+     * @param startDateStr
+     * @param endDateStr
+     * @return
+     */
+    OrderDiagramVo queryRecentOrderInfo(String startDateStr, String endDateStr);
+
+    /**
+     * 指定日期内FAC的统计信息
+     *
+     * @param startDateStr
+     * @param endDateStr
+     * @return
+     */
+    FacStaticVo queryFacStaticInfo(String startDateStr, String endDateStr);
 }

@@ -2,6 +2,7 @@ package com.ruoyi.fac.mapper;
 
 import com.ruoyi.fac.domain.BuyerBusiness;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -62,5 +63,4 @@ public interface BuyerBusinessMapper {
     int deleteBuyerBusinessByUserId(BuyerBusiness buyerBusiness);
 
     int batchInsert(List<BuyerBusiness> list);
-
 }

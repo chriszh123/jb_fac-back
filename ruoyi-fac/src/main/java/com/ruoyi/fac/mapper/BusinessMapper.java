@@ -2,6 +2,7 @@ package com.ruoyi.fac.mapper;
 
 import com.ruoyi.fac.domain.Business;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -59,4 +60,12 @@ public interface BusinessMapper {
      */
     int deleteBusinessByIds(String[] ids);
 
+    /**
+     * 指定日期内的商家数
+     *
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    int countBusinesses(Date startDate, Date endDate);
 }

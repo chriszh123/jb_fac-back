@@ -1,7 +1,9 @@
 package com.ruoyi.fac.mapper;
 
+import com.ruoyi.fac.domain.BuyerBusiness;
 import com.ruoyi.fac.domain.Order;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -67,4 +69,21 @@ public interface OrderMapper {
      */
     int cancelOrderByIds(String[] ids);
 
+    /**
+     * 查询指定日期内的订单信息
+     *
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    List<Order> queryRecentOrderInfo(Date startDate, Date endDate);
+
+    /**
+     * 指定日期内的订单数
+     *
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    int countOrders(Date startDate, Date endDate);
 }

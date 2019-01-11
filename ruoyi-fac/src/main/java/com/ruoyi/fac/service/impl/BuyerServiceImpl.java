@@ -11,12 +11,17 @@ import com.ruoyi.fac.mapper.BuyerBusinessMapper;
 import com.ruoyi.fac.mapper.BuyerMapper;
 import com.ruoyi.fac.mapper.ProductMapper;
 import com.ruoyi.fac.service.IBuyerService;
+import com.ruoyi.fac.util.TimeUtils;
+import com.ruoyi.fac.vo.UserDiagramVo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -27,6 +32,8 @@ import java.util.*;
  */
 @Service
 public class BuyerServiceImpl implements IBuyerService {
+    private static final Logger log = LoggerFactory.getLogger(BuyerServiceImpl.class);
+
     @Autowired
     private BuyerMapper buyerMapper;
 
@@ -194,6 +201,60 @@ public class BuyerServiceImpl implements IBuyerService {
         return data;
     }
 
+    /**
+     * 查询指定日期内每日的新增人数
+     *
+     * @param startDateStr
+     * @param endDateStr
+     * @return
+     */
+    @Override
+    public UserDiagramVo queryRecentUserInfo(String startDateStr, String endDateStr) {
+        UserDiagramVo vo = new UserDiagramVo();
+        Date startDate = null, endDate = null;
+        if (StringUtils.isEmpty(startDateStr) || StringUtils.isEmpty(endDateStr)) {
+            // 最近一周日期: 2019-01-04, end = 2019-01-11
+            endDate = new Date();
+            startDate = TimeUtils.getDateByHours(endDate, -168);
+        } else {
+            try {
+                startDate = TimeUtils.parseTime(startDateStr, TimeUtils.DEFAULT_DATE_FORMAT);
+                endDate = TimeUtils.parseTime(endDateStr, TimeUtils.DEFAULT_DATE_FORMAT);
+            } catch (Exception ex) {
+                log.info("[queryRecentUserInfo] error", ex);
+            }
+        }
+        if (startDate == null || endDate == null) {
+            return vo;
+        }
+        List<BuyerBusiness> buyerBusinesses = this.buyerMapper.queryRecentUserInfo(startDate, endDate);
+        if (CollectionUtils.isEmpty(buyerBusinesses)) {
+            return vo;
+        }
+        Map<Date, Integer> date2Count = new HashMap<>(16);
+        Date date = null;
+        int tempCount = 0;
+        for (BuyerBusiness buyerBusiness : buyerBusinesses) {
+            date = buyerBusiness.getCreateTime();
+            if (!date2Count.containsKey(date)) {
+                date2Count.put(date, 0);
+            }
+            tempCount = date2Count.get(date);
+            date2Count.put(date, ++tempCount);
+        }
+        List<Date> datesList = TimeUtils.getStaticDates(startDate, endDate);
+        String[] xAxisData = new String[datesList.size()];
+        String[] seriesData = new String[datesList.size()];
+        for (int i = 0, size = datesList.size(); i < size; i++) {
+            xAxisData[i] = TimeUtils.date2Str(datesList.get(i), "");
+            seriesData[i] = date2Count.get(datesList.get(i)).toString();
+        }
+        vo.setxAxisData(xAxisData);
+        vo.setSeriesUserData(seriesData);
+
+        return vo;
+    }
+
     private boolean checkProdBuyed(String prodId, List<BuyerBusiness> buyerBusinesses) {
         if (StringUtils.isEmpty(prodId) || CollectionUtils.isEmpty(buyerBusinesses)) {
             return false;
@@ -204,5 +265,14 @@ public class BuyerServiceImpl implements IBuyerService {
             }
         }
         return false;
+    }
+
+    public static void main(String[] args) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd EE");
+        Date endDate = new Date();
+        Date startDate = TimeUtils.getDateByHours(endDate, -168);
+        String start = dateFormat.format(startDate);
+        String end = dateFormat.format(endDate);
+        System.out.println("start = " + start + ", end = " + end);
     }
 }

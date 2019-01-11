@@ -11,8 +11,10 @@ import com.ruoyi.common.utils.StringUtils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 public class TimeUtils {
     public static final String DEFAULT_DATE_TIME_FORMAT_HH_MM_SS_MS = "yyyy-MM-dd_HH-mm-ss-SSS";
@@ -170,5 +172,35 @@ public class TimeUtils {
         String dstDateStr = dateStr;
         Date date = new SimpleDateFormat(format).parse(dstDateStr);
         return date2Str(date, format);
+    }
+
+    /**
+     * 两个日期范围内的日期对象Date
+     * 已经按升序排好序
+     *
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    public static List<Date> getStaticDates(Date startDate, Date endDate) {
+        List<Date> dateList = new ArrayList<>();
+        if (startDate.compareTo(endDate) == 0) {
+            dateList.add(startDate);
+            return dateList;
+        }
+        List<String> existDates = new ArrayList<>();
+        dateList.add(startDate);
+        existDates.add(date2Str(startDate, ""));
+        Date tempDate = getDateByHours(startDate, 24);
+        while (tempDate.compareTo(endDate) <= 0) {
+            dateList.add(tempDate);
+            tempDate = getDateByHours(tempDate, 24);
+            existDates.add(date2Str(tempDate, ""));
+        }
+        if (!existDates.contains(date2Str(endDate, ""))) {
+            dateList.add(endDate);
+        }
+
+        return dateList;
     }
 }

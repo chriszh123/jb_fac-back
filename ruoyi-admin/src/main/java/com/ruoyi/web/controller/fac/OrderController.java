@@ -2,7 +2,10 @@ package com.ruoyi.web.controller.fac;
 
 import java.util.List;
 
+import com.ruoyi.fac.vo.FacStaticVo;
+import com.ruoyi.fac.vo.OrderDiagramVo;
 import com.ruoyi.fac.vo.OrderVo;
+import com.ruoyi.fac.vo.UserDiagramVo;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -128,4 +131,19 @@ public class OrderController extends BaseController {
         return toAjax(orderService.cancelOrderByIds(ids));
     }
 
+    @GetMapping("/queryRecentOrderInfo")
+    @ResponseBody
+    public OrderDiagramVo queryRecentOrderInfo(String startDate, String endDate) {
+        // 默认当前一周日期内(Multiple X Axes)
+        OrderDiagramVo vo = this.orderService.queryRecentOrderInfo(startDate, endDate);
+        return vo;
+    }
+
+    @GetMapping("/queryFacStaticInfo")
+    @ResponseBody
+    public FacStaticVo queryFacStaticInfo(String startDate, String endDate) {
+        // 默认当前一周日期内(坐标轴刻度与标签对齐)
+        FacStaticVo vo = this.orderService.queryFacStaticInfo(startDate, endDate);
+        return vo;
+    }
 }

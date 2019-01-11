@@ -1,16 +1,28 @@
 package com.ruoyi.fac.service.impl;
 
-import java.util.List;
-
+import com.ruoyi.common.support.Convert;
 import com.ruoyi.fac.domain.Buyer;
+import com.ruoyi.fac.domain.Order;
+import com.ruoyi.fac.mapper.BusinessMapper;
 import com.ruoyi.fac.mapper.BuyerMapper;
+import com.ruoyi.fac.mapper.OrderMapper;
+import com.ruoyi.fac.service.IOrderService;
+import com.ruoyi.fac.util.TimeUtils;
+import com.ruoyi.fac.vo.FacStaticVo;
+import com.ruoyi.fac.vo.OrderDiagramVo;
 import com.ruoyi.fac.vo.OrderVo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.ruoyi.fac.mapper.OrderMapper;
-import com.ruoyi.fac.domain.Order;
-import com.ruoyi.fac.service.IOrderService;
-import com.ruoyi.common.support.Convert;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 订单 服务层实现
@@ -20,11 +32,16 @@ import com.ruoyi.common.support.Convert;
  */
 @Service
 public class OrderServiceImpl implements IOrderService {
+    private static final Logger log = LoggerFactory.getLogger(OrderServiceImpl.class);
+
     @Autowired
     private OrderMapper orderMapper;
 
     @Autowired
     private BuyerMapper buyerMapper;
+
+    @Autowired
+    private BusinessMapper businessMapper;
 
     /**
      * 查询订单信息
@@ -119,4 +136,121 @@ public class OrderServiceImpl implements IOrderService {
         }
         return orderVo;
     }
+
+    /**
+     * 查询指定日期内的订单信息
+     *
+     * @param startDateStr
+     * @param endDateStr
+     * @return
+     */
+    @Override
+    public OrderDiagramVo queryRecentOrderInfo(String startDateStr, String endDateStr) {
+        OrderDiagramVo vo = new OrderDiagramVo();
+        Date startDate = null, endDate = null;
+        if (!StringUtils.isEmpty(startDateStr) && !StringUtils.isEmpty(endDateStr)) {
+            try {
+                startDate = TimeUtils.parseTime(startDateStr, TimeUtils.DEFAULT_DATE_FORMAT);
+                endDate = TimeUtils.parseTime(endDateStr, TimeUtils.DEFAULT_DATE_FORMAT);
+            } catch (Exception ex) {
+                log.info("[queryRecentUserInfo] error", ex);
+            }
+        } else {
+            // 最近一周日期: 2019-01-04, end = 2019-01-11
+            endDate = new Date();
+            startDate = TimeUtils.getDateByHours(endDate, -168);
+        }
+        if (startDate == null || endDate == null) {
+            return vo;
+        }
+        // 当前时间范围内产生的订单
+        List<Order> orders = this.orderMapper.queryRecentOrderInfo(startDate, endDate);
+        if (CollectionUtils.isEmpty(orders)) {
+            return vo;
+        }
+        Map<Date, Integer> date2OrderCount = new HashMap<>(16);
+        Map<Date, BigDecimal> date2OrderAmount = new HashMap<>(16);
+        Date date = null;
+        int tempCount = 0;
+        try {
+            BigDecimal tempAmount = new BigDecimal("0.0");
+            for (Order order : orders) {
+                date = TimeUtils.parseTime(order.getCreateTime(), TimeUtils.DEFAULT_DATE_FORMAT);
+                if (!date2OrderCount.containsKey(date)) {
+                    date2OrderCount.put(date, 0);
+                }
+                tempCount = date2OrderCount.get(date);
+                date2OrderCount.put(date, ++tempCount);
+                if (!date2OrderAmount.containsKey(date)) {
+                    date2OrderAmount.put(date, new BigDecimal("0.0"));
+                }
+                tempAmount = date2OrderAmount.get(date);
+                tempAmount = tempAmount.add(order.getPrice());
+                date2OrderAmount.put(date, tempAmount);
+            }
+            List<Date> dateList = TimeUtils.getStaticDates(startDate, endDate);
+            String[] xAxisData = new String[dateList.size()];
+            String[] seriesOrderCount = new String[dateList.size()];
+            String[] seriesOrderAmount = new String[dateList.size()];
+            for (int i = 0, size = dateList.size(); i < size; i++) {
+                xAxisData[i] = TimeUtils.date2Str(dateList.get(0), "");
+                seriesOrderCount[i] = date2OrderCount.containsKey(dateList.get(0)) ? date2OrderCount.get(dateList.get(0)).toString() : "0";
+                seriesOrderAmount[i] = date2OrderAmount.containsKey(dateList.get(0)) ? date2OrderAmount.get(dateList.get(0)).toString() : "0.0";
+            }
+            vo.setxAxisData(xAxisData);
+            vo.setSeriesOrderCount(seriesOrderCount);
+            vo.setSeriesOrderAmount(seriesOrderAmount);
+        } catch (Exception ex) {
+            log.error("[queryRecentOrderInfo] error", ex);
+        }
+
+        return vo;
+    }
+
+    /**
+     * 指定日期内FAC的统计信息
+     *
+     * @param startDateStr
+     * @param endDateStr
+     * @return
+     */
+    @Override
+    public FacStaticVo queryFacStaticInfo(String startDateStr, String endDateStr) {
+        FacStaticVo vo = new FacStaticVo();
+        Date startDate = null, endDate = null;
+        if (!StringUtils.isEmpty(startDateStr)) {
+            try {
+                startDate = TimeUtils.parseTime(startDateStr, TimeUtils.DEFAULT_DATE_FORMAT);
+            } catch (Exception ex) {
+                log.info("[queryFacStaticInfo] error", ex);
+            }
+        }
+        if (!StringUtils.isEmpty(endDateStr)) {
+            try {
+                endDate = TimeUtils.parseTime(endDateStr, TimeUtils.DEFAULT_DATE_FORMAT);
+            } catch (Exception ex) {
+                log.info("[queryFacStaticInfo] error", ex);
+            }
+        }
+        // 统计项目
+        String[] xAxis = new String[3];
+        xAxis[0] = "订单";
+        xAxis[1] = "用户";
+        xAxis[2] = "商家";
+        Integer[] seriesData = new Integer[3];
+        // 1.当前订单数
+        int orderCount = this.orderMapper.countOrders(startDate, endDate);
+        seriesData[0] = orderCount;
+        // 2.当前用户数
+        int buyCount = this.buyerMapper.countBuyers(startDate, endDate);
+        seriesData[1] = buyCount;
+        // 3.当前商家数
+        int bizCount = this.businessMapper.countBusinesses(startDate, endDate);
+        seriesData[2] = bizCount;
+
+        vo.setStaticXAxis(xAxis);
+        vo.setStaticData(seriesData);
+        return vo;
+    }
+
 }

@@ -174,4 +174,23 @@
         </foreach>
     </update>
 
+    <select id="queryRecentOrderInfo" resultMap="BuyerResult">
+        <include refid="selectOrderVo"/>
+        where is_deleted = 0
+        and DATE_FORMAT(create_time,'%Y-%m-%d') &lt;= DATE_FORMAT(#{endDate},'%Y-%m-%d')
+        and DATE_FORMAT(create_time,'%Y-%m-%d') &gt;= DATE_FORMAT(#{startDate},'%Y-%m-%d')
+    </select>
+
+    <select id="countOrders" resultType="java.lang.Integer">
+        select count(*)
+        from fac_order
+        where is_deleted = 0
+        <if test="startDate != null">
+            and DATE_FORMAT(create_time,'%Y-%m-%d') &gt;= DATE_FORMAT(#{startDate},'%Y-%m-%d')
+        </if>
+        <if test="endDate != null">
+            and DATE_FORMAT(create_time,'%Y-%m-%d') &lt;= DATE_FORMAT(#{endDate},'%Y-%m-%d')
+        </if>
+    </select>
+
 </mapper>

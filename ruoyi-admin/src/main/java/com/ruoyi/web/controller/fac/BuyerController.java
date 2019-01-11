@@ -8,6 +8,7 @@ import com.ruoyi.common.utils.ExcelUtil;
 import com.ruoyi.fac.constant.FacConstant;
 import com.ruoyi.fac.domain.Buyer;
 import com.ruoyi.fac.service.IBuyerService;
+import com.ruoyi.fac.vo.UserDiagramVo;
 import com.ruoyi.framework.util.ShiroUtils;
 import com.ruoyi.framework.web.base.BaseController;
 import com.ruoyi.system.domain.SysUser;
@@ -136,5 +137,13 @@ public class BuyerController extends BaseController {
     public List<Map<String, Object>> bizProdTreeData(Buyer buyer) {
         List<Map<String, Object>> tree = this.buyerService.bizProdTreeData(buyer);
         return tree;
+    }
+
+    @GetMapping("/queryRecentUserInfo")
+    @ResponseBody
+    public UserDiagramVo queryRecentUserInfo(String startDate, String endDate) {
+        // 默认当前一周日期内(Basic area chart)
+        UserDiagramVo vo = this.buyerService.queryRecentUserInfo(startDate, endDate);
+        return vo;
     }
 }
