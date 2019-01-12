@@ -11,6 +11,7 @@ import com.ruoyi.fac.util.TimeUtils;
 import com.ruoyi.fac.vo.FacStaticVo;
 import com.ruoyi.fac.vo.OrderDiagramVo;
 import com.ruoyi.fac.vo.OrderVo;
+import com.ruoyi.fac.vo.QueryVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -164,7 +165,10 @@ public class OrderServiceImpl implements IOrderService {
             return vo;
         }
         // 当前时间范围内产生的订单
-        List<Order> orders = this.orderMapper.queryRecentOrderInfo(startDate, endDate);
+        QueryVo queryVo = new QueryVo();
+        queryVo.setStartDate(startDate);
+        queryVo.setEndDate(endDate);
+        List<Order> orders = this.orderMapper.queryRecentOrderInfo(queryVo);
         if (CollectionUtils.isEmpty(orders)) {
             return vo;
         }

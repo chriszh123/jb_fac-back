@@ -2,6 +2,7 @@ package com.ruoyi.fac.mapper;
 
 import com.ruoyi.fac.domain.BuyerBusiness;
 import com.ruoyi.fac.domain.Order;
+import com.ruoyi.fac.vo.QueryVo;
 
 import java.util.Date;
 import java.util.List;
@@ -72,11 +73,10 @@ public interface OrderMapper {
     /**
      * 查询指定日期内的订单信息
      *
-     * @param startDate
-     * @param endDate
+     * @param queryVo
      * @return
      */
-    List<Order> queryRecentOrderInfo(Date startDate, Date endDate);
+    List<Order> queryRecentOrderInfo(QueryVo queryVo);
 
     /**
      * 指定日期内的订单数

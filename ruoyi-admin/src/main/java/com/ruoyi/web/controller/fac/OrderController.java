@@ -135,6 +135,7 @@ public class OrderController extends BaseController {
     /**
      * 数据分析-订单统计
      */
+    @RequiresPermissions("fac:order:orderAnalysis")
     @GetMapping("/orderAnalysis")
     public String orderAnalysis() {
         return prefix_analysis + "/orderAnalysis";

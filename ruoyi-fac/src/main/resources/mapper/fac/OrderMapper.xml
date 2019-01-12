@@ -174,7 +174,7 @@
         </foreach>
     </update>
 
-    <select id="queryRecentOrderInfo" resultMap="BuyerResult">
+    <select id="queryRecentOrderInfo" parameterType="QueryVo" resultMap="OrderResult">
         <include refid="selectOrderVo"/>
         where is_deleted = 0
         and DATE_FORMAT(create_time,'%Y-%m-%d') &lt;= DATE_FORMAT(#{endDate},'%Y-%m-%d')
