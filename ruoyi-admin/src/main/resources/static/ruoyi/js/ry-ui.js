@@ -92,7 +92,7 @@
                 }
                 $("#bootstrap-table").bootstrapTable('refresh', params);
             },
-            // 下载-默认第一个form
+            // 导出数据
             exportExcel: function (formId) {
                 var currentId = $.common.isEmpty(formId) ? $('form').attr('id') : formId;
                 $.modal.loading("正在导出数据，请稍后...");
@@ -103,6 +103,64 @@
                         $.modal.alertError(result.msg);
                     }
                     $.modal.closeLoading();
+                });
+            },
+            // 下载模板
+            importTemplate: function () {
+                $.get($.table._option.importTemplateUrl, function (result) {
+                    if (result.code == web_status.SUCCESS) {
+                        window.location.href = ctx + "common/download?fileName=" + result.msg + "&delete=" + true;
+                    } else {
+                        $.modal.alertError(result.msg);
+                    }
+                });
+            },
+            // 导入数据
+            importExcel: function (formId) {
+                var currentId = $.common.isEmpty(formId) ? 'importForm' : formId;
+                $.form.reset(currentId);
+                layer.open({
+                    type: 1,
+                    area: ['400px'],
+                    fix: false,
+                    //不固定
+                    maxmin: true,
+                    shade: 0.3,
+                    title: '导入' + $.table._option.modalName + '数据',
+                    content: $('#' + currentId),
+                    btn: ['<i class="fa fa-check"></i> 导入', '<i class="fa fa-remove"></i> 取消'],
+                    // 弹层外区域关闭
+                    shadeClose: true,
+                    btn1: function (index, layero) {
+                        var file = layero.find('#file').val();
+                        if (file == '' || (!$.common.endWith(file, '.xls') && !$.common.endWith(file, '.xlsx'))) {
+                            $.modal.msgWarning("请选择后缀为 “xls”或“xlsx”的文件。");
+                            return false;
+                        }
+                        var index = layer.load(2, {shade: false});
+                        var url = prefix + "/importData";
+                        var formData = new FormData();
+                        formData.append("file", $('#file')[0].files[0]);
+                        formData.append("updateSupport", $("input[name='updateSupport']").is(':checked'));
+                        $.ajax({
+                            url: url,
+                            data: formData,
+                            cache: false,
+                            contentType: false,
+                            processData: false,
+                            type: 'POST',
+                            success: function (result) {
+                                if (result.code == web_status.SUCCESS) {
+                                    $.modal.closeAll();
+                                    $.modal.alertSuccess(result.msg);
+                                    $.table.refresh();
+                                } else {
+                                    layer.close(index);
+                                    $.modal.alertError(result.msg);
+                                }
+                            }
+                        });
+                    }
                 });
             },
             // 刷新表格
@@ -288,6 +346,10 @@
                 var index = parent.layer.getFrameIndex(window.name);
                 parent.layer.close(index);
             },
+            // 关闭全部窗体
+            closeAll: function () {
+                layer.closeAll();
+            },
             // 确认窗体
             confirm: function (content, callBack) {
                 layer.confirm(content, {
@@ -461,7 +523,7 @@
                     _width = 'auto';
                     _height = 'auto';
                 }
-                layer.open({
+                top.layer.open({
                     type: 2,
                     area: [_width + 'px', _height + 'px'],
                     fix: false,
@@ -470,14 +532,17 @@
                     shade: 0.3,
                     title: $.table._option.modalName + "详细",
                     content: _url,
-                    btn: '关闭',
+                    btn: ['关闭'],
                     // 弹层外区域关闭
                     shadeClose: true,
-                    success: function (layer) {
-                        layer[0].childNodes[3].childNodes[0].attributes[0].value = 'layui-layer-btn1';
-                    },
-                    btn1: function (index) {
-                        layer.close(index);
+                    // success: function (layer) {
+                    //     layer[0].childNodes[3].childNodes[0].attributes[0].value = 'layui-layer-btn1';
+                    // },
+                    // btn1: function (index) {
+                    //     layer.close(index);
+                    // }
+                    cancel: function (index) {
+                        return true;
                     }
                 });
             },
@@ -572,8 +637,9 @@
             // 保存结果弹出msg刷新table表格
             ajaxSuccess: function (result) {
                 if (result.code == web_status.SUCCESS) {
-                    $.modal.msgSuccess(result.msg);
-                    $.table.refresh();
+                    $.modal.close();
+                    window.parent.$.modal.msgSuccess(result.msg);
+                    window.parent.$.table.refresh();
                 } else {
                     $.modal.alertError(result.msg);
                 }

@@ -2,7 +2,6 @@ package com.ruoyi.web.controller.system;
 
 import java.util.List;
 
-import com.ruoyi.common.page.TableDataInfo;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -13,18 +12,20 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.base.AjaxResult;
 import com.ruoyi.common.enums.BusinessType;
-import com.ruoyi.common.utils.ExcelUtil;
+import com.ruoyi.common.page.TableDataInfo;
 import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.framework.shiro.service.SysPasswordService;
 import com.ruoyi.framework.util.ShiroUtils;
+import com.ruoyi.framework.web.base.BaseController;
 import com.ruoyi.system.domain.SysUser;
 import com.ruoyi.system.service.ISysPostService;
 import com.ruoyi.system.service.ISysRoleService;
 import com.ruoyi.system.service.ISysUserService;
-import com.ruoyi.framework.web.base.BaseController;
 
 /**
  * 用户信息
@@ -34,7 +35,7 @@ import com.ruoyi.framework.web.base.BaseController;
 @Controller
 @RequestMapping("/system/user")
 public class SysUserController extends BaseController {
-    private String prefix = "system/user" ;
+    private String prefix = "system/user";
 
     @Autowired
     private ISysUserService userService;
@@ -51,7 +52,7 @@ public class SysUserController extends BaseController {
     @RequiresPermissions("system:user:view")
     @GetMapping()
     public String user() {
-        return prefix + "/user" ;
+        return prefix + "/user";
     }
 
     @RequiresPermissions("system:user:list")
@@ -70,7 +71,27 @@ public class SysUserController extends BaseController {
     public AjaxResult export(SysUser user) {
         List<SysUser> list = userService.selectUserList(user);
         ExcelUtil<SysUser> util = new ExcelUtil<SysUser>(SysUser.class);
-        return util.exportExcel(list, "user");
+        return util.exportExcel(list, "用户数据");
+    }
+
+    @Log(title = "用户管理", businessType = BusinessType.IMPORT)
+    @RequiresPermissions("system:user:import")
+    @PostMapping("/importData")
+    @ResponseBody
+    public AjaxResult importData(MultipartFile file, boolean updateSupport) throws Exception {
+        ExcelUtil<SysUser> util = new ExcelUtil<SysUser>(SysUser.class);
+        List<SysUser> userList = util.importExcel(file.getInputStream());
+        String operName = getSysUser().getLoginName();
+        String message = userService.importUser(userList, updateSupport, operName);
+        return AjaxResult.success(message);
+    }
+
+    @RequiresPermissions("system:user:view")
+    @GetMapping("/importTemplate")
+    @ResponseBody
+    public AjaxResult importTemplate() {
+        ExcelUtil<SysUser> util = new ExcelUtil<SysUser>(SysUser.class);
+        return util.importTemplateExcel("用户数据");
     }
 
     /**
@@ -80,7 +101,7 @@ public class SysUserController extends BaseController {
     public String add(ModelMap mmap) {
         mmap.put("roles", roleService.selectRoleAll());
         mmap.put("posts", postService.selectPostAll());
-        return prefix + "/add" ;
+        return prefix + "/add";
     }
 
     /**
@@ -109,7 +130,7 @@ public class SysUserController extends BaseController {
         mmap.put("user", userService.selectUserById(userId));
         mmap.put("roles", roleService.selectRolesByUserId(userId));
         mmap.put("posts", postService.selectPostsByUserId(userId));
-        return prefix + "/edit" ;
+        return prefix + "/edit";
     }
 
     /**
@@ -133,7 +154,7 @@ public class SysUserController extends BaseController {
     @GetMapping("/resetPwd/{userId}")
     public String resetPwd(@PathVariable("userId") Long userId, ModelMap mmap) {
         mmap.put("user", userService.selectUserById(userId));
-        return prefix + "/resetPwd" ;
+        return prefix + "/resetPwd";
     }
 
     @RequiresPermissions("system:user:resetPwd")

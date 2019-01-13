@@ -2,7 +2,6 @@ package com.ruoyi.web.controller.monitor;
 
 import java.util.List;
 
-import com.ruoyi.common.page.TableDataInfo;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -15,11 +14,12 @@ import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.base.AjaxResult;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.enums.OnlineStatus;
+import com.ruoyi.common.page.TableDataInfo;
 import com.ruoyi.framework.shiro.session.OnlineSession;
 import com.ruoyi.framework.shiro.session.OnlineSessionDAO;
 import com.ruoyi.framework.util.ShiroUtils;
 import com.ruoyi.system.domain.SysUserOnline;
-import com.ruoyi.system.service.impl.SysUserOnlineServiceImpl;
+import com.ruoyi.system.service.ISysUserOnlineService;
 import com.ruoyi.framework.web.base.BaseController;
 
 /**
@@ -30,10 +30,10 @@ import com.ruoyi.framework.web.base.BaseController;
 @Controller
 @RequestMapping("/monitor/online")
 public class SysUserOnlineController extends BaseController {
-    private String prefix = "monitor/online" ;
+    private String prefix = "monitor/online";
 
     @Autowired
-    private SysUserOnlineServiceImpl userOnlineService;
+    private ISysUserOnlineService userOnlineService;
 
     @Autowired
     private OnlineSessionDAO onlineSessionDAO;
@@ -41,7 +41,7 @@ public class SysUserOnlineController extends BaseController {
     @RequiresPermissions("monitor:online:view")
     @GetMapping()
     public String online() {
-        return prefix + "/online" ;
+        return prefix + "/online";
     }
 
     @RequiresPermissions("monitor:online:list")

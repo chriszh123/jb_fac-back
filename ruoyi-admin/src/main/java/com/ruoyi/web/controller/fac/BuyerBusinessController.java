@@ -4,7 +4,7 @@ import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.base.AjaxResult;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.page.TableDataInfo;
-import com.ruoyi.common.utils.ExcelUtil;
+import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.fac.domain.BuyerBusiness;
 import com.ruoyi.fac.service.IBuyerBusinessService;
 import com.ruoyi.framework.web.base.BaseController;

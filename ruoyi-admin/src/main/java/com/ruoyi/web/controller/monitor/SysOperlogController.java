@@ -1,24 +1,20 @@
 package com.ruoyi.web.controller.monitor;
 
-import java.util.List;
-
+import com.ruoyi.common.annotation.Log;
+import com.ruoyi.common.base.AjaxResult;
+import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.page.TableDataInfo;
+import com.ruoyi.common.utils.poi.ExcelUtil;
+import com.ruoyi.framework.web.base.BaseController;
+import com.ruoyi.system.domain.SysOperLog;
+import com.ruoyi.system.service.ISysOperLogService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import com.ruoyi.common.annotation.Log;
-import com.ruoyi.common.base.AjaxResult;
-import com.ruoyi.common.enums.BusinessType;
-import com.ruoyi.common.utils.ExcelUtil;
-import com.ruoyi.system.domain.SysOperLog;
-import com.ruoyi.system.service.ISysOperLogService;
-import com.ruoyi.framework.web.base.BaseController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * 操作日志记录
@@ -28,7 +24,7 @@ import com.ruoyi.framework.web.base.BaseController;
 @Controller
 @RequestMapping("/monitor/operlog")
 public class SysOperlogController extends BaseController {
-    private String prefix = "monitor/operlog" ;
+    private String prefix = "monitor/operlog";
 
     @Autowired
     private ISysOperLogService operLogService;
@@ -36,7 +32,7 @@ public class SysOperlogController extends BaseController {
     @RequiresPermissions("monitor:operlog:view")
     @GetMapping()
     public String operlog() {
-        return prefix + "/operlog" ;
+        return prefix + "/operlog";
     }
 
     @RequiresPermissions("monitor:operlog:list")
@@ -55,7 +51,7 @@ public class SysOperlogController extends BaseController {
     public AjaxResult export(SysOperLog operLog) {
         List<SysOperLog> list = operLogService.selectOperLogList(operLog);
         ExcelUtil<SysOperLog> util = new ExcelUtil<SysOperLog>(SysOperLog.class);
-        return util.exportExcel(list, "operLog");
+        return util.exportExcel(list, "操作日志");
     }
 
     @RequiresPermissions("monitor:operlog:remove")
@@ -69,7 +65,7 @@ public class SysOperlogController extends BaseController {
     @GetMapping("/detail/{operId}")
     public String detail(@PathVariable("operId") Long operId, ModelMap mmap) {
         mmap.put("operLog", operLogService.selectOperLogById(operId));
-        return prefix + "/detail" ;
+        return prefix + "/detail";
     }
 
     @Log(title = "操作日志", businessType = BusinessType.CLEAN)

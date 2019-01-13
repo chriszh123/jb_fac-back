@@ -1,25 +1,21 @@
 package com.ruoyi.web.controller.monitor;
 
-import java.util.List;
-
+import com.ruoyi.common.annotation.Log;
+import com.ruoyi.common.base.AjaxResult;
+import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.page.TableDataInfo;
+import com.ruoyi.common.utils.poi.ExcelUtil;
+import com.ruoyi.framework.util.ShiroUtils;
+import com.ruoyi.framework.web.base.BaseController;
+import com.ruoyi.quartz.domain.SysJob;
+import com.ruoyi.quartz.service.ISysJobService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import com.ruoyi.common.annotation.Log;
-import com.ruoyi.common.base.AjaxResult;
-import com.ruoyi.common.enums.BusinessType;
-import com.ruoyi.common.utils.ExcelUtil;
-import com.ruoyi.framework.util.ShiroUtils;
-import com.ruoyi.quartz.domain.SysJob;
-import com.ruoyi.quartz.service.ISysJobService;
-import com.ruoyi.framework.web.base.BaseController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * 调度任务信息操作处理
@@ -29,7 +25,7 @@ import com.ruoyi.framework.web.base.BaseController;
 @Controller
 @RequestMapping("/monitor/job")
 public class SysJobController extends BaseController {
-    private String prefix = "monitor/job" ;
+    private String prefix = "monitor/job";
 
     @Autowired
     private ISysJobService jobService;
@@ -37,7 +33,7 @@ public class SysJobController extends BaseController {
     @RequiresPermissions("monitor:job:view")
     @GetMapping()
     public String job() {
-        return prefix + "/job" ;
+        return prefix + "/job";
     }
 
     @RequiresPermissions("monitor:job:list")
@@ -56,7 +52,7 @@ public class SysJobController extends BaseController {
     public AjaxResult export(SysJob job) {
         List<SysJob> list = jobService.selectJobList(job);
         ExcelUtil<SysJob> util = new ExcelUtil<SysJob>(SysJob.class);
-        return util.exportExcel(list, "job");
+        return util.exportExcel(list, "定时任务");
     }
 
     @Log(title = "定时任务", businessType = BusinessType.DELETE)
@@ -78,7 +74,7 @@ public class SysJobController extends BaseController {
     public String detail(@PathVariable("jobId") Long jobId, ModelMap mmap) {
         mmap.put("name", "job");
         mmap.put("job", jobService.selectJobById(jobId));
-        return prefix + "/detail" ;
+        return prefix + "/detail";
     }
 
     /**
@@ -109,7 +105,7 @@ public class SysJobController extends BaseController {
      */
     @GetMapping("/add")
     public String add() {
-        return prefix + "/add" ;
+        return prefix + "/add";
     }
 
     /**
@@ -130,7 +126,7 @@ public class SysJobController extends BaseController {
     @GetMapping("/edit/{jobId}")
     public String edit(@PathVariable("jobId") Long jobId, ModelMap mmap) {
         mmap.put("job", jobService.selectJobById(jobId));
-        return prefix + "/edit" ;
+        return prefix + "/edit";
     }
 
     /**
