@@ -6,7 +6,7 @@
 
 <div class="container-div">
     <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
-    <div id="order" style="width: 600px;height:400px;"></div>
+    <div id="order" style="width: 100%;height:100%;"></div>
 </div>
 <div th:include="include :: footer"></div>
 <script th:src="@{/fac/fac_common.js}"></script>
@@ -22,7 +22,6 @@
             var seriesOrderAmount = data.seriesOrderAmount;
             var seriesOrderCount = data.seriesOrderCount;
             orderOption.xAxis[0].data = xAxisData;
-            orderOption.xAxis[1].data = xAxisData;
             orderOption.series[0].data = seriesOrderAmount;
             orderOption.series[1].data = seriesOrderCount;
 

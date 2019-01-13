@@ -152,6 +152,7 @@ public class OrderController extends BaseController {
     /**
      * 首页统计
      */
+    @RequiresPermissions("fac:order:homepage")
     @GetMapping("/homepage")
     public String homepage() {
         return prefix + "/homepage";

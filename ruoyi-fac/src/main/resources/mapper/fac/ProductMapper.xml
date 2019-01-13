@@ -184,13 +184,25 @@
         </foreach>
     </delete>
 
-    <select id="selectProducsByBizIds" parameterType="String" resultMap="ProductResult">
+    <select id="selectProductsByBizIds" parameterType="String" resultMap="ProductResult">
         <include refid="selectProductVo"/>
         where is_deleted = 0 and business_id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>
         order by create_time desc
+    </select>
+
+    <select id="countProducts" resultType="java.lang.Integer">
+        select count(*)
+        from fac_product
+        where is_deleted = 0
+        <if test="startDate != null">
+            and DATE_FORMAT(create_time,'%Y-%m-%d') &gt;= DATE_FORMAT(#{startDate},'%Y-%m-%d')
+        </if>
+        <if test="endDate != null">
+            and DATE_FORMAT(create_time,'%Y-%m-%d') &lt;= DATE_FORMAT(#{endDate},'%Y-%m-%d')
+        </if>
     </select>
 
 </mapper>

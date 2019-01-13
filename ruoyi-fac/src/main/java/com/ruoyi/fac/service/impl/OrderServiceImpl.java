@@ -6,6 +6,7 @@ import com.ruoyi.fac.domain.Order;
 import com.ruoyi.fac.mapper.BusinessMapper;
 import com.ruoyi.fac.mapper.BuyerMapper;
 import com.ruoyi.fac.mapper.OrderMapper;
+import com.ruoyi.fac.mapper.ProductMapper;
 import com.ruoyi.fac.service.IOrderService;
 import com.ruoyi.fac.util.TimeUtils;
 import com.ruoyi.fac.vo.FacStaticVo;
@@ -37,12 +38,12 @@ public class OrderServiceImpl implements IOrderService {
 
     @Autowired
     private OrderMapper orderMapper;
-
     @Autowired
     private BuyerMapper buyerMapper;
-
     @Autowired
     private BusinessMapper businessMapper;
+    @Autowired
+    private ProductMapper productMapper;
 
     /**
      * 查询订单信息
@@ -149,34 +150,40 @@ public class OrderServiceImpl implements IOrderService {
     public OrderDiagramVo queryRecentOrderInfo(String startDateStr, String endDateStr) {
         OrderDiagramVo vo = new OrderDiagramVo();
         Date startDate = null, endDate = null;
-        if (!StringUtils.isEmpty(startDateStr) && !StringUtils.isEmpty(endDateStr)) {
-            try {
+        try {
+            if (!StringUtils.isEmpty(startDateStr) && !StringUtils.isEmpty(endDateStr)) {
                 startDate = TimeUtils.parseTime(startDateStr, TimeUtils.DEFAULT_DATE_FORMAT);
                 endDate = TimeUtils.parseTime(endDateStr, TimeUtils.DEFAULT_DATE_FORMAT);
-            } catch (Exception ex) {
-                log.info("[queryRecentUserInfo] error", ex);
+            } else {
+                // 最近一周日期: 2019-01-04, end = 2019-01-11
+                endDate = new Date();
+                startDate = TimeUtils.getDateByHours(endDate, -168);
             }
-        } else {
-            // 最近一周日期: 2019-01-04, end = 2019-01-11
-            endDate = new Date();
-            startDate = TimeUtils.getDateByHours(endDate, -168);
-        }
-        if (startDate == null || endDate == null) {
-            return vo;
-        }
-        // 当前时间范围内产生的订单
-        QueryVo queryVo = new QueryVo();
-        queryVo.setStartDate(startDate);
-        queryVo.setEndDate(endDate);
-        List<Order> orders = this.orderMapper.queryRecentOrderInfo(queryVo);
-        if (CollectionUtils.isEmpty(orders)) {
-            return vo;
-        }
-        Map<Date, Integer> date2OrderCount = new HashMap<>(16);
-        Map<Date, BigDecimal> date2OrderAmount = new HashMap<>(16);
-        Date date = null;
-        int tempCount = 0;
-        try {
+            if (startDate == null || endDate == null) {
+                return vo;
+            }
+            List<Date> dateList = TimeUtils.getStaticDates(startDate, endDate);
+            String[] xAxisData = new String[dateList.size()];
+            String[] seriesOrderCount = new String[dateList.size()];
+            String[] seriesOrderAmount = new String[dateList.size()];
+            for (int i = 0, size = dateList.size(); i < size; i++) {
+                xAxisData[i] = TimeUtils.date2Str(dateList.get(i), "");
+                seriesOrderCount[i] = "0";
+                seriesOrderAmount[i] = "0.0";
+            }
+
+            // 当前时间范围内产生的订单
+            QueryVo queryVo = new QueryVo();
+            queryVo.setStartDate(startDate);
+            queryVo.setEndDate(endDate);
+            List<Order> orders = this.orderMapper.queryRecentOrderInfo(queryVo);
+            if (CollectionUtils.isEmpty(orders)) {
+                return vo;
+            }
+            Map<Date, Integer> date2OrderCount = new HashMap<>(16);
+            Map<Date, BigDecimal> date2OrderAmount = new HashMap<>(16);
+            Date date;
+            int tempCount = 0;
             BigDecimal tempAmount = new BigDecimal("0.0");
             for (Order order : orders) {
                 date = TimeUtils.parseTime(order.getCreateTime(), TimeUtils.DEFAULT_DATE_FORMAT);
@@ -192,20 +199,16 @@ public class OrderServiceImpl implements IOrderService {
                 tempAmount = tempAmount.add(order.getPrice());
                 date2OrderAmount.put(date, tempAmount);
             }
-            List<Date> dateList = TimeUtils.getStaticDates(startDate, endDate);
-            String[] xAxisData = new String[dateList.size()];
-            String[] seriesOrderCount = new String[dateList.size()];
-            String[] seriesOrderAmount = new String[dateList.size()];
             for (int i = 0, size = dateList.size(); i < size; i++) {
-                xAxisData[i] = TimeUtils.date2Str(dateList.get(0), "");
-                seriesOrderCount[i] = date2OrderCount.containsKey(dateList.get(0)) ? date2OrderCount.get(dateList.get(0)).toString() : "0";
-                seriesOrderAmount[i] = date2OrderAmount.containsKey(dateList.get(0)) ? date2OrderAmount.get(dateList.get(0)).toString() : "0.0";
+                seriesOrderCount[i] = date2OrderCount.containsKey(dateList.get(i)) ? date2OrderCount.get(dateList.get(i)).toString() : "0";
+                seriesOrderAmount[i] = date2OrderAmount.containsKey(dateList.get(i)) ? date2OrderAmount.get(dateList.get(i)).toString() : "0.0";
             }
             vo.setxAxisData(xAxisData);
             vo.setSeriesOrderCount(seriesOrderCount);
             vo.setSeriesOrderAmount(seriesOrderAmount);
+
         } catch (Exception ex) {
-            log.error("[queryRecentOrderInfo] error", ex);
+            log.info("[queryRecentUserInfo] error", ex);
         }
 
         return vo;
@@ -237,20 +240,25 @@ public class OrderServiceImpl implements IOrderService {
             }
         }
         // 统计项目
-        String[] xAxis = new String[3];
+        String[] xAxis = new String[4];
         xAxis[0] = "订单";
         xAxis[1] = "用户";
         xAxis[2] = "商家";
-        Integer[] seriesData = new Integer[3];
+        xAxis[3] = "商品";
+        Integer[] seriesData = new Integer[4];
         // 1.当前订单数
-        int orderCount = this.orderMapper.countOrders(startDate, endDate);
+        QueryVo queryVo = new QueryVo(startDate, endDate);
+        int orderCount = this.orderMapper.countOrders(queryVo);
         seriesData[0] = orderCount;
         // 2.当前用户数
-        int buyCount = this.buyerMapper.countBuyers(startDate, endDate);
+        int buyCount = this.buyerMapper.countBuyers(queryVo);
         seriesData[1] = buyCount;
         // 3.当前商家数
-        int bizCount = this.businessMapper.countBusinesses(startDate, endDate);
+        int bizCount = this.businessMapper.countBusinesses(queryVo);
         seriesData[2] = bizCount;
+        // 4.当前商品数
+        int productCount = this.productMapper.countProducts(queryVo);
+        seriesData[3] = productCount;
 
         vo.setStaticXAxis(xAxis);
         vo.setStaticData(seriesData);

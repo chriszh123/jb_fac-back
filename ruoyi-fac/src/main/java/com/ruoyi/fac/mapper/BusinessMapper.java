@@ -1,6 +1,7 @@
 package com.ruoyi.fac.mapper;
 
 import com.ruoyi.fac.domain.Business;
+import com.ruoyi.fac.vo.QueryVo;
 
 import java.util.Date;
 import java.util.List;
@@ -63,9 +64,8 @@ public interface BusinessMapper {
     /**
      * 指定日期内的商家数
      *
-     * @param startDate
-     * @param endDate
+     * @param queryVo
      * @return
      */
-    int countBusinesses(Date startDate, Date endDate);
+    int countBusinesses(QueryVo queryVo);
 }

@@ -12,6 +12,7 @@ import com.ruoyi.fac.mapper.BuyerMapper;
 import com.ruoyi.fac.mapper.ProductMapper;
 import com.ruoyi.fac.service.IBuyerService;
 import com.ruoyi.fac.util.TimeUtils;
+import com.ruoyi.fac.vo.QueryVo;
 import com.ruoyi.fac.vo.UserDiagramVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -165,7 +166,7 @@ public class BuyerServiceImpl implements IBuyerService {
         // 商家对应商品
         String[] bizIdsArr = new String[bizIds.size()];
         bizIds.toArray(bizIdsArr);
-        List<Product> products = this.productMapper.selectProducsByBizIds(bizIdsArr);
+        List<Product> products = this.productMapper.selectProductsByBizIds(bizIdsArr);
         if (CollectionUtils.isEmpty(products)) {
             return data;
         }
@@ -212,45 +213,53 @@ public class BuyerServiceImpl implements IBuyerService {
     public UserDiagramVo queryRecentUserInfo(String startDateStr, String endDateStr) {
         UserDiagramVo vo = new UserDiagramVo();
         Date startDate = null, endDate = null;
-        if (StringUtils.isEmpty(startDateStr) || StringUtils.isEmpty(endDateStr)) {
-            // 最近一周日期: 2019-01-04, end = 2019-01-11
-            endDate = new Date();
-            startDate = TimeUtils.getDateByHours(endDate, -168);
-        } else {
-            try {
+        try {
+            if (StringUtils.isEmpty(startDateStr) || StringUtils.isEmpty(endDateStr)) {
+                // 最近一周日期: 2019-01-04, end = 2019-01-11
+                endDate = new Date();
+                startDate = TimeUtils.getDateByHours(endDate, -168);
+            } else {
                 startDate = TimeUtils.parseTime(startDateStr, TimeUtils.DEFAULT_DATE_FORMAT);
                 endDate = TimeUtils.parseTime(endDateStr, TimeUtils.DEFAULT_DATE_FORMAT);
-            } catch (Exception ex) {
-                log.info("[queryRecentUserInfo] error", ex);
             }
-        }
-        if (startDate == null || endDate == null) {
-            return vo;
-        }
-        List<BuyerBusiness> buyerBusinesses = this.buyerMapper.queryRecentUserInfo(startDate, endDate);
-        if (CollectionUtils.isEmpty(buyerBusinesses)) {
-            return vo;
-        }
-        Map<Date, Integer> date2Count = new HashMap<>(16);
-        Date date = null;
-        int tempCount = 0;
-        for (BuyerBusiness buyerBusiness : buyerBusinesses) {
-            date = buyerBusiness.getCreateTime();
-            if (!date2Count.containsKey(date)) {
-                date2Count.put(date, 0);
+            if (startDate == null || endDate == null) {
+                return vo;
             }
-            tempCount = date2Count.get(date);
-            date2Count.put(date, ++tempCount);
+            List<Date> datesList = TimeUtils.getStaticDates(startDate, endDate);
+            String[] xAxisData = new String[datesList.size()];
+            String[] seriesData = new String[datesList.size()];
+            for (int i = 0, size = datesList.size(); i < size; i++) {
+                xAxisData[i] = TimeUtils.date2Str(datesList.get(i), "");
+                seriesData[i] = "0";
+            }
+            vo.setxAxisData(xAxisData);
+            vo.setSeriesUserData(seriesData);
+
+            QueryVo queryVo = new QueryVo(startDate, endDate);
+            List<Buyer> buyers = this.buyerMapper.queryRecentUserInfo(queryVo);
+            if (CollectionUtils.isEmpty(buyers)) {
+                return vo;
+            }
+            Map<Date, Integer> date2Count = new HashMap<>(16);
+            Date date;
+            int tempCount = 0;
+            for (Buyer buyer : buyers) {
+                date = TimeUtils.parseTime(buyer.getCreateTime(), TimeUtils.DEFAULT_DATE_FORMAT);
+                if (!date2Count.containsKey(date)) {
+                    date2Count.put(date, 0);
+                }
+                tempCount = date2Count.get(date);
+                date2Count.put(date, ++tempCount);
+            }
+            for (int i = 0, size = datesList.size(); i < size; i++) {
+                if (date2Count.containsKey(datesList.get(i))) {
+                    seriesData[i] = date2Count.get(datesList.get(i)).toString();
+                }
+            }
+            vo.setSeriesUserData(seriesData);
+        } catch (Exception ex) {
+            log.info("[queryRecentUserInfo] error", ex);
         }
-        List<Date> datesList = TimeUtils.getStaticDates(startDate, endDate);
-        String[] xAxisData = new String[datesList.size()];
-        String[] seriesData = new String[datesList.size()];
-        for (int i = 0, size = datesList.size(); i < size; i++) {
-            xAxisData[i] = TimeUtils.date2Str(datesList.get(i), "");
-            seriesData[i] = date2Count.get(datesList.get(i)).toString();
-        }
-        vo.setxAxisData(xAxisData);
-        vo.setSeriesUserData(seriesData);
 
         return vo;
     }

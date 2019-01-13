@@ -11,6 +11,14 @@ public class QueryVo {
     private Date startDate;
     private Date endDate;
 
+    public QueryVo() {
+    }
+
+    public QueryVo(Date startDate, Date endDate) {
+        this.startDate = startDate;
+        this.endDate = endDate;
+    }
+
     public Date getStartDate() {
         return startDate;
     }

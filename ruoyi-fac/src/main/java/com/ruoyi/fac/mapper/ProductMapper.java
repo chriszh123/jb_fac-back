@@ -1,6 +1,7 @@
 package com.ruoyi.fac.mapper;
 
 import com.ruoyi.fac.domain.Product;
+import com.ruoyi.fac.vo.QueryVo;
 
 import java.util.List;
 
@@ -65,6 +66,8 @@ public interface ProductMapper {
      * @param bizIds 商家ids
      * @return
      */
-    List<Product> selectProducsByBizIds(String[] bizIds);
+    List<Product> selectProductsByBizIds(String[] bizIds);
+
+    int countProducts(QueryVo queryVo);
 
 }

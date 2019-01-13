@@ -81,9 +81,8 @@ public interface OrderMapper {
     /**
      * 指定日期内的订单数
      *
-     * @param startDate
-     * @param endDate
+     * @param queryVo
      * @return
      */
-    int countOrders(Date startDate, Date endDate);
+    int countOrders(QueryVo queryVo);
 }

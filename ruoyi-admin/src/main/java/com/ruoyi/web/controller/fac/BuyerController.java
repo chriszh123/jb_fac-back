@@ -143,6 +143,7 @@ public class BuyerController extends BaseController {
     /**
      * 新增用户统计
      */
+    @RequiresPermissions("fac:buyer:userAnalysis")
     @GetMapping("/userAnalysis")
     public String userAnalysis() {
         return prefix_analysis + "/userAnalysis";

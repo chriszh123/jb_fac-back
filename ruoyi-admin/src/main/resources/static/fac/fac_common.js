@@ -26,11 +26,25 @@ var STATUS_VISIBLE = {
 
 // option：首页相关统计图
 var homepageOption = {
+    title: {
+        text: 'FAC数据总体一览'
+    },
     color: ['#3398DB'],
     tooltip: {
         trigger: 'axis',
         axisPointer: {            // 坐标轴指示器，坐标轴触发有效
             type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+        }
+    },
+    toolbox: {
+        show: true,
+        top: 10,
+        right: 10,
+        feature: {
+            mark: {show: true},
+            magicType: {show: true, type: ['line', 'bar']},
+            restore: {show: true},
+            saveAsImage: {show: true}
         }
     },
     grid: {
@@ -64,104 +78,147 @@ var homepageOption = {
 };
 
 // 订单统计
-var colors = ['#5793f3', '#d14a61', '#675bba'];
 var orderOption = {
-    color: colors,
+    title: {
+        text: '每日订单金额与数量统计'
+    },
     tooltip: {
-        trigger: 'axis',
-        axisPointer: {
-            type: 'cross'
+        trigger: 'item',
+        formatter: "{a} <br/>{b} : {c}"
+    },
+    toolbox: {
+        show: true,
+        top: 10,
+        right: 10,
+        feature: {
+            mark: {show: true},
+            magicType: {show: true, type: ['line', 'bar']},
+            restore: {show: true},
+            saveAsImage: {show: true}
         }
     },
     legend: {
-        data: ['订单金额', '新增用户']
+        top: 32,
+        left: 'center',
+        data: ['订单金额', '订单数量']
     },
-    grid: {
-        top: 70,
-        bottom: 50
-    },
+    calculable: true,
     xAxis: [
         {
             type: 'category',
-            axisTick: {
-                alignWithLabel: true
-            },
-            axisLine: {
-                onZero: false,
-                lineStyle: {
-                    color: colors[1]
-                }
-            },
-            axisPointer: {
-                label: {
-                    formatter: function (params) {
-                        return '订单金额  ' + params.value
-                            + (params.seriesData.length ? '：' + params.seriesData[0].data : '');
-                    }
-                }
-            },
-            data: []
-        },
-        {
-            type: 'category',
-            axisTick: {
-                alignWithLabel: true
-            },
-            axisLine: {
-                onZero: false,
-                lineStyle: {
-                    color: colors[0]
-                }
-            },
-            axisPointer: {
-                label: {
-                    formatter: function (params) {
-                        return '新增用户  ' + params.value
-                            + (params.seriesData.length ? '：' + params.seriesData[1].data : '');
-                    }
-                }
-            },
             data: []
         }
     ],
     yAxis: [
         {
-            type: 'value'
+            type: 'value',
+            name: "订\n单\n金\n额\n︵\n元\n︶",
+            nameLocation: "center",
+            nameGap: 35,
+            nameRotate: 0,
+            nameTextStyle: {
+                fontSize: 12,
+            },
+            //默认以千分位显示，不想用的可以在这加一段
+            axisLabel: {   //调整左侧Y轴刻度， 直接按对应数据显示
+                show: true,
+                showMinLabel: true,
+                showMaxLabel: true,
+                formatter: function (value) {
+                    return value;
+                }
+            }
+        },
+        {
+            type: 'value',
+            name: "订\n单\n个\n数\n︵\n个\n︶",
+            nameLocation: "center",
+            nameGap: 35,
+            nameRotate: 0,
+            nameTextStyle: {
+                fontSize: 12,
+            },
+            //默认以千分位显示，不想用的可以在这加一段
+            axisLabel: {   //调整左侧Y轴刻度， 直接按对应数据显示
+                show: true,
+                showMinLabel: true,
+                showMaxLabel: true,
+                formatter: function (value) {
+                    return value;
+                }
+            }
         }
     ],
     series: [
         {
-            name: '',
+            name: '订单金额',
             type: 'line',
-            xAxisIndex: 1,
             smooth: true,
-            data: []
+            yAxisIndex: 0,
+            data: [],
+            itemStyle: {normal: {label: {show: true}}},
         },
         {
-            name: '',
+            name: '订单数量',
             type: 'line',
             smooth: true,
-            data: []
+            yAxisIndex: 1,
+            data: [],
+            itemStyle: {normal: {label: {show: true}}},
         }
     ]
 };
 
 // 新增用户统计
 var userOption = {
+    title: {
+        text: '每日新增用户统计'
+    },
     tooltip: {
-        trigger: 'axis'
+        trigger: 'axis',
+        axisPointer: {
+            type: 'cross',
+            label: {
+                backgroundColor: '#6a7985'
+            }
+        }
     },
-    xAxis: {
-        type: 'category',
-        data: []
+    toolbox: {
+        show: true,
+        top: 10,
+        right: 10,
+        feature: {
+            mark: {show: true},
+            magicType: {show: true, type: ['line', 'bar']},
+            restore: {show: true},
+            saveAsImage: {show: true}
+        }
     },
+    legend: {
+        data: ['新增用户']
+    },
+    grid: {
+        left: '3%',
+        right: '4%',
+        bottom: '3%',
+        containLabel: true
+    },
+    xAxis: [
+        {
+            type: 'category',
+            boundaryGap: false,
+            data: []
+        }
+    ],
     yAxis: {
         type: 'value'
     },
     series: [{
+        name: '新增用户',
         data: [],
         type: 'line',
-        smooth: true
+        smooth: true,
+        areaStyle: {}
     }]
 };
 

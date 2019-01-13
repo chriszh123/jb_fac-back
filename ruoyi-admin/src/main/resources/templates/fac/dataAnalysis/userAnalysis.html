@@ -6,7 +6,7 @@
 
 <div class="container-div">
     <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
-    <div id="user" style="width: 600px;height:400px;"></div>
+    <div id="user" style="width: 100%;height:100%;"></div>
 </div>
 <div th:include="include :: footer"></div>
 <script th:src="@{/fac/fac_common.js}"></script>
@@ -20,7 +20,7 @@
         $.get(url, function (data) {
             var xAxisData = data.xAxisData;
             var seriesUserData = data.seriesUserData;
-            userOption.xAxis.data = xAxisData;
+            userOption.xAxis[0].data = xAxisData;
             userOption.series[0].data = seriesUserData;
 
             // 基于准备好的dom，初始化echarts实例

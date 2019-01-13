@@ -180,10 +180,15 @@ public class TimeUtils {
      *
      * @param startDate
      * @param endDate
-     * @return
+     * @return yyyy-MM-dd
      */
-    public static List<Date> getStaticDates(Date startDate, Date endDate) {
+    public static List<Date> getStaticDates(Date startDate, Date endDate) throws ParseException {
         List<Date> dateList = new ArrayList<>();
+        if (startDate == null || endDate == null) {
+            return dateList;
+        }
+        startDate = parseTime(startDate, DEFAULT_DATE_FORMAT);
+        endDate = parseTime(endDate, DEFAULT_DATE_FORMAT);
         if (startDate.compareTo(endDate) == 0) {
             dateList.add(startDate);
             return dateList;
