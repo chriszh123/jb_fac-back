@@ -171,7 +171,9 @@ public class OrderServiceImpl implements IOrderService {
                 seriesOrderCount[i] = "0";
                 seriesOrderAmount[i] = "0.0";
             }
-
+            vo.setxAxisData(xAxisData);
+            vo.setSeriesOrderCount(seriesOrderCount);
+            vo.setSeriesOrderAmount(seriesOrderAmount);
             // 当前时间范围内产生的订单
             QueryVo queryVo = new QueryVo();
             queryVo.setStartDate(startDate);
@@ -206,7 +208,6 @@ public class OrderServiceImpl implements IOrderService {
             vo.setxAxisData(xAxisData);
             vo.setSeriesOrderCount(seriesOrderCount);
             vo.setSeriesOrderAmount(seriesOrderAmount);
-
         } catch (Exception ex) {
             log.info("[queryRecentUserInfo] error", ex);
         }

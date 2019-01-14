@@ -106,8 +106,8 @@
             <label class="col-sm-3 control-label">商品图片：</label>
             <div class="col-sm-8">
                 <!--<input id="picture" name="picture" class="form-control" type="text">-->
-                <button class="ui-upload" onclick="document.getElementById('upload').click()">请选择图片</button>
-                <input type="file" id="upload" style="display:none;" onchange="changeProductImg(this)"/>
+                <button class="ui-upload" onclick="uploadSimpleProductImg();">请选择图片</button>
+                <input type="file" id="upload" style="display:none;"/>
                 <img src="" id="show" width="200">
             </div>
         </div>
@@ -224,6 +224,51 @@
         if ($.validate.form()) {
             $.operate.save(prefix + "/add", $('#form-product-add').serialize());
         }
+    }
+
+
+    // 上传商品图片
+    var uploadProductImg = function (obj) {
+        var file = obj.files[0];
+        if (typeof (file) == "undefined" || file.size <= 0) {
+            $.modal.alertWarning("请选择图片");
+            return;
+        }
+        var formData = new FormData();
+        formData.append("action", "UploadVMKImagePath");
+        formData.append("upload", file); //加入文件对象
+
+        var url = ctx + "ajax/uploadProductImg";
+        $.ajax({
+            url: url,
+            data: formData,
+            type: "post",
+            dataType: "json",
+            cache: false,//上传文件无需缓存
+            processData: false,//用于对data参数进行序列化处理 这里必须false
+            contentType: false, //必须
+            success: function (result) {
+                if (result && result.code == "0") {
+                    alert("上传完成!");
+                    $("#picture").val(result.fileName);
+                    $("#imgPath").val(result.imgPath);
+                    //预览
+                    var newsrc = getObjectURL(obj.files[0]);
+                    document.getElementById('show').src = newsrc;
+                } else {
+                    alert("上传失败");
+                }
+            }
+        });
+    }
+
+    // 商品图片上传
+    var uploadSimpleProductImg = function () {
+        $("input#upload").click();
+        $("input#upload").change(function () {
+            // 上传商品图片
+            uploadProductImg(this);
+        });
     }
 
     $(function () {

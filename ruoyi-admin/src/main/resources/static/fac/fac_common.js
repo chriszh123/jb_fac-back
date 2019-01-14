@@ -259,45 +259,7 @@ var getObjectURL = function (file) {
     return url;
 }
 
-// 上传商品图片
-var uploadProductImg = function (file) {
-    if (typeof (file) == "undefined" || file.size <= 0) {
-        $.modal.alertWarning("请选择图片");
-        return;
-    }
-    var formData = new FormData();
-    formData.append("action", "UploadVMKImagePath");
-    formData.append("upload", file); //加入文件对象
 
-    var url = ctx + "ajax/uploadProductImg";
-    $.ajax({
-        url: url,
-        data: formData,
-        type: "post",
-        dataType: "json",
-        cache: false,//上传文件无需缓存
-        processData: false,//用于对data参数进行序列化处理 这里必须false
-        contentType: false, //必须
-        success: function (result) {
-            if (result && result.code == "0") {
-                $.operate.saveSuccess("上传完成!");
-                $("#picture").val(result.fileName);
-                $("#imgPath").val(result.imgPath);
-            } else {
-                $.operate.alertError("上传失败");
-            }
-        },
-    })
-}
-
-// 商品图片上传
-function changeProductImg(obj) {
-    console.log(obj.files[0]);//这里可以获取上传文件的name
-    var newsrc = getObjectURL(obj.files[0]);
-    document.getElementById('show').src = newsrc;
-    // 上传商品图片
-    uploadProductImg(obj.files[0]);
-}
 
 
 
