@@ -223,7 +223,7 @@ var userOption = {
 };
 
 // 初始化商品介绍富文本编辑器组件
-var initProdIntroductionEditor = function (editorId) {
+var initProdIntroductionEditor = function (editorId, data) {
     CKEDITOR.replace(editorId, {
         toolbar: null,
         toolbarGroups: null,
@@ -238,8 +238,66 @@ var initProdIntroductionEditor = function (editorId) {
     // CKEDITOR.config.removePlugins = 'elementspath,resize'; // 移除编辑器底部状态栏显示的元素路径和调整编辑器大小的按钮
     CKEDITOR.config.uploadImgSupportedTypes = '/image\\/(jpeg|png|gif|bmp)/';  // 上传图片格式限制
     CKEDITOR.config.image_previewText = "";
+
+    CKEDITOR.on('instanceReady', function (evt) {
+        var editor = evt.editor;
+        editor.setData(data);
+    });
 }
 
+//建立一個可存取到該file的url
+var getObjectURL = function (file) {
+    var url = null;
+    // 下面函数执行的效果是一样的，只是需要针对不同的浏览器执行不同的 js 函数而已
+    if (window.createObjectURL != undefined) { // basic
+        url = window.createObjectURL(file);
+    } else if (window.URL != undefined) { // mozilla(firefox)
+        url = window.URL.createObjectURL(file);
+    } else if (window.webkitURL != undefined) { // webkit or chrome
+        url = window.webkitURL.createObjectURL(file);
+    }
+    return url;
+}
+
+// 上传商品图片
+var uploadProductImg = function (file) {
+    if (typeof (file) == "undefined" || file.size <= 0) {
+        $.modal.alertWarning("请选择图片");
+        return;
+    }
+    var formData = new FormData();
+    formData.append("action", "UploadVMKImagePath");
+    formData.append("upload", file); //加入文件对象
+
+    var url = ctx + "ajax/uploadProductImg";
+    $.ajax({
+        url: url,
+        data: formData,
+        type: "post",
+        dataType: "json",
+        cache: false,//上传文件无需缓存
+        processData: false,//用于对data参数进行序列化处理 这里必须false
+        contentType: false, //必须
+        success: function (result) {
+            if (result && result.code == "0") {
+                $.operate.saveSuccess("上传完成!");
+                $("#picture").val(result.fileName);
+                $("#imgPath").val(result.imgPath);
+            } else {
+                $.operate.alertError("上传失败");
+            }
+        },
+    })
+}
+
+// 商品图片上传
+function changeProductImg(obj) {
+    console.log(obj.files[0]);//这里可以获取上传文件的name
+    var newsrc = getObjectURL(obj.files[0]);
+    document.getElementById('show').src = newsrc;
+    // 上传商品图片
+    uploadProductImg(obj.files[0]);
+}
 
 
 

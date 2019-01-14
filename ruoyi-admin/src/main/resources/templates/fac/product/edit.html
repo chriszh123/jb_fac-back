@@ -6,6 +6,8 @@
 <body class="white-bg">
 <div class="wrapper wrapper-content animated fadeInRight ibox-content">
     <form class="form-horizontal m" id="form-product-edit" th:object="${product}">
+        <input type="hidden" id="imgPath" name="imgPath" th:field="*{imgPath}"/>
+        <input type="hidden" id="picture" name="picture" th:field="*{picture}"/>
         <input id="id" name="id" th:field="*{id}" type="hidden">
         <div class="form-group">
             <label class="col-sm-3 control-label">商品名称：</label>
@@ -114,11 +116,13 @@
         <div class="form-group">
             <label class="col-sm-3 control-label">商品图片：</label>
             <div class="col-sm-8">
-                <input id="picture" name="picture" th:field="*{picture}" class="form-control" type="text">
+                <button class="ui-upload" onclick="document.getElementById('upload').click()">请选择图片</button>
+                <input type="file" id="upload" style="display:none;" onchange="changeProductImg(this)"/>
+                <img src="" id="show" width="200" th:src="*{imgPath}">
             </div>
         </div>
         <div class="form-group">
-            <label class="col-sm-3 control-label">商品介绍内容url：</label>
+            <label class="col-sm-3 control-label">商品介绍：</label>
             <div class="col-sm-8">
                 <textarea cols="80" id="introduction" name="introduction" rows="10" th:field="*{introduction}"
                           style="width: 100%;height: 100%;"></textarea>
@@ -236,8 +240,8 @@
     }
 
     $(function () {
-        var rushStart = [[${product.status}]];
-        initProdIntroductionEditor('introduction');
+        var introduction = [[${product.introduction}]];
+        initProdIntroductionEditor('introduction', introduction);
     });
 </script>
 </body>

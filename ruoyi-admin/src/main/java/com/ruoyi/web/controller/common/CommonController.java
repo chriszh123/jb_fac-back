@@ -11,7 +11,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
@@ -79,6 +82,27 @@ public class CommonController {
             return new ResponseEntity<String>(resp, headers, HttpStatus.BAD_REQUEST);
         }
 
+    }
+
+    @RequestMapping(value = "/ajax/uploadProductImg", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> uploadProductImg(Map<String, Object> model, @RequestParam("upload") MultipartFile file, HttpServletRequest request) {
+        Map<String, Object> result = new HashMap<>();
+        result.put("code", "-1");
+        try {
+            if (file != null && file.getSize() > 0) {
+                String basePath = Global.getProductPath();
+                String fileName = FileUploadUtils.upload(basePath, file);
+                String imgPath = basePath + fileName;
+                result.put("code", "0");
+                result.put("fileName", fileName);
+                result.put("imgPath", imgPath);
+            }
+        } catch (Exception e) {
+            log.error("[batchUploadImg] 上传图片失败！", e);
+        }
+
+        return result;
     }
 
     @RequestMapping(value = "/ajax/upload/image/batch", method = RequestMethod.POST)

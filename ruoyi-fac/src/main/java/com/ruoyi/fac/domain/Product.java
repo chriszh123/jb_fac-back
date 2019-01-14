@@ -140,6 +140,10 @@ public class Product extends BaseEntity {
      * 待核销
      */
     private Integer torWiteOff = 0;
+    /**
+     * 商品图片完全路径
+     */
+    private String imgPath;
 
     public void setId(Long id) {
         this.id = id;
@@ -420,5 +424,13 @@ public class Product extends BaseEntity {
 
     public void setTorWiteOff(Integer torWiteOff) {
         this.torWiteOff = torWiteOff;
+    }
+
+    public String getImgPath() {
+        return imgPath;
+    }
+
+    public void setImgPath(String imgPath) {
+        this.imgPath = imgPath;
     }
 }

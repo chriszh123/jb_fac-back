@@ -2,8 +2,10 @@ package com.ruoyi.web.controller.fac;
 
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.base.AjaxResult;
+import com.ruoyi.common.config.Global;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.page.TableDataInfo;
+import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.fac.constant.FacConstant;
 import com.ruoyi.fac.domain.Product;
@@ -101,6 +103,10 @@ public class ProductController extends BaseController {
     @GetMapping("/edit/{id}")
     public String edit(@PathVariable("id") Long id, ModelMap mmap) {
         Product product = productService.selectProductById(id);
+        if (product != null && StringUtils.isNotEmpty(product.getPicture())) {
+            String imgPath = Global.getProductPath() + product.getPicture();
+            product.setImgPath(imgPath);
+        }
         mmap.put("product", product);
         return prefix + "/edit";
     }
