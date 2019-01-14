@@ -222,5 +222,25 @@ var userOption = {
     }]
 };
 
+// 初始化商品介绍富文本编辑器组件
+var initProdIntroductionEditor = function (editorId) {
+    CKEDITOR.replace(editorId, {
+        toolbar: null,
+        toolbarGroups: null,
+        removeButtons: null,
+        height: 100
+    });
+    CKEDITOR.config.extraPlugins = 'selectall,notification,notificationaggregator,widgetselection,filetools,lineutils,widget,uploadwidget,uploadimage';
+    // 其它配置项
+    var uploadUrl = ctx + "ajax/upload/image/batch";
+    CKEDITOR.config.filebrowserImageUploadUrl = uploadUrl; // 图片上传路径
+    CKEDITOR.config.removeDialogTabs = 'image:advanced;image:Link'; // 移除图片上传页面的'高级','链接'页签
+    // CKEDITOR.config.removePlugins = 'elementspath,resize'; // 移除编辑器底部状态栏显示的元素路径和调整编辑器大小的按钮
+    CKEDITOR.config.uploadImgSupportedTypes = '/image\\/(jpeg|png|gif|bmp)/';  // 上传图片格式限制
+    CKEDITOR.config.image_previewText = "";
+}
+
+
+
 
 

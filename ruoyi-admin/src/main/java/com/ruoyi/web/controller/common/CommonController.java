@@ -1,11 +1,18 @@
 package com.ruoyi.web.controller.common;
 
+import com.alibaba.fastjson.JSON;
 import com.ruoyi.common.config.Global;
 import com.ruoyi.common.utils.file.FileUtils;
+import com.ruoyi.framework.util.FileUploadUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -13,6 +20,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 通用请求处理
@@ -43,6 +52,58 @@ public class CommonController {
         } catch (Exception e) {
             log.error("下载文件失败", e);
         }
+    }
+
+    @RequestMapping(value = "ajax/upload/image", method = RequestMethod.POST)
+    public ResponseEntity<String> uploadImg(Map<String, Object> model, @RequestParam("CKEditorFuncNum") String funNum
+            , @RequestParam("upload") MultipartFile file, HttpServletRequest request) {
+        try {
+            if (file.getSize() > 0) {
+                String basePath = Global.getProductPath();
+                String fileName = FileUploadUtils.upload(basePath, file);
+                model.put("msg", "File '" + file.getOriginalFilename() + "' uploaded successfully");
+                String imgpath = basePath + fileName;
+                String resp = "<script type=\"text/javascript\">window.parent.CKEDITOR.tools.callFunction(" + funNum + ",'" + imgpath + "','')</script>";
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.TEXT_HTML);
+                return new ResponseEntity<String>(resp, headers, HttpStatus.OK);
+            } else {
+                HttpHeaders headers = new HttpHeaders();
+                String resp = "";
+                return new ResponseEntity<String>(resp, headers, HttpStatus.BAD_REQUEST);
+            }
+        } catch (Exception e) {
+            log.error("[uploadImg] 上传图片失败！", e);
+            HttpHeaders headers = new HttpHeaders();
+            String resp = "";
+            return new ResponseEntity<String>(resp, headers, HttpStatus.BAD_REQUEST);
+        }
+
+    }
+
+    @RequestMapping(value = "/ajax/upload/image/batch", method = RequestMethod.POST)
+    @ResponseBody
+    public String batchUploadImg(Map<String, Object> model, @RequestParam("upload") MultipartFile file, HttpServletRequest request) {
+        Map<String, Object> map = new HashMap<>();
+        try {
+            if (file != null && file.getSize() > 0) {
+                String basePath = Global.getProductPath();
+                String fileName = FileUploadUtils.upload(basePath, file);
+                String imgpath = basePath + fileName;
+                map.put("uploaded", 1);
+                map.put("fileName", fileName);
+                map.put("url", imgpath);
+            } else {
+                map.put("uploaded", 0);
+                map.put("error", "upload img failed");
+            }
+        } catch (Exception e) {
+            log.error("[batchUploadImg] 上传图片失败！", e);
+            map.put("uploaded", 0);
+            map.put("error", "upload img failed");
+        }
+
+        return JSON.toJSONString(map);
     }
 
     public String setFileDownloadHeader(HttpServletRequest request, String fileName) throws UnsupportedEncodingException {
