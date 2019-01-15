@@ -106,9 +106,9 @@
         <div class="form-group">
             <label class="col-sm-3 control-label">商品图片：</label>
             <div class="col-sm-8">
-                <button class="ui-upload" onclick="uploadSimpleProductImg();">请选择图片</button>
-                <input type="file" id="upload" style="display:none;"/><br>
-                <img src="" id="show" style="width: 320px;height: 180px;display: none;">
+                <button class="ui-upload" onclick="selectProductImg()">请选择图片</button>
+                <input type="file" id="upload" style="display:none;"/>&nbsp;&nbsp;&nbsp;&nbsp;
+                <img src="" id="show" style="width: 120px;height: 120px;display: none;">
             </div>
         </div>
         <div class="form-group">
@@ -263,7 +263,7 @@
     }
 
     // 商品图片上传
-    var uploadSimpleProductImg = function () {
+    function selectProductImg() {
         $("input#upload").click();
         $("input#upload").change(function () {
             // 上传商品图片
@@ -274,16 +274,15 @@
     (function () {
         CKEDITOR.config.extraPlugins = 'selectall,notification,notificationaggregator,widgetselection,filetools,lineutils,widget,uploadwidget,uploadimage';
         CKEDITOR.replace('introduction', {
-            // Reset toolbar settings, so full toolbar will be generated automatically.
             toolbar: null,
             toolbarGroups: null,
             removeButtons: null,
-            height: 100
+            height: 300
         });
 
-        CKEDITOR.config.filebrowserImageUploadUrl = './upload'; // 图片上传路径
+        var uploadUrl = ctx + "ajax/upload/image/batch";
+        CKEDITOR.config.filebrowserImageUploadUrl = uploadUrl; // 图片上传路径
         CKEDITOR.config.removeDialogTabs = 'image:advanced;image:Link'; // 移除图片上传页面的'高级','链接'页签
-        // CKEDITOR.config.removePlugins = 'elementspath,resize'; // 移除编辑器底部状态栏显示的元素路径和调整编辑器大小的按钮
         CKEDITOR.config.uploadImgSupportedTypes = '/image\\/(jpeg|png|gif|bmp)/';
         CKEDITOR.config.image_previewText = "";
     })();
