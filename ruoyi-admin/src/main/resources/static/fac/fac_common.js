@@ -239,10 +239,10 @@ var initProdIntroductionEditor = function (editorId, data) {
     CKEDITOR.config.uploadImgSupportedTypes = '/image\\/(jpeg|png|gif|bmp)/';  // 上传图片格式限制
     CKEDITOR.config.image_previewText = "";
 
-    CKEDITOR.on('instanceReady', function (evt) {
-        var editor = evt.editor;
-        editor.setData(data);
-    });
+    // CKEDITOR.on('instanceReady', function (evt) {
+    //     var editor = evt.editor;
+    //     editor.setData(data);
+    // });
 }
 
 //建立一個可存取到該file的url
