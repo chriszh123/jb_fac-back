@@ -5,34 +5,74 @@
 <body class="gray-bg">
 
 <div class="container-div">
-    <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
-    <div id="user" style="width: 100%;height:100%;"></div>
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <div class="select-list">
+                    <ul>
+                        <li class="select-time">
+                            <label>用户创建时间： </label>
+                            <input type="text" class="time-input" id="startDate" placeholder="开始时间" name="startDate"/>
+                            <span>-</span>
+                            <input type="text" class="time-input" id="endDate" placeholder="结束时间" name="endDate"/>
+                        </li>
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" href="javascript:void(0);"
+                               onclick="searchData()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset();"><i
+                                    class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <div class="col-sm-12 select-table table-striped" style="width: 100%;height:80%;">
+            <div id="user" style="width: 100%;height:100%;"></div>
+        </div>
+    </div>
 </div>
 <div th:include="include :: footer"></div>
 <script th:src="@{/fac/fac_common.js}"></script>
 <script th:src="@{/echarts/echarts.min.js}"></script>
 <script th:inline="javascript">
     var prefix = ctx + "fac/buyer";
+    var url = prefix + "/queryRecentUserInfo";
 
-    var initUserStatic = function () {
-        var url = prefix + "/queryRecentUserInfo";
+    // 初始化图表
+    var initEChart = function (data) {
+        var xAxisData = data.xAxisData;
+        var seriesUserData = data.seriesUserData;
+        userOption.xAxis[0].data = xAxisData;
+        userOption.series[0].data = seriesUserData;
 
-        $.get(url, function (data) {
-            var xAxisData = data.xAxisData;
-            var seriesUserData = data.seriesUserData;
-            userOption.xAxis[0].data = xAxisData;
-            userOption.series[0].data = seriesUserData;
+        // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(document.getElementById('user'));
+        // 使用刚指定的配置项和数据显示图表。
+        myChart.setOption(userOption);
+    }
 
-            // 基于准备好的dom，初始化echarts实例
-            var myChart = echarts.init(document.getElementById('user'));
-            // 使用刚指定的配置项和数据显示图表。
-            myChart.setOption(userOption);
-        }, null, null, "正在处理，请稍后...");
+    // 搜索接口
+    var searchData = function () {
+        var data = {
+            "startDate": $("#startDate").val(),
+            "endDate": $("#endDate").val()
+        }
+        var config = {
+            url: url,
+            type: "post",
+            dataType: "json",
+            data: data,
+            success: function (result) {
+                initEChart(result);
+            }
+        };
+        $.ajax(config);
     }
 
     $(function () {
         // 新增用户统计相关数据展示
-        initUserStatic();
+        searchData();
     });
 </script>
 </body>

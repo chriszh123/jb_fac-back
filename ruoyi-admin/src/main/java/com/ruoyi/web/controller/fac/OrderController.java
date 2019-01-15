@@ -136,7 +136,7 @@ public class OrderController extends BaseController {
         return prefix_analysis + "/orderAnalysis";
     }
 
-    @GetMapping("/queryRecentOrderInfo")
+    @PostMapping("/queryRecentOrderInfo")
     @ResponseBody
     public OrderDiagramVo queryRecentOrderInfo(String startDate, String endDate) {
         // 默认当前一周日期内(Multiple X Axes)
@@ -153,7 +153,7 @@ public class OrderController extends BaseController {
         return prefix + "/homepage";
     }
 
-    @GetMapping("/queryFacStaticInfo")
+    @PostMapping("/queryFacStaticInfo")
     @ResponseBody
     public FacStaticVo queryFacStaticInfo(String startDate, String endDate) {
         // 默认当前一周日期内(坐标轴刻度与标签对齐)

@@ -149,7 +149,7 @@ public class BuyerController extends BaseController {
         return prefix_analysis + "/userAnalysis";
     }
 
-    @GetMapping("/queryRecentUserInfo")
+    @PostMapping("/queryRecentUserInfo")
     @ResponseBody
     public UserDiagramVo queryRecentUserInfo(String startDate, String endDate) {
         // 默认当前一周日期内(Basic area chart)
