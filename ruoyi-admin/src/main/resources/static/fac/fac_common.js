@@ -259,6 +259,164 @@ var getObjectURL = function (file) {
     return url;
 }
 
+// 初始化图片上传组件:商品
+var initFileInput = function (id, uploadUrl, maxFilesNum) {
+    var control = $('#' + id);
+    control.fileinput({
+        language: 'zh', //设置语言
+        uploadUrl: uploadUrl, //上传的地址
+        allowedFileExtensions: ['jpg', 'gif', 'png'],//接收的文件后缀
+        maxFilesNum: maxFilesNum,//上传最大的文件数量
+        //uploadExtraData:{"id": 1, "fileName":'123.mp3'},
+        uploadAsync: true, //默认异步上传
+        showUpload: true, //是否显示上传按钮
+        showRemove: true, //显示移除按钮
+        showPreview: true, //是否显示预览
+        showCaption: false,//是否显示标题
+        browseClass: "btn btn-primary", //按钮样式
+        //dropZoneEnabled: true,//是否显示拖拽区域
+        //minImageWidth: 50, //图片的最小宽度
+        //minImageHeight: 50,//图片的最小高度
+        //maxImageWidth: 1000,//图片的最大宽度
+        //maxImageHeight: 1000,//图片的最大高度
+        maxFileSize: 0,//单位为kb，如果为0表示不限制文件大小
+        //minFileCount: 0,
+        //maxFileCount: 10, //表示允许同时上传的最大文件个数
+        enctype: 'multipart/form-data',
+        validateInitialCount: true,
+        previewFileIcon: "<i class='glyphicon glyphicon-king'></i>",
+        msgFilesTooMany: "选择上传的文件数量({n}) 超过允许的最大数值{m}！",
+
+    }).on('filepreupload', function (event, data, previewId, index) {     //上传中
+        var form = data.form, files = data.files, extra = data.extra, response = data.response, reader = data.reader;
+        console.log('文件正在上传');
+    }).on("fileuploaded", function (event, data, previewId, index) {    //一个文件上传成功
+        console.log('文件上传成功！' + data.id);
+    }).on('fileerror', function (event, data, msg) {  //一个文件上传失败
+        console.log('文件上传失败！' + data.id);
+    })
+}
+
+// 关闭选项卡菜单
+function closeTab() {
+    var closeTabId = $(this).parents('.menuTab').data('id');
+    var currentWidth = $(this).parents('.menuTab').width();
+
+    // 当前元素处于活动状态
+    if ($(this).parents('.menuTab').hasClass('active')) {
+
+        // 当前元素后面有同辈元素，使后面的一个元素处于活动状态
+        if ($(this).parents('.menuTab').next('.menuTab').size()) {
+
+            var activeId = $(this).parents('.menuTab').next('.menuTab:eq(0)').data('id');
+            $(this).parents('.menuTab').next('.menuTab:eq(0)').addClass('active');
+
+            $('.mainContent .RuoYi_iframe').each(function () {
+                if ($(this).data('id') == activeId) {
+                    $(this).show().siblings('.RuoYi_iframe').hide();
+                    return false;
+                }
+            });
+
+            var marginLeftVal = parseInt($('.page-tabs-content').css('margin-left'));
+            if (marginLeftVal < 0) {
+                $('.page-tabs-content').animate({
+                        marginLeft: (marginLeftVal + currentWidth) + 'px'
+                    },
+                    "fast");
+            }
+
+            //  移除当前选项卡
+            $(this).parents('.menuTab').remove();
+
+            // 移除tab对应的内容区
+            $('.mainContent .RuoYi_iframe').each(function () {
+                if ($(this).data('id') == closeTabId) {
+                    $(this).remove();
+                    return false;
+                }
+            });
+        }
+
+        // 当前元素后面没有同辈元素，使当前元素的上一个元素处于活动状态
+        if ($(this).parents('.menuTab').prev('.menuTab').size()) {
+            var activeId = $(this).parents('.menuTab').prev('.menuTab:last').data('id');
+            $(this).parents('.menuTab').prev('.menuTab:last').addClass('active');
+            $('.mainContent .RuoYi_iframe').each(function () {
+                if ($(this).data('id') == activeId) {
+                    $(this).show().siblings('.RuoYi_iframe').hide();
+                    return false;
+                }
+            });
+
+            //  移除当前选项卡
+            $(this).parents('.menuTab').remove();
+
+            // 移除tab对应的内容区
+            $('.mainContent .RuoYi_iframe').each(function () {
+                if ($(this).data('id') == closeTabId) {
+                    $(this).remove();
+                    return false;
+                }
+            });
+        }
+    }
+    // 当前元素不处于活动状态
+    else {
+        //  移除当前选项卡
+        $(this).parents('.menuTab').remove();
+
+        // 移除相应tab对应的内容区
+        $('.mainContent .RuoYi_iframe').each(function () {
+            if ($(this).data('id') == closeTabId) {
+                $(this).remove();
+                return false;
+            }
+        });
+        scrollToTab($('.menuTab.active'));
+    }
+    return false;
+}
+
+//滚动到指定选项卡
+function scrollToTab(element) {
+    var marginLeftVal = calSumWidth($(element).prevAll()),
+        marginRightVal = calSumWidth($(element).nextAll());
+    // 可视区域非tab宽度
+    var tabOuterWidth = calSumWidth($(".content-tabs").children().not(".menuTabs"));
+    //可视区域tab宽度
+    var visibleWidth = $(".content-tabs").outerWidth(true) - tabOuterWidth;
+    //实际滚动宽度
+    var scrollVal = 0;
+    if ($(".page-tabs-content").outerWidth() < visibleWidth) {
+        scrollVal = 0;
+    } else if (marginRightVal <= (visibleWidth - $(element).outerWidth(true) - $(element).next().outerWidth(true))) {
+        if ((visibleWidth - $(element).next().outerWidth(true)) > marginRightVal) {
+            scrollVal = marginLeftVal;
+            var tabElement = element;
+            while ((scrollVal - $(tabElement).outerWidth()) > ($(".page-tabs-content").outerWidth() - visibleWidth)) {
+                scrollVal -= $(tabElement).prev().outerWidth();
+                tabElement = $(tabElement).prev();
+            }
+        }
+    } else if (marginLeftVal > (visibleWidth - $(element).outerWidth(true) - $(element).prev().outerWidth(true))) {
+        scrollVal = marginLeftVal - $(element).prev().outerWidth(true);
+    }
+    $('.page-tabs-content').animate({
+            marginLeft: 0 - scrollVal + 'px'
+        },
+        "fast");
+}
+
+//计算元素集合的总宽度
+function calSumWidth(elements) {
+    var width = 0;
+    $(elements).each(function () {
+        width += $(this).outerWidth(true);
+    });
+    return width;
+}
+
 
 
 

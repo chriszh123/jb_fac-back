@@ -43,7 +43,10 @@
 
         <!--按钮区域-->
         <div class="btn-group-sm hidden-xs" id="toolbar" role="group">
-            <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="fac:product:add">
+            <!--<a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="fac:product:add">-->
+            <!--<i class="fa fa-plus"></i> 添加-->
+            <!--</a>-->
+            <a class="btn btn-success" onclick="toAddProduct()" shiro:hasPermission="fac:product:add">
                 <i class="fa fa-plus"></i> 添加
             </a>
             <a class="btn btn-primary btn-edit disabled" onclick="$.operate.edit()"
@@ -139,6 +142,13 @@
         };
         $.table.init(options);
     });
+
+    // 跳转至商品新增页面
+    var toAddProduct = function () {
+        var url = prefix + "/add";
+        var menuName = "添加商品";
+        createMenuItem(url, menuName);
+    }
 
     // 跳转至核销记录查询页面
     var toWriteOff = function (productId) {

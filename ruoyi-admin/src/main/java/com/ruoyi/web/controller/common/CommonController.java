@@ -2,7 +2,9 @@ package com.ruoyi.web.controller.common;
 
 import com.alibaba.fastjson.JSON;
 import com.ruoyi.common.config.Global;
+import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.file.FileUtils;
+import com.ruoyi.fac.vo.ProductImgVo;
 import com.ruoyi.framework.util.FileUploadUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,9 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 通用请求处理
@@ -128,6 +129,47 @@ public class CommonController {
         }
 
         return JSON.toJSONString(map);
+    }
+
+    @RequestMapping("/product/picture/batchUpload")
+    @ResponseBody
+    public ProductImgVo batchUploadProductImg(HttpServletRequest request, HttpServletResponse response, @RequestParam("file") MultipartFile[] file) throws Exception {
+        ProductImgVo vo = new ProductImgVo();
+        vo.setCode("-1");
+        if (file != null && file.length > 0) {
+            //组合image名称，“;隔开”
+            List<String> fileNames = new ArrayList<>();
+            List<String> imgPaths = new ArrayList<>();
+            try {
+                String basePath = Global.getProductPath();
+                for (int i = 0; i < file.length; i++) {
+                    if (!file[i].isEmpty()) {
+                        //上传文件，随机名称，";"分号隔开
+                        String fileName = FileUploadUtils.upload(basePath, file[i]);
+                        String imgPath = basePath + fileName;
+                        fileNames.add(fileName);
+                        imgPaths.add(imgPath);
+                    }
+                }
+                //上传成功
+                if (!CollectionUtils.isEmpty(fileNames)) {
+                    System.out.println("上传成功！");
+                    vo.setCode("0");
+                    vo.setFileName(StringUtils.join(fileNames, ","));
+                    vo.setImgPath(StringUtils.join(imgPaths, ","));
+                } else {
+                    log.error("[batchUploadProductImg] 上传失败！文件格式错误！");
+                    vo.setMsg("上传失败！文件格式错误！");
+                }
+            } catch (Exception e) {
+                log.error("[batchUploadProductImg] 上传出现异常！异常出现在：class.CommonController.batchUploadProductImg()！", e);
+                vo.setMsg("上传出现异常！");
+            }
+        } else {
+            vo.setMsg("没有检测到文件！");
+        }
+
+        return vo;
     }
 
     public String setFileDownloadHeader(HttpServletRequest request, String fileName) throws UnsupportedEncodingException {
