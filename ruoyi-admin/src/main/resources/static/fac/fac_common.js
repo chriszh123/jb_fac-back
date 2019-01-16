@@ -279,9 +279,9 @@ var initFileInput = function (id, uploadUrl, maxFilesNum) {
         allowedFileExtensions: ['jpg', 'gif', 'png'],//接收的文件后缀
         maxFilesNum: maxFilesNum,//上传最大的文件数量
         //uploadExtraData:{"id": 1, "fileName":'123.mp3'},
-        uploadAsync: true, //默认异步上传
-        showUpload: true, //是否显示上传按钮
-        showRemove: true, //显示移除按钮
+        uploadAsync: false, //默认异步上传
+        showUpload: false, //是否显示上传按钮
+        showRemove: false, //显示移除按钮
         showPreview: true, //是否显示预览
         showCaption: false,//是否显示标题
         browseClass: "btn btn-primary", //按钮样式
@@ -302,10 +302,20 @@ var initFileInput = function (id, uploadUrl, maxFilesNum) {
         var form = data.form, files = data.files, extra = data.extra, response = data.response, reader = data.reader;
         console.log('文件正在上传');
     }).on("fileuploaded", function (event, data, previewId, index) {    //一个文件上传成功
-        console.log('文件上传成功！' + data.id);
+        console.log('文件上传成功！index = ' + index);
+        if (index == 0) {
+            // 只要上传的索引又是从一个0开始，证明用户又做了新一次的上传，以最新这次上传的图片数据为准
+            $('#picture').val("");
+            $('#imgPath').val("");
+            console.log('文件上传成功！picture ,imgPath 值清空了');
+        }
         if (data && data.response && data.response.code && data.response.code == "0") {
-            $('#picture').val(data.response.fileName);
-            $('#imgPath').val(data.response.imgPath);
+            var lastPicture = $('#picture').val();
+            var lastImgPath = $('#imgPath').val();
+            lastPicture = lastPicture + "," + data.response.fileName;
+            lastImgPath = lastImgPath + "," + data.response.imgPath;
+            $('#picture').val(lastPicture);
+            $('#imgPath').val(lastImgPath);
         }
     }).on('fileerror', function (event, data, msg) {  //一个文件上传失败
         console.log('文件上传失败！' + data.id);
