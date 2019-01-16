@@ -136,16 +136,19 @@ public class CommonController {
     public ProductImgVo batchUploadProductImg(HttpServletRequest request, HttpServletResponse response, @RequestParam("file") MultipartFile[] file) throws Exception {
         ProductImgVo vo = new ProductImgVo();
         vo.setCode("-1");
+        System.out.println("batchUploadProductImg........");
         if (file != null && file.length > 0) {
             //组合image名称，“;隔开”
             List<String> fileNames = new ArrayList<>();
             List<String> imgPaths = new ArrayList<>();
             try {
+                System.out.println("batchUploadProductImg,file.length = " + file.length);
                 String basePath = Global.getProductPath();
                 for (int i = 0; i < file.length; i++) {
                     if (!file[i].isEmpty()) {
                         //上传文件，随机名称，";"分号隔开
                         String fileName = FileUploadUtils.upload(basePath, file[i]);
+                        System.out.println("fileName = " + fileName);
                         String imgPath = basePath + fileName;
                         fileNames.add(fileName);
                         imgPaths.add(imgPath);

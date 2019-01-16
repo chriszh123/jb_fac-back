@@ -1,3 +1,14 @@
+var TIP_DEALING = "正在处理中，请稍后...";
+//各页面对应的data_id
+var DATA_ID = {
+    "PRODUCT": '/fac/product'
+};
+
+// 各对象预置数量
+var OBJECT_COUNT = {
+    "PRODUCT_IMG": 5
+};
+
 // 订单状态
 var ORDER_STATUS = {
     1: "已付款",
@@ -292,129 +303,25 @@ var initFileInput = function (id, uploadUrl, maxFilesNum) {
         console.log('文件正在上传');
     }).on("fileuploaded", function (event, data, previewId, index) {    //一个文件上传成功
         console.log('文件上传成功！' + data.id);
+        if (data && data.response && data.response.code && data.response.code == "0") {
+            $('#picture').val(data.response.fileName);
+            $('#imgPath').val(data.response.imgPath);
+        }
     }).on('fileerror', function (event, data, msg) {  //一个文件上传失败
         console.log('文件上传失败！' + data.id);
     })
 }
 
-// 关闭选项卡菜单
-function closeTab() {
-    var closeTabId = $(this).parents('.menuTab').data('id');
-    var currentWidth = $(this).parents('.menuTab').width();
-
-    // 当前元素处于活动状态
-    if ($(this).parents('.menuTab').hasClass('active')) {
-
-        // 当前元素后面有同辈元素，使后面的一个元素处于活动状态
-        if ($(this).parents('.menuTab').next('.menuTab').size()) {
-
-            var activeId = $(this).parents('.menuTab').next('.menuTab:eq(0)').data('id');
-            $(this).parents('.menuTab').next('.menuTab:eq(0)').addClass('active');
-
-            $('.mainContent .RuoYi_iframe').each(function () {
-                if ($(this).data('id') == activeId) {
-                    $(this).show().siblings('.RuoYi_iframe').hide();
-                    return false;
-                }
-            });
-
-            var marginLeftVal = parseInt($('.page-tabs-content').css('margin-left'));
-            if (marginLeftVal < 0) {
-                $('.page-tabs-content').animate({
-                        marginLeft: (marginLeftVal + currentWidth) + 'px'
-                    },
-                    "fast");
-            }
-
-            //  移除当前选项卡
-            $(this).parents('.menuTab').remove();
-
-            // 移除tab对应的内容区
-            $('.mainContent .RuoYi_iframe').each(function () {
-                if ($(this).data('id') == closeTabId) {
-                    $(this).remove();
-                    return false;
-                }
-            });
-        }
-
-        // 当前元素后面没有同辈元素，使当前元素的上一个元素处于活动状态
-        if ($(this).parents('.menuTab').prev('.menuTab').size()) {
-            var activeId = $(this).parents('.menuTab').prev('.menuTab:last').data('id');
-            $(this).parents('.menuTab').prev('.menuTab:last').addClass('active');
-            $('.mainContent .RuoYi_iframe').each(function () {
-                if ($(this).data('id') == activeId) {
-                    $(this).show().siblings('.RuoYi_iframe').hide();
-                    return false;
-                }
-            });
-
-            //  移除当前选项卡
-            $(this).parents('.menuTab').remove();
-
-            // 移除tab对应的内容区
-            $('.mainContent .RuoYi_iframe').each(function () {
-                if ($(this).data('id') == closeTabId) {
-                    $(this).remove();
-                    return false;
-                }
-            });
-        }
-    }
-    // 当前元素不处于活动状态
-    else {
-        //  移除当前选项卡
-        $(this).parents('.menuTab').remove();
-
-        // 移除相应tab对应的内容区
-        $('.mainContent .RuoYi_iframe').each(function () {
-            if ($(this).data('id') == closeTabId) {
-                $(this).remove();
-                return false;
-            }
-        });
-        scrollToTab($('.menuTab.active'));
-    }
-    return false;
+// 关闭选项卡菜单:从iFrame内部调用
+var closeCurrentTab = function () {
+    parent.window.$(".tabCloseCurrent").click();
 }
 
-//滚动到指定选项卡
-function scrollToTab(element) {
-    var marginLeftVal = calSumWidth($(element).prevAll()),
-        marginRightVal = calSumWidth($(element).nextAll());
-    // 可视区域非tab宽度
-    var tabOuterWidth = calSumWidth($(".content-tabs").children().not(".menuTabs"));
-    //可视区域tab宽度
-    var visibleWidth = $(".content-tabs").outerWidth(true) - tabOuterWidth;
-    //实际滚动宽度
-    var scrollVal = 0;
-    if ($(".page-tabs-content").outerWidth() < visibleWidth) {
-        scrollVal = 0;
-    } else if (marginRightVal <= (visibleWidth - $(element).outerWidth(true) - $(element).next().outerWidth(true))) {
-        if ((visibleWidth - $(element).next().outerWidth(true)) > marginRightVal) {
-            scrollVal = marginLeftVal;
-            var tabElement = element;
-            while ((scrollVal - $(tabElement).outerWidth()) > ($(".page-tabs-content").outerWidth() - visibleWidth)) {
-                scrollVal -= $(tabElement).prev().outerWidth();
-                tabElement = $(tabElement).prev();
-            }
-        }
-    } else if (marginLeftVal > (visibleWidth - $(element).outerWidth(true) - $(element).prev().outerWidth(true))) {
-        scrollVal = marginLeftVal - $(element).prev().outerWidth(true);
-    }
-    $('.page-tabs-content').animate({
-            marginLeft: 0 - scrollVal + 'px'
-        },
-        "fast");
-}
-
-//计算元素集合的总宽度
-function calSumWidth(elements) {
-    var width = 0;
-    $(elements).each(function () {
-        width += $(this).outerWidth(true);
-    });
-    return width;
+// 刷新指定iframe页面数据:从iFrame内部调用
+var refreshParentIFramePage = function (parentDataId) {
+    var target = parent.window.$('.RuoYi_iframe[data-id="' + parentDataId + '"]');
+    var url = parentDataId;
+    target.attr('src', url).ready();
 }
 
 

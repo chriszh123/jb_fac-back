@@ -166,8 +166,8 @@
         <div class="form-group" style="text-align: center;">
             <label class="col-sm-3 control-label" style="margin-bottom: 30px;"></label>
             <div class="col-sm-8" style="margin-bottom: 30px;">
-                <button type="button" class="btn btn-success">确定</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                <button type="button" class="btn btn-default" onclick="closeTab()">取消</button>
+                <button type="button" class="btn btn-success" onclick="addProduct()">确定</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <button type="button" class="btn btn-default" onclick="closeCurrentTab()">取消</button>
             </div>
         </div>
     </form>
@@ -180,7 +180,6 @@
 <script th:src="@{/fac/fac_common.js}"></script>
 <script th:src="@{/ajax/libs//fileinput/js/fileinput.min.js}"></script>
 <script th:src="@{/ajax/libs//fileinput/js/locales/zh.js}"></script>
-<script th:src="@{/ruoyi/index.js}"></script>
 <script>
     var prefix = ctx + "fac/product";
     $(".input-group.date").datetimepicker({
@@ -240,65 +239,42 @@
             sort: {
                 required: true,
                 digits: true
+            },
+            introduction: {
+                required: true
             }
         }
     });
 
-    function submitHandler() {
-        if ($.validate.form()) {
-            $.operate.save(prefix + "/add", $('#form-product-add').serialize());
-        }
-    }
-
-    // 上传商品图片
-    var uploadProductImg = function (obj) {
-        var file = obj.files[0];
-        if (typeof (file) == "undefined" || file.size <= 0) {
-            $.modal.alertWarning("请选择图片");
+    function addProduct() {
+        var picture = $("#picture").val();
+        if (picture == undefined || picture == "") {
+            $.modal.alertError("请确认已经选择了商品图片并已上传！");
             return;
         }
-        var formData = new FormData();
-        formData.append("action", "UploadVMKImagePath");
-        formData.append("upload", file); //加入文件对象
-        var url = ctx + "ajax/uploadProductImg";
-        $.ajax({
-            url: url,
-            data: formData,
-            type: "post",
-            dataType: "json",
-            cache: false,//上传文件无需缓存
-            processData: false,//用于对data参数进行序列化处理 这里必须false
-            contentType: false, //必须
-            success: function (result) {
-                if (result && result.code == "0") {
-                    console.log("fileName = " + result.fileName + ", imgPath = " + result.imgPath);
-                    $("#picture").val(result.fileName);
-                    $("#imgPath").val(result.imgPath);
-                    //预览
-                    var newsrc = getObjectURL(obj.files[0]);
-                    document.getElementById('show').src = newsrc;
-                    $("#show").css("display", "inline");
-                    $.modal.alertSuccess("上传完成!");
-                } else {
-                    $.modal.alertError("上传失败");
+        if ($.validate.form()) {
+            $.modal.loading(TIP_DEALING);
+            var url = prefix + "/add";
+            var data = $('#form-product-add').serialize();
+            var config = {
+                url: url,
+                type: "post",
+                dataType: "json",
+                data: data,
+                success: function (result) {
+                    $.modal.close();
+                    // 重新加载商品主页面数据
+                    refreshParentIFramePage(DATA_ID.PRODUCT);
                 }
-            }
-        });
-    }
-
-    // 商品图片上传
-    function selectProductImg() {
-        $("input#upload").click();
-        $("input#upload").change(function () {
-            // 上传商品图片
-            uploadProductImg(this);
-        });
+            };
+            $.ajax(config)
+        }
     }
 
     (function () {
         // 初始化商品图片上传组件
         var uploadUrl = ctx + "product/picture/batchUpload";
-        initFileInput("prodImgInput", uploadUrl, 5);
+        initFileInput("prodImgInput", uploadUrl, OBJECT_COUNT.PRODUCT_IMG);
 
         // 初始化商品介绍ekeditor组件
         CKEDITOR.config.extraPlugins = 'selectall,notification,notificationaggregator,widgetselection,filetools,lineutils,widget,uploadwidget,uploadimage';
