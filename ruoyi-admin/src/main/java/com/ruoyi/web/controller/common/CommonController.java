@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.ruoyi.common.config.Global;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.file.FileUtils;
+import com.ruoyi.fac.constant.FacConstant;
 import com.ruoyi.fac.vo.ProductImgVo;
 import com.ruoyi.framework.util.FileUploadUtils;
 import org.slf4j.Logger;
@@ -89,13 +90,13 @@ public class CommonController {
     @ResponseBody
     public Map<String, Object> uploadProductImg(Map<String, Object> model, @RequestParam("upload") MultipartFile file, HttpServletRequest request) {
         Map<String, Object> result = new HashMap<>();
-        result.put("code", "-1");
+        result.put("code", FacConstant.AJAX_CODE_FAIL);
         try {
             if (file != null && file.getSize() > 0) {
                 String basePath = Global.getProductPath();
                 String fileName = FileUploadUtils.upload(basePath, file, true);
                 String imgPath = basePath + fileName;
-                result.put("code", "0");
+                result.put("code", FacConstant.AJAX_CODE_SUCCESS);
                 result.put("fileName", fileName);
                 result.put("imgPath", imgPath);
             }
@@ -135,7 +136,7 @@ public class CommonController {
     @ResponseBody
     public ProductImgVo batchUploadProductImg(HttpServletRequest request, HttpServletResponse response, @RequestParam("file") MultipartFile[] file) throws Exception {
         ProductImgVo vo = new ProductImgVo();
-        vo.setCode("-1");
+        vo.setCode(FacConstant.AJAX_CODE_FAIL);
         System.out.println("batchUploadProductImg........");
         if (file != null && file.length > 0) {
             //组合image名称，“;隔开”
@@ -157,7 +158,7 @@ public class CommonController {
                 //上传成功
                 if (!CollectionUtils.isEmpty(fileNames)) {
                     System.out.println("上传成功！");
-                    vo.setCode("0");
+                    vo.setCode(FacConstant.AJAX_CODE_SUCCESS);
                     vo.setFileName(StringUtils.join(fileNames, ","));
                     vo.setImgPath(StringUtils.join(imgPaths, ","));
                 } else {

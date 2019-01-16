@@ -2,6 +2,7 @@ package com.ruoyi.fac.service.impl;
 
 import com.ruoyi.common.support.Convert;
 import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.fac.constant.FacConstant;
 import com.ruoyi.fac.domain.Product;
 import com.ruoyi.fac.mapper.ProductMapper;
 import com.ruoyi.fac.service.IProductService;
@@ -123,14 +124,14 @@ public class ProductServiceImpl implements IProductService {
     @Override
     public ProductImgVo getProductImgs(Product product) {
         ProductImgVo vo = new ProductImgVo();
-        vo.setCode("-1");
+        vo.setCode(FacConstant.AJAX_CODE_FAIL);
         if (product == null || product.getId() == null) {
             return vo;
         }
         Product dstProduct = this.productMapper.selectProductById(product.getId());
         String pictures = dstProduct.getPicture();
         if (StringUtils.isNotEmpty(pictures)) {
-            vo.setCode("0");
+            vo.setCode(FacConstant.AJAX_CODE_SUCCESS);
             String[] imgPaths = pictures.split(",");
             vo.setImgPaths(imgPaths);
             List<String> imgList = Arrays.asList(imgPaths);
