@@ -7,6 +7,10 @@
 package com.ruoyi.fac.vo;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 商品图片上传响应数据对象
@@ -21,6 +25,12 @@ public class ProductImgVo implements Serializable {
     private String msg;
     private String fileName;
     private String imgPath;
+    private String[] imgPaths;
+    /**
+     * [{caption: "People-1.jpg", size: 576237, width: "120px", url: "/site/file-delete", key: 1}]
+     */
+    private List<Map<String, Object>> cfg = new ArrayList<>();
+
 
     public String getCode() {
         return code;
@@ -52,5 +62,21 @@ public class ProductImgVo implements Serializable {
 
     public void setImgPath(String imgPath) {
         this.imgPath = imgPath;
+    }
+
+    public String[] getImgPaths() {
+        return imgPaths;
+    }
+
+    public void setImgPaths(String[] imgPaths) {
+        this.imgPaths = imgPaths;
+    }
+
+    public List<Map<String, Object>> getCfg() {
+        return cfg;
+    }
+
+    public void setCfg(List<Map<String, Object>> cfg) {
+        this.cfg = cfg;
     }
 }

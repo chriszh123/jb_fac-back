@@ -1,6 +1,7 @@
 package com.ruoyi.fac.service;
 
 import com.ruoyi.fac.domain.Product;
+import com.ruoyi.fac.vo.ProductImgVo;
 
 import java.util.List;
 
@@ -51,4 +52,11 @@ public interface IProductService {
      */
     int deleteProductByIds(String ids);
 
+    /**
+     * 获取当前商品对应图片信息
+     *
+     * @param product
+     * @return
+     */
+    ProductImgVo getProductImgs(Product product);
 }

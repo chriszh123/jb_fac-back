@@ -64,7 +64,7 @@ public class CommonController {
         try {
             if (file.getSize() > 0) {
                 String basePath = Global.getProductPath();
-                String fileName = FileUploadUtils.upload(basePath, file);
+                String fileName = FileUploadUtils.upload(basePath, file, true);
                 model.put("msg", "File '" + file.getOriginalFilename() + "' uploaded successfully");
                 String imgpath = basePath + fileName;
                 String resp = "<script type=\"text/javascript\">window.parent.CKEDITOR.tools.callFunction(" + funNum + ",'" + imgpath + "','')</script>";
@@ -93,7 +93,7 @@ public class CommonController {
         try {
             if (file != null && file.getSize() > 0) {
                 String basePath = Global.getProductPath();
-                String fileName = FileUploadUtils.upload(basePath, file);
+                String fileName = FileUploadUtils.upload(basePath, file, true);
                 String imgPath = basePath + fileName;
                 result.put("code", "0");
                 result.put("fileName", fileName);
@@ -113,7 +113,7 @@ public class CommonController {
         try {
             if (file != null && file.getSize() > 0) {
                 String basePath = Global.getProductPath();
-                String fileName = FileUploadUtils.upload(basePath, file);
+                String fileName = FileUploadUtils.upload(basePath, file, true);
                 String imgpath = basePath + fileName;
                 map.put("uploaded", 1);
                 map.put("fileName", fileName);
@@ -147,7 +147,7 @@ public class CommonController {
                 for (int i = 0; i < file.length; i++) {
                     if (!file[i].isEmpty()) {
                         //上传文件，随机名称，";"分号隔开
-                        String fileName = FileUploadUtils.upload(basePath, file[i]);
+                        String fileName = FileUploadUtils.upload(basePath, file[i], true);
                         System.out.println("fileName = " + fileName);
                         String imgPath = basePath + fileName;
                         fileNames.add(fileName);

@@ -238,13 +238,14 @@ var initFileInput = function (id, uploadUrl, maxFilesNum) {
     var control = $('#' + id);
     control.fileinput({
         language: 'zh', //设置语言
+        browseLabel: '选择图片',
         uploadUrl: uploadUrl, //上传的地址
         allowedFileExtensions: ['jpg', 'gif', 'png'],//接收的文件后缀
         maxFilesNum: maxFilesNum,//上传最大的文件数量
         //uploadExtraData:{"id": 1, "fileName":'123.mp3'},
         uploadAsync: false, //默认异步上传
-        showUpload: false, //是否显示上传按钮
-        showRemove: false, //显示移除按钮
+        showUpload: true, //是否显示上传按钮，输入框后面的按钮
+        showRemove: true, //显示移除按钮，输入框后面的按钮
         showPreview: true, //是否显示预览
         showCaption: false,//是否显示标题
         browseClass: "btn btn-primary", //按钮样式
@@ -260,7 +261,10 @@ var initFileInput = function (id, uploadUrl, maxFilesNum) {
         validateInitialCount: true,
         previewFileIcon: "<i class='glyphicon glyphicon-king'></i>",
         msgFilesTooMany: "选择上传的文件数量({n}) 超过允许的最大数值{m}！",
-
+        layoutTemplates: {
+            actionDelete: '',
+            actionUpload: ''
+        }
     }).on('filepreupload', function (event, data, previewId, index) {     //上传中
         var form = data.form, files = data.files, extra = data.extra, response = data.response, reader = data.reader;
         console.log('文件正在上传');
@@ -295,6 +299,39 @@ var refreshParentIFramePage = function (parentDataId) {
     var target = parent.window.$('.RuoYi_iframe[data-id="' + parentDataId + '"]');
     var url = parentDataId;
     target.attr('src', url).ready();
+}
+
+// 初始化fileinput组件图片数据
+// 图片的地址 path:
+//      [
+//         "http://lorempixel.com/800/460/nature/1",
+//         "http://lorempixel.com/800/460/nature/2",
+//      ]
+// con 参数外层是数组形式，里面则为对象
+//     [
+//     {caption: "People-1.jpg", size: 576237, width: "120px", url: "/site/file-delete", key: 1},
+//     ]
+var initFileInputWithImgData = function (id, uploadUrl, maxFilesNum, imgPaths, cfg) {
+    var control = $('#' + id);
+    control.fileinput({
+        language: 'zh', //设置语言
+        browseLabel: '选择图片',
+        uploadUrl: uploadUrl, //上传到后台处理的方法
+        uploadAsync: false, //设置同步，异步 （同步）
+        showUpload: true, //是否显示上传按钮，输入框后面的按钮
+        showRemove: true, //显示移除按钮，输入框后面的按钮
+        showPreview: true, //是否显示预览
+        overwriteInitial: false, //不覆盖已存在的图片
+        //下面几个就是初始化预览图片的配置
+        initialPreviewAsData: true,
+        initialPreviewFileType: 'image',
+        initialPreview: imgPaths, //要显示的图片的路径
+        initialPreviewConfig: cfg,
+        layoutTemplates: {
+            actionDelete: '',
+            actionUpload: ''
+        }
+    });
 }
 
 

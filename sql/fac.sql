@@ -21,7 +21,7 @@ CREATE TABLE `fac_product` (
   `rush_end` datetime NULL COMMENT '抢购结束时间',
   `writeoff_start` datetime NULL COMMENT '核销开始时间',
   `writeoff_end` datetime NULL COMMENT '核销结束时间',
-  `picture` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '商品图片',
+  `picture` varchar(1536) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '商品图片',
   `introduction` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '商品介绍内容',
   `ship_mode` tinyint(2) NOT NULL DEFAULT '2' COMMENT '发货方式:1-送货上门,2-核销码',
   `ship_cost` decimal(8,2) NOT NULL DEFAULT '0.0' COMMENT '运费',

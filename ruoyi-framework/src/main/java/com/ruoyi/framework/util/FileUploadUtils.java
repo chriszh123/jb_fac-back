@@ -2,8 +2,14 @@ package com.ruoyi.framework.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.text.DecimalFormat;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.tomcat.util.http.fileupload.FileUploadBase.FileSizeLimitExceededException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
 import com.ruoyi.common.config.Global;
 import com.ruoyi.common.exception.file.FileNameLengthLimitExceededException;
@@ -15,6 +21,7 @@ import com.ruoyi.common.utils.Md5Utils;
  * @author ruoyi
  */
 public class FileUploadUtils {
+    private static final Logger logger = LoggerFactory.getLogger(FileUploadUtils.class);
     /**
      * 默认大小 50M
      */
@@ -52,9 +59,9 @@ public class FileUploadUtils {
      * @return 文件名称
      * @throws Exception
      */
-    public static final String upload(MultipartFile file) throws IOException {
+    public static final String upload(MultipartFile file, boolean originalFilename) throws IOException {
         try {
-            return upload(getDefaultBaseDir(), file, FileUploadUtils.IMAGE_JPG_EXTENSION);
+            return upload(getDefaultBaseDir(), file, FileUploadUtils.IMAGE_JPG_EXTENSION, originalFilename);
         } catch (Exception e) {
             throw new IOException(e);
         }
@@ -68,9 +75,9 @@ public class FileUploadUtils {
      * @return 文件名称
      * @throws IOException
      */
-    public static final String upload(String baseDir, MultipartFile file) throws IOException {
+    public static final String upload(String baseDir, MultipartFile file, boolean originalFilename) throws IOException {
         try {
-            return upload(baseDir, file, FileUploadUtils.IMAGE_JPG_EXTENSION);
+            return upload(baseDir, file, FileUploadUtils.IMAGE_JPG_EXTENSION, originalFilename);
         } catch (Exception e) {
             throw new IOException(e);
         }
@@ -87,7 +94,7 @@ public class FileUploadUtils {
      * @throws FileNameLengthLimitExceededException 文件名太长
      * @throws IOException                          比如读写文件出错时
      */
-    public static final String upload(String baseDir, MultipartFile file, String extension)
+    public static final String upload(String baseDir, MultipartFile file, String extension, boolean originalFilename)
             throws FileSizeLimitExceededException, IOException, FileNameLengthLimitExceededException {
 
         int fileNamelength = file.getOriginalFilename().length();
@@ -98,11 +105,17 @@ public class FileUploadUtils {
 
         assertAllowed(file);
 
-        String fileName = encodingFilename(file.getOriginalFilename(), extension);
+        String fileName = "";
+        if (originalFilename) {
+            fileName = file.getOriginalFilename();
+        } else {
+            fileName = encodingFilename(file.getOriginalFilename(), extension);
+        }
 
         File desc = getAbsoluteFile(baseDir, baseDir + fileName);
         System.out.println("[FileUploadUtils -> upload] fileName = " + fileName);
         file.transferTo(desc);
+
         return fileName;
     }
 
@@ -139,5 +152,68 @@ public class FileUploadUtils {
         if (DEFAULT_MAX_SIZE != -1 && size > DEFAULT_MAX_SIZE) {
             throw new FileSizeLimitExceededException("not allowed upload upload", size, DEFAULT_MAX_SIZE);
         }
+    }
+
+    /**
+     * 获取文件名称
+     *
+     * @param fileUrl 网络资源文件 地址
+     * @return 名称
+     */
+    public static final String getFileName(String fileUrl) {
+        String fileName = "";
+        if (StringUtils.isBlank(fileUrl) || fileUrl.indexOf("/") < 0 || fileUrl.length() <= 1) {
+            return fileName;
+        }
+        fileName = fileUrl.substring(fileUrl.lastIndexOf("/") + 1);
+        return fileName;
+    }
+
+    /**
+     * 获取文件类型：后缀
+     *
+     * @param fileUrl 网络资源文件 地址
+     * @return 文件类型：后缀
+     */
+    public static final String getFileType(String fileUrl) {
+        String fileType = "";
+        if (StringUtils.isBlank(fileUrl) || fileUrl.indexOf(".") < 0 || fileUrl.length() <= 1) {
+            return fileType;
+        }
+        fileType = fileUrl.substring(fileUrl.lastIndexOf(".") + 1);
+
+        return fileType;
+    }
+
+    /**
+     * 获取网络资源文件大小
+     *
+     * @param fileUrl 网络资源文件 地址
+     * @return 文件大小
+     */
+    public static final String getFileSize(String fileUrl) {
+        String fileSize = "";
+        try {
+            logger.info("正在链接URL,fileUrl:{}", fileUrl);
+            URL url = new URL(fileUrl);
+            HttpURLConnection urlFile = (HttpURLConnection) url.openConnection();
+            //根据响应获取文件大小
+            int fileLength = urlFile.getContentLength();
+            if (urlFile.getResponseCode() >= 400) {
+                logger.info("服务器响应错误,fileUrl:{}", fileUrl);
+                return fileSize;
+            }
+            if (fileLength <= 0) {
+                logger.info("无法获知文件大小,fileUrl:{}", fileUrl);
+                return fileSize;
+            }
+            DecimalFormat df = new DecimalFormat("######0");
+            Double size = Double.parseDouble(String.valueOf(fileLength));
+            fileSize = df.format(size);
+        } catch (Exception ex) {
+            logger.info("获知文件大小操作异常,fileUrl:{}", fileUrl, ex);
+        }
+
+        return fileSize;
     }
 }

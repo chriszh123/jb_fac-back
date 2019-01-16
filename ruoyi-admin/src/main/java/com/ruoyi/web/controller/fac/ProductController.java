@@ -11,6 +11,8 @@ import com.ruoyi.fac.constant.FacConstant;
 import com.ruoyi.fac.domain.Product;
 import com.ruoyi.fac.enums.ProductStatus;
 import com.ruoyi.fac.service.IProductService;
+import com.ruoyi.fac.vo.FacStaticVo;
+import com.ruoyi.fac.vo.ProductImgVo;
 import com.ruoyi.framework.util.ShiroUtils;
 import com.ruoyi.framework.web.base.BaseController;
 import com.ruoyi.system.domain.SysUser;
@@ -154,5 +156,12 @@ public class ProductController extends BaseController {
         Product product = productService.selectProductById(id);
         mmap.put("product", product);
         return prefix + "/writeOff";
+    }
+
+    @PostMapping("/getProductImgs")
+    @ResponseBody
+    public ProductImgVo getProductImgs(Product product) {
+        ProductImgVo vo = this.productService.getProductImgs(product);
+        return vo;
     }
 }

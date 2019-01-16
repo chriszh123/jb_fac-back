@@ -67,8 +67,6 @@
 
     function submitHandler() {
         if ($.validate.form()) {
-            // $.operate.save(prefix + "/edit", $('#form-buyer-edit').serialize());
-
             $.modal.confirm("确定要修改当前用户与商家商品绑定关系吗？", function () {
                 // [nodeType-id-pId,...]
                 var prodIds = $.tree.getCheckedNodes("id", "type", "prod");

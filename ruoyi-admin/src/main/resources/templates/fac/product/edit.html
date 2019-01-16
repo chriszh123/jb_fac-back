@@ -281,10 +281,31 @@
         }
     }
 
+    // 初始化商品图片上传组件
+    function initFileInputData() {
+        var url = prefix + "/getProductImgs";
+        var data = {"id": $("#id").val()};
+        var config = {
+            url: url,
+            type: "post",
+            dataType: "json",
+            data: data,
+            success: function (res) {
+                if (res && res.code && res.code == "0") {
+                    $("#prodImgInput").fileinput('destroy');
+
+                    var imgPaths = res.imgPaths, cfg = res.cfg;
+                    var uploadUrl = ctx + "product/picture/batchUpload";
+                    initFileInputWithImgData("prodImgInput", uploadUrl, OBJECT_COUNT.PRODUCT_IMG, imgPaths, cfg);
+                }
+            }
+        };
+        $.ajax(config)
+    }
+
     $(function () {
         // 初始化商品图片上传组件
-        var uploadUrl = ctx + "product/picture/batchUpload";
-        initFileInput("prodImgInput", uploadUrl, OBJECT_COUNT.PRODUCT_IMG);
+        initFileInputData();
 
         // 初始化商品介绍ekeditor组件
         CKEDITOR.config.extraPlugins = 'selectall,notification,notificationaggregator,widgetselection,filetools,lineutils,widget,uploadwidget,uploadimage';
