@@ -1,19 +1,14 @@
 package com.ruoyi.framework.util;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.text.DecimalFormat;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.tomcat.util.http.fileupload.FileUploadBase.FileSizeLimitExceededException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.web.multipart.MultipartFile;
 import com.ruoyi.common.config.Global;
 import com.ruoyi.common.exception.file.FileNameLengthLimitExceededException;
 import com.ruoyi.common.utils.Md5Utils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.tomcat.util.http.fileupload.FileUploadBase.FileSizeLimitExceededException;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  * 文件上传工具类
