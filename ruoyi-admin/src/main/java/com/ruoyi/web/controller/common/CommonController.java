@@ -4,6 +4,7 @@ import com.ruoyi.common.config.Global;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.file.FileUtils;
 import com.ruoyi.fac.constant.FacConstant;
+import com.ruoyi.fac.vo.FileVo;
 import com.ruoyi.fac.vo.ProductImgVo;
 import com.ruoyi.framework.util.CkImageUploadUtil;
 import com.ruoyi.framework.util.FileUploadUtils;
@@ -18,8 +19,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -33,6 +36,8 @@ import java.util.List;
 @Controller
 public class CommonController {
     private static final Logger log = LoggerFactory.getLogger(CommonController.class);
+
+    private static final String DEFAULT_SUB_FOLDER_FORMAT_AUTO = "yyyyMMddHHmmss";
 
     @RequestMapping("common/download")
     public void fileDownload(String fileName, Boolean delete, HttpServletResponse response, HttpServletRequest request) {
@@ -69,6 +74,34 @@ public class CommonController {
             CkImageUploadUtil.getInstance().ckeditor(request, response);
         } catch (Exception ex) {
             log.error("[ckeditorUploadImg] error", ex);
+        }
+    }
+
+    @RequestMapping("/image/uploadImg")
+    public void uplodaImg(@RequestParam("upload") MultipartFile file, HttpServletRequest request, HttpServletResponse response) {
+        FileVo fileVo = new FileVo();
+        try {
+            PrintWriter out = response.getWriter();
+            log.info("fileSize: " + file.getSize());
+            // 图片大小不超过500K
+            if (file.getSize() > 1024 * 500) {
+                String error = fileVo.error(0, "图片大小超过500K");
+                out.println(error);
+                return;
+            }
+
+            String success = CkImageUploadUtil.getInstance().uploadFile(file);
+            out.println(success);
+            return;
+        } catch (Exception e) {
+            e.printStackTrace();
+            String error = fileVo.error(0, "系统异常");
+            try {
+                response.getWriter().println(error);
+                return;
+            } catch (Exception e1) {
+                e1.printStackTrace();
+            }
         }
     }
 

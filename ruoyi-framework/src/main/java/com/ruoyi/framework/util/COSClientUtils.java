@@ -100,8 +100,8 @@ public class COSClientUtils {
     }
 
     public String uploadFile2Cos(MultipartFile file) throws Exception {
-        if (file.getSize() > 10 * 1024 * 1024) {
-            throw new Exception("上传图片大小不能超过10M！");
+        if (file.getSize() > 1024 * 500) {
+            throw new Exception("上传图片大小不能超过500K！");
         }
         try {
             String originalFilename = file.getOriginalFilename();
