@@ -65,7 +65,7 @@ public class CommonController {
         try {
             if (file.getSize() > 0) {
                 String basePath = Global.getProductPath();
-                String fileName = FileUploadUtils.upload(basePath, file, true);
+                String fileName = FileUploadUtils.upload(basePath, file, false);
                 model.put("msg", "File '" + file.getOriginalFilename() + "' uploaded successfully");
                 String imgpath = basePath + fileName;
                 String resp = "<script type=\"text/javascript\">window.parent.CKEDITOR.tools.callFunction(" + funNum + ",'" + imgpath + "','')</script>";
@@ -94,7 +94,7 @@ public class CommonController {
         try {
             if (file != null && file.getSize() > 0) {
                 String basePath = Global.getProductPath();
-                String fileName = FileUploadUtils.upload(basePath, file, true);
+                String fileName = FileUploadUtils.upload(basePath, file, false);
                 String imgPath = basePath + fileName;
                 result.put("code", FacConstant.AJAX_CODE_SUCCESS);
                 result.put("fileName", fileName);
@@ -114,7 +114,7 @@ public class CommonController {
         try {
             if (file != null && file.getSize() > 0) {
                 String basePath = Global.getProductPath();
-                String fileName = FileUploadUtils.upload(basePath, file, true);
+                String fileName = FileUploadUtils.upload(basePath, file, false);
                 String imgpath = basePath + fileName;
                 map.put("uploaded", 1);
                 map.put("fileName", fileName);
@@ -139,7 +139,6 @@ public class CommonController {
         vo.setCode(FacConstant.AJAX_CODE_FAIL);
         System.out.println("batchUploadProductImg........");
         if (file != null && file.length > 0) {
-            //组合image名称，“;隔开”
             List<String> fileNames = new ArrayList<>();
             List<String> imgPaths = new ArrayList<>();
             try {
@@ -147,8 +146,8 @@ public class CommonController {
                 String basePath = Global.getProductPath();
                 for (int i = 0; i < file.length; i++) {
                     if (!file[i].isEmpty()) {
-                        //上传文件，随机名称，";"分号隔开
-                        String fileName = FileUploadUtils.upload(basePath, file[i], true);
+                        //上传文件，原始文件名称
+                        String fileName = FileUploadUtils.upload(basePath, file[i], false);
                         System.out.println("fileName = " + fileName);
                         String imgPath = basePath + fileName;
                         fileNames.add(fileName);

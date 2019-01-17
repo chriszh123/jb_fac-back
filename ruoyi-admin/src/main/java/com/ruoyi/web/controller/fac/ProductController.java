@@ -105,10 +105,6 @@ public class ProductController extends BaseController {
     @GetMapping("/edit/{id}")
     public String edit(@PathVariable("id") Long id, ModelMap mmap) {
         Product product = productService.selectProductById(id);
-        if (product != null && StringUtils.isNotEmpty(product.getPicture())) {
-            String imgPath = Global.getProductPath() + product.getPicture();
-            product.setImgPath(imgPath);
-        }
         mmap.put("product", product);
         return prefix + "/edit";
     }
