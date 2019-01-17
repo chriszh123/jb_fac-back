@@ -285,7 +285,8 @@
             height: 300
         });
 
-        var ckEditorUploadUrl = ctx + "image/ckeditorUploadImg";
+        var ckEditorUploadUrl = ctx + "image/uploadImg";
+        // var ckEditorUploadUrl = ctx + "image/ckeditorUploadImg";
         CKEDITOR.config.filebrowserImageUploadUrl = ckEditorUploadUrl; // 图片上传路径
         CKEDITOR.config.removeDialogTabs = 'image:advanced;image:Link'; // 移除图片上传页面的'高级','链接'页签
         CKEDITOR.config.uploadImgSupportedTypes = '/image\\/(jpeg|jpg|bmp|gif|png)/';

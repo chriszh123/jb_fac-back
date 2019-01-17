@@ -129,9 +129,11 @@ public class CkImageUploadUtil {
         out.close();
 
         // 腾讯云上传图片
-        fileName = COSClientUtils.getInstance().uploadFile2Cos(file);
+//        fileName = COSClientUtils.getInstance().uploadFile2Cos(file);
 //      String imagePath = COSClientUtils.getInstance().getImgUrl(fileName);
 
+        // TODO:测试网络图片地址
+        imagePath = "https://www.baidu.com/img/jijian%20pad_13db91458cc0573abbf3055bc9c1d15b.png";
         result = fileVo.success(1, file.getOriginalFilename(), imagePath, null);
 
         return result;

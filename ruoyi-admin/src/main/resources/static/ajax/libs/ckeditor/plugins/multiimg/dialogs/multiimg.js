@@ -16,7 +16,7 @@
                     elements: [{
                         type: "html",
                         style: "width:660px;height:400px",
-                        html: '<iframe id="uploadFrame" src="/image/image.html?v=' + new Date().getSeconds() + '" frameborder="0"></iframe>'
+                        html: '<iframe id="uploadFrame" src="/image.html?v=' + new Date().getSeconds() + '" frameborder="0"></iframe>'
                     }]
                 }],
                 onOk: function () {
@@ -26,7 +26,7 @@
                     a.insertHtml("编辑器追加内容" + num);
                 },
                 onShow: function () {
-                    document.getElementById("uploadFrame").setAttribute("src", "/image/image.html?v=' +new Date().getSeconds() + '");
+                    document.getElementById("uploadFrame").setAttribute("src", "/image.html?v=' +new Date().getSeconds() + '");
                 }
             }
         })

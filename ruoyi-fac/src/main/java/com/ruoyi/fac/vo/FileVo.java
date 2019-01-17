@@ -23,22 +23,20 @@ public class FileVo extends HashMap<String, Object> {
     Map<String, Object> msgMap = new HashMap<>();
 
     public String error(int code, String msg) {
-        FileVo result = new FileVo();
         msgMap.put("message", msg);
-        result.put("uploaded", code);
-        result.put("error", msgMap);
+        msgMap.put("uploaded", code);
+        msgMap.put("error", msgMap);
         return JSONObject.toJSONString(msgMap);
     }
 
     public String success(int code, String fileName, String url, String msg) {
-        FileVo result = new FileVo();
         if (!StringUtils.isEmpty(msg)) {
             msgMap.put("message", msg);
-            result.put("error", msgMap);
+            msgMap.put("error", msgMap);
         }
-        result.put("uploaded", code);
-        result.put("fileName", fileName);
-        result.put("url", url);
+        msgMap.put("uploaded", code);
+        msgMap.put("fileName", fileName);
+        msgMap.put("url", url);
         return JSONObject.toJSONString(msgMap);
     }
 }
