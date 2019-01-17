@@ -9,10 +9,6 @@ import com.ruoyi.fac.vo.ProductImgVo;
 import com.ruoyi.framework.util.FileUploadUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -59,54 +55,6 @@ public class CommonController {
         }
     }
 
-    @RequestMapping(value = "ajax/upload/image", method = RequestMethod.POST)
-    public ResponseEntity<String> uploadImg(Map<String, Object> model, @RequestParam("CKEditorFuncNum") String funNum
-            , @RequestParam("upload") MultipartFile file, HttpServletRequest request) {
-        try {
-            if (file.getSize() > 0) {
-                String basePath = Global.getProductPath();
-                String fileName = FileUploadUtils.upload(basePath, file, false);
-                model.put("msg", "File '" + file.getOriginalFilename() + "' uploaded successfully");
-                String imgpath = basePath + fileName;
-                String resp = "<script type=\"text/javascript\">window.parent.CKEDITOR.tools.callFunction(" + funNum + ",'" + imgpath + "','')</script>";
-                HttpHeaders headers = new HttpHeaders();
-                headers.setContentType(MediaType.TEXT_HTML);
-                return new ResponseEntity<String>(resp, headers, HttpStatus.OK);
-            } else {
-                HttpHeaders headers = new HttpHeaders();
-                String resp = "";
-                return new ResponseEntity<String>(resp, headers, HttpStatus.BAD_REQUEST);
-            }
-        } catch (Exception e) {
-            log.error("[uploadImg] 上传图片失败！", e);
-            HttpHeaders headers = new HttpHeaders();
-            String resp = "";
-            return new ResponseEntity<String>(resp, headers, HttpStatus.BAD_REQUEST);
-        }
-
-    }
-
-    @RequestMapping(value = "/ajax/uploadProductImg", method = RequestMethod.POST)
-    @ResponseBody
-    public Map<String, Object> uploadProductImg(Map<String, Object> model, @RequestParam("upload") MultipartFile file, HttpServletRequest request) {
-        Map<String, Object> result = new HashMap<>();
-        result.put("code", FacConstant.AJAX_CODE_FAIL);
-        try {
-            if (file != null && file.getSize() > 0) {
-                String basePath = Global.getProductPath();
-                String fileName = FileUploadUtils.upload(basePath, file, false);
-                String imgPath = basePath + fileName;
-                result.put("code", FacConstant.AJAX_CODE_SUCCESS);
-                result.put("fileName", fileName);
-                result.put("imgPath", imgPath);
-            }
-        } catch (Exception e) {
-            log.error("[batchUploadImg] 上传图片失败！", e);
-        }
-
-        return result;
-    }
-
     @RequestMapping(value = "/ajax/upload/image/batch", method = RequestMethod.POST)
     @ResponseBody
     public String batchUploadImg(Map<String, Object> model, @RequestParam("upload") MultipartFile file, HttpServletRequest request) {
@@ -115,10 +63,15 @@ public class CommonController {
             if (file != null && file.getSize() > 0) {
                 String basePath = Global.getProductPath();
                 String fileName = FileUploadUtils.upload(basePath, file, false);
-                String imgpath = basePath + fileName;
+                String imgUrl = basePath + fileName;
+
+                // 腾讯云上传图片
+//                String fileName = COSClientUtils.getInstance().uploadFile2Cos(file);
+//                String imgUrl = COSClientUtils.getInstance().getImgUrl(fileName);
+
                 map.put("uploaded", 1);
                 map.put("fileName", fileName);
-                map.put("url", imgpath);
+                map.put("url", imgUrl);
             } else {
                 map.put("uploaded", 0);
                 map.put("error", "upload img failed");
@@ -149,9 +102,13 @@ public class CommonController {
                         //上传文件，原始文件名称
                         String fileName = FileUploadUtils.upload(basePath, file[i], false);
                         System.out.println("fileName = " + fileName);
-                        String imgPath = basePath + fileName;
+                        String imgUrl = basePath + fileName;
+                        // 腾讯云上传图片
+//                        String fileName = COSClientUtils.getInstance().uploadFile2Cos(file[i]);
+//                        String imgUrl = COSClientUtils.getInstance().getImgUrl(fileName);
+
                         fileNames.add(fileName);
-                        imgPaths.add(imgPath);
+                        imgPaths.add(imgUrl);
                     }
                 }
                 //上传成功
