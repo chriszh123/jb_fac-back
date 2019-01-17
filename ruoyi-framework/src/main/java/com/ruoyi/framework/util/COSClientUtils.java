@@ -105,10 +105,8 @@ public class COSClientUtils {
         }
         try {
             String originalFilename = file.getOriginalFilename();
-            String substring = originalFilename.substring(originalFilename.lastIndexOf(".")).toLowerCase();
-            // 保证上传文件名称唯一
-            Random random = new Random();
-            String fileName = random.nextInt(10000) + System.currentTimeMillis() + substring;
+            String extension = originalFilename.substring(originalFilename.lastIndexOf(".")).toLowerCase();
+            String fileName = FileUploadUtils.encodingFilename(originalFilename, extension);
             InputStream inputStream = file.getInputStream();
             this.uploadFile2Cos(inputStream, fileName);
             return fileName;

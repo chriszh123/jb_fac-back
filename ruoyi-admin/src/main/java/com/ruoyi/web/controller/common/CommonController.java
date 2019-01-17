@@ -1,18 +1,17 @@
 package com.ruoyi.web.controller.common;
 
-import com.alibaba.fastjson.JSON;
 import com.ruoyi.common.config.Global;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.file.FileUtils;
 import com.ruoyi.fac.constant.FacConstant;
 import com.ruoyi.fac.vo.ProductImgVo;
+import com.ruoyi.framework.util.CkImageUploadUtil;
 import com.ruoyi.framework.util.FileUploadUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,7 +21,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * 通用请求处理
@@ -55,34 +56,20 @@ public class CommonController {
         }
     }
 
-    @RequestMapping(value = "/ajax/upload/image/batch", method = RequestMethod.POST)
+    /**
+     * ckeditor组件上传图片
+     *
+     * @param request
+     * @param response
+     */
+    @RequestMapping(value = "/image/ckeditorUploadImg")
     @ResponseBody
-    public String batchUploadImg(Map<String, Object> model, @RequestParam("upload") MultipartFile file, HttpServletRequest request) {
-        Map<String, Object> map = new HashMap<>();
+    public void ckeditorUploadImg(HttpServletRequest request, HttpServletResponse response) {
         try {
-            if (file != null && file.getSize() > 0) {
-                String basePath = Global.getProductPath();
-                String fileName = FileUploadUtils.upload(basePath, file, false);
-                String imgUrl = basePath + fileName;
-
-                // 腾讯云上传图片
-//                String fileName = COSClientUtils.getInstance().uploadFile2Cos(file);
-//                String imgUrl = COSClientUtils.getInstance().getImgUrl(fileName);
-
-                map.put("uploaded", 1);
-                map.put("fileName", fileName);
-                map.put("url", imgUrl);
-            } else {
-                map.put("uploaded", 0);
-                map.put("error", "upload img failed");
-            }
-        } catch (Exception e) {
-            log.error("[batchUploadImg] 上传图片失败！", e);
-            map.put("uploaded", 0);
-            map.put("error", "upload img failed");
+            CkImageUploadUtil.getInstance().ckeditor(request, response);
+        } catch (Exception ex) {
+            log.error("[ckeditorUploadImg] error", ex);
         }
-
-        return JSON.toJSONString(map);
     }
 
     @RequestMapping("/product/picture/batchUpload")

@@ -21,7 +21,6 @@ import com.ruoyi.common.utils.Md5Utils;
  * @author ruoyi
  */
 public class FileUploadUtils {
-    private static final Logger logger = LoggerFactory.getLogger(FileUploadUtils.class);
     /**
      * 默认大小 50M
      */
@@ -134,7 +133,7 @@ public class FileUploadUtils {
     /**
      * 编码文件名
      */
-    private static final String encodingFilename(String filename, String extension) {
+    public static final String encodingFilename(String filename, String extension) {
         filename = filename.replace("_", " ");
         filename = Md5Utils.hash(filename + System.nanoTime() + counter++) + extension;
         return filename;
@@ -167,53 +166,5 @@ public class FileUploadUtils {
         }
         fileName = fileUrl.substring(fileUrl.lastIndexOf("/") + 1);
         return fileName;
-    }
-
-    /**
-     * 获取文件类型：后缀
-     *
-     * @param fileUrl 网络资源文件 地址
-     * @return 文件类型：后缀
-     */
-    public static final String getFileType(String fileUrl) {
-        String fileType = "";
-        if (StringUtils.isBlank(fileUrl) || fileUrl.indexOf(".") < 0 || fileUrl.length() <= 1) {
-            return fileType;
-        }
-        fileType = fileUrl.substring(fileUrl.lastIndexOf(".") + 1);
-
-        return fileType;
-    }
-
-    /**
-     * 获取网络资源文件大小
-     *
-     * @param fileUrl 网络资源文件 地址
-     * @return 文件大小
-     */
-    public static final String getFileSize(String fileUrl) {
-        String fileSize = "";
-        try {
-            logger.info("正在链接URL,fileUrl:{}", fileUrl);
-            URL url = new URL(fileUrl);
-            HttpURLConnection urlFile = (HttpURLConnection) url.openConnection();
-            //根据响应获取文件大小
-            int fileLength = urlFile.getContentLength();
-            if (urlFile.getResponseCode() >= 400) {
-                logger.info("服务器响应错误,fileUrl:{}", fileUrl);
-                return fileSize;
-            }
-            if (fileLength <= 0) {
-                logger.info("无法获知文件大小,fileUrl:{}", fileUrl);
-                return fileSize;
-            }
-            DecimalFormat df = new DecimalFormat("######0");
-            Double size = Double.parseDouble(String.valueOf(fileLength));
-            fileSize = df.format(size);
-        } catch (Exception ex) {
-            logger.info("获知文件大小操作异常,fileUrl:{}", fileUrl, ex);
-        }
-
-        return fileSize;
     }
 }

@@ -6,6 +6,7 @@ import com.ruoyi.fac.constant.FacConstant;
 import com.ruoyi.fac.domain.Product;
 import com.ruoyi.fac.mapper.ProductMapper;
 import com.ruoyi.fac.service.IProductService;
+import com.ruoyi.fac.util.FacFileUtils;
 import com.ruoyi.fac.util.TimeUtils;
 import com.ruoyi.fac.vo.ProductImgVo;
 import org.slf4j.Logger;
@@ -13,9 +14,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.text.DecimalFormat;
 import java.util.*;
 
 /**
@@ -129,8 +127,8 @@ public class ProductServiceImpl implements IProductService {
             for (int i = 0, size = imgList.size(); i < size; i++) {
                 cfg = new HashMap<>(16);
                 imgPath = imgList.get(i);
-                cfg.put("caption", getFileName(imgPath));
-                cfg.put("size", getFileSize(imgPath));
+                cfg.put("caption", FacFileUtils.getInstance().getFileName(imgPath));
+                cfg.put("size", FacFileUtils.getInstance().getFileSize(imgPath));
                 cfg.put("key", (i + 1));
                 cfg.put("width", "200px");
                 // 每个图片元素上的小删除按钮对应的接口url地址
@@ -141,52 +139,6 @@ public class ProductServiceImpl implements IProductService {
         }
 
         return vo;
-    }
-
-    /**
-     * 获取文件名称
-     *
-     * @param fileUrl 网络资源文件 地址
-     * @return 名称
-     */
-    public String getFileName(String fileUrl) {
-        String fileName = "";
-        if (org.apache.commons.lang3.StringUtils.isBlank(fileUrl) || fileUrl.indexOf("/") < 0 || fileUrl.length() <= 1) {
-            return fileName;
-        }
-        fileName = fileUrl.substring(fileUrl.lastIndexOf("/") + 1);
-        return fileName;
-    }
-
-    /**
-     * 获取网络资源文件大小
-     *
-     * @param fileUrl 网络资源文件 地址
-     * @return 文件大小
-     */
-    public String getFileSize(String fileUrl) {
-        String fileSize = "";
-        try {
-            URL url = new URL(fileUrl);
-            HttpURLConnection urlFile = (HttpURLConnection) url.openConnection();
-            //根据响应获取文件大小
-            int fileLength = urlFile.getContentLength();
-            if (urlFile.getResponseCode() >= 400) {
-                logger.info("服务器响应错误,fileUrl:{}", fileUrl);
-                return fileSize;
-            }
-            if (fileLength <= 0) {
-                logger.info("无法获知文件大小,fileUrl:{}", fileUrl);
-                return fileSize;
-            }
-            DecimalFormat df = new DecimalFormat("######0");
-            Double size = Double.parseDouble(String.valueOf(fileLength));
-            fileSize = df.format(size);
-        } catch (Exception ex) {
-            logger.info("获知文件大小操作异常,fileUrl:{}", fileUrl, ex);
-        }
-
-        return fileSize;
     }
 
     private void resetProductImg(Product product) {
