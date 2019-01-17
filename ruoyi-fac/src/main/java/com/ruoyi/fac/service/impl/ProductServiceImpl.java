@@ -76,13 +76,7 @@ public class ProductServiceImpl implements IProductService {
      */
     @Override
     public int insertProduct(Product product) {
-        if (StringUtils.isNotEmpty(product.getImgPath())) {
-            String imgPath = product.getImgPath();
-            if (imgPath.startsWith(",")) {
-                imgPath = imgPath.substring(1);
-            }
-            product.setPicture(imgPath);
-        }
+        this.resetProductImg(product);
         return productMapper.insertProduct(product);
     }
 
@@ -94,13 +88,7 @@ public class ProductServiceImpl implements IProductService {
      */
     @Override
     public int updateProduct(Product product) {
-        if (StringUtils.isNotEmpty(product.getImgPath())) {
-            String imgPath = product.getImgPath();
-            if (imgPath.startsWith(",")) {
-                imgPath = imgPath.substring(1);
-            }
-            product.setPicture(imgPath);
-        }
+        this.resetProductImg(product);
         return productMapper.updateProduct(product);
     }
 
@@ -199,6 +187,16 @@ public class ProductServiceImpl implements IProductService {
         }
 
         return fileSize;
+    }
+
+    private void resetProductImg(Product product) {
+        if (product != null && StringUtils.isNotEmpty(product.getImgPath())) {
+            String imgPath = product.getImgPath();
+            if (imgPath.startsWith(",")) {
+                imgPath = imgPath.substring(1);
+            }
+            product.setPicture(imgPath);
+        }
     }
 
 }
