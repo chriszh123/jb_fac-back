@@ -1,0 +1,297 @@
+<!DOCTYPE HTML>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<link th:href="@{/ajax/libs/datapicker/bootstrap-datetimepicker.min.css}" rel="stylesheet"/>
+<link th:href="@{/ajax/libs/fileinput/css/fileinput.min.css}" rel="stylesheet"/>
+<link th:href="@{/fac/fac.css}" rel="stylesheet"/>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+    <form class="form-horizontal m" id="form-product-add">
+        <input type="hidden" id="imgPath" name="imgPath"/>
+        <input type="hidden" id="picture" name="picture"/>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">商品名称：</label>
+            <div class="col-sm-8">
+                <input id="name" name="name" class="form-control" type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">商品类目：</label>
+            <div class="col-sm-8">
+                <select id="categoryId" name="categoryId" class="form-control m-b"
+                        th:with="productCategorys=${@ps.getProductCategorys()}">
+                    <option value="">请选择...</option>
+                    <option th:each="pc : ${productCategorys}" th:text="${pc.name}" th:value="${pc.id}"></option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label">所属商家：</label>
+            <div class="col-sm-8">
+                <select id="businessId" name="businessId" class="form-control m-b"
+                        th:with="businesses=${@ps.getBusinesses()}">
+                    <option value="">请选择...</option>
+                    <option th:each="bs : ${businesses}" th:text="${bs.name}" th:value="${bs.id}"></option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">原价：</label>
+            <div class="col-sm-8">
+                <input id="originalPrice" name="originalPrice" class="form-control" type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">抢购价：</label>
+            <div class="col-sm-8">
+                <input id="price" name="price" class="form-control" type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">库存数量：</label>
+            <div class="col-sm-8">
+                <input id="inventoryQuantity" name="inventoryQuantity" class="form-control" type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">每人限购数量：</label>
+            <div class="col-sm-8">
+                <input id="limitQuantity" name="limitQuantity" class="form-control" type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">虚拟购买人数：</label>
+            <div class="col-sm-8">
+                <input id="vmBuyerQuantity" name="vmBuyerQuantity" class="form-control" type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">分销奖金：</label>
+            <div class="col-sm-8">
+                <input id="distribution" name="distribution" class="form-control" type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">奖励积分：</label>
+            <div class="col-sm-8">
+                <input id="bonusPoints" name="bonusPoints" class="form-control" type="text">
+            </div>
+        </div>
+        <div class="form-group form-inline">
+            <label class="col-sm-3 control-label">抢购开始时间：</label>
+            <div class="col-sm-3 input-group date" style="margin-left: 15px;"><span class="input-group-addon"><i
+                    class="fa fa-calendar"></i></span>
+                <input type="text" class="form-control" id="rushStart" name="rushStart" value="" placeholder="选择开始日期">
+            </div>
+            <label>至</label>
+            <div class="col-sm-3 input-group date"><span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                <input type="text" class="form-control" id="rushEnd" name="rushEnd" value="" placeholder="选择结束日期">
+            </div>
+        </div>
+        <div class="form-group form-inline">
+            <label class="col-sm-3 control-label">核销开始时间：</label>
+            <div class="col-sm-3 input-group date" style="margin-left: 15px;"><span class="input-group-addon"><i
+                    class="fa fa-calendar"></i></span>
+                <input type="text" class="form-control" id="writeoffStart" name="writeoffStart" value=""
+                       placeholder="选择开始日期">
+            </div>
+            <label>至</label>
+            <div class="col-sm-3 input-group date"><span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                <input type="text" class="form-control" id="writeoffEnd" name="writeoffEnd" value=""
+                       placeholder="选择结束日期">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">发货方式：</label>
+            <div class="col-sm-8">
+                <label class="radio-box"> <input type="radio" name="shipMode" value="1"/> 送货上门 </label>
+                <label class="radio-box"> <input type="radio" name="shipMode" value="2" checked/> 核销码 </label>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">运费：</label>
+            <div class="col-sm-8">
+                <input id="shipCost" name="shipCost" class="form-control" type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">排序：</label>
+            <div class="col-sm-8">
+                <input id="sort" name="sort" class="form-control" type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">商品图片：</label>
+            <div class="col-sm-8">
+                <form id="form" action="" method="post" enctype="multipart/form-data">
+                    <div class="row form-group">
+                        <div class="panel panel-primary" style="margin-left: 16px;margin-right: 13px;">
+                            <div class="panel-heading" align="center">
+                                <label style="text-align: center;font-size: 18px;">图 片 上 传</label>
+                            </div>
+                            <div class="panel-body">
+                                <div class="col-sm-12">
+                                    <input id="prodImgInput" name="file" multiple type="file" data-show-caption="true">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="form-group" style="margin-bottom: 25px;">
+            <label class="col-sm-3 control-label" style="padding-left: 330px;">商品介绍：</label>
+            <div class="col-sm-8">
+                <textarea cols="80" id="introduction" name="introduction" rows="10"
+                          style="width: 100%;height: 100%;"></textarea>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label" style="padding-left: 355px;margin-top: 25px;">上架：</label>
+            <div class="col-sm-8" style="margin-top: 25px;">
+                <div class="onoffswitch">
+                    <input type="checkbox" th:checked="true" class="onoffswitch-checkbox" value="1" id="status"
+                           name="status">
+                    <label class="onoffswitch-label" for="status">
+                        <span class="onoffswitch-inner"></span>
+                        <span class="onoffswitch-switch"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group" style="text-align: center;">
+            <label class="col-sm-3 control-label" style="margin-bottom: 30px;"></label>
+            <div class="col-sm-8" style="margin-bottom: 30px;">
+                <button type="button" class="btn btn-success" onclick="addProduct()">确定</button>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <button type="button" class="btn btn-default" onclick="closeCurrentTab()">取消</button>
+            </div>
+        </div>
+    </form>
+
+</div>
+<div th:include="include::footer"></div>
+<script th:src="@{/ajax/libs//datapicker/bootstrap-datetimepicker.min.js}"></script>
+<script th:src="@{/ajax/libs//datapicker/bootstrap-datetimepicker.zh-CN.js}"></script>
+<script th:src="@{/ajax/libs//ckeditor/ckeditor.js}"></script>
+<script th:src="@{/fac/fac_common.js}"></script>
+<script th:src="@{/ajax/libs//fileinput/js/fileinput.min.js}"></script>
+<script th:src="@{/ajax/libs//fileinput/js/locales/zh.js}"></script>
+<script>
+    var prefix = ctx + "fac/product";
+    $(".input-group.date").datetimepicker({
+        format: 'yyyy-mm-dd hh:ii',
+        todayBtn: "linked",
+        keyboardNavigation: !1,
+        forceParse: !1,
+        calendarWeeks: !0,
+        autoclose: !0,
+        initialDate: new Date(),
+        language: "zh-CN"
+    });
+
+    $("#form-product-add").validate({
+        rules: {
+            name: {
+                required: true,
+                maxlength: 500
+            },
+            categoryId: {
+                required: true
+            },
+            businessId: {
+                required: true
+            },
+            originalPrice: {
+                required: true,
+                number: true
+            },
+            price: {
+                required: true,
+                number: true
+            },
+            inventoryQuantity: {
+                required: true,
+                digits: true
+            },
+            limitQuantity: {
+                required: true,
+                digits: true
+            },
+            vmBuyerQuantity: {
+                required: true,
+                digits: true
+            },
+            distribution: {
+                required: true,
+                number: true
+            },
+            bonusPoints: {
+                required: true,
+                digits: true
+            },
+            shipCost: {
+                number: true
+            },
+            sort: {
+                required: true,
+                digits: true
+            },
+            introduction: {
+                required: true
+            }
+        }
+    });
+
+    function addProduct() {
+        var picture = $("#picture").val();
+        if (picture == undefined || picture == "") {
+            $.modal.alertError("请确认已经选择了商品图片并已上传！");
+            return;
+        }
+        if ($.validate.form()) {
+            $.modal.loading(TIP_DEALING);
+            var url = prefix + "/add";
+            var data = $('#form-product-add').serialize();
+            var config = {
+                url: url,
+                type: "post",
+                dataType: "json",
+                data: data,
+                success: function (result) {
+                    $.modal.close();
+                    // 重新加载商品主页面数据
+                    refreshParentIFramePage(DATA_ID.PRODUCT);
+                }
+            };
+            $.ajax(config)
+        }
+    }
+
+    $(function () {
+        // 初始化商品图片上传组件
+        var uploadUrl = ctx + "product/picture/batchUpload";
+        initFileInput("prodImgInput", uploadUrl, OBJECT_COUNT.PRODUCT_IMG);
+
+        // 初始化商品介绍ekeditor组件
+        CKEDITOR.config.extraPlugins = 'selectall,notification,notificationaggregator,widgetselection,filetools,lineutils,widget,uploadwidget,uploadimage';
+        CKEDITOR.replace('introduction', {
+            toolbar: null,
+            toolbarGroups: null,
+            removeButtons: null,
+            height: 300
+        });
+
+        var ckEditorUploadUrl = ctx + "image/uploadImg";
+        // var ckEditorUploadUrl = ctx + "image/ckeditorUploadImg";
+        CKEDITOR.config.filebrowserImageUploadUrl = ckEditorUploadUrl; // 图片上传路径
+        CKEDITOR.config.removeDialogTabs = 'image:advanced;image:Link'; // 移除图片上传页面的'高级','链接'页签
+        CKEDITOR.config.uploadImgSupportedTypes = '/image\\/(jpeg|jpg|bmp|gif|png)/';
+        CKEDITOR.config.image_previewText = "";
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+.ui-upload {
+    height: 30px;
+    width: 90px;
+    background-color: #00abff;
+    font-size: 14px;
+    line-height: 30px;
+    cursor: pointer;
+    display: inline-block;
+    text-align: center;
+    color: #fff;
+    border-radius: 3px;
+    border: 0px;
+    margin-left: 20px;
+}

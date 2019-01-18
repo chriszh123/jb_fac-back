@@ -1,0 +1,148 @@
+<!DOCTYPE HTML>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="gray-bg">
+
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <div class="select-list">
+                    <ul>
+                        <li>
+                            收款帐号：<input type="text" name="receivingAccount"/>
+                        </li>
+                        <li>
+                            用户id：<input type="text" name="userId"/>
+                        </li>
+                        <li>
+                            联系电话：<input type="text" name="phoneNumber"/>
+                        </li>
+                        <li>
+                            状态:
+                            <select id="status" name="status">
+                                <option value="">请选择...</option>
+                                <option value="1">待处理</option>
+                                <option value="3">成功</option>
+                                <option value="2">失败</option>
+                            </select>
+                        </li>
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i
+                                    class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i
+                                    class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <div class="btn-group-sm hidden-xs" id="toolbar" role="group">
+            <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="fac:cash:export">
+                <i class="fa fa-download"></i> 导出
+            </a>
+        </div>
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table" data-mobile-responsive="true"></table>
+        </div>
+    </div>
+</div>
+<div th:include="include :: footer"></div>
+<script th:src="@{/fac/fac_common.js}"></script>
+<script th:inline="javascript">
+    var editFlag = [[${@permission.hasPermi('fac:cash:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('fac:cash:remove')}]];
+    var prefix = ctx + "fac/cash";
+
+    $(function () {
+        var options = {
+            url: prefix + "/list",
+            createUrl: prefix + "/add",
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove",
+            exportUrl: prefix + "/export",
+            modalName: "买家提现记录",
+            search: false,
+            showExport: true,
+            columns: [{
+                checkbox: true
+            },
+                {
+                    field: 'id',
+                    title: '',
+                    visible: false
+                },
+                {
+                    field: 'userId',
+                    title: '用户id',
+                    sortable: true
+                },
+                {
+                    field: 'cash',
+                    title: '提现金额',
+                    sortable: true
+                },
+                {
+                    field: 'receivingAccount',
+                    title: '收款帐号',
+                    sortable: true
+                },
+                {
+                    field: 'phoneNumber',
+                    title: '联系电话',
+                    sortable: true
+                },
+                {
+                    field: 'applyTime',
+                    title: '申请日期',
+                    sortable: true
+                },
+                {
+                    field: 'payTime',
+                    title: '打款时间',
+                    sortable: true
+                },
+                {
+                    field: 'status',
+                    title: '状态',
+                    sortable: true,
+                    formatter: function (value, row, index) {
+                        // 1-待处理；2-失败；3-成功
+                        return CASH_STATUS[value];
+                    }
+                },
+                {
+                    field: 'updateTime',
+                    title: '操作时间',
+                    sortable: true
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="#" onclick="updateStatus(\'' + row.id + '\',\'3\')"><i class="fa fa-edit"></i>打款</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs  ' + editFlag + '" href="#" onclick="updateStatus(\'' + row.id + '\',\'2\')"><i class="fa fa-edit"></i>拒绝</a> ');
+                        return actions.join('');
+                    }
+                }]
+        };
+        $.table.init(options);
+    });
+
+    var updateStatus = function (id, status) {
+        var tip = "确定要 " + ((status == "3") ? "打款" : "拒绝") + " 当前提现记录吗？";
+        $.modal.confirm(tip, function () {
+            var url = ctx + "fac/cash/edit";
+            var data = {
+                "id": id,
+                "status": status
+            };
+            $.operate.post(url, data);
+        });
+    }
+</script>
+</body>
+</html>

@@ -1,34 +1,30 @@
 package com.ruoyi.web.controller.monitor;
 
-import java.util.List;
+import com.ruoyi.common.annotation.Log;
+import com.ruoyi.common.base.AjaxResult;
+import com.ruoyi.common.enums.BusinessType;
+import com.ruoyi.common.page.TableDataInfo;
+import com.ruoyi.common.utils.poi.ExcelUtil;
+import com.ruoyi.framework.util.ShiroUtils;
+import com.ruoyi.framework.web.base.BaseController;
+import com.ruoyi.quartz.domain.SysJob;
+import com.ruoyi.quartz.service.ISysJobService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import com.ruoyi.common.annotation.Log;
-import com.ruoyi.common.base.AjaxResult;
-import com.ruoyi.common.enums.BusinessType;
-import com.ruoyi.common.utils.ExcelUtil;
-import com.ruoyi.framework.util.ShiroUtils;
-import com.ruoyi.framework.web.page.TableDataInfo;
-import com.ruoyi.quartz.domain.SysJob;
-import com.ruoyi.quartz.service.ISysJobService;
-import com.ruoyi.framework.web.base.BaseController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * 调度任务信息操作处理
- * 
+ *
  * @author ruoyi
  */
 @Controller
 @RequestMapping("/monitor/job")
-public class SysJobController extends BaseController
-{
+public class SysJobController extends BaseController {
     private String prefix = "monitor/job";
 
     @Autowired
@@ -36,16 +32,14 @@ public class SysJobController extends BaseController
 
     @RequiresPermissions("monitor:job:view")
     @GetMapping()
-    public String job()
-    {
+    public String job() {
         return prefix + "/job";
     }
 
     @RequiresPermissions("monitor:job:list")
     @PostMapping("/list")
     @ResponseBody
-    public TableDataInfo list(SysJob job)
-    {
+    public TableDataInfo list(SysJob job) {
         startPage();
         List<SysJob> list = jobService.selectJobList(job);
         return getDataTable(list);
@@ -55,26 +49,21 @@ public class SysJobController extends BaseController
     @RequiresPermissions("monitor:job:export")
     @PostMapping("/export")
     @ResponseBody
-    public AjaxResult export(SysJob job)
-    {
+    public AjaxResult export(SysJob job) {
         List<SysJob> list = jobService.selectJobList(job);
         ExcelUtil<SysJob> util = new ExcelUtil<SysJob>(SysJob.class);
-        return util.exportExcel(list, "job");
+        return util.exportExcel(list, "定时任务");
     }
 
     @Log(title = "定时任务", businessType = BusinessType.DELETE)
     @RequiresPermissions("monitor:job:remove")
     @PostMapping("/remove")
     @ResponseBody
-    public AjaxResult remove(String ids)
-    {
-        try
-        {
+    public AjaxResult remove(String ids) {
+        try {
             jobService.deleteJobByIds(ids);
             return success();
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
             return error(e.getMessage());
         }
@@ -82,8 +71,7 @@ public class SysJobController extends BaseController
 
     @RequiresPermissions("monitor:job:detail")
     @GetMapping("/detail/{jobId}")
-    public String detail(@PathVariable("jobId") Long jobId, ModelMap mmap)
-    {
+    public String detail(@PathVariable("jobId") Long jobId, ModelMap mmap) {
         mmap.put("name", "job");
         mmap.put("job", jobService.selectJobById(jobId));
         return prefix + "/detail";
@@ -96,8 +84,7 @@ public class SysJobController extends BaseController
     @RequiresPermissions("monitor:job:changeStatus")
     @PostMapping("/changeStatus")
     @ResponseBody
-    public AjaxResult changeStatus(SysJob job)
-    {
+    public AjaxResult changeStatus(SysJob job) {
         job.setUpdateBy(ShiroUtils.getLoginName());
         return toAjax(jobService.changeStatus(job));
     }
@@ -109,8 +96,7 @@ public class SysJobController extends BaseController
     @RequiresPermissions("monitor:job:changeStatus")
     @PostMapping("/run")
     @ResponseBody
-    public AjaxResult run(SysJob job)
-    {
+    public AjaxResult run(SysJob job) {
         return toAjax(jobService.run(job));
     }
 
@@ -118,8 +104,7 @@ public class SysJobController extends BaseController
      * 新增调度
      */
     @GetMapping("/add")
-    public String add()
-    {
+    public String add() {
         return prefix + "/add";
     }
 
@@ -130,8 +115,7 @@ public class SysJobController extends BaseController
     @RequiresPermissions("monitor:job:add")
     @PostMapping("/add")
     @ResponseBody
-    public AjaxResult addSave(SysJob job)
-    {
+    public AjaxResult addSave(SysJob job) {
         job.setCreateBy(ShiroUtils.getLoginName());
         return toAjax(jobService.insertJobCron(job));
     }
@@ -140,8 +124,7 @@ public class SysJobController extends BaseController
      * 修改调度
      */
     @GetMapping("/edit/{jobId}")
-    public String edit(@PathVariable("jobId") Long jobId, ModelMap mmap)
-    {
+    public String edit(@PathVariable("jobId") Long jobId, ModelMap mmap) {
         mmap.put("job", jobService.selectJobById(jobId));
         return prefix + "/edit";
     }
@@ -153,19 +136,17 @@ public class SysJobController extends BaseController
     @RequiresPermissions("monitor:job:edit")
     @PostMapping("/edit")
     @ResponseBody
-    public AjaxResult editSave(SysJob job)
-    {
+    public AjaxResult editSave(SysJob job) {
         job.setUpdateBy(ShiroUtils.getLoginName());
         return toAjax(jobService.updateJobCron(job));
     }
-    
+
     /**
      * 校验cron表达式是否有效
      */
     @PostMapping("/checkCronExpressionIsValid")
     @ResponseBody
-    public boolean checkCronExpressionIsValid(SysJob job)
-    {
+    public boolean checkCronExpressionIsValid(SysJob job) {
         return jobService.checkCronExpressionIsValid(job.getCronExpression());
     }
 }

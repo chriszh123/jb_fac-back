@@ -1,0 +1,167 @@
+<!DOCTYPE HTML>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <!--查询区域-->
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <div class="select-list">
+                    <ul>
+                        <li>
+                            商品名称：<input type="text" name="name"/>
+                        </li>
+                        <li>
+                            商品类目：
+                            <select id="categoryId" name="categoryId"
+                                    th:with="productCategorys=${@ps.getProductCategorys()}">
+                                <option value="">请选择...</option>
+                                <option th:each="pc : ${productCategorys}" th:text="${pc.name}"
+                                        th:value="${pc.id}"></option>
+                            </select>
+                        </li>
+                        <li>
+                            商品状态：
+                            <select id="status" name="status">
+                                <option value="">请选择...</option>
+                                <option value="1">上架</option>
+                                <option value="2">下架</option>
+                            </select>
+                        </li>
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i
+                                    class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i
+                                    class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <!--按钮区域-->
+        <div class="btn-group-sm hidden-xs" id="toolbar" role="group">
+            <!--<a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="fac:product:add">-->
+            <!--<i class="fa fa-plus"></i> 添加-->
+            <!--</a>-->
+            <a class="btn btn-success" onclick="toAddProduct()" shiro:hasPermission="fac:product:add">
+                <i class="fa fa-plus"></i> 添加
+            </a>
+            <!--<a class="btn btn-primary btn-edit disabled" onclick="$.operate.edit()"-->
+               <!--shiro:hasPermission="fac:product:edit">-->
+                <!--<i class="fa fa-edit"></i> 修改-->
+            <!--</a>-->
+            <a class="btn btn-danger btn-del btn-del disabled" onclick="$.operate.removeAll()"
+               shiro:hasPermission="fac:product:remove">
+                <i class="fa fa-remove"></i> 删除
+            </a>
+            <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="fac:product:export">
+                <i class="fa fa-download"></i> 导出
+            </a>
+        </div>
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table" data-mobile-responsive="true"></table>
+        </div>
+    </div>
+</div>
+<div th:include="include :: footer"></div>
+<script th:inline="javascript">
+    var editFlag = [[${@permission.hasPermi('fac:product:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('fac:product:remove')}]];
+    var prefix = ctx + "fac/product";
+
+    $(function () {
+        var options = {
+            url: prefix + "/list",
+            createUrl: prefix + "/add",
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove",
+            exportUrl: prefix + "/export",
+            modalName: "商品",
+            search: false,
+            showExport: true,
+            columns: [{
+                checkbox: true
+            },
+                {
+                    field: 'id',
+                    title: '商品ID',
+                    visible: true
+                },
+                {
+                    field: 'name',
+                    title: '商品名称',
+                    sortable: false
+                },
+                {
+                    field: 'sort',
+                    title: '排序',
+                    sortable: true
+                },
+                {
+                    field: 'price',
+                    title: '售价',
+                    sortable: true
+                },
+                {
+                    field: 'sales',
+                    title: '销量',
+                    sortable: true
+                },
+                {
+                    field: 'inventoryQuantity',
+                    title: '库存数量',
+                    sortable: true
+                },
+                {
+                    field: 'status',
+                    title: '状态',
+                    sortable: false,
+                    formatter: function (value, row, index) {
+                        if (value == 1) {
+                            return "上架";
+                        } else {
+                            return "<span style='color: red;font-weight:bold;'>下架<span>";
+                        }
+                    }
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    sortable: false,
+                    formatter: function (value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="#" onclick="toEditProduct(\'' + row.id + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="#" onclick="toWriteOff(\'' + row.id + '\')"><i class="fa fa-edit"></i>核销记录</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="#" onclick="$.operate.remove(\'' + row.id + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }]
+        };
+        $.table.init(options);
+    });
+
+    // 跳转至商品新增页面
+    var toAddProduct = function () {
+        var url = prefix + "/add";
+        var menuName = "添加商品";
+        createMenuItem(url, menuName);
+    }
+
+    // 跳转至商品编辑页面
+    var toEditProduct = function (id) {
+        var url = prefix + "/edit/" + id;
+        var menuName = "修改商品";
+        createMenuItem(url, menuName);
+    }
+
+    // 跳转至核销记录查询页面
+    var toWriteOff = function (productId) {
+        var url = prefix + '/toWriteOff/' + productId;
+        createMenuItem(url, "核销记录_" + productId);
+    }
+</script>
+</body>
+</html>

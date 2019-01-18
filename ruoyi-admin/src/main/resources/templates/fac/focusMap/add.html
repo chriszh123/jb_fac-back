@@ -1,0 +1,89 @@
+<!DOCTYPE HTML>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+    <form class="form-horizontal m" id="form-focusMap-add">
+        <div class="form-group">
+            <label class="col-sm-3 control-label">标题：</label>
+            <div class="col-sm-8">
+                <input id="title" name="title" class="form-control" type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">显示顺序：</label>
+            <div class="col-sm-8">
+                <input id="sort" name="sort" class="form-control" type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">图片：</label>
+            <div class="col-sm-8">
+                <input id="picture" name="picture" class="form-control" type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">跳转类型:</label>
+            <div class="col-sm-8">
+                <select id="jumpType" name="jumpType" class="form-control">
+                    <option value="">请选择...</option>
+                    <option value="1">页面</option>
+                    <option value="2">商品</option>
+                    <option value="3">分类</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">跳转参数：</label>
+            <div class="col-sm-8">
+                <input id="jumpParams" name="jumpParams" class="form-control" type="text">
+                填写跳转类型对应的页面ID、商品ID或分类ID
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">状态:</label>
+            <div class="col-sm-8">
+                <select id="status" name="status" class="form-control">
+                    <option value="">请选择...</option>
+                    <option value="1">显示</option>
+                    <option value="2">隐藏</option>
+                </select>
+            </div>
+        </div>
+    </form>
+</div>
+<div th:include="include::footer"></div>
+<script type="text/javascript">
+    var prefix = ctx + "fac/focusMap"
+    $("#form-focusMap-add").validate({
+        rules: {
+            title: {
+                required: true,
+                maxlength: 500
+            },
+            sort: {
+                required: true,
+                digits: true
+            },
+            jumpType: {
+                required: true
+            },
+            jumpParams: {
+                required: true,
+                digits: true
+            },
+            status: {
+                required: true
+            }
+        }
+    });
+
+    function submitHandler() {
+        if ($.validate.form()) {
+            $.operate.save(prefix + "/add", $('#form-focusMap-add').serialize());
+        }
+    }
+</script>
+</body>
+</html>

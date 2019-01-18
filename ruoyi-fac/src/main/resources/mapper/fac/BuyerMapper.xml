@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.fac.mapper.BuyerMapper">
+
+    <resultMap type="Buyer" id="BuyerResult">
+        <result property="id" column="id"/>
+        <result property="nickName" column="nick_name"/>
+        <result property="name" column="name"/>
+        <result property="phoneNumber" column="phone_number"/>
+        <result property="balance" column="balance"/>
+        <result property="points" column="points"/>
+        <result property="registryTime" column="registry_time"/>
+        <result property="harvestAddress" column="harvest_address"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="operatorId" column="operator_id"/>
+        <result property="operatorName" column="operator_name"/>
+        <result property="isDeleted" column="is_deleted"/>
+    </resultMap>
+
+    <sql id="selectBuyerVo">
+        select id, nick_name, name, phone_number, balance, points, registry_time, harvest_address, create_time, update_time, operator_id, operator_name, is_deleted from fac_buyer
+    </sql>
+
+    <select id="selectBuyerList" parameterType="Buyer" resultMap="BuyerResult">
+        <include refid="selectBuyerVo"/>
+        <where>
+            <if test="id != null ">and id like "%"#{id}"%"</if>
+            <if test="nickName != null  and nickName != '' ">and nick_name like "%"#{nickName}"%"</if>
+            <if test="name != null  and name != '' ">and name = #{name}</if>
+            <if test="phoneNumber != null  and phoneNumber != '' ">and phone_number like "%"#{phoneNumber}"%"</if>
+            <if test="balance != null ">and balance = #{balance}</if>
+            <if test="points != null ">and points = #{points}</if>
+            <if test="registryTime != null ">and registry_time = #{registryTime}</if>
+            <if test="harvestAddress != null  and harvestAddress != '' ">and harvest_address = #{harvestAddress}</if>
+            <if test="createTime != null ">and create_time = #{createTime}</if>
+            <if test="updateTime != null ">and update_time = #{updateTime}</if>
+            <if test="operatorId != null ">and operator_id = #{operatorId}</if>
+            <if test="operatorName != null  and operatorName != '' ">and operator_name = #{operatorName}</if>
+            <if test="isDeleted != null ">and is_deleted = #{isDeleted}</if>
+        </where>
+    </select>
+
+    <select id="selectBuyerById" parameterType="Long" resultMap="BuyerResult">
+        <include refid="selectBuyerVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertBuyer" parameterType="Buyer">
+        insert into fac_buyer
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null  ">id,</if>
+            <if test="nickName != null  and nickName != ''  ">nick_name,</if>
+            <if test="name != null  and name != ''  ">name,</if>
+            <if test="phoneNumber != null  and phoneNumber != ''  ">phone_number,</if>
+            <if test="balance != null  ">balance,</if>
+            <if test="points != null  ">points,</if>
+            <if test="registryTime != null  ">registry_time,</if>
+            <if test="harvestAddress != null  and harvestAddress != ''  ">harvest_address,</if>
+            <if test="createTime != null  ">create_time,</if>
+            <if test="updateTime != null  ">update_time,</if>
+            <if test="operatorId != null  ">operator_id,</if>
+            <if test="operatorName != null  and operatorName != ''  ">operator_name,</if>
+            <if test="isDeleted != null  ">is_deleted,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null  ">#{id},</if>
+            <if test="nickName != null  and nickName != ''  ">#{nickName},</if>
+            <if test="name != null  and name != ''  ">#{name},</if>
+            <if test="phoneNumber != null  and phoneNumber != ''  ">#{phoneNumber},</if>
+            <if test="balance != null  ">#{balance},</if>
+            <if test="points != null  ">#{points},</if>
+            <if test="registryTime != null  ">#{registryTime},</if>
+            <if test="harvestAddress != null  and harvestAddress != ''  ">#{harvestAddress},</if>
+            <if test="createTime != null  ">#{createTime},</if>
+            <if test="updateTime != null  ">#{updateTime},</if>
+            <if test="operatorId != null  ">#{operatorId},</if>
+            <if test="operatorName != null  and operatorName != ''  ">#{operatorName},</if>
+            <if test="isDeleted != null  ">#{isDeleted},</if>
+        </trim>
+    </insert>
+
+    <update id="updateBuyer" parameterType="Buyer">
+        update fac_buyer
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="nickName != null  and nickName != ''  ">nick_name = #{nickName},</if>
+            <if test="name != null  and name != ''  ">name = #{name},</if>
+            <if test="phoneNumber != null  and phoneNumber != ''  ">phone_number = #{phoneNumber},</if>
+            <if test="balance != null  ">balance = #{balance},</if>
+            <if test="points != null  ">points = #{points},</if>
+            <if test="registryTime != null  ">registry_time = #{registryTime},</if>
+            <if test="harvestAddress != null  and harvestAddress != ''  ">harvest_address = #{harvestAddress},</if>
+            <if test="createTime != null  ">create_time = #{createTime},</if>
+            <if test="updateTime != null  ">update_time = #{updateTime},</if>
+            <if test="operatorId != null  ">operator_id = #{operatorId},</if>
+            <if test="operatorName != null  and operatorName != ''  ">operator_name = #{operatorName},</if>
+            <if test="isDeleted != null  ">is_deleted = #{isDeleted},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBuyerById" parameterType="Long">
+        delete from fac_buyer where id = #{id}
+    </delete>
+
+    <delete id="deleteBuyerByIds" parameterType="String">
+        delete from fac_buyer where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="queryRecentUserInfo" resultMap="BuyerResult">
+        <include refid="selectBuyerVo"/>
+        where is_deleted = 0
+        and DATE_FORMAT(#{endDate},'%Y-%m-%d') &gt;= DATE_FORMAT(create_time,'%Y-%m-%d')
+        and DATE_FORMAT(#{startDate},'%Y-%m-%d') &lt;= DATE_FORMAT(create_time,'%Y-%m-%d')
+    </select>
+
+    <select id="countBuyers" resultType="java.lang.Integer">
+        select count(*)
+        from fac_buyer
+        where is_deleted = 0
+        <if test="startDate != null">
+            and DATE_FORMAT(create_time,'%Y-%m-%d') &gt;= DATE_FORMAT(#{startDate},'%Y-%m-%d')
+        </if>
+        <if test="endDate != null">
+            and DATE_FORMAT(create_time,'%Y-%m-%d') &lt;= DATE_FORMAT(#{endDate},'%Y-%m-%d')
+        </if>
+    </select>
+
+</mapper>
