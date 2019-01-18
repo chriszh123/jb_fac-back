@@ -1,6 +1,6 @@
 /**
  * 通用js方法封装处理
- * Copyright (c) 2018 ruoyi
+ * Copyright (c) 2019 ruoyi
  */
 (function ($) {
     $.extend({
@@ -123,7 +123,6 @@
                 $.form.reset(currentId);
                 layer.open({
                     type: 1,
-                    area: ['400px'],
                     area: ['400px', '230px'],
                     fix: false,
                     //不固定
@@ -547,12 +546,6 @@
                     btn: ['关闭'],
                     // 弹层外区域关闭
                     shadeClose: true,
-                    // success: function (layer) {
-                    //     layer[0].childNodes[3].childNodes[0].attributes[0].value = 'layui-layer-btn1';
-                    // },
-                    // btn1: function (index) {
-                    //     layer.close(index);
-                    // }
                     cancel: function (index) {
                         return true;
                     }
@@ -652,9 +645,8 @@
             // 保存结果弹出msg刷新table表格
             ajaxSuccess: function (result) {
                 if (result.code == web_status.SUCCESS) {
-                    $.modal.close();
-                    window.parent.$.modal.msgSuccess(result.msg);
-                    window.parent.$.table.refresh();
+                    $.modal.msgSuccess(result.msg);
+                    $.table.refresh();
                 } else {
                     $.modal.alertError(result.msg);
                 }
@@ -836,18 +828,6 @@
                 var nodes = $._tree.getCheckedNodes(true);
                 return $.map(nodes, function (row) {
                     return row[_column];
-                }).join();
-            },
-            // 获取当前被勾选指定节点类型的节点集合:[nodeType-id-pId]
-            getCheckedNodes: function (column, nodeTypeField, nodeTypeValue) {
-                var _column = $.common.isEmpty(column) ? "id" : column;
-                var nodes = $._tree.getCheckedNodes(true);
-                return $.map(nodes, function (row) {
-                    if (nodeTypeValue == row[nodeTypeField]) {
-                        return (nodeTypeValue + "-" + row[_column] + "-" + row["pId"]);
-                    } else {
-                        return row[_column];
-                    }
                 }).join();
             },
             // 不允许根父节点选择

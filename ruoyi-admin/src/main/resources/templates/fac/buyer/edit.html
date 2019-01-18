@@ -65,11 +65,24 @@
         $.operate.post(url, data);
     }
 
+    // 获取当前被勾选指定节点类型的节点集合:[nodeType-id-pId]
+    function getCheckedNodes(column, nodeTypeField, nodeTypeValue) {
+        var _column = $.common.isEmpty(column) ? "id" : column;
+        var nodes = $._tree.getCheckedNodes(true);
+        return $.map(nodes, function (row) {
+            if (nodeTypeValue == row[nodeTypeField]) {
+                return (nodeTypeValue + "-" + row[_column] + "-" + row["pId"]);
+            } else {
+                return row[_column];
+            }
+        }).join();
+    }
+
     function submitHandler() {
         if ($.validate.form()) {
             $.modal.confirm("确定要修改当前用户与商家商品绑定关系吗？", function () {
                 // [nodeType-id-pId,...]
-                var prodIds = $.tree.getCheckedNodes("id", "type", "prod");
+                var prodIds = getCheckedNodes("id", "type", "prod");
                 var userId = $("#id").val();
                 editPost(userId, prodIds);
             });
