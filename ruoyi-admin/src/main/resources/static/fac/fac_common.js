@@ -17,6 +17,12 @@ var ORDER_STATUS = {
     4: "未取消"
 };
 
+// 商品核销状态
+var WRITE_OFF_STATUS = {
+    1: "已核销",
+    2: "待核销",
+};
+
 // 提现功能：申请记录状态
 var CASH_STATUS = {
     "1": "待处理",
