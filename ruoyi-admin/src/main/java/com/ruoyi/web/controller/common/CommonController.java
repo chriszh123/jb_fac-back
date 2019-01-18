@@ -1,6 +1,7 @@
 package com.ruoyi.web.controller.common;
 
 import com.ruoyi.common.config.Global;
+import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.file.FileUtils;
 import com.ruoyi.fac.constant.FacConstant;
@@ -36,8 +37,6 @@ import java.util.List;
 @Controller
 public class CommonController {
     private static final Logger log = LoggerFactory.getLogger(CommonController.class);
-
-    private static final String DEFAULT_SUB_FOLDER_FORMAT_AUTO = "yyyyMMddHHmmss";
 
     @RequestMapping("common/download")
     public void fileDownload(String fileName, Boolean delete, HttpServletResponse response, HttpServletRequest request) {
@@ -82,9 +81,9 @@ public class CommonController {
         FileVo fileVo = new FileVo();
         try {
             PrintWriter out = response.getWriter();
-            log.info("fileSize: " + file.getSize());
+            log.info("[uplodaImg] fileSize: " + file.getSize());
             // 图片大小不超过500K
-            if (file.getSize() > 1024 * 500) {
+            if (file.getSize() > Constants.FILE_SIZE_FAC) {
                 String error = fileVo.error(0, "图片大小超过500K");
                 out.println(error);
                 return;
@@ -92,15 +91,13 @@ public class CommonController {
 
             String success = CkImageUploadUtil.getInstance().uploadFile(file);
             out.println(success);
-            return;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("[uplodaImg] error", e);
             String error = fileVo.error(0, "系统异常");
             try {
                 response.getWriter().println(error);
-                return;
             } catch (Exception e1) {
-                e1.printStackTrace();
+                log.error("[uplodaImg] error1", e1);
             }
         }
     }

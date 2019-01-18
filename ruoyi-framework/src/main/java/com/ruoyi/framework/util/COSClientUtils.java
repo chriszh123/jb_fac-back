@@ -13,6 +13,7 @@ import com.qcloud.cos.auth.COSCredentials;
 import com.qcloud.cos.model.ObjectMetadata;
 import com.qcloud.cos.model.PutObjectResult;
 import com.qcloud.cos.region.Region;
+import com.ruoyi.common.constant.Constants;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
@@ -100,7 +101,7 @@ public class COSClientUtils {
     }
 
     public String uploadFile2Cos(MultipartFile file) throws Exception {
-        if (file.getSize() > 1024 * 500) {
+        if (file.getSize() > Constants.FILE_SIZE_FAC) {
             throw new Exception("上传图片大小不能超过500K！");
         }
         try {
