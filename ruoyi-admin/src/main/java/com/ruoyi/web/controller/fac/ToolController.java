@@ -17,10 +17,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class ToolController extends BaseController {
     private String prefix = "fac/tool";
 
+    /**
+     * 图片裁剪
+     *
+     * @return
+     */
     @RequiresPermissions("fac:tailoring:view")
     @GetMapping("/tailoring")
     public String tailoring() {
-        return prefix + "/tool";
+        return prefix + "/tailoring";
     }
 
 }
