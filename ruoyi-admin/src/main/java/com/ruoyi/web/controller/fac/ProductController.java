@@ -145,7 +145,7 @@ public class ProductController extends BaseController {
     }
 
     /**
-     * 修改商品
+     * 核销记录查询
      */
     @GetMapping("/toWriteOff/{productId}")
     public String toWriteOff(@PathVariable("productId") Long id, ModelMap mmap) {
