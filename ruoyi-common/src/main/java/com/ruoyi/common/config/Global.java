@@ -107,7 +107,7 @@ public class Global {
     }
 
     /**
-     * 获取下载上传路径
+     * 获取下载路径
      */
     public static String getDownloadPath() {
         return getConfig("ruoyi.profile") + "download/";
@@ -118,6 +118,14 @@ public class Global {
      */
     public static String getProductPath() {
         return getConfig("ruoyi.profile") + "product/";
+    }
+
+    /**
+     * +     * 获取上传路径
+     * +
+     */
+    public static String getUploadPath() {
+        return getConfig("ruoyi.profile") + "upload/";
     }
 
     /**
