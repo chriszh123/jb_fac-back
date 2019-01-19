@@ -1,4 +1,6 @@
-package ${basePackage}.web.controller.${moduleName};
+package
+
+    ${basePackage}.web.controller.${moduleName};
 
 import java.util.List;
 
@@ -18,7 +20,7 @@ import ${package}.service.I${className}Service;
 import com.ruoyi.framework.web.base.BaseController;
 import com.ruoyi.common.page.TableDataInfo;
 import com.ruoyi.common.base.AjaxResult;
-import com.ruoyi.common.utils.ExcelUtil;
+import com.ruoyi.common.utils.poi.ExcelUtil;
 
 /**
  * ${tableComment} 信息操作处理
@@ -29,7 +31,7 @@ import com.ruoyi.common.utils.ExcelUtil;
 @Controller
 @RequestMapping("/${moduleName}/${classname}")
 public class ${className}Controller extends BaseController {
-    private String prefix = "${moduleName}/${classname}" ;
+    private String prefix = "${moduleName}/${classname}";
 
     @Autowired
     private I${className}Service ${classname}Service;
@@ -37,7 +39,7 @@ public class ${className}Controller extends BaseController {
     @RequiresPermissions("${moduleName}:${classname}:view")
     @GetMapping()
     public String${classname}() {
-        return prefix + "/${classname}" ;
+        return prefix + "/${classname}";
     }
 
     /**
@@ -70,7 +72,7 @@ public class ${className}Controller extends BaseController {
      */
     @GetMapping("/add")
     public String add() {
-        return prefix + "/add" ;
+        return prefix + "/add";
     }
 
     /**
@@ -91,7 +93,7 @@ public class ${className}Controller extends BaseController {
     public String edit(@PathVariable("${primaryKey.attrname}") ${primaryKey.attrType} ${primaryKey.attrname}, ModelMap mmap) {
         ${className} ${classname} =${classname}Service.select${className}ById(${primaryKey.attrname});
         mmap.put("${classname}", ${classname});
-        return prefix + "/edit" ;
+        return prefix + "/edit";
     }
 
     /**

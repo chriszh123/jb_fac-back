@@ -645,6 +645,7 @@
             // 保存结果弹出msg刷新table表格
             ajaxSuccess: function (result) {
                 if (result.code == web_status.SUCCESS) {
+                    $.modal.close();
                     $.modal.msgSuccess(result.msg);
                     $.table.refresh();
                 } else {
