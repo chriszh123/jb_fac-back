@@ -275,7 +275,25 @@ var initFileInput = function (id, uploadUrl, maxFilesNum) {
         var form = data.form, files = data.files, extra = data.extra, response = data.response, reader = data.reader;
         console.log('文件正在上传');
     }).on("fileuploaded", function (event, data, previewId, index) {    //一个文件上传成功
-        console.log('文件上传成功！index = ' + index);
+        // 异步上传图片时，用fileuploaded事件处理回调
+        console.log('fileuploaded：文件上传成功！index = ' + index);
+        if (index == 0) {
+            // 只要上传的索引又是从一个0开始，证明用户又做了新一次的上传，以最新这次上传的图片数据为准
+            $('#picture').val("");
+            $('#imgPath').val("");
+            console.log('文件上传成功！picture ,imgPath 值清空了');
+        }
+        if (data && data.response && data.response.code && data.response.code == "0") {
+            var lastPicture = $('#picture').val();
+            var lastImgPath = $('#imgPath').val();
+            lastPicture = lastPicture + "," + data.response.fileName;
+            lastImgPath = lastImgPath + "," + data.response.imgPath;
+            $('#picture').val(lastPicture);
+            $('#imgPath').val(lastImgPath);
+        }
+    }).on("filebatchuploadsuccess", function (event, data, previewId, index) {    //一个文件上传成功
+        // 同步上传图片时，用filebatchuploadsuccess事件处理回调
+        console.log('filebatchuploadsuccess：文件上传成功！index = ' + index);
         if (index == 0) {
             // 只要上传的索引又是从一个0开始，证明用户又做了新一次的上传，以最新这次上传的图片数据为准
             $('#picture').val("");
@@ -296,8 +314,14 @@ var initFileInput = function (id, uploadUrl, maxFilesNum) {
 }
 
 // 关闭选项卡菜单:从iFrame内部调用
-var closeCurrentTab = function () {
-    parent.window.$(".tabCloseCurrent").click();
+var closeCurrentTab = function (tip) {
+    if (tip && tip == "1") {
+        $.modal.confirm("确定要关闭当前tab页面吗？", function () {
+            parent.window.$(".tabCloseCurrent").click();
+        });
+    } else {
+        parent.window.$(".tabCloseCurrent").click();
+    }
 }
 
 // 刷新指定iframe页面数据:从iFrame内部调用

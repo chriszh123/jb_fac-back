@@ -3,11 +3,14 @@
 <meta charset="utf-8">
 <head th:include="include :: header"></head>
 <link th:href="@{/ajax/libs/datapicker/bootstrap-datetimepicker.min.css}" rel="stylesheet"/>
+<link th:href="@{/ajax/libs/fileinput/css/fileinput.min.css}" rel="stylesheet"/>
+<link th:href="@{/fac/fac.css}" rel="stylesheet"/>
 <body class="white-bg">
 <div class="wrapper wrapper-content animated fadeInRight ibox-content">
     <form class="form-horizontal m" id="form-product-edit" th:object="${product}">
         <input type="hidden" id="imgPath" name="imgPath" th:field="*{imgPath}"/>
         <input type="hidden" id="picture" name="picture" th:field="*{picture}"/>
+        <input type="hidden" id="introduction" name="introduction" th:field="*{introduction}"/>
         <input id="id" name="id" th:field="*{id}" type="hidden">
         <div class="form-group">
             <label class="col-sm-3 control-label">商品名称：</label>
@@ -137,26 +140,26 @@
         <div class="form-group">
             <label class="col-sm-3 control-label">商品图片：</label>
             <div class="col-sm-8">
-                <form id="form" action="" method="post" enctype="multipart/form-data">
-                    <div class="row form-group">
-                        <div class="panel panel-primary" style="margin-left: 16px;margin-right: 13px;">
-                            <div class="panel-heading" align="center">
-                                <label style="text-align: center;font-size: 18px;">图 片 上 传</label>
-                            </div>
-                            <div class="panel-body">
-                                <div class="col-sm-12">
-                                    <input id="prodImgInput" name="file" multiple type="file" data-show-caption="true">
-                                </div>
+                <!--<form id="form" action="" method="post" enctype="multipart/form-data">-->
+                <div class="row form-group">
+                    <div class="panel panel-primary" style="margin-left: 16px;margin-right: 13px;">
+                        <div class="panel-heading" align="center">
+                            <label style="text-align: center;font-size: 18px;">图 片 上 传</label>
+                        </div>
+                        <div class="panel-body">
+                            <div class="col-sm-12">
+                                <input id="prodImgInput" name="file" multiple type="file" data-show-caption="true">
                             </div>
                         </div>
                     </div>
-                </form>
+                </div>
+                <!--</form>-->
             </div>
         </div>
         <div class="form-group" style="margin-bottom: 25px;">
-            <label class="col-sm-3 control-label" style="padding-left: 330px;">商品介绍：</label>
+            <label class="col-sm-3 control-label">商品介绍：</label>
             <div class="col-sm-8">
-                <textarea cols="80" id="introduction" name="introduction" rows="10" th:field="*{introduction}"
+                <textarea cols="80" id="introductionText" name="introductionText" rows="10" th:field="*{introduction}"
                           style="width: 100%;height: 100%;"></textarea>
             </div>
         </div>
@@ -190,6 +193,8 @@
 <script th:src="@{/ajax/libs//datapicker/bootstrap-datetimepicker.zh-CN.js}"></script>
 <script th:src="@{/ajax/libs//ckeditor/ckeditor.js}"></script>
 <script th:src="@{/fac/fac_common.js}"></script>
+<script th:src="@{/ajax/libs//fileinput/js/fileinput.min.js}"></script>
+<script th:src="@{/ajax/libs//fileinput/js/locales/zh.js}"></script>
 <script type="text/javascript">
     var prefix = ctx + "fac/product"
     $(".input-group.date").datetimepicker({
@@ -249,21 +254,25 @@
             sort: {
                 required: true,
                 digits: true
-            },
-            introduction: {
-                required: true
             }
         }
     });
 
     function editProduct() {
+        // 商品图片
         var picture = $("#picture").val();
         if (picture == undefined || picture == "") {
             $.modal.alertError("请确认已经选择了商品图片并已上传！");
             return;
         }
+        // 商品介绍
+        var introduction = CKEDITOR.instances.introductionText.getData();
+        if (introduction == undefined || introduction == "") {
+            $.modal.alertError("请先填写当前商品介绍再提交！");
+            return;
+        }
+        $("#introduction").val(introduction);
         if ($.validate.form()) {
-            $.modal.loading(TIP_DEALING);
             var url = prefix + "/edit";
             var data = $('#form-product-edit').serialize();
             var config = {
@@ -272,12 +281,13 @@
                 dataType: "json",
                 data: data,
                 success: function (result) {
-                    $.modal.close();
                     // 重新加载商品主页面数据
                     refreshParentIFramePage(DATA_ID.PRODUCT);
+                    // 关闭当前TAB页面
+                    closeCurrentTab("");
                 }
             };
-            $.ajax(config)
+            $.ajax(config);
         }
     }
 
@@ -305,11 +315,14 @@
 
     $(function () {
         // 初始化商品图片上传组件
+        var uploadUrl = ctx + "product/picture/batchUpload";
+        initFileInput("prodImgInput", uploadUrl, OBJECT_COUNT.PRODUCT_IMG);
+        // 初始化商品图片上传组件图片数据
         initFileInputData();
 
         // 初始化商品介绍ekeditor组件
         CKEDITOR.config.extraPlugins = 'selectall,notification,notificationaggregator,widgetselection,filetools,lineutils,widget,uploadwidget,uploadimage';
-        CKEDITOR.replace('introduction', {
+        CKEDITOR.replace('introductionText', {
             toolbar: null,
             toolbarGroups: null,
             removeButtons: null,
@@ -317,7 +330,6 @@
         });
 
         var ckEditorUploadUrl = ctx + "image/uploadImg";
-        // var ckEditorUploadUrl = ctx + "image/ckeditorUploadImg";
         CKEDITOR.config.filebrowserImageUploadUrl = ckEditorUploadUrl; // 图片上传路径
         CKEDITOR.config.removeDialogTabs = 'image:advanced;image:Link'; // 移除图片上传页面的'高级','链接'页签
         CKEDITOR.config.uploadImgSupportedTypes = '/image\\/(jpeg|jpg|bmp|gif|png)/';
