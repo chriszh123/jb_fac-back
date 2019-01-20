@@ -1,6 +1,7 @@
 package com.ruoyi.fac.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.ruoyi.common.annotation.Excel;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ruoyi.common.base.BaseEntity;
@@ -17,18 +18,22 @@ public class ProductWriteoff extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
     /**  */
+    @Excel(name = "核销ID")
     private Integer id;
     /**
      * 商品ID
      */
+    @Excel(name = "商品ID")
     private Long productId;
     /**
      * 买者ID
      */
+    @Excel(name = "买者ID")
     private Long buyerId;
     /**
      * 核销码
      */
+    @Excel(name = "核销码")
     private String code;
     /**
      * 核销时间
@@ -38,6 +43,7 @@ public class ProductWriteoff extends BaseEntity {
     /**
      * 核销状态
      */
+    @Excel(name = "核销状态", readConverterExp = "1=已核销,2=待核销")
     private Integer status;
     /**
      * 操作者ID
