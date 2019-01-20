@@ -10,7 +10,7 @@
     <form class="form-horizontal m" id="form-product-edit" th:object="${product}">
         <input type="hidden" id="imgPath" name="imgPath" th:field="*{imgPath}"/>
         <input type="hidden" id="picture" name="picture" th:field="*{picture}"/>
-        <input type="hidden" id="introduction" name="introduction" th:field="*{introduction}"/>
+        <input type="hidden" id="introductionEdit" name="introductionEdit"/>
         <input id="id" name="id" th:field="*{id}" type="hidden">
         <div class="form-group">
             <label class="col-sm-3 control-label">商品名称：</label>
@@ -159,7 +159,7 @@
         <div class="form-group" style="margin-bottom: 25px;">
             <label class="col-sm-3 control-label">商品介绍：</label>
             <div class="col-sm-8">
-                <textarea cols="80" id="introductionText" name="introductionText" rows="10" th:field="*{introduction}"
+                <textarea cols="80" id="spjs" name="spjs" rows="10" th:field="*{introduction}"
                           style="width: 100%;height: 100%;"></textarea>
             </div>
         </div>
@@ -266,28 +266,30 @@
             return;
         }
         // 商品介绍
-        var introduction = CKEDITOR.instances.introductionText.getData();
+        var introduction = CKEDITOR.instances.spjs.getData();
         if (introduction == undefined || introduction == "") {
             $.modal.alertError("请先填写当前商品介绍再提交！");
             return;
         }
-        $("#introduction").val(introduction);
+        $("#introductionEdit").val(introduction);
         if ($.validate.form()) {
-            var url = prefix + "/edit";
-            var data = $('#form-product-edit').serialize();
-            var config = {
-                url: url,
-                type: "post",
-                dataType: "json",
-                data: data,
-                success: function (result) {
-                    // 重新加载商品主页面数据
-                    refreshParentIFramePage(DATA_ID.PRODUCT);
-                    // 关闭当前TAB页面
-                    closeCurrentTab("");
-                }
-            };
-            $.ajax(config);
+            $.modal.confirm("确认保存当前商品信息吗？", function () {
+                var url = prefix + "/edit";
+                var data = $('#form-product-edit').serialize();
+                var config = {
+                    url: url,
+                    type: "post",
+                    dataType: "json",
+                    data: data,
+                    success: function (result) {
+                        // 重新加载商品主页面数据
+                        refreshParentIFramePage(DATA_ID.PRODUCT);
+                        // 关闭当前TAB页面
+                        closeCurrentTab("");
+                    }
+                };
+                $.ajax(config);
+            });
         }
     }
 
@@ -322,7 +324,7 @@
 
         // 初始化商品介绍ekeditor组件
         CKEDITOR.config.extraPlugins = 'selectall,notification,notificationaggregator,widgetselection,filetools,lineutils,widget,uploadwidget,uploadimage';
-        CKEDITOR.replace('introductionText', {
+        CKEDITOR.replace('spjs', {
             toolbar: null,
             toolbarGroups: null,
             removeButtons: null,

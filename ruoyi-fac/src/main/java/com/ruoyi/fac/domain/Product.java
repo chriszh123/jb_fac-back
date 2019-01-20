@@ -112,6 +112,10 @@ public class Product extends BaseEntity {
      */
     private String introduction;
     /**
+     * 编辑场景下新的商品介绍内容
+     */
+    private String introductionEdit;
+    /**
      * 发货方式
      */
     @Excel(name = "发货方式", readConverterExp = "1=送货上门,2=核销码")
@@ -432,5 +436,13 @@ public class Product extends BaseEntity {
 
     public void setImgPath(String imgPath) {
         this.imgPath = imgPath;
+    }
+
+    public String getIntroductionEdit() {
+        return introductionEdit;
+    }
+
+    public void setIntroductionEdit(String introductionEdit) {
+        this.introductionEdit = introductionEdit;
     }
 }

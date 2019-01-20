@@ -159,7 +159,7 @@
             <if test="writeoffStart != null  ">writeoff_start = #{writeoffStart},</if>
             <if test="writeoffEnd != null  ">writeoff_end = #{writeoffEnd},</if>
             <if test="picture != null  and picture != ''  ">picture = #{picture},</if>
-            <if test="introduction != null  and introduction != ''  ">introduction = #{introduction},</if>
+            <if test="introduction != null">introduction = #{introduction},</if>
             <if test="shipMode != null  ">ship_mode = #{shipMode},</if>
             <if test="shipCost != null  ">ship_cost = #{shipCost},</if>
             <if test="createTime != null  ">create_time = #{createTime},</if>
