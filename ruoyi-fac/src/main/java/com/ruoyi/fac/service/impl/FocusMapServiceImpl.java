@@ -56,6 +56,7 @@ public class FocusMapServiceImpl implements IFocusMapService {
         focusMap.setCreateTime(now);
         focusMap.setUpdateTime(now);
         focusMap.setIsDeleted(0);
+        focusMap.setPicture(focusMap.getImgPath());
         return focusMapMapper.insertFocusMap(focusMap);
     }
 
@@ -69,6 +70,7 @@ public class FocusMapServiceImpl implements IFocusMapService {
     public int updateFocusMap(FocusMap focusMap) {
         Date now = new Date();
         focusMap.setUpdateTime(now);
+        focusMap.setPicture(focusMap.getImgPath());
         return focusMapMapper.updateFocusMap(focusMap);
     }
 
