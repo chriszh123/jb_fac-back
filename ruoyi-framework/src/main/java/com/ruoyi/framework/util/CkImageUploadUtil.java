@@ -7,6 +7,7 @@
 package com.ruoyi.framework.util;
 
 import com.ruoyi.common.config.Global;
+import com.ruoyi.fac.constant.FacConstant;
 import com.ruoyi.fac.vo.FileVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -134,7 +135,7 @@ public class CkImageUploadUtil {
 //      String imagePath = COSClientUtils.getInstance().getImgUrl(fileName);
 
         // TODO:测试网络图片地址
-        imagePath = "https://www.baidu.com/img/jijian%20pad_13db91458cc0573abbf3055bc9c1d15b.png";
+        imagePath = FacConstant.TEST_IMG_URL;
         result = fileVo.success(1, file.getOriginalFilename(), imagePath, null);
 
         return result;

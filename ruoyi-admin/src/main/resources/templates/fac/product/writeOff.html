@@ -2,6 +2,7 @@
 <html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
 <meta charset="utf-8">
 <head th:include="include :: header"></head>
+<link th:href="@{/ajax/libs/jquery-ui-1.11.4/jquery-ui.css}" rel="stylesheet"/>
 <body class="gray-bg">
 <div class="container-div">
     <div class="row">
@@ -12,7 +13,7 @@
                 <div class="select-list">
                     <ul>
                         <li>
-                            核销id：<input type="text" id="id" name="id"/>
+                            核销ID：<input type="text" id="id" name="id"/>
                         </li>
                         <li>
                             状态：
@@ -33,6 +34,12 @@
             </form>
         </div>
 
+        <div class="btn-group-sm hidden-xs" id="toolbar" role="group">
+            <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="fac:productWriteoff:export">
+                <i class="fa fa-download"></i> 导出
+            </a>
+        </div>
+
         <div class="col-sm-12 select-table table-striped">
             <table id="bootstrap-table" data-mobile-responsive="true"></table>
         </div>
@@ -44,6 +51,10 @@
 </div>
 
 <div th:include="include :: footer"></div>
+<script th:src="@{/fac/fac_common.js}"></script>
+<script th:src="@{/ajax/libs//jquery-qrcode/jquery.qrcode.js}"></script>
+<script th:src="@{/ajax/libs//jquery-qrcode/qrcode.js}"></script>
+<script th:src="@{/ajax/libs//jquery-ui-1.11.4/jquery-ui.js}"></script>
 <script th:inline="javascript">
     var prefix = ctx + "fac/productWriteoff";
 
@@ -57,12 +68,10 @@
             queryParams: {
                 productId: [[${product.id}]]
             },
-            columns: [{
-                checkbox: false
-            },
+            columns: [
                 {
                     field: 'id',
-                    title: '核销记录id',
+                    title: '核销记录ID',
                     visible: true
                 },
                 {
@@ -71,7 +80,7 @@
                     sortable: true,
                     formatter: function (value, row, index) {
                         var actions = [];
-                        actions.push('<a class="btn btn-primary btn-xs" href="#" onclick="writeOffQrCode(\'' + value + '\')">查看</a> ');
+                        actions.push('<a class="btn btn-primary btn-xs" href="#" onclick="writeOffQrCode(\'' + value + '\')">点击查看</a> ');
                         return actions.join('');
                     }
                 },
@@ -110,22 +119,15 @@
             $.modal.alertError("当前核销码值为空，请核对！");
             return;
         }
+        $('#qrcodeCanvas').html("");
         $('#qrcodeCanvas').qrcode({
             text: code
         });
         $("#qrcodeDialog").dialog({
-            height: 340,
-            width: 340,
+            width: 290,
+            height: 320,
             resizable: false,
-            modal: true,
-            position: {//弹框居中显示
-                using: function (pos) {
-                    var topOffset = $(this).css(pos).offset().top;
-                    if (topOffset = 0 || topOffset > 0) {
-                        $(this).css('top', ($(window).height() - 510) / 2);
-                    }
-                }
-            },
+            modal: true
         });
     }
 </script>

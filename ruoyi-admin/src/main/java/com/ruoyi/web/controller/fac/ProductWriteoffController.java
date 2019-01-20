@@ -58,7 +58,7 @@ public class ProductWriteoffController extends BaseController {
     public AjaxResult export(ProductWriteoff productWriteoff) {
         List<ProductWriteoff> list = productWriteoffService.selectProductWriteoffList(productWriteoff);
         ExcelUtil<ProductWriteoff> util = new ExcelUtil<ProductWriteoff>(ProductWriteoff.class);
-        return util.exportExcel(list, "productWriteoff");
+        return util.exportExcel(list, ("核销记录_" + productWriteoff.getId()));
     }
 
     /**

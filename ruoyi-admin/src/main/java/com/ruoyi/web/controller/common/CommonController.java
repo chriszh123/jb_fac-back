@@ -1,5 +1,6 @@
 package com.ruoyi.web.controller.common;
 
+import com.alibaba.fastjson.JSON;
 import com.ruoyi.common.config.Global;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.utils.StringUtils;
@@ -23,7 +24,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -120,6 +120,7 @@ public class CommonController {
                         String fileName = FileUploadUtils.upload(basePath, file[i], false);
                         System.out.println("fileName = " + fileName);
                         String imgUrl = basePath + fileName;
+                        imgUrl = FacConstant.TEST_IMG_URL;
                         // 腾讯云上传图片
 //                        String fileName = COSClientUtils.getInstance().uploadFile2Cos(file[i]);
 //                        String imgUrl = COSClientUtils.getInstance().getImgUrl(fileName);

@@ -87,6 +87,8 @@ public class ProductServiceImpl implements IProductService {
     @Override
     public int updateProduct(Product product) {
         this.resetProductImg(product);
+        // 编辑场景下用introductionEdit字段存储最新的商品介绍内容
+        product.setIntroduction(product.getIntroductionEdit());
         return productMapper.updateProduct(product);
     }
 
@@ -115,7 +117,9 @@ public class ProductServiceImpl implements IProductService {
             return vo;
         }
         Product dstProduct = this.productMapper.selectProductById(product.getId());
-        String pictures = dstProduct.getPicture();
+        // zgf
+//        String pictures = dstProduct.getPicture();
+        String pictures = FacConstant.TEST_IMG_URL;
         if (StringUtils.isNotEmpty(pictures)) {
             vo.setCode(FacConstant.AJAX_CODE_SUCCESS);
             String[] imgPaths = pictures.split(",");

@@ -2,10 +2,13 @@
 <html lang="zh" xmlns:th="http://www.thymeleaf.org">
 <meta charset="utf-8">
 <head th:include="include :: header"></head>
+<link th:href="@{/ajax/libs/bootstrap-fileinput/bootstrap-fileinput.css}" rel="stylesheet"/>
 <body class="white-bg">
 <div class="wrapper wrapper-content animated fadeInRight ibox-content">
     <form class="form-horizontal m" id="form-focusMap-edit" th:object="${focusMap}">
         <input id="id" name="id" th:field="*{id}" type="hidden">
+        <input type="hidden" id="imgPath" name="imgPath"/>
+        <input type="hidden" id="picture" name="picture"/>
         <div class="form-group">
             <label class="col-sm-3 control-label">标题：</label>
             <div class="col-sm-8">
@@ -21,7 +24,23 @@
         <div class="form-group">
             <label class="col-sm-3 control-label">图片：</label>
             <div class="col-sm-8">
-                <input id="picture" name="picture" th:field="*{picture}" class="form-control" type="text">
+                <div class="fileinput fileinput-new" data-provides="fileinput" id="uploadImageDiv">
+                    <div class="fileinput-new thumbnail" style="width: 200px; height: 150px;">
+                        <img alt="" th:src="*{picture}"/>
+                    </div>
+                    <div class="fileinput-preview fileinput-exists thumbnail"
+                         style="max-width: 200px; max-height: 150px;"></div>
+                    <div>
+                        <span class="btn btn-primary btn-file"> <span
+                                class="fileinput-new">选择图片</span> <span
+                                class="btn-success fileinput-exists">更改</span> <input
+                                type="file" name="uploadImage" id="uploadImage"
+                                onchange="uploadCategoryImg()"/></span>
+                        <a href="#" class="btn btn-danger fileinput-exists" data-dismiss="fileinput">移除</a>
+                        <span>请选择1M以内图片</span>
+                    </div>
+                </div>
+                <div id="titleImageError" style="color: #a94442"></div>
             </div>
         </div>
         <div class="form-group">
@@ -55,6 +74,7 @@
     </form>
 </div>
 <div th:include="include::footer"></div>
+<script th:src="@{/ajax/libs//bootstrap-fileinput/bootstrap-fileinput.js}"></script>
 <script type="text/javascript">
     var prefix = ctx + "fac/focusMap"
     $("#form-focusMap-edit").validate({
@@ -79,6 +99,33 @@
             }
         }
     });
+
+    function uploadCategoryImg() {
+        var fileObj = document.getElementById("uploadImage").files[0]; // js 获取文件对象
+        if (typeof (fileObj) == "undefined" || fileObj.size <= 0) {
+            return;
+        }
+        var formdata = new FormData();
+        formdata.append("action", "UploadVMKImagePath");
+        formdata.append("file", fileObj); //加入文件对象
+        var uploadUrl = ctx + "product/picture/batchUpload";
+        $.ajax({
+            url: uploadUrl,
+            data: formdata,
+            type: "post",
+            processData: false,
+            contentType: false,
+            success: function (result) {
+                if (result && result.code && result.code == "0") {
+                    $('#picture').val(result.fileName);
+                    $('#imgPath').val(result.imgPath);
+                } else {
+                    $('#picture').val("");
+                    $('#imgPath').val("");
+                }
+            }
+        });
+    }
 
     function submitHandler() {
         if ($.validate.form()) {

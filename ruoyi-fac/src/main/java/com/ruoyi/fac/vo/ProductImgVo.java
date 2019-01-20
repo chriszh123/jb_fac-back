@@ -26,11 +26,11 @@ public class ProductImgVo implements Serializable {
     private String fileName;
     private String imgPath;
     private String[] imgPaths;
+
     /**
      * [{caption: "People-1.jpg", size: 576237, width: "120px", url: "/site/file-delete", key: 1}]
      */
     private List<Map<String, Object>> cfg = new ArrayList<>();
-
 
     public String getCode() {
         return code;

@@ -1,10 +1,9 @@
 package com.ruoyi.fac.domain;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.common.annotation.Excel;
+import com.ruoyi.common.base.BaseEntity;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import com.ruoyi.common.base.BaseEntity;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -111,6 +110,10 @@ public class Product extends BaseEntity {
      * 商品介绍内容url
      */
     private String introduction;
+    /**
+     * 编辑场景下新的商品介绍内容
+     */
+    private String introductionEdit;
     /**
      * 发货方式
      */
@@ -432,5 +435,13 @@ public class Product extends BaseEntity {
 
     public void setImgPath(String imgPath) {
         this.imgPath = imgPath;
+    }
+
+    public String getIntroductionEdit() {
+        return introductionEdit;
+    }
+
+    public void setIntroductionEdit(String introductionEdit) {
+        this.introductionEdit = introductionEdit;
     }
 }

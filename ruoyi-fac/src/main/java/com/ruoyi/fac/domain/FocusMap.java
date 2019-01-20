@@ -32,6 +32,7 @@ public class FocusMap extends BaseEntity {
      * 图片
      */
     private String picture;
+    private String imgPath;
     /**
      * 跳转类型:1-页面；2-商品；3-分类
      */
@@ -138,6 +139,15 @@ public class FocusMap extends BaseEntity {
 
     public Integer getIsDeleted() {
         return isDeleted;
+    }
+
+
+    public String getImgPath() {
+        return imgPath;
+    }
+
+    public void setImgPath(String imgPath) {
+        this.imgPath = imgPath;
     }
 
     @Override
