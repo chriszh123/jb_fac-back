@@ -51,6 +51,7 @@ public class ProductCategoryServiceImpl implements IProductCategoryService {
      */
     @Override
     public int insertProductCategory(ProductCategory productCategory) {
+        productCategory.setPicture(productCategory.getImgPath());
         return productCategoryMapper.insertProductCategory(productCategory);
     }
 
@@ -62,6 +63,7 @@ public class ProductCategoryServiceImpl implements IProductCategoryService {
      */
     @Override
     public int updateProductCategory(ProductCategory productCategory) {
+        productCategory.setPicture(productCategory.getImgPath());
         return productCategoryMapper.updateProductCategory(productCategory);
     }
 

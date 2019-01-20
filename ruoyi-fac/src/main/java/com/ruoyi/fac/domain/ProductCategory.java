@@ -32,6 +32,7 @@ public class ProductCategory extends BaseEntity {
      * 图片
      */
     private String picture;
+    private String imgPath;
     /**
      * 操作者ID
      */
@@ -100,6 +101,14 @@ public class ProductCategory extends BaseEntity {
 
     public Integer getIsDeleted() {
         return isDeleted;
+    }
+
+    public String getImgPath() {
+        return imgPath;
+    }
+
+    public void setImgPath(String imgPath) {
+        this.imgPath = imgPath;
     }
 
     @Override

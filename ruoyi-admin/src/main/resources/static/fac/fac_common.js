@@ -6,7 +6,8 @@ var DATA_ID = {
 
 // 各对象预置数量
 var OBJECT_COUNT = {
-    "PRODUCT_IMG": 5
+    "PRODUCT_IMG": 5,
+    "PRODUCT_IMG_CATEGORY": 1
 };
 
 // 订单状态
@@ -290,6 +291,9 @@ var initFileInput = function (id, uploadUrl, maxFilesNum) {
             lastImgPath = lastImgPath + "," + data.response.imgPath;
             $('#picture').val(lastPicture);
             $('#imgPath').val(lastImgPath);
+        } else {
+            $('#picture').val("");
+            $('#imgPath').val("");
         }
     }).on("filebatchuploadsuccess", function (event, data, previewId, index) {    //一个文件上传成功
         // 同步上传图片时，用filebatchuploadsuccess事件处理回调
@@ -307,6 +311,9 @@ var initFileInput = function (id, uploadUrl, maxFilesNum) {
             lastImgPath = lastImgPath + "," + data.response.imgPath;
             $('#picture').val(lastPicture);
             $('#imgPath').val(lastImgPath);
+        } else {
+            $('#picture').val("");
+            $('#imgPath').val("");
         }
     }).on('fileerror', function (event, data, msg) {  //一个文件上传失败
         console.log('文件上传失败！' + data.id);

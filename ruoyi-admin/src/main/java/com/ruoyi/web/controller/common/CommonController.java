@@ -120,6 +120,7 @@ public class CommonController {
                         String fileName = FileUploadUtils.upload(basePath, file[i], false);
                         System.out.println("fileName = " + fileName);
                         String imgUrl = basePath + fileName;
+                        imgUrl = FacConstant.TEST_IMG_URL;
                         // 腾讯云上传图片
 //                        String fileName = COSClientUtils.getInstance().uploadFile2Cos(file[i]);
 //                        String imgUrl = COSClientUtils.getInstance().getImgUrl(fileName);
