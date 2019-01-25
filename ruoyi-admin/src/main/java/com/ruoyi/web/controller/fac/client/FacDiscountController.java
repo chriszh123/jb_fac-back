@@ -7,7 +7,7 @@
 package com.ruoyi.web.controller.fac.client;
 
 import com.ruoyi.fac.enums.FacCode;
-import com.ruoyi.fac.vo.client.BannerVo;
+import com.ruoyi.fac.vo.client.CouponsVo;
 import com.ruoyi.fac.vo.client.FacResult;
 import com.ruoyi.framework.web.base.BaseController;
 import org.apache.commons.collections.CollectionUtils;
@@ -32,11 +32,19 @@ public class FacDiscountController extends BaseController {
     @PostMapping("/coupons")
     @ResponseBody
     public FacResult list() {
-        List<BannerVo> bannerVos = new ArrayList<>();
-        if (CollectionUtils.isNotEmpty(bannerVos)) {
-            return FacResult.success(bannerVos);
+        List<CouponsVo> couponsVos = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(couponsVos)) {
+            return FacResult.success(couponsVos);
         } else {
             return FacResult.error(FacCode.HAS_NO_DATA.getCode(), FacCode.HAS_NO_DATA.getMsg());
         }
     }
+
+    @PostMapping("/my")
+    @ResponseBody
+    public FacResult my(String token, int status) {
+        return FacResult.error(FacCode.HAS_NO_DATA.getCode(), FacCode.HAS_NO_DATA.getMsg());
+    }
+
+
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2019 Wisedu All rights reserved
+ * Copyright (C) 2006-2019 zgf All rights reserved
  * Author：zhangguifeng
  * Date：2019/1/17
  * Description: 腾讯云文件操作工具类

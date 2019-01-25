@@ -8,6 +8,9 @@ package com.ruoyi.web.controller.fac.client;
 
 import com.ruoyi.fac.enums.FacCode;
 import com.ruoyi.fac.vo.client.FacResult;
+import com.ruoyi.fac.vo.client.ShippingAddress;
+import com.ruoyi.fac.vo.client.UserAmountVo;
+import com.ruoyi.fac.vo.client.UserDetailVo;
 import com.ruoyi.framework.web.base.BaseController;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,5 +31,30 @@ public class FacUserController extends BaseController {
     @ResponseBody
     public FacResult checkToken(String token) {
         return FacResult.error(FacCode.HAS_NO_DATA.getCode(), FacCode.HAS_NO_DATA.getMsg());
+    }
+
+    @PostMapping("/shipping-address/default")
+    @ResponseBody
+    public FacResult defaultShippingAddress(String token) {
+        ShippingAddress shippingAddress = new ShippingAddress();
+
+
+        return FacResult.success(shippingAddress);
+    }
+
+    @PostMapping("/detail")
+    @ResponseBody
+    public FacResult detail(String token) {
+        UserDetailVo detailVo = new UserDetailVo();
+
+        return FacResult.success(detailVo);
+    }
+
+    @PostMapping("/amount")
+    @ResponseBody
+    public FacResult amount(String token) {
+        UserAmountVo amountVo = new UserAmountVo();
+
+        return FacResult.success(amountVo);
     }
 }

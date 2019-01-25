@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2019 Wisedu All rights reserved
+ * Copyright (C) 2006-2019 zgf All rights reserved
  * Author：zhangguifeng
  * Date：2019/1/8
  * Description: Fac常量定义类
