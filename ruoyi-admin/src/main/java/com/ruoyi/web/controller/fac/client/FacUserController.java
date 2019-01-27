@@ -17,6 +17,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * 用户相关接口
  *
@@ -56,5 +59,36 @@ public class FacUserController extends BaseController {
         UserAmountVo amountVo = new UserAmountVo();
 
         return FacResult.success(amountVo);
+    }
+
+    @PostMapping("/shipping-address/list")
+    @ResponseBody
+    public FacResult shippingAddressList(String token) {
+        List<ShippingAddress> shippingAddressList = new ArrayList<>();
+
+        return FacResult.success(shippingAddressList);
+    }
+
+    @PostMapping("/shipping-address/detail")
+    @ResponseBody
+    public FacResult defaultShippingDetail(String token, long id) {
+        ShippingAddress shippingAddress = new ShippingAddress();
+
+
+        return FacResult.success(shippingAddress);
+    }
+
+    @PostMapping("/shipping-address/update")
+    @ResponseBody
+    public FacResult defaultShippingUpdate(ShippingAddress shippingAddress) {
+
+        return FacResult.success("");
+    }
+
+    @PostMapping("/shipping-address/delete")
+    @ResponseBody
+    public FacResult defaultShippingDelete(String token, long id) {
+
+        return FacResult.success("");
     }
 }

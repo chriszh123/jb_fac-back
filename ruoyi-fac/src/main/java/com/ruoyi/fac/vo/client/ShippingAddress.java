@@ -17,6 +17,7 @@ import java.io.Serializable;
 public class ShippingAddress implements Serializable {
     private static final long serialVersionUID = 8186697176895269078L;
 
+    private String token;
     /**
      * "天元西路牛首工业园区"
      */
@@ -30,12 +31,18 @@ public class ShippingAddress implements Serializable {
      * "南京市"
      */
     private String cityStr;
+    /**
+     * 邮政编码
+     */
     private String code;
     private String dateAdd;
     private String dateUpdate;
     private long districtId;
     private long id;
-    private boolean isDefault;
+    /**
+     * 是否为默认地址
+     */
+    private boolean isDefault = false;
     /**
      * "张三丰"
      */
@@ -193,5 +200,13 @@ public class ShippingAddress implements Serializable {
 
     public void setUserId(long userId) {
         this.userId = userId;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 }

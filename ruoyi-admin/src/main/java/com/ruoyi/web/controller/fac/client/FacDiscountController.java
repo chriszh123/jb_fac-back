@@ -43,7 +43,12 @@ public class FacDiscountController extends BaseController {
     @PostMapping("/my")
     @ResponseBody
     public FacResult my(String token, int status) {
-        return FacResult.error(FacCode.HAS_NO_DATA.getCode(), FacCode.HAS_NO_DATA.getMsg());
+        List<CouponsVo> couponsVos = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(couponsVos)) {
+            return FacResult.success(couponsVos);
+        } else {
+            return FacResult.error(FacCode.HAS_NO_DATA.getCode(), FacCode.HAS_NO_DATA.getMsg());
+        }
     }
 
 

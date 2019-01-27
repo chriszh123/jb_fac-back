@@ -19,15 +19,19 @@ public class CouponsVo implements Serializable {
 
     private String dateAdd;
     private String dateEnd;
+    private String dateStart;
     private int dateEndType;
     private int dateStartType;
     private long id;
+    private long pid;
+    private String pwd;
     /**
      * 39.90
      */
     private double moneyHreshold;
     private double moneyMax;
     private double moneyMin;
+    private double money;
     private String name;
     private int needScore;
     private int needSignedContinuous;
@@ -199,5 +203,37 @@ public class CouponsVo implements Serializable {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getDateStart() {
+        return dateStart;
+    }
+
+    public void setDateStart(String dateStart) {
+        this.dateStart = dateStart;
+    }
+
+    public long getPid() {
+        return pid;
+    }
+
+    public void setPid(long pid) {
+        this.pid = pid;
+    }
+
+    public String getPwd() {
+        return pwd;
+    }
+
+    public void setPwd(String pwd) {
+        this.pwd = pwd;
+    }
+
+    public double getMoney() {
+        return money;
+    }
+
+    public void setMoney(double money) {
+        this.money = money;
     }
 }
