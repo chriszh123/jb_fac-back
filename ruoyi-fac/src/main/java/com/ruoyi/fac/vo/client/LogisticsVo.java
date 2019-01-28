@@ -26,10 +26,6 @@ public class LogisticsVo implements Serializable {
      */
     private String feeTypeStr;
     private List<LogisticsDetailVo> details = new ArrayList<>();
-    private CategoryVo category;
-    private List<PicsVo> pics = new ArrayList<>();
-    private String content;
-    private GoodVo basicInfo;
 
     public boolean isFree() {
         return isFree;
@@ -61,37 +57,5 @@ public class LogisticsVo implements Serializable {
 
     public void setDetails(List<LogisticsDetailVo> details) {
         this.details = details;
-    }
-
-    public CategoryVo getCategory() {
-        return category;
-    }
-
-    public void setCategory(CategoryVo category) {
-        this.category = category;
-    }
-
-    public List<PicsVo> getPics() {
-        return pics;
-    }
-
-    public void setPics(List<PicsVo> pics) {
-        this.pics = pics;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public GoodVo getBasicInfo() {
-        return basicInfo;
-    }
-
-    public void setBasicInfo(GoodVo basicInfo) {
-        this.basicInfo = basicInfo;
     }
 }

@@ -1,14 +1,19 @@
 package com.ruoyi.fac.service.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.ruoyi.fac.enums.FocusStatus;
+import com.ruoyi.fac.util.TimeUtils;
+import com.ruoyi.fac.vo.client.BannerVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.fac.mapper.FocusMapMapper;
 import com.ruoyi.fac.domain.FocusMap;
 import com.ruoyi.fac.service.IFocusMapService;
 import com.ruoyi.common.support.Convert;
+import org.springframework.util.CollectionUtils;
 
 /**
  * 焦点图 服务层实现
@@ -83,6 +88,48 @@ public class FocusMapServiceImpl implements IFocusMapService {
     @Override
     public int deleteFocusMapByIds(String ids) {
         return focusMapMapper.deleteFocusMapByIds(Convert.toStrArray(ids));
+    }
+
+    /**
+     * 当前轮播图片
+     *
+     * @return
+     */
+    @Override
+    public List<BannerVo> selectFocusMapList() {
+        List<BannerVo> bannerVos = new ArrayList<>();
+        FocusMap focusMap = new FocusMap();
+        List<FocusMap> focusMaps = this.selectFocusMapList(focusMap);
+        if (CollectionUtils.isEmpty(focusMaps)) {
+            return bannerVos;
+        }
+        BannerVo bannerVo = null;
+        for (int i = 0, size = focusMaps.size(); i < size; i++) {
+            FocusMap focusMap1 = focusMaps.get(i);
+            // 跳转类型:1-页面；2-商品；3-分类
+            if (focusMap1.getJumpType() == null || focusMap1.getJumpType().intValue() != 2) {
+                continue;
+            }
+            bannerVo = new BannerVo();
+            bannerVos.add(bannerVo);
+            bannerVo.setBusinessId(Long.valueOf(focusMap1.getJumpParams()));
+            bannerVo.setDateAdd(TimeUtils.date2Str(focusMap1.getCreateTime(), TimeUtils.DEFAULT_DATE_TIME_FORMAT_HH_MM_SS));
+            if (focusMap1.getUpdateTime() != null) {
+                bannerVo.setDateUpdate(TimeUtils.date2Str(focusMap1.getUpdateTime(), TimeUtils.DEFAULT_DATE_TIME_FORMAT_HH_MM_SS));
+            }
+            bannerVo.setId(focusMap1.getId());
+            bannerVo.setLinkUrl("");
+            bannerVo.setPaixu(focusMap1.getSort());
+            bannerVo.setPicUrl(focusMap1.getPicture());
+            bannerVo.setRemark("");
+            bannerVo.setStatus(focusMap1.getStatus());
+            bannerVo.setStatusStr(FocusStatus.getNameByCode(focusMap1.getStatus().toString()));
+            bannerVo.setTitle(focusMap1.getTitle());
+            bannerVo.setType(focusMap1.getJumpType().toString());
+            bannerVo.setUserId(focusMap1.getOperatorId());
+        }
+
+        return bannerVos;
     }
 
 }

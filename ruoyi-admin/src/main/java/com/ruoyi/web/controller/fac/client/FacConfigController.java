@@ -27,6 +27,12 @@ import java.util.HashMap;
 @RequestMapping("/fac/config")
 public class FacConfigController extends BaseController {
 
+    /**
+     * 查询相关系统参数配置信息
+     *
+     * @param key
+     * @return
+     */
     @PostMapping("/get-value")
     @ResponseBody
     public FacResult getValue(String key) {
@@ -38,6 +44,5 @@ public class FacConfigController extends BaseController {
         } else {
             return FacResult.error(FacCode.HAS_NO_DATA.getCode(), FacCode.HAS_NO_DATA.getMsg());
         }
-
     }
 }

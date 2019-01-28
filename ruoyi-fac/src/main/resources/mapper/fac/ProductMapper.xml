@@ -205,4 +205,16 @@
         </if>
     </select>
 
+    <select id="goodsList" resultMap="ProductResult">
+        <include refid="selectProductVo"/>
+        <where>
+            <if test="categoryId != null ">and category_id = #{categoryId}</if>
+            <if test="name != null  and name != '' ">and name like "%"#{name}"%"</if>
+        </where>
+        order by sort desc, create_time desc
+        <if test="page != null and pageSize != null">
+            limit page, pageSize
+        </if>
+    </select>
+
 </mapper>

@@ -2,6 +2,10 @@ package com.ruoyi.fac.service;
 
 import com.ruoyi.fac.domain.Product;
 import com.ruoyi.fac.vo.ProductImgVo;
+import com.ruoyi.fac.vo.client.GoodDetailVo;
+import com.ruoyi.fac.vo.client.GoodVo;
+import com.ruoyi.fac.vo.client.GoodsPriceVo;
+import com.ruoyi.fac.vo.client.LogisticsVo;
 
 import java.util.List;
 
@@ -59,4 +63,30 @@ public interface IProductService {
      * @return
      */
     ProductImgVo getProductImgs(Product product);
+
+    /**
+     * 查询指定条件下的商品数据
+     *
+     * @param categoryId
+     * @param nameLike
+     * @param page
+     * @param pageSize
+     * @return
+     */
+    List<GoodVo> goodsList(String categoryId, String nameLike, Integer page, Integer pageSize);
+
+    /**
+     * 商品详情
+     *
+     * @param id
+     */
+    GoodDetailVo goodsDetail(String id);
+
+    /**
+     * 商品价格
+     *
+     * @param id
+     * @return
+     */
+    GoodsPriceVo goodPrice(String id);
 }

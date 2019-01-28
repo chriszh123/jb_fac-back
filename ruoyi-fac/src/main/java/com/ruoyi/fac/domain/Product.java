@@ -63,6 +63,11 @@ public class Product extends BaseEntity {
     @Excel(name = "库存数量")
     private Integer inventoryQuantity;
     /**
+     * 订单数量
+     */
+    @Excel(name = "订单数量")
+    private Integer orderCount;
+    /**
      * 每人限购数量
      */
     private Integer limitQuantity;
@@ -443,5 +448,13 @@ public class Product extends BaseEntity {
 
     public void setIntroductionEdit(String introductionEdit) {
         this.introductionEdit = introductionEdit;
+    }
+
+    public Integer getOrderCount() {
+        return orderCount;
+    }
+
+    public void setOrderCount(Integer orderCount) {
+        this.orderCount = orderCount;
     }
 }

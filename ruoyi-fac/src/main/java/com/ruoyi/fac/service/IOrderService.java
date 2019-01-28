@@ -4,6 +4,7 @@ import com.ruoyi.fac.domain.Order;
 import com.ruoyi.fac.vo.FacStaticVo;
 import com.ruoyi.fac.vo.OrderDiagramVo;
 import com.ruoyi.fac.vo.OrderVo;
+import com.ruoyi.fac.vo.client.GoodVo;
 
 import java.util.List;
 

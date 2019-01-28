@@ -6,12 +6,15 @@
  */
 package com.ruoyi.web.controller.fac.client;
 
+import com.ruoyi.fac.domain.Buyer;
 import com.ruoyi.fac.enums.FacCode;
+import com.ruoyi.fac.service.IBuyerService;
 import com.ruoyi.fac.vo.client.FacResult;
 import com.ruoyi.fac.vo.client.ShippingAddress;
 import com.ruoyi.fac.vo.client.UserAmountVo;
 import com.ruoyi.fac.vo.client.UserDetailVo;
 import com.ruoyi.framework.web.base.BaseController;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,10 +33,24 @@ import java.util.List;
 @RequestMapping("/fac/user")
 public class FacUserController extends BaseController {
 
+    @Autowired
+    private IBuyerService buyerService;
+
+    /**
+     * 校验当前用户token
+     *
+     * @param token
+     * @return
+     */
     @PostMapping("/check-token")
     @ResponseBody
     public FacResult checkToken(String token) {
-        return FacResult.error(FacCode.HAS_NO_DATA.getCode(), FacCode.HAS_NO_DATA.getMsg());
+        Buyer buyer = this.buyerService.selectBuyerByToken(token);
+        if (buyer == null) {
+            return FacResult.error(FacCode.HAS_NO_DATA.getCode(), FacCode.HAS_NO_DATA.getMsg());
+        } else {
+            return FacResult.success("");
+        }
     }
 
     @PostMapping("/shipping-address/default")

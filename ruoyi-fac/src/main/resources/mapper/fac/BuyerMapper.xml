@@ -8,6 +8,7 @@
         <result property="id" column="id"/>
         <result property="nickName" column="nick_name"/>
         <result property="name" column="name"/>
+        <result property="token" column="token"/>
         <result property="phoneNumber" column="phone_number"/>
         <result property="balance" column="balance"/>
         <result property="points" column="points"/>
@@ -30,6 +31,7 @@
             <if test="id != null ">and id = #{id}</if>
             <if test="nickName != null  and nickName != '' ">and nick_name like "%"#{nickName}"%"</if>
             <if test="name != null  and name != '' ">and name = #{name}</if>
+            <if test="token != null  and token != '' ">and token = #{token}</if>
             <if test="phoneNumber != null  and phoneNumber != '' ">and phone_number like "%"#{phoneNumber}"%"</if>
             <if test="balance != null ">and balance = #{balance}</if>
             <if test="points != null ">and points = #{points}</if>
@@ -54,6 +56,7 @@
             <if test="id != null  ">id,</if>
             <if test="nickName != null  and nickName != ''  ">nick_name,</if>
             <if test="name != null  and name != ''  ">name,</if>
+            <if test="token != null  and token != ''  ">token,</if>
             <if test="phoneNumber != null  and phoneNumber != ''  ">phone_number,</if>
             <if test="balance != null  ">balance,</if>
             <if test="points != null  ">points,</if>
@@ -69,6 +72,7 @@
             <if test="id != null  ">#{id},</if>
             <if test="nickName != null  and nickName != ''  ">#{nickName},</if>
             <if test="name != null  and name != ''  ">#{name},</if>
+            <if test="token != null  and token != ''  ">#{token},</if>
             <if test="phoneNumber != null  and phoneNumber != ''  ">#{phoneNumber},</if>
             <if test="balance != null  ">#{balance},</if>
             <if test="points != null  ">#{points},</if>
@@ -129,6 +133,11 @@
         <if test="endDate != null">
             and DATE_FORMAT(create_time,'%Y-%m-%d') &lt;= DATE_FORMAT(#{endDate},'%Y-%m-%d')
         </if>
+    </select>
+
+    <select id="selectBuyerByToken" parameterType="String" resultMap="BuyerResult">
+        <include refid="selectBuyerVo"/>
+        where token = #{token}
     </select>
 
 </mapper>

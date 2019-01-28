@@ -13,6 +13,7 @@ CREATE TABLE `fac_product` (
   `business_id` int(10) NOT NULL COMMENT '所属商家',
   `original_price` decimal(8,2) NOT NULL DEFAULT '0.0' COMMENT '原价',
   `inventory_quantity` tinyint(4) NOT NULL DEFAULT '0' COMMENT '库存数量',
+  `order_count` tinyint(4) NOT NULL DEFAULT '0' COMMENT '订单数量',
   `limit_quantity` tinyint(4) NOT NULL DEFAULT '0' COMMENT '每人限购数量',
   `vm_buyer_quantity` tinyint(4) NOT NULL DEFAULT '0' COMMENT '虚拟购买人数',
   `distribution` decimal(8,2) NOT NULL DEFAULT '0.0' COMMENT '分销奖金',
@@ -42,6 +43,7 @@ CREATE TABLE `fac_product_category` (
   `sort` tinyint(2) NOT NULL COMMENT '排序',
   `name` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '类目名称',
   `picture` varchar(1024) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '图片',
+  `status` tinyint(2) NOT NULL COMMENT '状态:1-显示；2-隐藏',
   `create_time` datetime NOT NULL COMMENT '创建时间',
   `update_time` datetime NOT NULL COMMENT '最近更新时间',
   `operator_id` bigint(20) DEFAULT NULL COMMENT '操作者ID',
@@ -153,11 +155,11 @@ CREATE TABLE `fac_buyer` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `nick_name` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '用户昵称',
   `name` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '真实姓名 ',
-  `phone_number` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '手机号',
+  `token` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'token ',
   `balance` decimal(8,2) NOT NULL COMMENT '余额:分销的奖金',
   `points` tinyint(4) NOT NULL COMMENT '积分',
   `registry_time` datetime NOT NULL COMMENT '注册日期,第一次使用本产品时间',
-  `harvest_address` varchar(2048) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '收获地址',
+  `address_id` bigint(20) DEFAULT NULL COMMENT '操作者ID',
   `create_time` datetime NOT NULL COMMENT '创建时间',
   `update_time` datetime NOT NULL COMMENT '最近更新时间',
   `operator_id` bigint(20) DEFAULT NULL COMMENT '操作者ID',
@@ -243,3 +245,30 @@ CREATE TABLE `fac_menu` (
   `is_deleted` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否删除',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='菜单管理表';
+
+
+-- --------------------------
+-- 12、用户收货地址表
+-- --------------------------
+drop table if exists `fac_buyer_address`;
+CREATE TABLE `fac_buyer_address` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `token` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '用户token ',
+  `address` varchar(1024) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '用户昵称',
+  `provinceId` int(10)  NOT NULL COMMENT '省id ',
+  `province_str` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '省名称',
+  `cityId` int(10)  NOT NULL COMMENT '市id ',
+  `city_str` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '市名称',
+  `districtId` int(10)  NOT NULL COMMENT '区id ',
+  `district_str` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '区名称',
+  `linkMan` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '联系人',
+  `phone_number` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '手机号',
+  `code` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '邮政编码',
+  `default` tinyint(1) NOT NULL COMMENT '是否为默认地址',
+  `create_time` datetime NOT NULL COMMENT '创建时间',
+  `update_time` datetime NOT NULL COMMENT '最近更新时间',
+  `operator_id` bigint(20) DEFAULT NULL COMMENT '操作者ID',
+  `operator_name` varchar(60) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL COMMENT '操作者姓名',
+  `is_deleted` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否删除',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='买者用户收货地址表';

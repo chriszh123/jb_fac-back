@@ -31,6 +31,10 @@ public class Buyer extends BaseEntity {
     @Excel(name = "真实姓名")
     private String name;
     /**
+     * token
+     */
+    private String token;
+    /**
      * 手机号
      */
     @Excel(name = "手机号")
@@ -167,6 +171,14 @@ public class Buyer extends BaseEntity {
 
     public void setProdIds(String[] prodIds) {
         this.prodIds = prodIds;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 
     @Override

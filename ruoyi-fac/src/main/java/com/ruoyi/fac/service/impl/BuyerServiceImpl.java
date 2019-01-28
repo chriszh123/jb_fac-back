@@ -264,6 +264,20 @@ public class BuyerServiceImpl implements IBuyerService {
         return vo;
     }
 
+    /**
+     * 查询指定token对应的用户
+     *
+     * @param token
+     * @return
+     */
+    @Override
+    public Buyer selectBuyerByToken(String token) {
+        if (StringUtils.isEmpty(token)) {
+            return null;
+        }
+        return this.buyerMapper.selectBuyerByToken(token);
+    }
+
     private boolean checkProdBuyed(String prodId, List<BuyerBusiness> buyerBusinesses) {
         if (StringUtils.isEmpty(prodId) || CollectionUtils.isEmpty(buyerBusinesses)) {
             return false;

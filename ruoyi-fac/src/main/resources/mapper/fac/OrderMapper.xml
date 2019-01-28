@@ -192,5 +192,4 @@
             and DATE_FORMAT(create_time,'%Y-%m-%d') &lt;= DATE_FORMAT(#{endDate},'%Y-%m-%d')
         </if>
     </select>
-
 </mapper>

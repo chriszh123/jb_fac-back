@@ -26,16 +26,27 @@ import java.util.HashMap;
 @RequestMapping("/fac/score")
 public class FacScoreController extends BaseController {
 
+    /**
+     * 积分派送规则
+     *
+     * @param code
+     * @return
+     */
     @PostMapping("/send/rule")
     @ResponseBody
     public FacResult sendRule(String code) {
         return FacResult.error(FacCode.HAS_NO_DATA.getCode(), FacCode.HAS_NO_DATA.getMsg());
     }
 
+    /**
+     * 今日签到所得积分
+     *
+     * @param token
+     * @return
+     */
     @PostMapping("/today-signed")
     @ResponseBody
     public FacResult todaySigned(String token) {
-
 
 
         return FacResult.error(FacCode.HAS_NO_DATA.getCode(), FacCode.HAS_NO_DATA.getMsg());

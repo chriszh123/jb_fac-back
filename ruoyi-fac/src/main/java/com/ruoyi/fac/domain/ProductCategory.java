@@ -34,6 +34,11 @@ public class ProductCategory extends BaseEntity {
     private String picture;
     private String imgPath;
     /**
+     * 状态:1-显示；2-隐藏
+     */
+    @Excel(name = "状态", readConverterExp = "1=显示,2=隐藏")
+    private Integer status;
+    /**
      * 操作者ID
      */
     private Long operatorId;
@@ -109,6 +114,14 @@ public class ProductCategory extends BaseEntity {
 
     public void setImgPath(String imgPath) {
         this.imgPath = imgPath;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
     }
 
     @Override

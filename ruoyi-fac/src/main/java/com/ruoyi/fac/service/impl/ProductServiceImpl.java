@@ -4,16 +4,24 @@ import com.ruoyi.common.support.Convert;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.fac.constant.FacConstant;
 import com.ruoyi.fac.domain.Product;
+import com.ruoyi.fac.domain.ProductCategory;
+import com.ruoyi.fac.enums.FocusStatus;
+import com.ruoyi.fac.enums.ProductStatus;
+import com.ruoyi.fac.mapper.ProductCategoryMapper;
 import com.ruoyi.fac.mapper.ProductMapper;
 import com.ruoyi.fac.service.IProductService;
 import com.ruoyi.fac.util.FacFileUtils;
 import com.ruoyi.fac.util.TimeUtils;
 import com.ruoyi.fac.vo.ProductImgVo;
+import com.ruoyi.fac.vo.client.*;
+import com.ruoyi.fac.vo.condition.QueryGoodVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
+import java.sql.Time;
 import java.util.*;
 
 /**
@@ -28,6 +36,8 @@ public class ProductServiceImpl implements IProductService {
 
     @Autowired
     private ProductMapper productMapper;
+    @Autowired
+    private ProductCategoryMapper productCategoryMapper;
 
     /**
      * 查询商品信息
@@ -155,4 +165,175 @@ public class ProductServiceImpl implements IProductService {
         }
     }
 
+    /**
+     * 查询指定条件下的商品数据
+     *
+     * @param categoryId
+     * @param nameLike
+     * @param page
+     * @param pageSize
+     * @return
+     */
+    @Override
+    public List<GoodVo> goodsList(String categoryId, String nameLike, Integer page, Integer pageSize) {
+        List<GoodVo> goodVos = new ArrayList<>();
+        QueryGoodVo vo = new QueryGoodVo();
+        if (StringUtils.isNotEmpty(categoryId)) {
+            vo.setCategoryId(categoryId);
+        }
+        if (StringUtils.isNotEmpty(nameLike)) {
+            vo.setName(nameLike);
+        }
+        if (page != null && pageSize != null && pageSize > 0) {
+            vo.setPage(page);
+            vo.setPageSize(pageSize);
+        }
+        List<Product> products = this.productMapper.goodsList(vo);
+        if (!CollectionUtils.isEmpty(products)) {
+            GoodVo goodVo = null;
+            for (int i = 0, size = products.size(); i < size; i++) {
+                Product product = products.get(i);
+                goodVo = this.convertGoodVo(product);
+                goodVos.add(goodVo);
+
+            }
+        }
+
+        return goodVos;
+    }
+
+    /**
+     * 商品详情
+     *
+     * @param id
+     */
+    @Override
+    public GoodDetailVo goodsDetail(String id) {
+        if (StringUtils.isEmpty(id)) {
+            return null;
+        }
+        GoodDetailVo vo = new GoodDetailVo();
+        Product product = this.productMapper.selectProductById(Long.valueOf(id));
+        if (product == null || product.getIsDeleted() == 1) {
+            return null;
+        }
+        // 当前商品所属商品分类信息
+        if (product.getCategoryId() != null) {
+            ProductCategory productCategory = this.productCategoryMapper.selectProductCategoryById(product.getCategoryId());
+            if (productCategory != null) {
+                CategoryVo category = new CategoryVo();
+                category.setDateAdd(TimeUtils.date2Str(productCategory.getCreateTime(), TimeUtils.DEFAULT_DATE_TIME_FORMAT_HH_MM_SS));
+                category.setIcon(productCategory.getPicture());
+                category.setId(productCategory.getId());
+                category.setUse(FocusStatus.VISIBLE.getValue().equals(productCategory.getStatus()));
+                category.setKey("");
+                category.setName(productCategory.getName());
+                category.setPaixu(productCategory.getSort());
+                category.setPid(0);
+                category.setType("");
+                category.setUserId(productCategory.getOperatorId());
+            }
+        }
+        // 商品图片
+        if (StringUtils.isNotEmpty(product.getPicture())) {
+            List<PicsVo> pics = new ArrayList<>();
+            List<String> picList = Arrays.asList(product.getPicture().split(","));
+            for (int i = 0, size = picList.size(); i < size; i++) {
+                PicsVo picsVo = new PicsVo();
+                pics.add(picsVo);
+                picsVo.setGoodsId(product.getId());
+                picsVo.setId(product.getId() + i);
+                picsVo.setPic(picList.get(i));
+                picsVo.setUserId(product.getOperatorId());
+            }
+            vo.setPics(pics);
+        }
+        // 商品介绍
+        vo.setContent(product.getIntroduction());
+        // 商品基本信息
+        GoodVo basicInfo = this.convertGoodVo(product);
+        vo.setBasicInfo(basicInfo);
+
+        return vo;
+    }
+
+    /**
+     * 商品价格
+     *
+     * @param id
+     * @return
+     */
+    @Override
+    public GoodsPriceVo goodPrice(String id) {
+        if (StringUtils.isEmpty(id)) {
+            return null;
+        }
+        Product product = this.productMapper.selectProductById(Long.valueOf(id));
+        if (product == null) {
+            return null;
+        }
+        GoodsPriceVo vo = new GoodsPriceVo();
+        vo.setGoodsId(product.getId());
+        vo.setId(product.getId());
+        vo.setOriginalPrice(Double.valueOf(product.getOriginalPrice().toString()));
+        vo.setPrice(Double.valueOf(product.getPrice().toString()));
+        vo.setPingtuanPrice(0.00);
+        vo.setPropertyChildIds("");
+        vo.setScore(0);
+        vo.setStores(product.getInventoryQuantity());
+        vo.setUserId(product.getOperatorId());
+
+        return vo;
+    }
+
+    private GoodVo convertGoodVo(Product product) {
+        GoodVo goodVo = new GoodVo();
+        goodVo.setBarCode("");
+        goodVo.setCategoryId(product.getCategoryId());
+        goodVo.setCharacteristic("");
+        goodVo.setCommission(10.00);
+        goodVo.setCommissionType(1);
+        goodVo.setDateAdd(TimeUtils.date2Str(product.getCreateTime(), TimeUtils.DEFAULT_DATE_TIME_FORMAT_HH_MM_SS));
+        goodVo.setDateStart(TimeUtils.date2Str(product.getRushStart(), TimeUtils.DEFAULT_DATE_TIME_FORMAT_HH_MM_SS));
+        goodVo.setDateEnd(TimeUtils.date2Str(product.getRushEnd(), TimeUtils.DEFAULT_DATE_TIME_FORMAT_HH_MM_SS));
+        goodVo.setDateEndCountDown("2019年");
+        if (product.getUpdateTime() != null) {
+            goodVo.setDateUpdate(TimeUtils.date2Str(product.getUpdateTime(), TimeUtils.DEFAULT_DATE_TIME_FORMAT_HH_MM_SS));
+        }
+        goodVo.setGotScore(0);
+        goodVo.setGotScoreType(0);
+        goodVo.setId(product.getId());
+        goodVo.setKanjia(false);
+        goodVo.setKanjiaPrice(0.00);
+        goodVo.setLogisticsId(0);
+        goodVo.setMinPrice(Double.valueOf(product.getPrice().toString()));
+        goodVo.setMinScore(0);
+        goodVo.setName(product.getName());
+        goodVo.setNumberFav(0);
+        goodVo.setNumberGoodReputation(0);
+        goodVo.setNumberOrders(product.getOrderCount());
+        goodVo.setNumberSells(product.getSales());
+        goodVo.setOriginalPrice(Double.valueOf(product.getOriginalPrice().toString()));
+        goodVo.setPaixu(product.getSort());
+        // 默认取第一张图片
+        if (StringUtils.isNotEmpty(product.getPicture())) {
+            String pics = product.getPicture();
+            goodVo.setPic(pics.split(",")[0]);
+        }
+        goodVo.setPingtuan(false);
+        goodVo.setPingtuanPrice(0.00);
+        goodVo.setPropertyIds("");
+        goodVo.setRecommendStatus(1);
+        goodVo.setRecommendStatusStr("推荐");
+        goodVo.setShopId(product.getBusinessId());
+        goodVo.setStatus(product.getStatus());
+        goodVo.setStatusStr(ProductStatus.getNameByCode(product.getStatus().toString()));
+        goodVo.setStores(product.getInventoryQuantity());
+        goodVo.setUserId(product.getOperatorId());
+        goodVo.setVideoId("");
+        goodVo.setViews(1);
+        goodVo.setWeight(0.00);
+
+        return goodVo;
+    }
 }

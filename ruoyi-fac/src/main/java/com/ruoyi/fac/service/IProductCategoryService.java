@@ -1,6 +1,7 @@
 package com.ruoyi.fac.service;
 
 import com.ruoyi.fac.domain.ProductCategory;
+import com.ruoyi.fac.vo.client.CategoryVo;
 
 import java.util.List;
 
@@ -51,4 +52,10 @@ public interface IProductCategoryService {
      */
     int deleteProductCategoryByIds(String ids);
 
+    /**
+     * 查询当前商品分类信息
+     *
+     * @return
+     */
+    List<CategoryVo> categoryList();
 }

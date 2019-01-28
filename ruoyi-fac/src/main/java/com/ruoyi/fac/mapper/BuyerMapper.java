@@ -71,4 +71,12 @@ public interface BuyerMapper {
      * @return
      */
     int countBuyers(QueryVo queryVo);
+
+    /**
+     * 查询指定token对应的用户
+     *
+     * @param token
+     * @return
+     */
+    Buyer selectBuyerByToken(String token);
 }

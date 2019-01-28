@@ -13,6 +13,7 @@ import com.ruoyi.fac.vo.FacStaticVo;
 import com.ruoyi.fac.vo.OrderDiagramVo;
 import com.ruoyi.fac.vo.OrderVo;
 import com.ruoyi.fac.vo.QueryVo;
+import com.ruoyi.fac.vo.client.GoodVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -265,5 +266,4 @@ public class OrderServiceImpl implements IOrderService {
         vo.setStaticData(seriesData);
         return vo;
     }
-
 }
