@@ -7,17 +7,12 @@
 package com.ruoyi.web.controller.fac.client;
 
 import com.ruoyi.fac.enums.FacCode;
-import com.ruoyi.fac.vo.client.CouponsVo;
 import com.ruoyi.fac.vo.client.FacResult;
 import com.ruoyi.framework.web.base.BaseController;
-import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * 通知等数据相关接口

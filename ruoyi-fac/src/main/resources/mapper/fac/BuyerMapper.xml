@@ -9,7 +9,6 @@
         <result property="nickName" column="nick_name"/>
         <result property="name" column="name"/>
         <result property="token" column="token"/>
-        <result property="phoneNumber" column="phone_number"/>
         <result property="balance" column="balance"/>
         <result property="points" column="points"/>
         <result property="registryTime" column="registry_time"/>
@@ -22,7 +21,7 @@
     </resultMap>
 
     <sql id="selectBuyerVo">
-        select id, nick_name, name, phone_number, balance, points, registry_time, harvest_address, create_time, update_time, operator_id, operator_name, is_deleted from fac_buyer
+        select id, nick_name, name, balance, points, registry_time, harvest_address, create_time, update_time, operator_id, operator_name, is_deleted from fac_buyer
     </sql>
 
     <select id="selectBuyerList" parameterType="Buyer" resultMap="BuyerResult">
@@ -32,7 +31,6 @@
             <if test="nickName != null  and nickName != '' ">and nick_name like "%"#{nickName}"%"</if>
             <if test="name != null  and name != '' ">and name = #{name}</if>
             <if test="token != null  and token != '' ">and token = #{token}</if>
-            <if test="phoneNumber != null  and phoneNumber != '' ">and phone_number like "%"#{phoneNumber}"%"</if>
             <if test="balance != null ">and balance = #{balance}</if>
             <if test="points != null ">and points = #{points}</if>
             <if test="registryTime != null ">and registry_time = #{registryTime}</if>
@@ -57,7 +55,6 @@
             <if test="nickName != null  and nickName != ''  ">nick_name,</if>
             <if test="name != null  and name != ''  ">name,</if>
             <if test="token != null  and token != ''  ">token,</if>
-            <if test="phoneNumber != null  and phoneNumber != ''  ">phone_number,</if>
             <if test="balance != null  ">balance,</if>
             <if test="points != null  ">points,</if>
             <if test="registryTime != null  ">registry_time,</if>
@@ -73,7 +70,6 @@
             <if test="nickName != null  and nickName != ''  ">#{nickName},</if>
             <if test="name != null  and name != ''  ">#{name},</if>
             <if test="token != null  and token != ''  ">#{token},</if>
-            <if test="phoneNumber != null  and phoneNumber != ''  ">#{phoneNumber},</if>
             <if test="balance != null  ">#{balance},</if>
             <if test="points != null  ">#{points},</if>
             <if test="registryTime != null  ">#{registryTime},</if>
@@ -91,7 +87,6 @@
         <trim prefix="SET" suffixOverrides=",">
             <if test="nickName != null  and nickName != ''  ">nick_name = #{nickName},</if>
             <if test="name != null  and name != ''  ">name = #{name},</if>
-            <if test="phoneNumber != null  and phoneNumber != ''  ">phone_number = #{phoneNumber},</if>
             <if test="balance != null  ">balance = #{balance},</if>
             <if test="points != null  ">points = #{points},</if>
             <if test="registryTime != null  ">registry_time = #{registryTime},</if>

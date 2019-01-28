@@ -85,6 +85,7 @@ public class ProductServiceImpl implements IProductService {
     @Override
     public int insertProduct(Product product) {
         this.resetProductImg(product);
+        product.setOrderCount(0);
         return productMapper.insertProduct(product);
     }
 

@@ -11,9 +11,8 @@ import com.ruoyi.fac.service.IOrderService;
 import com.ruoyi.fac.util.TimeUtils;
 import com.ruoyi.fac.vo.FacStaticVo;
 import com.ruoyi.fac.vo.OrderDiagramVo;
-import com.ruoyi.fac.vo.OrderVo;
+import com.ruoyi.fac.vo.OrderItemVo;
 import com.ruoyi.fac.vo.QueryVo;
-import com.ruoyi.fac.vo.client.GoodVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -120,24 +119,25 @@ public class OrderServiceImpl implements IOrderService {
      * @return
      */
     @Override
-    public OrderVo detailOrderById(Long id) {
-        OrderVo orderVo = new OrderVo();
+    public OrderItemVo detailOrderById(Long id) {
+        OrderItemVo orderItemVo = new OrderItemVo();
         Order order = this.orderMapper.selectOrderById(id);
         if (order != null) {
-            orderVo.setId(order.getId().toString());
-            orderVo.setOrderNo(order.getOrderNo());
-            orderVo.setUserName(order.getUserName());
+            orderItemVo.setId(order.getId().toString());
+            orderItemVo.setOrderNo(order.getOrderNo());
+            orderItemVo.setUserName(order.getUserName());
             Buyer buyer = this.buyerMapper.selectBuyerById(order.getUserId());
             if (buyer != null) {
-                orderVo.setPhoneNumber(buyer.getPhoneNumber());
-                orderVo.setHarvestAddress(buyer.getHarvestAddress());
+                // 取那个默认的收获地址里的电话号码:zgf
+                orderItemVo.setPhoneNumber("");
+                orderItemVo.setHarvestAddress(buyer.getHarvestAddress());
             }
-            orderVo.setRemark(order.getRemark());
-            orderVo.setShipCode(order.getShipCode());
-            orderVo.setRemarkMngt(order.getRemarkMngt());
-            orderVo.setShip(order.getShip().toString());
+            orderItemVo.setRemark(order.getRemark());
+            orderItemVo.setShipCode(order.getShipCode());
+            orderItemVo.setRemarkMngt(order.getRemarkMngt());
+            orderItemVo.setShip(order.getShip().toString());
         }
-        return orderVo;
+        return orderItemVo;
     }
 
     /**

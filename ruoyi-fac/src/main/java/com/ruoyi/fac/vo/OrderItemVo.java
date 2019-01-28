@@ -7,7 +7,7 @@ import java.io.Serializable;
  * Date 2019/1/6 19:37
  * Description
  */
-public class OrderVo implements Serializable {
+public class OrderItemVo implements Serializable {
     private static final long serialVersionUID = 8339390641166290856L;
 
     // 订单id

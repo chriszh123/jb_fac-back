@@ -2,14 +2,14 @@
  * Copyright (C) 2006-2019 zgf All rights reserved
  * Author：zhangguifeng
  * Date：2019/1/25
- * Description: OrderVo
+ * Description: OrderItemVo
  */
 package com.ruoyi.fac.vo.client;
 
 import java.io.Serializable;
 
 /**
- * OrderVo
+ * OrderItemVo
  *
  * @author zhangguifeng
  * @create 2019-01-25 17:35

@@ -8,6 +8,7 @@ package com.ruoyi.web.controller.fac.client;
 
 import com.ruoyi.fac.domain.Buyer;
 import com.ruoyi.fac.enums.FacCode;
+import com.ruoyi.fac.service.IBuyerAddressService;
 import com.ruoyi.fac.service.IBuyerService;
 import com.ruoyi.fac.vo.client.FacResult;
 import com.ruoyi.fac.vo.client.ShippingAddress;
@@ -35,6 +36,8 @@ public class FacUserController extends BaseController {
 
     @Autowired
     private IBuyerService buyerService;
+    @Autowired
+    private IBuyerAddressService buyerAddressService;
 
     /**
      * 校验当前用户token
@@ -95,16 +98,23 @@ public class FacUserController extends BaseController {
         return FacResult.success(shippingAddress);
     }
 
+    @PostMapping("/shipping-address/add")
+    @ResponseBody
+    public FacResult addAddress(ShippingAddress shippingAddress) {
+
+        return FacResult.success("");
+    }
+
     @PostMapping("/shipping-address/update")
     @ResponseBody
-    public FacResult defaultShippingUpdate(ShippingAddress shippingAddress) {
+    public FacResult updateAddress(ShippingAddress shippingAddress) {
 
         return FacResult.success("");
     }
 
     @PostMapping("/shipping-address/delete")
     @ResponseBody
-    public FacResult defaultShippingDelete(String token, long id) {
+    public FacResult deleteAddress(String token, long id) {
 
         return FacResult.success("");
     }

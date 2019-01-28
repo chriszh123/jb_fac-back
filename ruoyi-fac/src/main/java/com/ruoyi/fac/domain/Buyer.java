@@ -35,11 +35,6 @@ public class Buyer extends BaseEntity {
      */
     private String token;
     /**
-     * 手机号
-     */
-    @Excel(name = "手机号")
-    private String phoneNumber;
-    /**
      * 余额:分销的奖金
      */
     @Excel(name = "余额")
@@ -99,14 +94,6 @@ public class Buyer extends BaseEntity {
 
     public String getName() {
         return name;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
     }
 
     public void setBalance(BigDecimal balance) {
@@ -187,7 +174,6 @@ public class Buyer extends BaseEntity {
                 .append("id", getId())
                 .append("nickName", getNickName())
                 .append("name", getName())
-                .append("phoneNumber", getPhoneNumber())
                 .append("balance", getBalance())
                 .append("points", getPoints())
                 .append("registryTime", getRegistryTime())

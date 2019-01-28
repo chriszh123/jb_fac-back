@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping("/fac/order")
 public class FacOrderController extends BaseController {
 
-    @PostMapping("/list")
+    @PostMapping("/listData")
     @ResponseBody
     public FacResult list(String token, int status) {
         OrderListVo list = new OrderListVo();

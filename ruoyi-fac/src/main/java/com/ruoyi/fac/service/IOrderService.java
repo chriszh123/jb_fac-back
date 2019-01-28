@@ -3,8 +3,7 @@ package com.ruoyi.fac.service;
 import com.ruoyi.fac.domain.Order;
 import com.ruoyi.fac.vo.FacStaticVo;
 import com.ruoyi.fac.vo.OrderDiagramVo;
-import com.ruoyi.fac.vo.OrderVo;
-import com.ruoyi.fac.vo.client.GoodVo;
+import com.ruoyi.fac.vo.OrderItemVo;
 
 import java.util.List;
 
@@ -69,7 +68,7 @@ public interface IOrderService {
      * @param id
      * @return
      */
-    OrderVo detailOrderById(Long id);
+    OrderItemVo detailOrderById(Long id);
 
     /**
      * 查询指定日期内的订单信息
