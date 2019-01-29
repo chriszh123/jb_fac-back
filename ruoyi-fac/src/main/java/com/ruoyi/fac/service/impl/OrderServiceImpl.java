@@ -3,6 +3,8 @@ package com.ruoyi.fac.service.impl;
 import com.ruoyi.common.support.Convert;
 import com.ruoyi.fac.domain.Buyer;
 import com.ruoyi.fac.domain.Order;
+import com.ruoyi.fac.domain.Product;
+import com.ruoyi.fac.enums.OrderStatus;
 import com.ruoyi.fac.mapper.BusinessMapper;
 import com.ruoyi.fac.mapper.BuyerMapper;
 import com.ruoyi.fac.mapper.OrderMapper;
@@ -13,6 +15,10 @@ import com.ruoyi.fac.vo.FacStaticVo;
 import com.ruoyi.fac.vo.OrderDiagramVo;
 import com.ruoyi.fac.vo.OrderItemVo;
 import com.ruoyi.fac.vo.QueryVo;
+import com.ruoyi.fac.vo.client.GoodsJsonStrVo;
+import com.ruoyi.fac.vo.client.OrderCreateVo;
+import com.ruoyi.fac.vo.condition.QueryGoodVo;
+import org.apache.commons.lang3.time.DateFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,10 +27,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 订单 服务层实现
@@ -265,5 +268,54 @@ public class OrderServiceImpl implements IOrderService {
         vo.setStaticXAxis(xAxis);
         vo.setStaticData(seriesData);
         return vo;
+    }
+
+    /**
+     * 用户客户端创建订单
+     *
+     * @param orderCreateVo
+     */
+    @Override
+    public void createOrderFromClient(OrderCreateVo orderCreateVo) {
+        List<GoodsJsonStrVo> goodsJsonStr = orderCreateVo.getGoodsJsonStr();
+        if (CollectionUtils.isEmpty(goodsJsonStr) || StringUtils.isEmpty(orderCreateVo.getToken())) {
+            return;
+        }
+        List<Long> prodIds = new ArrayList<>();
+        for (GoodsJsonStrVo good : goodsJsonStr) {
+            prodIds.add(good.getGoodsId());
+        }
+        QueryGoodVo vo = new QueryGoodVo();
+        List<Product> products = this.productMapper.goodsList(vo);
+        if (CollectionUtils.isEmpty(products)) {
+            return;
+        }
+        Map<Long, Product> productMap = new HashMap<>();
+        for (Product product : products) {
+            productMap.put(product.getId(), product);
+        }
+        List<Order> orders = new ArrayList<>();
+        for (GoodsJsonStrVo good : goodsJsonStr) {
+            Product product = productMap.get(good.getGoodsId());
+            if (product == null) {
+                continue;
+            }
+            Order order = new Order();
+            orders.add(order);
+            String orderNo = DateFormatUtils.format(new Date(), "yyyyMMddHHmmssSSSS");
+            order.setOrderNo(orderNo);
+            order.setProdId(good.getGoodsId());
+            order.setProdName(product.getName());
+            order.setPrice(product.getPrice());
+            order.setStatus(OrderStatus.PAYING.getValue());
+            order.setToken(orderCreateVo.getToken());
+
+        }
+
+    }
+
+    public static void main(String[] args) {
+        String orderNo = DateFormatUtils.format(new Date(), "yyyyMMddHHmmssSSSS");
+        System.out.println("orderNo = " + orderNo);
     }
 }

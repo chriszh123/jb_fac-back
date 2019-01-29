@@ -20,7 +20,7 @@ public class Order extends BaseEntity {
     /**  */
     private Long id;
     /**
-     * 订单号,eg:201812231410342545
+     * 订单号,eg:2018 12 231410342545
      */
     @Excel(name = "订单号")
     private String orderNo;
@@ -48,6 +48,10 @@ public class Order extends BaseEntity {
      */
     @Excel(name = "付款时间", dateFormat = "yyyy-MM-dd HH:mm:ss")
     private Date payTime;
+    /**
+     * 用户token
+     */
+    private String token;
     /**
      * 买者用户id
      */
@@ -276,6 +280,14 @@ public class Order extends BaseEntity {
 
     public void setOrderRemark(String orderRemark) {
         this.orderRemark = orderRemark;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 
     @Override

@@ -141,5 +141,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{id}
         </foreach>
     </delete>
+
+    <select id="getDefaultAddress" parameterType="String" resultMap="BuyerAddressResult">
+        <include refid="selectBuyerAddressVo"/>
+        where token = #{token} and is_default = 1 and is_deleted = 0
+    </select>
     
 </mapper>

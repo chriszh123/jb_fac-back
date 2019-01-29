@@ -6,6 +6,9 @@
  */
 package com.ruoyi.fac.vo.condition;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * 商品信息查询条件
  *
@@ -17,6 +20,7 @@ public class QueryGoodVo {
     private String name = null;
     private Integer page = null;
     private Integer pageSize = null;
+    private List<Long> goodIds = new ArrayList<>();
 
     public String getCategoryId() {
         return categoryId;
@@ -48,5 +52,13 @@ public class QueryGoodVo {
 
     public void setPageSize(Integer pageSize) {
         this.pageSize = pageSize;
+    }
+
+    public List<Long> getGoodIds() {
+        return goodIds;
+    }
+
+    public void setGoodIds(List<Long> goodIds) {
+        this.goodIds = goodIds;
     }
 }

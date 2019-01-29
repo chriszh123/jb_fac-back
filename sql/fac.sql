@@ -83,6 +83,7 @@ CREATE TABLE `fac_order` (
   `price` decimal(8,2) NOT NULL COMMENT '金额',
   `status` tinyint(2) NOT NULL COMMENT '状态:1-已付款;2-待付款；3-已取消;4-未取消',
   `pay_time` datetime NOT NULL COMMENT '付款时间',
+  `token` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '用户token ',
   `user_id` bigint(20) DEFAULT NULL COMMENT '买者用户id',
   `user_name` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '用户真实名称',
   `nick_name` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '用户昵称',

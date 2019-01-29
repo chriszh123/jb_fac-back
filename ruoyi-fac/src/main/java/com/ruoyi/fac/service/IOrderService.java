@@ -4,6 +4,7 @@ import com.ruoyi.fac.domain.Order;
 import com.ruoyi.fac.vo.FacStaticVo;
 import com.ruoyi.fac.vo.OrderDiagramVo;
 import com.ruoyi.fac.vo.OrderItemVo;
+import com.ruoyi.fac.vo.client.OrderCreateVo;
 
 import java.util.List;
 
@@ -87,4 +88,11 @@ public interface IOrderService {
      * @return
      */
     FacStaticVo queryFacStaticInfo(String startDateStr, String endDateStr);
+
+    /**
+     * 用户客户端创建订单
+     *
+     * @param order
+     */
+    void createOrderFromClient(OrderCreateVo order);
 }

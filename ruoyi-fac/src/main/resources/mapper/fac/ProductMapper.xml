@@ -210,6 +210,12 @@
         <where>
             <if test="categoryId != null ">and category_id = #{categoryId}</if>
             <if test="name != null  and name != '' ">and name like "%"#{name}"%"</if>
+            <if test="goodIds != null and !goodIds.isEmpty()">
+                AND id IN
+                <foreach item="item" index="index" collection="goodIds" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
         </where>
         order by sort desc, create_time desc
         <if test="page != null and pageSize != null">

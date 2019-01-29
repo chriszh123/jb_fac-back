@@ -53,4 +53,12 @@ public interface IBuyerAddressService {
      */
     int deleteBuyerAddressByIds(String ids);
 
+    /**
+     * 指定用户对应默认的收获地址
+     *
+     * @param token
+     * @return
+     */
+    ShippingAddress getDefaultAddress(String token);
+
 }

@@ -1,6 +1,7 @@
 package com.ruoyi.fac.mapper;
 
 import com.ruoyi.fac.domain.BuyerAddress;
+
 import java.util.List;
 
 /**
@@ -16,7 +17,7 @@ public interface BuyerAddressMapper {
      * @param id 买者用户收货地址ID
      * @return 买者用户收货地址信息
      */
-        BuyerAddress selectBuyerAddressById(Long id);
+    BuyerAddress selectBuyerAddressById(Long id);
 
     /**
      * 查询买者用户收货地址列表
@@ -57,5 +58,7 @@ public interface BuyerAddressMapper {
      * @return 结果
      */
     int deleteBuyerAddressByIds(String[] ids);
+
+    BuyerAddress getDefaultAddress(String token);
 
 }
