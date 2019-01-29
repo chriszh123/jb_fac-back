@@ -281,6 +281,10 @@ public class OrderServiceImpl implements IOrderService {
         if (CollectionUtils.isEmpty(goodsJsonStr) || StringUtils.isEmpty(orderCreateVo.getToken())) {
             return;
         }
+        Buyer buyer = this.buyerMapper.selectBuyerByToken(orderCreateVo.getToken());
+        if (buyer == null) {
+            return;
+        }
         List<Long> prodIds = new ArrayList<>();
         for (GoodsJsonStrVo good : goodsJsonStr) {
             prodIds.add(good.getGoodsId());
@@ -295,6 +299,7 @@ public class OrderServiceImpl implements IOrderService {
             productMap.put(product.getId(), product);
         }
         List<Order> orders = new ArrayList<>();
+        Date nowDate = new Date();
         for (GoodsJsonStrVo good : goodsJsonStr) {
             Product product = productMap.get(good.getGoodsId());
             if (product == null) {
@@ -302,6 +307,7 @@ public class OrderServiceImpl implements IOrderService {
             }
             Order order = new Order();
             orders.add(order);
+
             String orderNo = DateFormatUtils.format(new Date(), "yyyyMMddHHmmssSSSS");
             order.setOrderNo(orderNo);
             order.setProdId(good.getGoodsId());
@@ -309,9 +315,16 @@ public class OrderServiceImpl implements IOrderService {
             order.setPrice(product.getPrice());
             order.setStatus(OrderStatus.PAYING.getValue());
             order.setToken(orderCreateVo.getToken());
-
+            order.setUserId(buyer.getId());
+            order.setUserName(buyer.getName());
+            order.setNickName(buyer.getNickName());
+            order.setRemark(orderCreateVo.getRemark());
+            order.setShip(2);
+            order.setCreateTime(nowDate);
+            order.setUpdateTime(nowDate);
+            order.setOperatorId(buyer.getId());
+            order.setOperatorName(buyer.getName());
         }
-
     }
 
     public static void main(String[] args) {
