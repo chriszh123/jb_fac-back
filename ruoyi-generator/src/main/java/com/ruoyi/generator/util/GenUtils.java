@@ -44,6 +44,7 @@ public class GenUtils
             String attrName = StringUtils.convertToCamelCase(column.getColumnName());
             column.setAttrName(attrName);
             column.setAttrname(StringUtils.uncapitalize(attrName));
+            column.setExtra(column.getExtra());
 
             // 列的数据类型，转换成Java类型
             String attrType = javaTypeMap.get(column.getDataType());
@@ -104,13 +105,11 @@ public class GenUtils
      */
     public static String tableToJava(String tableName)
     {
-        if (Constants.AUTO_REOMVE_PRE.equals(Global.getAutoRemovePre()))
+        String autoRemovePre = Global.getAutoRemovePre();
+        String tablePrefix = Global.getTablePrefix();
+        if (Constants.AUTO_REOMVE_PRE.equals(autoRemovePre) && StringUtils.isNotEmpty(tablePrefix))
         {
-            tableName = tableName.substring(tableName.indexOf("_") + 1);
-        }
-        if (StringUtils.isNotEmpty(Global.getTablePrefix()))
-        {
-            tableName = tableName.replace(Global.getTablePrefix(), "");
+            tableName = tableName.replaceFirst(tablePrefix, "");
         }
         return StringUtils.convertToCamelCase(tableName);
     }
@@ -220,6 +219,7 @@ public class GenUtils
         javaTypeMap.put("smallint", "Integer");
         javaTypeMap.put("mediumint", "Integer");
         javaTypeMap.put("int", "Integer");
+        javaTypeMap.put("number", "Integer");
         javaTypeMap.put("integer", "integer");
         javaTypeMap.put("bigint", "Long");
         javaTypeMap.put("float", "Float");
@@ -228,6 +228,7 @@ public class GenUtils
         javaTypeMap.put("bit", "Boolean");
         javaTypeMap.put("char", "String");
         javaTypeMap.put("varchar", "String");
+        javaTypeMap.put("varchar2", "String");
         javaTypeMap.put("tinytext", "String");
         javaTypeMap.put("text", "String");
         javaTypeMap.put("mediumtext", "String");

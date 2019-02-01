@@ -33,4 +33,8 @@ public class FacConstant {
     public static String AJAX_CODE_FAIL = "-1";
 
     public static String TEST_IMG_URL = "https://www.baidu.com/img/jijian%20pad_13db91458cc0573abbf3055bc9c1d15b.png";
+    /**
+     * fac模块涉及到的文件大小:500K
+     */
+    public static int FILE_SIZE_FAC = 1024 * 500;
 }

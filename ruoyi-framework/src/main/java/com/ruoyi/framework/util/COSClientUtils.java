@@ -14,6 +14,8 @@ import com.qcloud.cos.model.ObjectMetadata;
 import com.qcloud.cos.model.PutObjectResult;
 import com.qcloud.cos.region.Region;
 import com.ruoyi.common.constant.Constants;
+import com.ruoyi.common.utils.file.FileUploadUtils;
+import com.ruoyi.fac.constant.FacConstant;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
@@ -101,13 +103,13 @@ public class COSClientUtils {
     }
 
     public String uploadFile2Cos(MultipartFile file) throws Exception {
-        if (file.getSize() > Constants.FILE_SIZE_FAC) {
+        if (file.getSize() > FacConstant.FILE_SIZE_FAC) {
             throw new Exception("上传图片大小不能超过500K！");
         }
         try {
             String originalFilename = file.getOriginalFilename();
             String extension = originalFilename.substring(originalFilename.lastIndexOf(".")).toLowerCase();
-            String fileName = FileUploadUtils.encodingFilename(originalFilename, extension);
+            String fileName = FileUploadUtils.encodingFilename(originalFilename) + extension;
             InputStream inputStream = file.getInputStream();
             this.uploadFile2Cos(inputStream, fileName);
             return fileName;

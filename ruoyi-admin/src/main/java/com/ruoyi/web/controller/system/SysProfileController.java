@@ -16,8 +16,8 @@ import com.ruoyi.common.base.AjaxResult;
 import com.ruoyi.common.config.Global;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.common.utils.file.FileUploadUtils;
 import com.ruoyi.framework.shiro.service.SysPasswordService;
-import com.ruoyi.framework.util.FileUploadUtils;
 import com.ruoyi.framework.util.ShiroUtils;
 import com.ruoyi.system.domain.SysUser;
 import com.ruoyi.system.service.ISysDictDataService;
@@ -142,7 +142,7 @@ public class SysProfileController extends BaseController {
         SysUser currentUser = getSysUser();
         try {
             if (!file.isEmpty()) {
-                String avatar = FileUploadUtils.upload(Global.getAvatarPath(), file, false);
+                String avatar = FileUploadUtils.upload(Global.getAvatarPath(), file);
                 currentUser.setAvatar(avatar);
                 if (userService.updateUserInfo(currentUser) > 0) {
                     setSysUser(userService.selectUserById(currentUser.getUserId()));
