@@ -7,6 +7,7 @@
 package com.ruoyi.framework.util;
 
 import com.ruoyi.common.config.Global;
+import com.ruoyi.common.utils.file.FileUploadUtils;
 import com.ruoyi.fac.constant.FacConstant;
 import com.ruoyi.fac.vo.FileVo;
 import org.slf4j.Logger;
@@ -98,7 +99,7 @@ public class CkImageUploadUtil {
                         if (realPathDirectory == null || !realPathDirectory.exists()) {
                             realPathDirectory.mkdirs();
                         }
-                        fileName = FileUploadUtils.encodingFilename(originalFilename, suffix);
+                        fileName = FileUploadUtils.encodingFilename(originalFilename) + suffix;
                         File uploadFile = new File(realPathDirectory + fileName);
                         System.out.println(uploadFile);
                         file.transferTo(uploadFile);

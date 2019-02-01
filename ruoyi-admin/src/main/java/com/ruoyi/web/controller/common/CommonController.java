@@ -1,19 +1,17 @@
 package com.ruoyi.web.controller.common;
 
-import com.alibaba.fastjson.JSON;
 import com.ruoyi.common.config.Global;
-import com.ruoyi.common.constant.Constants;
-import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.common.utils.file.FileUploadUtils;
 import com.ruoyi.common.utils.file.FileUtils;
 import com.ruoyi.fac.constant.FacConstant;
 import com.ruoyi.fac.vo.FileVo;
 import com.ruoyi.fac.vo.ProductImgVo;
 import com.ruoyi.framework.util.CkImageUploadUtil;
-import com.ruoyi.framework.util.FileUploadUtils;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -83,7 +81,7 @@ public class CommonController {
             PrintWriter out = response.getWriter();
             log.info("[uplodaImg] fileSize: " + file.getSize());
             // 图片大小不超过500K
-            if (file.getSize() > Constants.FILE_SIZE_FAC) {
+            if (file.getSize() > FacConstant.FILE_SIZE_FAC) {
                 String error = fileVo.error(0, "图片大小超过500K");
                 out.println(error);
                 return;
@@ -117,7 +115,7 @@ public class CommonController {
                 for (int i = 0; i < file.length; i++) {
                     if (!file[i].isEmpty()) {
                         //上传文件，原始文件名称
-                        String fileName = FileUploadUtils.upload(basePath, file[i], false);
+                        String fileName = FileUploadUtils.upload(basePath, file[i]);
                         System.out.println("fileName = " + fileName);
                         String imgUrl = basePath + fileName;
                         imgUrl = FacConstant.TEST_IMG_URL;

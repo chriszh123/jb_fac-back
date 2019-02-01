@@ -2,10 +2,11 @@ package com.ruoyi.common.constant;
 
 /**
  * 通用常量信息
- *
+ * 
  * @author ruoyi
  */
-public class Constants {
+public class Constants
+{
     /**
      * UTF-8 字符集
      */
@@ -60,8 +61,4 @@ public class Constants {
      * 排序的方向 "desc" 或者 "asc".
      */
     public static String IS_ASC = "isAsc";
-    /**
-     * fac模块涉及到的文件大小:500K
-     */
-    public static int FILE_SIZE_FAC = 1024 * 500;
 }
