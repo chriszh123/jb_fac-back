@@ -17,7 +17,7 @@ import java.io.Serializable;
 public class GoodSpecification implements Serializable {
     private static final long serialVersionUID = 1666661368224208351L;
 
-    private double amount;
+    private double amount = 0.00;
     private long goodsId;
     private String goodsName;
     private long id;
@@ -27,8 +27,8 @@ public class GoodSpecification implements Serializable {
      * "https://cdn.it120.cc/apifactory/2019/01/22/b959b8a0f4ed9a3cf3848c6fd6113c5d.gif"
      */
     private String pic;
-    private String property;
-    private int score;
+    private String property = "";
+    private int score = 0;
     private long uid;
     private long userId;
 

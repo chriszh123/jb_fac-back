@@ -109,8 +109,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <update id="updateBuyerAddress" parameterType="BuyerAddress">
         update fac_buyer_address
         <trim prefix="SET" suffixOverrides=",">
-            <if test="buyerId != null  ">buyer_id = #{buyerId},</if>
-            <if test="token != null  and token != ''  ">token = #{token},</if>
+            <!--<if test="buyerId != null  ">buyer_id = #{buyerId},</if>-->
+            <!--<if test="token != null  and token != ''  ">token = #{token},</if>-->
             <if test="address != null  and address != ''  ">address = #{address},</if>
             <if test="provinceId != null  ">provinceId = #{provinceId},</if>
             <if test="provinceStr != null  and provinceStr != ''  ">province_str = #{provinceStr},</if>
@@ -146,5 +146,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <include refid="selectBuyerAddressVo"/>
         where token = #{token} and is_default = 1 and is_deleted = 0
     </select>
-    
+
+    <select id="selectBuyerAddressByToken" parameterType="String" resultMap="BuyerAddressResult">
+        <include refid="selectBuyerAddressVo"/>
+        where token = #{token} and is_deleted = 0
+        order by create_time desc
+    </select>
+
+    <select id="selectBuyerAddressByTokenAndId" resultMap="BuyerAddressResult">
+        <include refid="selectBuyerAddressVo"/>
+        where is_deleted = 0 and token = #{token} and id = #{id}
+    </select>
 </mapper>

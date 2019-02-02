@@ -10,15 +10,14 @@ public enum OrderStatus {
     PAYED("已付款", 1),
     PAYING("待付款", 2),
     CACELED("已取消", 3),
-    CACELING("未取消", 4),
-    ;
+    CACELING("未取消", 4);
 
     private String name;
-    private Integer value;
+    private Integer code;
 
-    private OrderStatus(String name, Integer value) {
+    private OrderStatus(String name, Integer code) {
         this.name = name;
-        this.value = value;
+        this.code = code;
     }
 
     public static String getCodeByName(String name) {
@@ -32,7 +31,7 @@ public enum OrderStatus {
 
     public static String getNameByCode(String value) {
         for (OrderStatus s : OrderStatus.values()) {
-            if (s.getValue().equals(value)) {
+            if (s.getCode().equals(value)) {
                 return s.getName();
             }
         }
@@ -47,11 +46,11 @@ public enum OrderStatus {
         this.name = name;
     }
 
-    public Integer getValue() {
-        return value;
+    public Integer getCode() {
+        return code;
     }
 
-    public void setValue(Integer value) {
-        this.value = value;
+    public void setCode(Integer code) {
+        this.code = code;
     }
 }

@@ -80,6 +80,7 @@ CREATE TABLE `fac_order` (
   `order_no` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '订单号,eg:201812231410342545',
   `prod_id` bigint(20) DEFAULT NULL COMMENT '商品id',
   `prod_name` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '商品名称',
+  `prod_number` tinyint(2) NOT NULL DEFAULT 0 COMMENT '购买商品数量',
   `price` decimal(8,2) NOT NULL COMMENT '金额',
   `status` tinyint(2) NOT NULL COMMENT '状态:1-已付款;2-待付款；3-已取消;4-未取消',
   `pay_time` datetime NOT NULL COMMENT '付款时间',

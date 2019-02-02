@@ -8,7 +8,8 @@ package com.ruoyi.fac.enums;
  */
 public enum FacCode {
     SUCCESS("success", 0),
-    HAS_NO_DATA("暂无数据", 404);
+    HAS_NO_DATA("暂无数据", 404),
+    PARAMTER_NULL("请求参数不能为空", 400);
 
     private String msg;
     private Integer code;

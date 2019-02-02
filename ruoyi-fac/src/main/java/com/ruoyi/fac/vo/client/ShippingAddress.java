@@ -26,7 +26,7 @@ public class ShippingAddress implements Serializable {
      * "江宁区"
      */
     private String areaStr;
-    private long cityId;
+    private Long cityId;
     /**
      * "南京市"
      */
@@ -37,8 +37,8 @@ public class ShippingAddress implements Serializable {
     private String code;
     private String dateAdd;
     private String dateUpdate;
-    private long districtId;
-    private long id;
+    private Long districtId;
+    private Long id;
     /**
      * 是否为默认地址
      */
@@ -48,13 +48,13 @@ public class ShippingAddress implements Serializable {
      */
     private String linkMan;
     private String mobile;
-    private long provinceId;
+    private Long provinceId;
     /**
      * "江苏省"
      */
     private String provinceStr;
-    private int status;
-    private String statusStr;
+    private int status = 0;
+    private String statusStr = "正常";
     private long uid;
     private long userId;
 
@@ -74,11 +74,11 @@ public class ShippingAddress implements Serializable {
         this.areaStr = areaStr;
     }
 
-    public long getCityId() {
+    public Long getCityId() {
         return cityId;
     }
 
-    public void setCityId(long cityId) {
+    public void setCityId(Long cityId) {
         this.cityId = cityId;
     }
 
@@ -114,19 +114,19 @@ public class ShippingAddress implements Serializable {
         this.dateUpdate = dateUpdate;
     }
 
-    public long getDistrictId() {
+    public Long getDistrictId() {
         return districtId;
     }
 
-    public void setDistrictId(long districtId) {
+    public void setDistrictId(Long districtId) {
         this.districtId = districtId;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -154,11 +154,11 @@ public class ShippingAddress implements Serializable {
         this.mobile = mobile;
     }
 
-    public long getProvinceId() {
+    public Long getProvinceId() {
         return provinceId;
     }
 
-    public void setProvinceId(long provinceId) {
+    public void setProvinceId(Long provinceId) {
         this.provinceId = provinceId;
     }
 

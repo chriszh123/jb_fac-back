@@ -46,16 +46,16 @@ public class UserBaseVo implements Serializable {
      * "Jiangsu"
      */
     private String province;
-    private int source;
+    private int source = 0;
     /**
      * "小程序"
      */
-    private String sourceStr;
-    private int status;
+    private String sourceStr = "小程序";
+    private int status = 0;
     /**
      * "默认"
      */
-    private String statusStr;
+    private String statusStr = "默认";
 
     public String getAvatarUrl() {
         return avatarUrl;

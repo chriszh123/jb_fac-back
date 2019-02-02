@@ -6,9 +6,12 @@
  */
 package com.ruoyi.web.controller.fac.client;
 
+import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.fac.enums.FacCode;
+import com.ruoyi.fac.service.IOrderService;
 import com.ruoyi.fac.vo.client.*;
 import com.ruoyi.framework.web.base.BaseController;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,6 +27,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping("/fac/order")
 public class FacOrderController extends BaseController {
 
+    @Autowired
+    private IOrderService orderService;
+
     @PostMapping("/listData")
     @ResponseBody
     public FacResult list(String token, int status) {
@@ -35,23 +41,24 @@ public class FacOrderController extends BaseController {
     @PostMapping("/create")
     @ResponseBody
     public FacResult create(OrderCreateVo order) {
-        OrderCreateRes res = new OrderCreateRes();
-
+        OrderCreateRes res = this.orderService.createOrderFromClient(order);
         return FacResult.success(res);
     }
 
     @PostMapping("/statistics")
     @ResponseBody
     public FacResult statistics(String token) {
-        OrderStatisticsVo statistics = new OrderStatisticsVo();
-
+        OrderStatisticsVo statistics = this.orderService.orderStatistics(token);
         return FacResult.success(statistics);
     }
 
     @PostMapping("/close")
     @ResponseBody
-    public FacResult close(String token, long orderId) {
-
+    public FacResult close(String token, String orderIds) {
+        if (StringUtils.isEmpty(token) ||  StringUtils.isEmpty(orderIds)) {
+            return FacResult.error(FacCode.PARAMTER_NULL.getCode(), FacCode.PARAMTER_NULL.getMsg());
+        }
+        this.orderService.closeOrder(token, orderIds);
         return FacResult.success("");
     }
 }

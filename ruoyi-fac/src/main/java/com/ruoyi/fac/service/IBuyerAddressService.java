@@ -61,4 +61,11 @@ public interface IBuyerAddressService {
      */
     ShippingAddress getDefaultAddress(String token);
 
+    List<ShippingAddress> shippingAddressList(String token);
+
+    ShippingAddress detailShippingAddress(String token, String id);
+
+    void updateAddress(ShippingAddress shippingAddress);
+
+    void deleteAddress(String token, String id);
 }

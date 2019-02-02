@@ -21,7 +21,7 @@
     </resultMap>
 
     <sql id="selectBuyerVo">
-        select id, nick_name, name, balance, points, registry_time, harvest_address, create_time, update_time, operator_id, operator_name, is_deleted from fac_buyer
+        select id, nick_name, name, token, balance, points, registry_time, harvest_address, create_time, update_time, operator_id, operator_name, is_deleted from fac_buyer
     </sql>
 
     <select id="selectBuyerList" parameterType="Buyer" resultMap="BuyerResult">

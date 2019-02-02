@@ -34,6 +34,6 @@ public class FacTemplateMsgController extends BaseController {
     @PostMapping("/put")
     @ResponseBody
     public FacResult put(TemplateMsgPutReq putReq) {
-        return FacResult.error(FacCode.HAS_NO_DATA.getCode(), FacCode.HAS_NO_DATA.getMsg());
+        return FacResult.success("");
     }
 }

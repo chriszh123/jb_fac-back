@@ -17,12 +17,12 @@ import java.io.Serializable;
 public class OrderVo implements Serializable {
     private static final long serialVersionUID = -8112017472434362767L;
 
-    private double amount;
-    private double amountLogistics;
-    private double amountReal;
+    private double amount = 0.00;
+    private double amountLogistics = 0.00;
+    private double amountReal = 0.00;
     private String dateAdd;
     private String dateClose;
-    private int goodsNumber;
+    private int goodsNumber = 0;
     private boolean hasRefund = false;
     private long id;
     private boolean isCanHx = false;
@@ -31,9 +31,9 @@ public class OrderVo implements Serializable {
     private boolean isSuccessPingtuan = false;
     private String orderNumber;
     private String remark;
-    private int score;
+    private int score = 0;
     private long shopId;
-    private int status;
+    private int status = 0;
     private String statusStr;
     private int type;
     private long uid;

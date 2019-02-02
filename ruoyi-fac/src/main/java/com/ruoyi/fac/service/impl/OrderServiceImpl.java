@@ -5,6 +5,7 @@ import com.ruoyi.fac.domain.Buyer;
 import com.ruoyi.fac.domain.Order;
 import com.ruoyi.fac.domain.Product;
 import com.ruoyi.fac.enums.OrderStatus;
+import com.ruoyi.fac.enums.ProductStatus;
 import com.ruoyi.fac.mapper.BusinessMapper;
 import com.ruoyi.fac.mapper.BuyerMapper;
 import com.ruoyi.fac.mapper.OrderMapper;
@@ -15,8 +16,7 @@ import com.ruoyi.fac.vo.FacStaticVo;
 import com.ruoyi.fac.vo.OrderDiagramVo;
 import com.ruoyi.fac.vo.OrderItemVo;
 import com.ruoyi.fac.vo.QueryVo;
-import com.ruoyi.fac.vo.client.GoodsJsonStrVo;
-import com.ruoyi.fac.vo.client.OrderCreateVo;
+import com.ruoyi.fac.vo.client.*;
 import com.ruoyi.fac.vo.condition.QueryGoodVo;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.slf4j.Logger;
@@ -276,28 +276,34 @@ public class OrderServiceImpl implements IOrderService {
      * @param orderCreateVo
      */
     @Override
-    public void createOrderFromClient(OrderCreateVo orderCreateVo) {
+    public OrderCreateRes createOrderFromClient(OrderCreateVo orderCreateVo) {
+        OrderCreateRes res = new OrderCreateRes();
         List<GoodsJsonStrVo> goodsJsonStr = orderCreateVo.getGoodsJsonStr();
         if (CollectionUtils.isEmpty(goodsJsonStr) || StringUtils.isEmpty(orderCreateVo.getToken())) {
-            return;
+            return res;
         }
+        // 当前用户信息
         Buyer buyer = this.buyerMapper.selectBuyerByToken(orderCreateVo.getToken());
         if (buyer == null) {
-            return;
+            return res;
         }
         List<Long> prodIds = new ArrayList<>();
         for (GoodsJsonStrVo good : goodsJsonStr) {
             prodIds.add(good.getGoodsId());
         }
+        // 当前用户选择的商品
         QueryGoodVo vo = new QueryGoodVo();
+        vo.setGoodIds(prodIds);
+        vo.setPage(null);
         List<Product> products = this.productMapper.goodsList(vo);
         if (CollectionUtils.isEmpty(products)) {
-            return;
+            return res;
         }
         Map<Long, Product> productMap = new HashMap<>();
         for (Product product : products) {
             productMap.put(product.getId(), product);
         }
+        // 转换用户选择的商品信息
         List<Order> orders = new ArrayList<>();
         Date nowDate = new Date();
         for (GoodsJsonStrVo good : goodsJsonStr) {
@@ -312,8 +318,9 @@ public class OrderServiceImpl implements IOrderService {
             order.setOrderNo(orderNo);
             order.setProdId(good.getGoodsId());
             order.setProdName(product.getName());
+            order.setProdNumber(good.getNumber());
             order.setPrice(product.getPrice());
-            order.setStatus(OrderStatus.PAYING.getValue());
+            order.setStatus(OrderStatus.PAYING.getCode());
             order.setToken(orderCreateVo.getToken());
             order.setUserId(buyer.getId());
             order.setUserName(buyer.getName());
@@ -324,8 +331,133 @@ public class OrderServiceImpl implements IOrderService {
             order.setUpdateTime(nowDate);
             order.setOperatorId(buyer.getId());
             order.setOperatorName(buyer.getName());
+            order.setIsDeleted(0);
+        }
+        // 批量保存用户选择的商品信息
+        int goodsNumber = this.orderMapper.batchInsertOrders(orders);
+
+        // 创建返回结果
+        res.setAmountLogistics(0);
+        res.setScore(0);
+        res.setGoodsNumber(goodsNumber);
+        res.setNeedLogistics(false);
+        res.setAmountTotle(0);
+        res.setDateAdd(TimeUtils.date2Str(nowDate, TimeUtils.DEFAULT_DATE_TIME_FORMAT_HH_MM_SS));
+        res.setStatus(OrderStatus.PAYING.getCode());
+        res.setStatusStr(OrderStatus.PAYING.getName());
+
+        return res;
+    }
+
+    @Override
+    public OrderStatisticsVo orderStatistics(String token) {
+        OrderStatisticsVo vo = new OrderStatisticsVo();
+        return vo;
+    }
+
+    /**
+     * 客户端商品查询接口
+     *
+     * @param token
+     * @param status
+     * @return
+     */
+    @Override
+    public OrderListVo orderList(String token, int status) {
+        OrderListVo vo = new OrderListVo();
+        if (StringUtils.isEmpty(token)) {
+            return vo;
+        }
+        QueryVo queryVo = new QueryVo();
+        queryVo.setToken(token);
+        queryVo.setStatus(status);
+        // 当前条件下所有商品
+        List<Order> orders = this.orderMapper.orderList(queryVo);
+        if (CollectionUtils.isEmpty(orders)) {
+            return vo;
+        }
+        // 商品信息
+        this.convertOrders(vo, orders);
+
+        return vo;
+    }
+
+    /**
+     * 取消订单
+     *
+     * @param token
+     * @param orderIds
+     */
+    @Override
+    public void closeOrder(String token, String orderIds) {
+        QueryVo queryVo = new QueryVo();
+        queryVo.setToken(token);
+        queryVo.setOrderIds(Convert.toLongArray(orderIds));
+        queryVo.setStatus(OrderStatus.CACELED.getCode());
+        this.orderMapper.updateOrderStatus(queryVo);
+    }
+
+    private void convertOrders(OrderListVo vo, List<Order> orders) {
+        List<OrderVo> orderVos = new ArrayList<>();
+        // <goodId, Order>
+        Map<Long, Order> good2Order = new HashMap<>(16);
+        for (Order order : orders) {
+            OrderVo orderVo = new OrderVo();
+            orderVos.add(orderVo);
+            orderVo.setDateAdd(TimeUtils.date2Str(order.getCreateTime(), TimeUtils.DEFAULT_DATE_TIME_FORMAT_HH_MM_SS));
+            orderVo.setGoodsNumber(1);
+            orderVo.setId(order.getId());
+            orderVo.setPay(order.getPayTime() != null);
+            orderVo.setOrderNumber(order.getOrderNo());
+            orderVo.setRemark(order.getRemark());
+            orderVo.setShopId(order.getShipId());
+            orderVo.setStatus(order.getStatus());
+            orderVo.setStatusStr(OrderStatus.getNameByCode(order.getStatus().toString()));
+            orderVo.setUserId(order.getUserId());
+
+            good2Order.put(order.getProdId(), order);
+        }
+        // 订单信息
+        vo.setOrderList(orderVos);
+        // 商品信息
+        List<Long> goodIds = new ArrayList<>(good2Order.keySet());
+        Long[] ids = new Long[goodIds.size()];
+        goodIds.toArray(ids);
+        List<Product> products = this.productMapper.selectProductsByIds(ids);
+        // 当前订单对应商品信息
+        if (!CollectionUtils.isEmpty(products)) {
+            this.convertProducts(vo, products, good2Order);
         }
     }
+
+    private void convertProducts(OrderListVo vo, List<Product> products, Map<Long, Order> good2Order) {
+        Map<String, List<GoodSpecification>> goodsMap = new HashMap();
+        vo.setGoodsMap(goodsMap);
+        List<GoodSpecification> goodInfos = null;
+        for (Product product : products) {
+            if (!good2Order.containsKey(product.getId())) {
+                continue;
+            }
+            goodInfos = goodsMap.get(product.getId().toString());
+            if (CollectionUtils.isEmpty(goodInfos)) {
+                goodInfos = new ArrayList<>();
+            }
+            goodsMap.put(product.getId().toString(), goodInfos);
+
+            GoodSpecification goodSpecification = new GoodSpecification();
+            goodInfos.add(goodSpecification);
+            goodSpecification.setGoodsId(product.getId());
+            goodSpecification.setGoodsName(product.getName());
+            // id值暂时同商品id
+            goodSpecification.setId(product.getId());
+            // 购买商品数量
+            goodSpecification.setNumber(good2Order.get(product.getId()).getProdNumber());
+            goodSpecification.setOrderId(good2Order.get(product.getId()).getId());
+            goodSpecification.setPic(product.getPicture());
+            goodSpecification.setUserId(good2Order.get(product.getId()).getUserId());
+        }
+    }
+
 
     public static void main(String[] args) {
         String orderNo = DateFormatUtils.format(new Date(), "yyyyMMddHHmmssSSSS");

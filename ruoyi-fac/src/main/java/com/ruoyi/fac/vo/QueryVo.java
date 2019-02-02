@@ -10,6 +10,9 @@ import java.util.Date;
 public class QueryVo {
     private Date startDate;
     private Date endDate;
+    private String token;
+    private int status;
+    private Long[] orderIds;
 
     public QueryVo() {
     }
@@ -33,5 +36,29 @@ public class QueryVo {
 
     public void setEndDate(Date endDate) {
         this.endDate = endDate;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public Long[] getOrderIds() {
+        return orderIds;
+    }
+
+    public void setOrderIds(Long[] orderIds) {
+        this.orderIds = orderIds;
     }
 }

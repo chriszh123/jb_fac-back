@@ -34,6 +34,11 @@ public class Order extends BaseEntity {
     @Excel(name = "商品名称")
     private String prodName;
     /**
+     * 商品数量
+     */
+    @Excel(name = "商品数量")
+    private int prodNumber;
+    /**
      * 金额
      */
     @Excel(name = "金额")
@@ -288,6 +293,14 @@ public class Order extends BaseEntity {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public int getProdNumber() {
+        return prodNumber;
+    }
+
+    public void setProdNumber(int prodNumber) {
+        this.prodNumber = prodNumber;
     }
 
     @Override

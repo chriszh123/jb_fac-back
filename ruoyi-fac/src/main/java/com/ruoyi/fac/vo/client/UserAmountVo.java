@@ -17,10 +17,10 @@ import java.io.Serializable;
 public class UserAmountVo implements Serializable {
     private static final long serialVersionUID = -5808520393298037035L;
 
-    private double balance;
-    private double freeze;
-    private int score;
-    private double totleConsumed;
+    private double balance = 0.00;
+    private double freeze = 0.00;
+    private int score = 0;
+    private double totleConsumed = 0.00;
 
     public double getBalance() {
         return balance;

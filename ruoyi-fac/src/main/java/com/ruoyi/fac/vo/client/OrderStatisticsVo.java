@@ -17,12 +17,12 @@ import java.io.Serializable;
 public class OrderStatisticsVo implements Serializable {
     private static final long serialVersionUID = -2342187099640678784L;
 
-    private int count_id_no_reputation;
-    private int count_id_no_transfer;
-    private int count_id_close;
-    private int count_id_no_pay;
-    private int count_id_no_confirm;
-    private int count_id_success;
+    private int count_id_no_reputation = 0;
+    private int count_id_no_transfer = 0;
+    private int count_id_close = 0;
+    private int count_id_no_pay = 0;
+    private int count_id_no_confirm = 0;
+    private int count_id_success = 0;
 
     public int getCount_id_no_reputation() {
         return count_id_no_reputation;

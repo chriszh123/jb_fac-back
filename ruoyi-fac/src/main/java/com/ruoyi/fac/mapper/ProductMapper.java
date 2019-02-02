@@ -73,4 +73,6 @@ public interface ProductMapper {
     int countProducts(QueryVo queryVo);
 
     List<Product> goodsList(QueryGoodVo vo);
+
+    List<Product> selectProductsByIds(Long[] ids);
 }

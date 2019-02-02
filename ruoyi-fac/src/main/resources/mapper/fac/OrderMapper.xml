@@ -9,9 +9,11 @@
         <result property="orderNo" column="order_no"/>
         <result property="prodId" column="prod_id"/>
         <result property="prodName" column="prod_name"/>
+        <result property="prodNumber" column="prod_number"/>
         <result property="price" column="price"/>
         <result property="status" column="status"/>
         <result property="payTime" column="pay_time"/>
+        <result property="token" column="token"/>
         <result property="userId" column="user_id"/>
         <result property="userName" column="user_name"/>
         <result property="nickName" column="nick_name"/>
@@ -32,7 +34,7 @@
     </resultMap>
 
     <sql id="selectOrderVo">
-        select id, order_no, prod_id, prod_name, price, status, pay_time, user_id, user_name, nick_name, remark, ship_id, ship_code, remark_mngt, ship, cacel_id, cacel_name, cacel_time, create_time, update_time, operator_id, operator_name, is_deleted from fac_order
+        select id, order_no, prod_id, prod_name, prod_number, price, status, pay_time, token, user_id, user_name, nick_name, remark, ship_id, ship_code, remark_mngt, ship, cacel_id, cacel_name, cacel_time, create_time, update_time, operator_id, operator_name, is_deleted from fac_order
     </sql>
 
     <select id="selectOrderList" parameterType="Order" resultMap="OrderResult">
@@ -42,9 +44,11 @@
             <if test="orderNo != null  and orderNo != '' ">and order_no = #{orderNo}</if>
             <if test="prodId != null ">and prod_id = #{prodId}</if>
             <if test="prodName != null  and prodName != '' ">and prod_name = #{prodName}</if>
+            <if test="prodNumber != null ">and prod_number = #{prodNumber}</if>
             <if test="price != null ">and price = #{price}</if>
             <if test="status != null ">and status = #{status}</if>
             <if test="payTime != null ">and pay_time = #{payTime}</if>
+            <if test="token != null ">and token = #{token}</if>
             <if test="userId != null ">and user_id = #{userId}</if>
             <if test="userName != null  and userName != '' ">and user_name = #{userName}</if>
             <if test="nickName != null  and nickName != '' ">and nick_name = #{nickName}</if>
@@ -79,6 +83,7 @@
             <if test="price != null  ">price,</if>
             <if test="status != null  ">status,</if>
             <if test="payTime != null  ">pay_time,</if>
+            <if test="token != null  ">token,</if>
             <if test="userId != null  ">user_id,</if>
             <if test="userName != null  and userName != ''  ">user_name,</if>
             <if test="nickName != null  and nickName != ''  ">nick_name,</if>
@@ -104,6 +109,7 @@
             <if test="price != null  ">#{price},</if>
             <if test="status != null  ">#{status},</if>
             <if test="payTime != null  ">#{payTime},</if>
+            <if test="token != null  ">#{token},</if>
             <if test="userId != null  ">#{userId},</if>
             <if test="userName != null  and userName != ''  ">#{userName},</if>
             <if test="nickName != null  and nickName != ''  ">#{nickName},</if>
@@ -132,6 +138,7 @@
             <if test="price != null  ">price = #{price},</if>
             <if test="status != null  ">status = #{status},</if>
             <if test="payTime != null  ">pay_time = #{payTime},</if>
+            <if test="token != null  ">token = #{token},</if>
             <if test="userId != null  ">user_id = #{userId},</if>
             <if test="userName != null  and userName != ''  ">user_name = #{userName},</if>
             <if test="nickName != null  and nickName != ''  ">nick_name = #{nickName},</if>
@@ -192,4 +199,44 @@
             and DATE_FORMAT(create_time,'%Y-%m-%d') &lt;= DATE_FORMAT(#{endDate},'%Y-%m-%d')
         </if>
     </select>
+
+    <insert id="batchInsertOrders">
+        insert into
+        fac_order
+        (order_no, prod_id, prod_name, prod_number, price, status, user_id, user_name, nick_name, remark, ship, create_time,
+        update_time, operator_id, operator_name, is_deleted)
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.orderNo,jdbcType=VARCHAR}, #{item.prodId,jdbcType=BIGINT},
+            #{item.prodName,jdbcType=VARCHAR}, #{item.prodNumber, jdbcType=TINYINT}, #{item.price, jdbcType=DECIMAL},
+            #{item.status,jdbcType=TINYINT}, #{item.user_id, jdbcType=BIGINT},
+            #{item.user_name,jdbcType=VARCHAR}, #{item.nick_name, jdbcType=VARCHAR},
+            #{item.remark,jdbcType=VARCHAR}, #{item.ship, jdbcType=TINYINT},
+            #{item.createTime,jdbcType=TIMESTAMP}, #{item.updateTime,jdbcType=TIMESTAMP},
+            #{item.operatorId,jdbcType=BIGINT}, #{item.operatorName,jdbcType=VARCHAR},
+            #{item.isDeleted,jdbcType=TINYINT}
+            )
+        </foreach>
+    </insert>
+
+    <select id="orderList" parameterType="QueryVo" resultMap="OrderResult">
+        <include refid="selectOrderVo"/>
+        where is_deleted = 0
+        and token = #{token}
+        <if test="status != null">
+            and status = #{status}
+        </if>
+        order by create_time desc
+    </select>
+
+    <update id="updateOrderStatus" parameterType="QueryVo">
+        UPDATE fac_order
+        set status = #{status}
+        where is_deleted = 0 and token = #{token}
+        and id in
+        <foreach item="id" collection="orderIds" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
 </mapper>

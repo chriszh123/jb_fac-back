@@ -21,9 +21,9 @@ public class OrderCreateRes implements Serializable {
     private int score;
     private int goodsNumber;
     private boolean isNeedLogistics = false;
-    private double amountTotle;
-    private double amount;
-    private double amountReal;
+    private double amountTotle = 0.00;
+    private double amount = 0.00;
+    private double amountReal = 0.00;
     private String dateAdd;
     private String dateClose;
     private boolean hasRefund = false;

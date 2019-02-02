@@ -61,4 +61,7 @@ public interface BuyerAddressMapper {
 
     BuyerAddress getDefaultAddress(String token);
 
+    List<BuyerAddress> selectBuyerAddressByToken(String token);
+
+    BuyerAddress selectBuyerAddressByTokenAndId(String token, long id);
 }
