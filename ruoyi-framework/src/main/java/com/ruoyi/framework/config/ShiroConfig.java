@@ -282,6 +282,16 @@ public class ShiroConfig
         filterChainDefinitionMap.put("/logout", "logout");
         // 不需要拦截的访问
         filterChainDefinitionMap.put("/login", "anon,captchaValidate");
+        // 客户端访问不需要拦截
+        filterChainDefinitionMap.put("/fac/banner/**", "anon");
+        filterChainDefinitionMap.put("/fac/config/**", "anon");
+        filterChainDefinitionMap.put("/fac/discounts/**", "anon");
+        filterChainDefinitionMap.put("/fac/notice/**", "anon");
+        filterChainDefinitionMap.put("/fac/order/**", "anon");
+        filterChainDefinitionMap.put("/fac/score/**", "anon");
+        filterChainDefinitionMap.put("/fac/shop/**", "anon");
+        filterChainDefinitionMap.put("/fac/template-msg/**", "anon");
+        filterChainDefinitionMap.put("/fac/user/**", "anon");
         // 系统权限列表
         // filterChainDefinitionMap.putAll(SpringUtils.getBean(IMenuService.class).selectPermsAll());
 
