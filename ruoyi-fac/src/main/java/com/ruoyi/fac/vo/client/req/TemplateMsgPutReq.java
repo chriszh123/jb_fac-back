@@ -4,7 +4,9 @@
  * Date：2019/1/25
  * Description: TemplateMsgPutReq
  */
-package com.ruoyi.fac.vo.client;
+package com.ruoyi.fac.vo.client.req;
+
+import com.ruoyi.fac.vo.client.PostJsonStringVo;
 
 import java.io.Serializable;
 

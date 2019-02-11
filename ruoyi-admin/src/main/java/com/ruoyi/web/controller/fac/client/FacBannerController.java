@@ -6,20 +6,20 @@
  */
 package com.ruoyi.web.controller.fac.client;
 
-import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.fac.enums.FacCode;
 import com.ruoyi.fac.service.IFocusMapService;
 import com.ruoyi.fac.vo.client.BannerVo;
 import com.ruoyi.fac.vo.client.FacResult;
+import com.ruoyi.fac.vo.client.req.BannerReq;
 import com.ruoyi.framework.web.base.BaseController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -37,7 +37,7 @@ public class FacBannerController extends BaseController {
 
     @PostMapping("/list")
     @ResponseBody
-    public FacResult list(String key) {
+    public FacResult list(@RequestBody BannerReq req) {
         List<BannerVo> bannerVos = this.focusMapService.selectFocusMapList();
         if (CollectionUtils.isEmpty(bannerVos)) {
             return FacResult.error(FacCode.HAS_NO_DATA.getCode(), FacCode.HAS_NO_DATA.getMsg());

@@ -15,11 +15,13 @@ import com.ruoyi.fac.vo.client.FacResult;
 import com.ruoyi.fac.vo.client.ShippingAddress;
 import com.ruoyi.fac.vo.client.UserAmountVo;
 import com.ruoyi.fac.vo.client.UserDetailVo;
+import com.ruoyi.fac.vo.client.req.UserReq;
 import com.ruoyi.framework.web.base.BaseController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -44,13 +46,13 @@ public class FacUserController extends BaseController {
     /**
      * 校验当前用户token
      *
-     * @param token
+     * @param req
      * @return
      */
     @PostMapping("/check-token")
     @ResponseBody
-    public FacResult checkToken(String token) {
-        Buyer buyer = this.buyerService.selectBuyerByToken(token);
+    public FacResult checkToken(@RequestBody UserReq req) {
+        Buyer buyer = this.buyerService.selectBuyerByToken(req.getToken());
         if (buyer == null) {
             return FacResult.error(FacCode.HAS_NO_DATA.getCode(), FacCode.HAS_NO_DATA.getMsg());
         } else {
@@ -60,7 +62,7 @@ public class FacUserController extends BaseController {
 
     @PostMapping("/shipping-address/default")
     @ResponseBody
-    public FacResult defaultShippingAddress(String token) {
+    public FacResult defaultShippingAddress(@RequestBody UserReq req) {
         ShippingAddress shippingAddress = new ShippingAddress();
 
 
@@ -69,11 +71,11 @@ public class FacUserController extends BaseController {
 
     @PostMapping("/detail")
     @ResponseBody
-    public FacResult detail(String token) {
-        if (StringUtils.isEmpty(token)) {
+    public FacResult detail(@RequestBody UserReq req) {
+        if (StringUtils.isEmpty(req.getToken())) {
             return FacResult.error(FacCode.PARAMTER_NULL.getCode(), FacCode.PARAMTER_NULL.getMsg());
         }
-        UserDetailVo detailVo = this.buyerService.detailUser(token);
+        UserDetailVo detailVo = this.buyerService.detailUser(req.getToken());
         if (detailVo == null) {
             return FacResult.error(FacCode.HAS_NO_DATA.getCode(), FacCode.HAS_NO_DATA.getMsg());
         }
@@ -82,11 +84,11 @@ public class FacUserController extends BaseController {
 
     @PostMapping("/amount")
     @ResponseBody
-    public FacResult amount(String token) {
-        if (StringUtils.isEmpty(token)) {
+    public FacResult amount(@RequestBody UserReq req) {
+        if (StringUtils.isEmpty(req.getToken())) {
             return FacResult.error(FacCode.PARAMTER_NULL.getCode(), FacCode.PARAMTER_NULL.getMsg());
         }
-        UserAmountVo amountVo = this.buyerService.userAmount(token);
+        UserAmountVo amountVo = this.buyerService.userAmount(req.getToken());
         if (amountVo == null) {
             return FacResult.error(FacCode.HAS_NO_DATA.getCode(), FacCode.HAS_NO_DATA.getMsg());
         }
@@ -95,11 +97,11 @@ public class FacUserController extends BaseController {
 
     @PostMapping("/shipping-address/list")
     @ResponseBody
-    public FacResult shippingAddressList(String token) {
-        if (StringUtils.isEmpty(token)) {
+    public FacResult shippingAddressList(@RequestBody UserReq req) {
+        if (StringUtils.isEmpty(req.getToken())) {
             return FacResult.error(FacCode.PARAMTER_NULL.getCode(), FacCode.PARAMTER_NULL.getMsg());
         }
-        List<ShippingAddress> shippingAddressList = this.buyerAddressService.shippingAddressList(token);
+        List<ShippingAddress> shippingAddressList = this.buyerAddressService.shippingAddressList(req.getToken());
         if (CollectionUtils.isEmpty(shippingAddressList)) {
             return FacResult.error(FacCode.HAS_NO_DATA.getCode(), FacCode.HAS_NO_DATA.getMsg());
         }
@@ -108,11 +110,11 @@ public class FacUserController extends BaseController {
 
     @PostMapping("/shipping-address/detail")
     @ResponseBody
-    public FacResult detailShippingAddress(String token, String id) {
-        if (StringUtils.isEmpty(token) || StringUtils.isEmpty(id)) {
+    public FacResult detailShippingAddress(@RequestBody UserReq req) {
+        if (StringUtils.isEmpty(req.getToken()) || StringUtils.isEmpty(req.getId())) {
             return FacResult.error(FacCode.PARAMTER_NULL.getCode(), FacCode.PARAMTER_NULL.getMsg());
         }
-        ShippingAddress shippingAddress = this.buyerAddressService.detailShippingAddress(token, id);
+        ShippingAddress shippingAddress = this.buyerAddressService.detailShippingAddress(req.getToken(), req.getId());
         if (shippingAddress == null) {
             return FacResult.error(FacCode.HAS_NO_DATA.getCode(), FacCode.HAS_NO_DATA.getMsg());
         }
@@ -121,14 +123,14 @@ public class FacUserController extends BaseController {
 
     @PostMapping("/shipping-address/add")
     @ResponseBody
-    public FacResult addAddress(ShippingAddress shippingAddress) {
+    public FacResult addAddress(@RequestBody ShippingAddress shippingAddress) {
 
         return FacResult.success("");
     }
 
     @PostMapping("/shipping-address/update")
     @ResponseBody
-    public FacResult updateAddress(ShippingAddress shippingAddress) {
+    public FacResult updateAddress(@RequestBody ShippingAddress shippingAddress) {
         if (shippingAddress == null || StringUtils.isEmpty(shippingAddress.getToken()) || shippingAddress.getId() == null) {
             return FacResult.error(FacCode.PARAMTER_NULL.getCode(), FacCode.PARAMTER_NULL.getMsg());
         }
@@ -139,11 +141,11 @@ public class FacUserController extends BaseController {
 
     @PostMapping("/shipping-address/delete")
     @ResponseBody
-    public FacResult deleteAddress(String token, String id) {
-        if (StringUtils.isEmpty(token) || StringUtils.isEmpty(id)) {
+    public FacResult deleteAddress(@RequestBody UserReq req) {
+        if (StringUtils.isEmpty(req.getToken()) || StringUtils.isEmpty(req.getId())) {
             return FacResult.error(FacCode.PARAMTER_NULL.getCode(), FacCode.PARAMTER_NULL.getMsg());
         }
-        this.buyerAddressService.deleteAddress(token, id);
+        this.buyerAddressService.deleteAddress(req.getToken(), req.getId());
         return FacResult.success("");
     }
 }

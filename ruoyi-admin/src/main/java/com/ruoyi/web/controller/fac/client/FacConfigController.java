@@ -8,10 +8,12 @@ package com.ruoyi.web.controller.fac.client;
 
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.fac.enums.FacCode;
+import com.ruoyi.fac.vo.client.req.ConfigReq;
 import com.ruoyi.fac.vo.client.FacResult;
 import com.ruoyi.framework.web.base.BaseController;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -30,13 +32,13 @@ public class FacConfigController extends BaseController {
     /**
      * 查询相关系统参数配置信息
      *
-     * @param key
+     * @param req
      * @return
      */
     @PostMapping("/get-value")
     @ResponseBody
-    public FacResult getValue(String key) {
-        if (StringUtils.equals("mallName", key)) {
+    public FacResult getValue(@RequestBody ConfigReq req) {
+        if (StringUtils.equals("mallName", req.getKey())) {
             HashMap<String, Object> data = new HashMap<>();
             data.put("remark", "商城的名称");
             data.put("value", "江北便利站");

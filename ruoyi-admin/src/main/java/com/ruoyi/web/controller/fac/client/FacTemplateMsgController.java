@@ -8,10 +8,12 @@ package com.ruoyi.web.controller.fac.client;
 
 import com.ruoyi.fac.enums.FacCode;
 import com.ruoyi.fac.vo.client.FacResult;
-import com.ruoyi.fac.vo.client.TemplateMsgPutReq;
+import com.ruoyi.fac.vo.client.req.TemplateMsgPutReq;
+import com.ruoyi.fac.vo.client.req.TemplateMsgReq;
 import com.ruoyi.framework.web.base.BaseController;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -27,13 +29,13 @@ public class FacTemplateMsgController extends BaseController {
 
     @PostMapping("/wxa/formId")
     @ResponseBody
-    public FacResult wxaFormId(String token, String type, String formId) {
+    public FacResult wxaFormId(@RequestBody TemplateMsgReq req) {
         return FacResult.error(FacCode.HAS_NO_DATA.getCode(), FacCode.HAS_NO_DATA.getMsg());
     }
 
     @PostMapping("/put")
     @ResponseBody
-    public FacResult put(TemplateMsgPutReq putReq) {
+    public FacResult put(@RequestBody TemplateMsgPutReq req) {
         return FacResult.success("");
     }
 }

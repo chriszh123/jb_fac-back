@@ -11,11 +11,13 @@ import com.ruoyi.fac.service.IOrderService;
 import com.ruoyi.fac.service.IProductCategoryService;
 import com.ruoyi.fac.service.IProductService;
 import com.ruoyi.fac.vo.client.*;
+import com.ruoyi.fac.vo.client.req.ShopReq;
 import com.ruoyi.framework.web.base.BaseController;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -62,8 +64,8 @@ public class FacShopController extends BaseController {
 
     @PostMapping("/goods/list")
     @ResponseBody
-    public FacResult goodsList(String categoryId, String nameLike, int page, int pageSize) {
-        List<GoodVo> goodVos = this.productService.goodsList(categoryId, nameLike, page, pageSize);
+    public FacResult goodsList(@RequestBody ShopReq req) {
+        List<GoodVo> goodVos = this.productService.goodsList(req.getCategoryId(), req.getNameLike(), req.getPage(), req.getPageSize());
         if (CollectionUtils.isNotEmpty(goodVos)) {
             return FacResult.success(goodVos);
         } else {
@@ -74,13 +76,13 @@ public class FacShopController extends BaseController {
     /**
      * 轮播图片点击或者点击商品分类里的商品
      *
-     * @param id
+     * @param req
      * @return
      */
     @PostMapping("/goods/detail")
     @ResponseBody
-    public FacResult goodsDetail(String id) {
-        GoodDetailVo goodDetailVo = this.productService.goodsDetail(id);
+    public FacResult goodsDetail(@RequestBody ShopReq req) {
+        GoodDetailVo goodDetailVo = this.productService.goodsDetail(req.getId());
         if (goodDetailVo != null) {
             return FacResult.success(goodDetailVo);
         } else {
@@ -90,21 +92,21 @@ public class FacShopController extends BaseController {
 
     @PostMapping("/goods/reputation")
     @ResponseBody
-    public FacResult reputation(String goodsId) {
+    public FacResult reputation(@RequestBody ShopReq req) {
         return FacResult.error(FacCode.HAS_NO_DATA.getCode(), FacCode.HAS_NO_DATA.getMsg());
     }
 
     @PostMapping("/goods/pingtuan/list")
     @ResponseBody
-    public FacResult pingtuanList(String goodsId) {
+    public FacResult pingtuanList(@RequestBody ShopReq req) {
         return FacResult.error(FacCode.HAS_NO_DATA.getCode(), FacCode.HAS_NO_DATA.getMsg());
     }
 
     @PostMapping("/goods/price")
     @ResponseBody
-    public FacResult goodsPrice(String goodsId, String propertyChildIds) {
+    public FacResult goodsPrice(@RequestBody ShopReq req) {
         // goodsId=114896&propertyChildIds= 10468:41285,
-        GoodsPriceVo goodsPriceVo = this.productService.goodPrice(goodsId);
+        GoodsPriceVo goodsPriceVo = this.productService.goodPrice(req.getGoodsId());
         if (goodsPriceVo != null) {
             return FacResult.success(goodsPriceVo);
         } else {
