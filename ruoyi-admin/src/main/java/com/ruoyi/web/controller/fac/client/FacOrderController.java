@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @create 2019-01-25 13:49
  **/
 @Controller
-@RequestMapping("/fac/order")
+@RequestMapping("/fac/client/order")
 public class FacOrderController extends BaseController {
 
     @Autowired

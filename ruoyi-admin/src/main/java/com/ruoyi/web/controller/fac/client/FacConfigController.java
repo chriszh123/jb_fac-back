@@ -24,7 +24,7 @@ import java.util.HashMap;
  * @create 2019-01-25 13:49
  **/
 @Controller
-@RequestMapping("/fac/config")
+@RequestMapping("/fac/client/config")
 public class FacConfigController extends BaseController {
 
     /**

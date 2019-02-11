@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @create 2019-01-25 13:49
  **/
 @Controller
-@RequestMapping("/fac/notice")
+@RequestMapping("/fac/client/notice")
 public class FacNoticeController extends BaseController {
 
     @PostMapping("/list")

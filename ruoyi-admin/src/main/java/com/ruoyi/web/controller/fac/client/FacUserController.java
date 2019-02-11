@@ -33,7 +33,7 @@ import java.util.List;
  * @create 2019-01-25 13:49
  **/
 @Controller
-@RequestMapping("/fac/user")
+@RequestMapping("/fac/client/user")
 public class FacUserController extends BaseController {
 
     @Autowired

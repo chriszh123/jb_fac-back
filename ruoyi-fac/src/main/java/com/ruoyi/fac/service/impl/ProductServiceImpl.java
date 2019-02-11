@@ -179,7 +179,7 @@ public class ProductServiceImpl implements IProductService {
     public List<GoodVo> goodsList(String categoryId, String nameLike, Integer page, Integer pageSize) {
         List<GoodVo> goodVos = new ArrayList<>();
         QueryGoodVo vo = new QueryGoodVo();
-        if (StringUtils.isNotEmpty(categoryId)) {
+        if (StringUtils.isNotEmpty(categoryId) && !StringUtils.equals("0", categoryId)) {
             vo.setCategoryId(categoryId);
         }
         if (StringUtils.isNotEmpty(nameLike)) {

@@ -23,7 +23,7 @@ import java.util.HashMap;
  * @create 2019-01-25 13:49
  **/
 @Controller
-@RequestMapping("/fac/score")
+@RequestMapping("/fac/client/score")
 public class FacScoreController extends BaseController {
 
     /**

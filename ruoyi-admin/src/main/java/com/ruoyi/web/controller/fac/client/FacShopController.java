@@ -29,7 +29,7 @@ import java.util.List;
  * @create 2019-01-25 13:49
  **/
 @Controller
-@RequestMapping("/fac/shop")
+@RequestMapping("/fac/client/shop")
 public class FacShopController extends BaseController {
 
     @Autowired
