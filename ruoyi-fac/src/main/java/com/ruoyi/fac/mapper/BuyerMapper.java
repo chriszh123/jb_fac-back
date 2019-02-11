@@ -1,10 +1,8 @@
 package com.ruoyi.fac.mapper;
 
 import com.ruoyi.fac.domain.Buyer;
-import com.ruoyi.fac.domain.BuyerBusiness;
 import com.ruoyi.fac.vo.QueryVo;
 
-import java.util.Date;
 import java.util.List;
 
 /**

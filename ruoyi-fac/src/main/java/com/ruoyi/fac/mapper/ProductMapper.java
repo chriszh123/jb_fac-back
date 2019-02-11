@@ -1,6 +1,5 @@
 package com.ruoyi.fac.mapper;
 
-import com.ruoyi.fac.domain.Order;
 import com.ruoyi.fac.domain.Product;
 import com.ruoyi.fac.vo.QueryVo;
 import com.ruoyi.fac.vo.condition.QueryGoodVo;

@@ -1,11 +1,9 @@
 package com.ruoyi.fac.mapper;
 
-import com.ruoyi.fac.domain.BuyerBusiness;
 import com.ruoyi.fac.domain.Order;
 import com.ruoyi.fac.vo.QueryVo;
 import org.apache.ibatis.annotations.Param;
 
-import java.util.Date;
 import java.util.List;
 
 /**
