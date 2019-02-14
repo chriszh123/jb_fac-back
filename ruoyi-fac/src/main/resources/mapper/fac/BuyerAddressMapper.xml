@@ -8,6 +8,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="id"    column="id"    />
         <result property="buyerId"    column="buyer_id"    />
         <result property="token"    column="token"    />
+        <result property="openId"    column="open_id"    />
         <result property="address"    column="address"    />
         <result property="provinceId"    column="provinceId"    />
         <result property="provinceStr"    column="province_str"    />
@@ -27,7 +28,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 	
 	<sql id="selectBuyerAddressVo">
-        select id, buyer_id, token, address, provinceId, province_str, cityId, city_str, districtId, district_str, linkMan, phone_number, code, is_default, create_time, update_time, operator_id, operator_name, is_deleted from fac_buyer_address
+        select id, buyer_id, token,open_id, address, provinceId, province_str, cityId, city_str, districtId, district_str, linkMan, phone_number, code, is_default, create_time, update_time, operator_id, operator_name, is_deleted from fac_buyer_address
     </sql>
 	
     <select id="selectBuyerAddressList" parameterType="BuyerAddress" resultMap="BuyerAddressResult">
@@ -36,6 +37,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="id != null "> and id = #{id}</if>
              <if test="buyerId != null "> and buyer_id = #{buyerId}</if>
              <if test="token != null  and token != '' "> and token = #{token}</if>
+             <if test="openId != null  and openId != '' "> and open_id = #{openId}</if>
              <if test="address != null  and address != '' "> and address = #{address}</if>
              <if test="provinceId != null "> and provinceId = #{provinceId}</if>
              <if test="provinceStr != null  and provinceStr != '' "> and province_str = #{provinceStr}</if>
@@ -66,6 +68,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			<if test="id != null  ">id,</if>
 			<if test="buyerId != null  ">buyer_id,</if>
 			<if test="token != null  and token != ''  ">token,</if>
+            <if test="openId != null  and openId != ''  ">open_id,</if>
 			<if test="address != null  and address != ''  ">address,</if>
 			<if test="provinceId != null  ">provinceId,</if>
 			<if test="provinceStr != null  and provinceStr != ''  ">province_str,</if>
@@ -87,6 +90,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			<if test="id != null  ">#{id},</if>
 			<if test="buyerId != null  ">#{buyerId},</if>
 			<if test="token != null  and token != ''  ">#{token},</if>
+            <if test="openId != null  and openId != ''  ">#{openId},</if>
 			<if test="address != null  and address != ''  ">#{address},</if>
 			<if test="provinceId != null  ">#{provinceId},</if>
 			<if test="provinceStr != null  and provinceStr != ''  ">#{provinceStr},</if>
@@ -144,17 +148,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="getDefaultAddress" parameterType="String" resultMap="BuyerAddressResult">
         <include refid="selectBuyerAddressVo"/>
-        where token = #{token} and is_default = 1 and is_deleted = 0
+        where open_id = #{openId} and is_default = 1 and is_deleted = 0
     </select>
 
-    <select id="selectBuyerAddressByToken" parameterType="String" resultMap="BuyerAddressResult">
+    <select id="selectBuyerAddressByOpenId" parameterType="String" resultMap="BuyerAddressResult">
         <include refid="selectBuyerAddressVo"/>
-        where token = #{token} and is_deleted = 0
+        where open_id = #{openId} and is_deleted = 0
         order by create_time desc
     </select>
 
-    <select id="selectBuyerAddressByTokenAndId" resultMap="BuyerAddressResult">
+    <select id="selectBuyerAddressByOpenIdAndId" resultMap="BuyerAddressResult">
         <include refid="selectBuyerAddressVo"/>
-        where is_deleted = 0 and token = #{token} and id = #{id}
+        where is_deleted = 0 and open_id = #{openId} and id = #{id}
     </select>
 </mapper>

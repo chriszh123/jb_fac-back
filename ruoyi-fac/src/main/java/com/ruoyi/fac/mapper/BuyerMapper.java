@@ -73,8 +73,8 @@ public interface BuyerMapper {
     /**
      * 查询指定token对应的用户
      *
-     * @param token
+     * @param openId
      * @return
      */
-    Buyer selectBuyerByToken(String token);
+    Buyer selectBuyerByOpenId(String openId);
 }

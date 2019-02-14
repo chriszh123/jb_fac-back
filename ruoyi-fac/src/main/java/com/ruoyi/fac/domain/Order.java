@@ -58,6 +58,10 @@ public class Order extends BaseEntity {
      */
     private String token;
     /**
+     * 用户微信openid，唯一
+     */
+    private String openId;
+    /**
      * 买者用户id
      */
     private Long userId;
@@ -301,6 +305,14 @@ public class Order extends BaseEntity {
 
     public void setProdNumber(int prodNumber) {
         this.prodNumber = prodNumber;
+    }
+
+    public String getOpenId() {
+        return openId;
+    }
+
+    public void setOpenId(String openId) {
+        this.openId = openId;
     }
 
     @Override

@@ -11,12 +11,13 @@ import com.ruoyi.fac.domain.Buyer;
 import com.ruoyi.fac.enums.FacCode;
 import com.ruoyi.fac.service.IBuyerAddressService;
 import com.ruoyi.fac.service.IBuyerService;
-import com.ruoyi.fac.vo.client.FacResult;
-import com.ruoyi.fac.vo.client.ShippingAddress;
-import com.ruoyi.fac.vo.client.UserAmountVo;
-import com.ruoyi.fac.vo.client.UserDetailVo;
+import com.ruoyi.fac.service.WechatAdapterService;
+import com.ruoyi.fac.vo.client.*;
 import com.ruoyi.fac.vo.client.req.UserReq;
+import com.ruoyi.fac.vo.client.res.LoginVo;
 import com.ruoyi.framework.web.base.BaseController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.CollectionUtils;
@@ -25,8 +26,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * 用户相关接口
@@ -37,11 +38,14 @@ import java.util.List;
 @Controller
 @RequestMapping("/fac/client/user")
 public class FacUserController extends BaseController {
+    private static final Logger LOGGER = LoggerFactory.getLogger(FacUserController.class);
 
     @Autowired
     private IBuyerService buyerService;
     @Autowired
     private IBuyerAddressService buyerAddressService;
+    @Autowired
+    private WechatAdapterService wechatAdapterService;
 
     /**
      * 校验当前用户token
@@ -147,5 +151,31 @@ public class FacUserController extends BaseController {
         }
         this.buyerAddressService.deleteAddress(req.getToken(), req.getId());
         return FacResult.success("");
+    }
+
+    @PostMapping("/wxapp/login")
+    @ResponseBody
+    public FacResult wxappLogin(@RequestBody UserReq req) {
+        if (StringUtils.isEmpty(req.getCode())) {
+            return FacResult.error(FacCode.PARAMTER_NULL.getCode(), FacCode.PARAMTER_NULL.getMsg());
+        }
+
+        try {
+            SessionDTO sessionDTO = this.wechatAdapterService.jscode2session(req.getCode());
+            if (sessionDTO == null || StringUtils.isBlank(sessionDTO.getOpenid())) {
+                return FacResult.error(FacCode.ERROR_WX_LOGIN_SESSION.getCode(), FacCode.ERROR_WX_LOGIN_SESSION.getMsg());
+            }
+            Long buyerId = this.buyerService.saveBuyer(sessionDTO.getOpenid(), req.getCode());
+            LoginVo loginVo = new LoginVo();
+            loginVo.setOpenid(sessionDTO.getOpenid());
+            // 这里token暂时与openId值相同，代表用户唯一标识
+            loginVo.setToken(sessionDTO.getOpenid());
+            loginVo.setUid(buyerId);
+
+            return FacResult.success(loginVo);
+        } catch (Exception ex) {
+            LOGGER.error("[wxappLogin] error", ex);
+            return FacResult.error(FacCode.ERROR_SERVER_INTERVAL.getCode(), FacCode.ERROR_SERVER_INTERVAL.getMsg());
+        }
     }
 }

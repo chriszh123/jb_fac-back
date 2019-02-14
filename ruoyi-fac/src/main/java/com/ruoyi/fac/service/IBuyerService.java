@@ -84,4 +84,12 @@ public interface IBuyerService {
     UserDetailVo detailUser(String token);
 
     UserAmountVo userAmount(String token);
+
+    /**
+     * 保存微信用户信息
+     * @param openId
+     * @param code
+     * @return
+     */
+    Long saveBuyer(String openId, String code);
 }

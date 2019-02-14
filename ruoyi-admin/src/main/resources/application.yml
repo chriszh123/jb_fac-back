@@ -132,3 +132,10 @@ gen:
   autoRemovePre: true
   # 表前缀(类名不会包含表前缀)
   tablePrefix: sys_
+
+#小程序信息
+wxapp:
+  #FAC相关信息
+  fac:
+    appid: wx7277976cd1ab9064
+    secret: b854a7ab20934902d5ccf9b6a4aac0f4

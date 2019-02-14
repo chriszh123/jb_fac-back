@@ -283,7 +283,7 @@ public class OrderServiceImpl implements IOrderService {
             return res;
         }
         // 当前用户信息
-        Buyer buyer = this.buyerMapper.selectBuyerByToken(orderCreateVo.getToken());
+        Buyer buyer = this.buyerMapper.selectBuyerByOpenId(orderCreateVo.getToken());
         if (buyer == null) {
             return res;
         }
@@ -370,6 +370,7 @@ public class OrderServiceImpl implements IOrderService {
         }
         QueryVo queryVo = new QueryVo();
         queryVo.setToken(token);
+        queryVo.setOpenId(token);
         queryVo.setStatus(status);
         // 当前条件下所有商品
         List<Order> orders = this.orderMapper.orderList(queryVo);
@@ -392,6 +393,7 @@ public class OrderServiceImpl implements IOrderService {
     public void closeOrder(String token, String orderIds) {
         QueryVo queryVo = new QueryVo();
         queryVo.setToken(token);
+        queryVo.setOpenId(token);
         queryVo.setOrderIds(Convert.toLongArray(orderIds));
         queryVo.setStatus(OrderStatus.CACELED.getCode());
         this.orderMapper.updateOrderStatus(queryVo);

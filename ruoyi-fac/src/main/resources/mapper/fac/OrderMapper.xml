@@ -34,7 +34,7 @@
     </resultMap>
 
     <sql id="selectOrderVo">
-        select id, order_no, prod_id, prod_name, prod_number, price, status, pay_time, token, user_id, user_name, nick_name, remark, ship_id, ship_code, remark_mngt, ship, cacel_id, cacel_name, cacel_time, create_time, update_time, operator_id, operator_name, is_deleted from fac_order
+        select id, order_no, prod_id, prod_name, prod_number, price, status, pay_time, token,open_id, user_id, user_name, nick_name, remark, ship_id, ship_code, remark_mngt, ship, cacel_id, cacel_name, cacel_time, create_time, update_time, operator_id, operator_name, is_deleted from fac_order
     </sql>
 
     <select id="selectOrderList" parameterType="Order" resultMap="OrderResult">
@@ -49,6 +49,7 @@
             <if test="status != null ">and status = #{status}</if>
             <if test="payTime != null ">and pay_time = #{payTime}</if>
             <if test="token != null ">and token = #{token}</if>
+            <if test="openId != null ">and open_id = #{openId}</if>
             <if test="userId != null ">and user_id = #{userId}</if>
             <if test="userName != null  and userName != '' ">and user_name = #{userName}</if>
             <if test="nickName != null  and nickName != '' ">and nick_name = #{nickName}</if>
@@ -84,6 +85,7 @@
             <if test="status != null  ">status,</if>
             <if test="payTime != null  ">pay_time,</if>
             <if test="token != null  ">token,</if>
+            <if test="openId != null  ">open_id,</if>
             <if test="userId != null  ">user_id,</if>
             <if test="userName != null  and userName != ''  ">user_name,</if>
             <if test="nickName != null  and nickName != ''  ">nick_name,</if>
@@ -110,6 +112,7 @@
             <if test="status != null  ">#{status},</if>
             <if test="payTime != null  ">#{payTime},</if>
             <if test="token != null  ">#{token},</if>
+            <if test="openId != null  ">#{openId},</if>
             <if test="userId != null  ">#{userId},</if>
             <if test="userName != null  and userName != ''  ">#{userName},</if>
             <if test="nickName != null  and nickName != ''  ">#{nickName},</if>
@@ -139,6 +142,7 @@
             <if test="status != null  ">status = #{status},</if>
             <if test="payTime != null  ">pay_time = #{payTime},</if>
             <if test="token != null  ">token = #{token},</if>
+            <if test="openId != null  ">open_id = #{openId},</if>
             <if test="userId != null  ">user_id = #{userId},</if>
             <if test="userName != null  and userName != ''  ">user_name = #{userName},</if>
             <if test="nickName != null  and nickName != ''  ">nick_name = #{nickName},</if>
@@ -223,7 +227,7 @@
     <select id="orderList" parameterType="QueryVo" resultMap="OrderResult">
         <include refid="selectOrderVo"/>
         where is_deleted = 0
-        and token = #{token}
+        and open_id = #{openId}
         <if test="status != null">
             and status = #{status}
         </if>
@@ -233,7 +237,7 @@
     <update id="updateOrderStatus" parameterType="QueryVo">
         UPDATE fac_order
         set status = #{status}
-        where is_deleted = 0 and token = #{token}
+        where is_deleted = 0 and open_id = #{openId}
         and id in
         <foreach item="id" collection="orderIds" open="(" separator="," close=")">
             #{id}

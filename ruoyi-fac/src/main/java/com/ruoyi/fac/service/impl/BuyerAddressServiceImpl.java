@@ -124,7 +124,7 @@ public class BuyerAddressServiceImpl implements IBuyerAddressService {
 
     @Override
     public List<ShippingAddress> shippingAddressList(String token) {
-        List<BuyerAddress> buyerAddresses = this.buyerAddressMapper.selectBuyerAddressByToken(token);
+        List<BuyerAddress> buyerAddresses = this.buyerAddressMapper.selectBuyerAddressByOpenId(token);
         if (CollectionUtils.isEmpty(buyerAddresses)) {
             return null;
         }
@@ -156,7 +156,7 @@ public class BuyerAddressServiceImpl implements IBuyerAddressService {
 
     @Override
     public ShippingAddress detailShippingAddress(String token, String id) {
-        BuyerAddress buyerAddress = this.buyerAddressMapper.selectBuyerAddressByTokenAndId(token, Long.valueOf(id));
+        BuyerAddress buyerAddress = this.buyerAddressMapper.selectBuyerAddressByOpenIdAndId(token, Long.valueOf(id));
         if (buyerAddress == null) {
             return null;
         }

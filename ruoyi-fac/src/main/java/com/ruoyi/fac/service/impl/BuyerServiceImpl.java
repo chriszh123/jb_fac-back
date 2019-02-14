@@ -274,12 +274,12 @@ public class BuyerServiceImpl implements IBuyerService {
         if (StringUtils.isEmpty(token)) {
             return null;
         }
-        return this.buyerMapper.selectBuyerByToken(token);
+        return this.buyerMapper.selectBuyerByOpenId(token);
     }
 
     @Override
     public UserDetailVo detailUser(String token) {
-        Buyer buyer = this.buyerMapper.selectBuyerByToken(token);
+        Buyer buyer = this.buyerMapper.selectBuyerByOpenId(token);
         if (buyer == null) {
             return null;
         }
@@ -301,7 +301,7 @@ public class BuyerServiceImpl implements IBuyerService {
 
     @Override
     public UserAmountVo userAmount(String token) {
-        Buyer buyer = this.buyerMapper.selectBuyerByToken(token);
+        Buyer buyer = this.buyerMapper.selectBuyerByOpenId(token);
         if (buyer == null) {
             return null;
         }
@@ -313,6 +313,7 @@ public class BuyerServiceImpl implements IBuyerService {
         // 总消费金额
         QueryVo queryVo = new QueryVo();
         queryVo.setToken(token);
+        queryVo.setOpenId(token);
         queryVo.setStatus(OrderStatus.PAYED.getCode());
         List<Order> orders = this.orderMapper.orderList(queryVo);
         if (!CollectionUtils.isEmpty(orders)) {
@@ -324,6 +325,38 @@ public class BuyerServiceImpl implements IBuyerService {
         }
 
         return vo;
+    }
+
+    /**
+     * 保存微信用户信息
+     *
+     * @param openId
+     * @param code
+     * @return
+     */
+    @Override
+    public Long saveBuyer(String openId, String code) {
+        Date nowDate = new Date();
+        Buyer buyer = this.buyerMapper.selectBuyerByOpenId(openId);
+        if (buyer != null) {
+           // update
+        } else {
+            // add
+            buyer = new Buyer();
+            buyer.setNickName("nickName");
+            buyer.setName("name");
+            buyer.setToken(code);
+            buyer.setOpenId(openId);
+            buyer.setBalance(new BigDecimal("0.00"));
+            buyer.setPoints(0);
+            buyer.setRegistryTime(nowDate);
+            buyer.setCreateTime(nowDate);
+            buyer.setUpdateTime(nowDate);
+            buyer.setIsDeleted(0);
+            this.buyerMapper.insertBuyer(buyer);
+        }
+
+        return buyer.getId();
     }
 
     private boolean checkProdBuyed(String prodId, List<BuyerBusiness> buyerBusinesses) {

@@ -35,6 +35,10 @@ public class Buyer extends BaseEntity {
      */
     private String token;
     /**
+     * 用户微信openid，唯一
+     */
+    private String openId;
+    /**
      * 余额:分销的奖金
      */
     @Excel(name = "余额")
@@ -166,6 +170,14 @@ public class Buyer extends BaseEntity {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public String getOpenId() {
+        return openId;
+    }
+
+    public void setOpenId(String openId) {
+        this.openId = openId;
     }
 
     @Override

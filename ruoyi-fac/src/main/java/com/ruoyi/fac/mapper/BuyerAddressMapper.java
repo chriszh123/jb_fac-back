@@ -59,9 +59,9 @@ public interface BuyerAddressMapper {
      */
     int deleteBuyerAddressByIds(String[] ids);
 
-    BuyerAddress getDefaultAddress(String token);
+    BuyerAddress getDefaultAddress(String openId);
 
-    List<BuyerAddress> selectBuyerAddressByToken(String token);
+    List<BuyerAddress> selectBuyerAddressByOpenId(String token);
 
-    BuyerAddress selectBuyerAddressByTokenAndId(String token, long id);
+    BuyerAddress selectBuyerAddressByOpenIdAndId(String token, long id);
 }

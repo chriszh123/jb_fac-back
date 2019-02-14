@@ -175,4 +175,20 @@ public class Global
     {
         return StringUtils.nvl(getConfig("gen.tablePrefix"), "sys_");
     }
+
+    /**
+     * FAC 小程序appId
+     * @return
+     */
+    public static String getFacAppId() {
+        return getConfig("wxapp.fac.appid");
+    }
+
+    /**
+     * FAC 小程序 secret
+     * @return
+     */
+    public static String getFacSecret() {
+        return getConfig("wxapp.fac.secret");
+    }
 }

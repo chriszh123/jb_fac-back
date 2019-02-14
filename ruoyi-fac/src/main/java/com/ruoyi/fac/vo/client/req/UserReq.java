@@ -19,6 +19,8 @@ public class UserReq implements Serializable {
 
     private String token;
     private String id;
+    private String code;
+    private Integer type;
 
     public String getToken() {
         return token;
@@ -34,5 +36,21 @@ public class UserReq implements Serializable {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
     }
 }

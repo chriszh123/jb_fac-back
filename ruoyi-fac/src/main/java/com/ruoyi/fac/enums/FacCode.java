@@ -9,7 +9,10 @@ package com.ruoyi.fac.enums;
 public enum FacCode {
     SUCCESS("success", 0),
     HAS_NO_DATA("暂无数据", 404),
-    PARAMTER_NULL("请求参数不能为空", 400);
+    PARAMTER_NULL("请求参数不能为空", 400),
+    ERROR_WX_LOGIN_SESSION("查询微信用户session接口异常", 10000001),
+    ERROR_SERVER_INTERVAL("服务启内部异常，请联系管理员", 509)
+    ;
 
     private String msg;
     private Integer code;

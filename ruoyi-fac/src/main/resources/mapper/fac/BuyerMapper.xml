@@ -9,6 +9,7 @@
         <result property="nickName" column="nick_name"/>
         <result property="name" column="name"/>
         <result property="token" column="token"/>
+        <result property="openId" column="open_id"/>
         <result property="balance" column="balance"/>
         <result property="points" column="points"/>
         <result property="registryTime" column="registry_time"/>
@@ -21,7 +22,7 @@
     </resultMap>
 
     <sql id="selectBuyerVo">
-        select id, nick_name, name, token, balance, points, registry_time, harvest_address, create_time, update_time, operator_id, operator_name, is_deleted from fac_buyer
+        select id, nick_name, name, token,open_id, balance, points, registry_time, harvest_address, create_time, update_time, operator_id, operator_name, is_deleted from fac_buyer
     </sql>
 
     <select id="selectBuyerList" parameterType="Buyer" resultMap="BuyerResult">
@@ -31,6 +32,7 @@
             <if test="nickName != null  and nickName != '' ">and nick_name like "%"#{nickName}"%"</if>
             <if test="name != null  and name != '' ">and name = #{name}</if>
             <if test="token != null  and token != '' ">and token = #{token}</if>
+            <if test="openId != null  and openId != '' ">and open_id = #{openId}</if>
             <if test="balance != null ">and balance = #{balance}</if>
             <if test="points != null ">and points = #{points}</if>
             <if test="registryTime != null ">and registry_time = #{registryTime}</if>
@@ -55,6 +57,7 @@
             <if test="nickName != null  and nickName != ''  ">nick_name,</if>
             <if test="name != null  and name != ''  ">name,</if>
             <if test="token != null  and token != ''  ">token,</if>
+            <if test="openId != null  and openId != ''  ">open_id,</if>
             <if test="balance != null  ">balance,</if>
             <if test="points != null  ">points,</if>
             <if test="registryTime != null  ">registry_time,</if>
@@ -70,6 +73,7 @@
             <if test="nickName != null  and nickName != ''  ">#{nickName},</if>
             <if test="name != null  and name != ''  ">#{name},</if>
             <if test="token != null  and token != ''  ">#{token},</if>
+            <if test="openId != null  and openId != ''  ">#{openId},</if>
             <if test="balance != null  ">#{balance},</if>
             <if test="points != null  ">#{points},</if>
             <if test="registryTime != null  ">#{registryTime},</if>
@@ -130,9 +134,9 @@
         </if>
     </select>
 
-    <select id="selectBuyerByToken" parameterType="String" resultMap="BuyerResult">
+    <select id="selectBuyerByOpenId" parameterType="String" resultMap="BuyerResult">
         <include refid="selectBuyerVo"/>
-        where token = #{token}
+        where open_id = #{openId} add is_deleted = 0
     </select>
 
 </mapper>

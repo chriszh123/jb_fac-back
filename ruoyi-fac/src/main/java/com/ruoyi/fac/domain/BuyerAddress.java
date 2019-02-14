@@ -26,6 +26,10 @@ public class BuyerAddress extends BaseEntity {
      */
     private String token;
     /**
+     * 用户微信openid，唯一
+     */
+    private String openId;
+    /**
      * 用户昵称
      */
     private String address;
@@ -216,6 +220,14 @@ public class BuyerAddress extends BaseEntity {
 
     public Integer getIsDeleted() {
         return isDeleted;
+    }
+
+    public String getOpenId() {
+        return openId;
+    }
+
+    public void setOpenId(String openId) {
+        this.openId = openId;
     }
 
     @Override

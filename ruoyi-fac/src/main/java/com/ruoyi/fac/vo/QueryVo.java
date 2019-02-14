@@ -11,6 +11,7 @@ public class QueryVo {
     private Date startDate;
     private Date endDate;
     private String token;
+    private String openId;
     private int status;
     private Long[] orderIds;
 
@@ -60,5 +61,13 @@ public class QueryVo {
 
     public void setOrderIds(Long[] orderIds) {
         this.orderIds = orderIds;
+    }
+
+    public String getOpenId() {
+        return openId;
+    }
+
+    public void setOpenId(String openId) {
+        this.openId = openId;
     }
 }
