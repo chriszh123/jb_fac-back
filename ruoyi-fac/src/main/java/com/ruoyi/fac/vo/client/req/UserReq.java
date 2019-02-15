@@ -21,6 +21,10 @@ public class UserReq implements Serializable {
     private String id;
     private String code;
     private Integer type;
+    private String encryptedData;
+    private String iv;
+    // 推荐人
+    private String referrer;
 
     public String getToken() {
         return token;
@@ -52,5 +56,29 @@ public class UserReq implements Serializable {
 
     public void setType(Integer type) {
         this.type = type;
+    }
+
+    public String getReferrer() {
+        return referrer;
+    }
+
+    public void setReferrer(String referrer) {
+        this.referrer = referrer;
+    }
+
+    public String getEncryptedData() {
+        return encryptedData;
+    }
+
+    public void setEncryptedData(String encryptedData) {
+        this.encryptedData = encryptedData;
+    }
+
+    public String getIv() {
+        return iv;
+    }
+
+    public void setIv(String iv) {
+        this.iv = iv;
     }
 }

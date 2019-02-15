@@ -163,7 +163,7 @@ public class FacUserController extends BaseController {
         try {
             SessionDTO sessionDTO = this.wechatAdapterService.jscode2session(req.getCode());
             if (sessionDTO == null || StringUtils.isBlank(sessionDTO.getOpenid())) {
-                return FacResult.error(FacCode.ERROR_WX_LOGIN_SESSION.getCode(), FacCode.ERROR_WX_LOGIN_SESSION.getMsg());
+                return FacResult.error(FacCode.UNREGISTER.getCode(), FacCode.UNREGISTER.getMsg());
             }
             Long buyerId = this.buyerService.saveBuyer(sessionDTO.getOpenid(), req.getCode());
             LoginVo loginVo = new LoginVo();
@@ -177,5 +177,11 @@ public class FacUserController extends BaseController {
             LOGGER.error("[wxappLogin] error", ex);
             return FacResult.error(FacCode.ERROR_SERVER_INTERVAL.getCode(), FacCode.ERROR_SERVER_INTERVAL.getMsg());
         }
+    }
+
+    @PostMapping("/wxapp/register/complex")
+    @ResponseBody
+    public FacResult wxappRegister(@RequestBody UserReq req) {
+        return FacResult.success("");
     }
 }
