@@ -128,8 +128,14 @@ public class FacUserController extends BaseController {
     @PostMapping("/shipping-address/add")
     @ResponseBody
     public FacResult addAddress(@RequestBody ShippingAddress shippingAddress) {
-
-        return FacResult.success("");
+        if (shippingAddress == null || StringUtils.isEmpty(shippingAddress.getToken())) {
+            return FacResult.error(FacCode.PARAMTER_NULL.getCode(), FacCode.PARAMTER_NULL.getMsg());
+        }
+        Long id = this.buyerAddressService.addAddress(shippingAddress);
+        if (id == null || id < 0) {
+            return FacResult.error(FacCode.DATA_NOT_EXIST.getCode(), FacCode.DATA_NOT_EXIST.getMsg());
+        }
+        return FacResult.success(id);
     }
 
     @PostMapping("/shipping-address/update")

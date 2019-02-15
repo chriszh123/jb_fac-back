@@ -6,8 +6,8 @@
  */
 package com.ruoyi.web.controller.fac.client;
 
+import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.fac.enums.FacCode;
-import com.ruoyi.fac.service.IOrderService;
 import com.ruoyi.fac.service.IProductCategoryService;
 import com.ruoyi.fac.service.IProductService;
 import com.ruoyi.fac.vo.client.*;
@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -82,6 +81,9 @@ public class FacShopController extends BaseController {
     @PostMapping("/goods/detail")
     @ResponseBody
     public FacResult goodsDetail(@RequestBody ShopReq req) {
+        if (StringUtils.isBlank(req.getId())) {
+            return FacResult.error(FacCode.PARAMTER_NULL.getCode(), FacCode.PARAMTER_NULL.getMsg());
+        }
         GoodDetailVo goodDetailVo = this.productService.goodsDetail(req.getId());
         if (goodDetailVo != null) {
             return FacResult.success(goodDetailVo);

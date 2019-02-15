@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.List;
 
 import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.fac.domain.Buyer;
+import com.ruoyi.fac.mapper.BuyerMapper;
 import com.ruoyi.fac.util.TimeUtils;
 import com.ruoyi.fac.vo.client.ShippingAddress;
 import com.ruoyi.system.domain.SysUser;
@@ -26,6 +28,8 @@ import org.springframework.util.CollectionUtils;
 public class BuyerAddressServiceImpl implements IBuyerAddressService {
     @Autowired
     private BuyerAddressMapper buyerAddressMapper;
+    @Autowired
+    private BuyerMapper buyerMapper;
 
     /**
      * 查询买者用户收货地址信息
@@ -114,7 +118,7 @@ public class BuyerAddressServiceImpl implements IBuyerAddressService {
             shippingAddress.setDateUpdate(TimeUtils.date2Str(address.getUpdateTime(), TimeUtils.DEFAULT_DATE_TIME_FORMAT_HH_MM_SS));
         }
         shippingAddress.setId(address.getId());
-        shippingAddress.setDefault(true);
+        shippingAddress.setIsDefault("true");
         shippingAddress.setLinkMan(address.getLinkMan());
         shippingAddress.setMobile(address.getPhoneNumber());
         shippingAddress.setUserId(address.getOperatorId());
@@ -143,7 +147,7 @@ public class BuyerAddressServiceImpl implements IBuyerAddressService {
             }
             shippingAddress.setDistrictId(Long.valueOf(item.getDistrictId()));
             shippingAddress.setId(item.getId());
-            shippingAddress.setDefault(item.getIsDefault().intValue() == 1);
+            shippingAddress.setIsDefault(item.getIsDefault().intValue() == 1 ? "true" : "false");
             shippingAddress.setLinkMan(item.getLinkMan());
             shippingAddress.setMobile(item.getPhoneNumber());
             shippingAddress.setProvinceId(Long.valueOf(item.getProvinceId()));
@@ -172,7 +176,7 @@ public class BuyerAddressServiceImpl implements IBuyerAddressService {
         }
         shippingAddress.setDistrictId(Long.valueOf(buyerAddress.getDistrictId()));
         shippingAddress.setId(buyerAddress.getId());
-        shippingAddress.setDefault(buyerAddress.getIsDefault().intValue() == 1);
+        shippingAddress.setIsDefault(buyerAddress.getIsDefault().intValue() == 1 ? "true" : "false");
         shippingAddress.setLinkMan(buyerAddress.getLinkMan());
         shippingAddress.setMobile(buyerAddress.getPhoneNumber());
         shippingAddress.setProvinceId(Long.valueOf(buyerAddress.getProvinceId()));
@@ -197,7 +201,7 @@ public class BuyerAddressServiceImpl implements IBuyerAddressService {
         buyerAddress.setPhoneNumber(shippingAddress.getMobile());
         buyerAddress.setCode(shippingAddress.getCode());
         buyerAddress.setUpdateTime(new Date());
-        buyerAddress.setIsDefault(shippingAddress.isDefault() ? 1 : 0);
+        buyerAddress.setIsDefault(StringUtils.equals("true", shippingAddress.getIsDefault()) ? 1 : 0);
 
         this.buyerAddressMapper.updateBuyerAddress(buyerAddress);
     }
@@ -210,6 +214,34 @@ public class BuyerAddressServiceImpl implements IBuyerAddressService {
         buyerAddress.setIsDeleted(1);
 
         this.buyerAddressMapper.updateBuyerAddress(buyerAddress);
+    }
+
+    @Override
+    public Long addAddress(ShippingAddress shippingAddress) {
+        Buyer buyer = this.buyerMapper.selectBuyerByOpenId(shippingAddress.getToken());
+        if (buyer == null) {
+            return -1L;
+        }
+        BuyerAddress buyerAddress = new BuyerAddress();
+        buyerAddress.setBuyerId(buyer.getId());
+        buyerAddress.setToken(shippingAddress.getToken());
+        buyerAddress.setOpenId(shippingAddress.getToken());
+
+        buyerAddress.setProvinceId(shippingAddress.getProvinceId().intValue());
+        buyerAddress.setProvinceStr(shippingAddress.getProvinceStr());
+        buyerAddress.setCityId(shippingAddress.getCityId().intValue());
+        buyerAddress.setCityStr(shippingAddress.getCityStr());
+        buyerAddress.setDistrictId(shippingAddress.getDistrictId().intValue());
+        buyerAddress.setDistrictStr(shippingAddress.getAreaStr());
+        buyerAddress.setAddress(shippingAddress.getAddress());
+        buyerAddress.setLinkMan(shippingAddress.getLinkMan());
+        buyerAddress.setPhoneNumber(shippingAddress.getMobile());
+        buyerAddress.setCode(shippingAddress.getCode());
+        buyerAddress.setUpdateTime(new Date());
+        buyerAddress.setIsDefault(StringUtils.equals("true", shippingAddress.getIsDefault()) ? 1 : 0);
+        this.buyerAddressMapper.insertBuyerAddress(buyerAddress);
+
+        return buyerAddress.getId();
     }
 
     private BuyerAddress convertBuyerAddress(ShippingAddress shippingAddress, SysUser user) {

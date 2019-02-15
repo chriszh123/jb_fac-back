@@ -42,7 +42,7 @@ public class ShippingAddress implements Serializable {
     /**
      * 是否为默认地址
      */
-    private boolean isDefault = false;
+    private String isDefault = "false";
     /**
      * "张三丰"
      */
@@ -130,14 +130,6 @@ public class ShippingAddress implements Serializable {
         this.id = id;
     }
 
-    public boolean isDefault() {
-        return isDefault;
-    }
-
-    public void setDefault(boolean aDefault) {
-        isDefault = aDefault;
-    }
-
     public String getLinkMan() {
         return linkMan;
     }
@@ -208,5 +200,13 @@ public class ShippingAddress implements Serializable {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public String getIsDefault() {
+        return isDefault;
+    }
+
+    public void setIsDefault(String isDefault) {
+        this.isDefault = isDefault;
     }
 }

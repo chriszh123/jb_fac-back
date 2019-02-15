@@ -68,4 +68,6 @@ public interface IBuyerAddressService {
     void updateAddress(ShippingAddress shippingAddress);
 
     void deleteAddress(String token, String id);
+
+    Long addAddress(ShippingAddress shippingAddress);
 }
