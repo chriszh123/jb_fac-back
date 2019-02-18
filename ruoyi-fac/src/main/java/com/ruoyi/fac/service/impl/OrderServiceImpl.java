@@ -133,7 +133,6 @@ public class OrderServiceImpl implements IOrderService {
             if (buyer != null) {
                 // 取那个默认的收获地址里的电话号码:zgf
                 orderItemVo.setPhoneNumber("");
-                orderItemVo.setHarvestAddress(buyer.getHarvestAddress());
             }
             orderItemVo.setRemark(order.getRemark());
             orderItemVo.setShipCode(order.getShipCode());

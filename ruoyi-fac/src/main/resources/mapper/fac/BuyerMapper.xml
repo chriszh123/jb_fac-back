@@ -13,7 +13,6 @@
         <result property="balance" column="balance"/>
         <result property="points" column="points"/>
         <result property="registryTime" column="registry_time"/>
-        <result property="harvestAddress" column="harvest_address"/>
         <result property="createTime" column="create_time"/>
         <result property="updateTime" column="update_time"/>
         <result property="operatorId" column="operator_id"/>
@@ -22,7 +21,7 @@
     </resultMap>
 
     <sql id="selectBuyerVo">
-        select id, nick_name, name, token,open_id, balance, points, registry_time, harvest_address, create_time, update_time, operator_id, operator_name, is_deleted from fac_buyer
+        select id, nick_name, name, token,open_id, balance, points, registry_time,  create_time, update_time, operator_id, operator_name, is_deleted from fac_buyer
     </sql>
 
     <select id="selectBuyerList" parameterType="Buyer" resultMap="BuyerResult">
@@ -36,7 +35,6 @@
             <if test="balance != null ">and balance = #{balance}</if>
             <if test="points != null ">and points = #{points}</if>
             <if test="registryTime != null ">and registry_time = #{registryTime}</if>
-            <if test="harvestAddress != null  and harvestAddress != '' ">and harvest_address = #{harvestAddress}</if>
             <if test="createTime != null ">and create_time = #{createTime}</if>
             <if test="updateTime != null ">and update_time = #{updateTime}</if>
             <if test="operatorId != null ">and operator_id = #{operatorId}</if>
@@ -61,7 +59,6 @@
             <if test="balance != null  ">balance,</if>
             <if test="points != null  ">points,</if>
             <if test="registryTime != null  ">registry_time,</if>
-            <if test="harvestAddress != null  and harvestAddress != ''  ">harvest_address,</if>
             <if test="createTime != null  ">create_time,</if>
             <if test="updateTime != null  ">update_time,</if>
             <if test="operatorId != null  ">operator_id,</if>
@@ -77,7 +74,6 @@
             <if test="balance != null  ">#{balance},</if>
             <if test="points != null  ">#{points},</if>
             <if test="registryTime != null  ">#{registryTime},</if>
-            <if test="harvestAddress != null  and harvestAddress != ''  ">#{harvestAddress},</if>
             <if test="createTime != null  ">#{createTime},</if>
             <if test="updateTime != null  ">#{updateTime},</if>
             <if test="operatorId != null  ">#{operatorId},</if>
@@ -94,7 +90,6 @@
             <if test="balance != null  ">balance = #{balance},</if>
             <if test="points != null  ">points = #{points},</if>
             <if test="registryTime != null  ">registry_time = #{registryTime},</if>
-            <if test="harvestAddress != null  and harvestAddress != ''  ">harvest_address = #{harvestAddress},</if>
             <if test="createTime != null  ">create_time = #{createTime},</if>
             <if test="updateTime != null  ">update_time = #{updateTime},</if>
             <if test="operatorId != null  ">operator_id = #{operatorId},</if>
@@ -127,16 +122,16 @@
         from fac_buyer
         where is_deleted = 0
         <if test="startDate != null">
-            and DATE_FORMAT(create_time,'%Y-%m-%d') &gt;= DATE_FORMAT(#{startDate},'%Y-%m-%d')
+            AND DATE_FORMAT(create_time,'%Y-%m-%d') &gt;= DATE_FORMAT(#{startDate},'%Y-%m-%d')
         </if>
         <if test="endDate != null">
-            and DATE_FORMAT(create_time,'%Y-%m-%d') &lt;= DATE_FORMAT(#{endDate},'%Y-%m-%d')
+            AND DATE_FORMAT(create_time,'%Y-%m-%d') &lt;= DATE_FORMAT(#{endDate},'%Y-%m-%d')
         </if>
     </select>
 
     <select id="selectBuyerByOpenId" parameterType="String" resultMap="BuyerResult">
         <include refid="selectBuyerVo"/>
-        where open_id = #{openId} add is_deleted = 0
+        where is_deleted = 0 AND open_id = #{openId}
     </select>
 
 </mapper>

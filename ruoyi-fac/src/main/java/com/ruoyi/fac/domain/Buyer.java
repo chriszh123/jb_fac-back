@@ -54,11 +54,6 @@ public class Buyer extends BaseEntity {
     @Excel(name = "注册日期", dateFormat = "yyyy-MM-dd HH:mm:ss")
     private Date registryTime;
     /**
-     * 收获地址
-     */
-    @Excel(name = "收获地址")
-    private String harvestAddress;
-    /**
      * 操作者ID
      */
     private Long operatorId;
@@ -124,14 +119,6 @@ public class Buyer extends BaseEntity {
         return registryTime;
     }
 
-    public void setHarvestAddress(String harvestAddress) {
-        this.harvestAddress = harvestAddress;
-    }
-
-    public String getHarvestAddress() {
-        return harvestAddress;
-    }
-
     public void setOperatorId(Long operatorId) {
         this.operatorId = operatorId;
     }
@@ -189,7 +176,6 @@ public class Buyer extends BaseEntity {
                 .append("balance", getBalance())
                 .append("points", getPoints())
                 .append("registryTime", getRegistryTime())
-                .append("harvestAddress", getHarvestAddress())
                 .append("createTime", getCreateTime())
                 .append("updateTime", getUpdateTime())
                 .append("operatorId", getOperatorId())
