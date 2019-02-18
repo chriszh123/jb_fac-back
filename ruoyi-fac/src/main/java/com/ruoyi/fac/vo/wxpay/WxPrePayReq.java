@@ -21,7 +21,7 @@ public class WxPrePayReq implements Serializable {
     private String money;
     private String remark;
     private String payName;
-    private String nextAction;
+    private NextAction nextAction;
 
     public String getToken() {
         return token;
@@ -55,11 +55,11 @@ public class WxPrePayReq implements Serializable {
         this.payName = payName;
     }
 
-    public String getNextAction() {
+    public NextAction getNextAction() {
         return nextAction;
     }
 
-    public void setNextAction(String nextAction) {
+    public void setNextAction(NextAction nextAction) {
         this.nextAction = nextAction;
     }
 }

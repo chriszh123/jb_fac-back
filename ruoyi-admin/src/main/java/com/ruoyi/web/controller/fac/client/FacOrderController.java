@@ -57,10 +57,20 @@ public class FacOrderController extends BaseController {
     @PostMapping("/close")
     @ResponseBody
     public FacResult close(@RequestBody OrderReq req) {
-        if (StringUtils.isEmpty(req.getToken()) ||  StringUtils.isEmpty(req.getOrderIds())) {
+        if (StringUtils.isEmpty(req.getToken()) || StringUtils.isEmpty(req.getOrderIds())) {
             return FacResult.error(FacCode.PARAMTER_NULL.getCode(), FacCode.PARAMTER_NULL.getMsg());
         }
         this.orderService.closeOrder(req.getToken(), req.getOrderIds());
+        return FacResult.success("");
+    }
+
+    @PostMapping("/detail")
+    @ResponseBody
+    public FacResult detail(@RequestBody OrderReq req) {
+        // 根据订单id(订单no)和用户token(openid)查询当前指定的订单下的商品
+        if (StringUtils.isEmpty(req.getToken()) || StringUtils.isEmpty(req.getId())) {
+            return FacResult.error(FacCode.PARAMTER_NULL.getCode(), FacCode.PARAMTER_NULL.getMsg());
+        }
         return FacResult.success("");
     }
 }

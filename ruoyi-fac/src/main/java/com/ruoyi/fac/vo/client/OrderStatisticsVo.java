@@ -7,6 +7,8 @@
 package com.ruoyi.fac.vo.client;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * OrderStatisticsVo
@@ -17,6 +19,7 @@ import java.io.Serializable;
 public class OrderStatisticsVo implements Serializable {
     private static final long serialVersionUID = -2342187099640678784L;
 
+    private List<String> tabClass = new ArrayList<>();
     private int count_id_no_reputation = 0;
     private int count_id_no_transfer = 0;
     private int count_id_close = 0;
@@ -70,5 +73,13 @@ public class OrderStatisticsVo implements Serializable {
 
     public void setCount_id_success(int count_id_success) {
         this.count_id_success = count_id_success;
+    }
+
+    public List<String> getTabClass() {
+        return tabClass;
+    }
+
+    public void setTabClass(List<String> tabClass) {
+        this.tabClass = tabClass;
     }
 }
