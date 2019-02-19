@@ -354,6 +354,8 @@ public class BuyerServiceImpl implements IBuyerService {
             buyer.setUpdateTime(nowDate);
             buyer.setIsDeleted(0);
             this.buyerMapper.insertBuyer(buyer);
+
+            buyer = this.selectBuyerByToken(openId);
         }
 
         return buyer.getId();

@@ -186,7 +186,7 @@ public class ProductServiceImpl implements IProductService {
             vo.setName(nameLike);
         }
         if (page != null && pageSize != null && pageSize > 0) {
-            vo.setPage(page);
+            vo.setPage(pageSize * (page - 1));
             vo.setPageSize(pageSize);
         }
         List<Product> products = this.productMapper.goodsList(vo);

@@ -15,6 +15,7 @@
         <result property="businessId" column="business_id"/>
         <result property="originalPrice" column="original_price"/>
         <result property="inventoryQuantity" column="inventory_quantity"/>
+        <result property="orderCount" column="order_count"/>
         <result property="limitQuantity" column="limit_quantity"/>
         <result property="vmBuyerQuantity" column="vm_buyer_quantity"/>
         <result property="distribution" column="distribution"/>
@@ -35,7 +36,10 @@
     </resultMap>
 
     <sql id="selectProductVo">
-        select id, sort, name, price, sales, status, category_id, business_id, original_price, inventory_quantity, limit_quantity, vm_buyer_quantity, distribution, bonus_points, rush_start, rush_end, writeoff_start, writeoff_end, picture, introduction, ship_mode, ship_cost, create_time, update_time, operator_id, operator_name, is_deleted from fac_product
+        select id, sort, name, price, sales, status, category_id, business_id, original_price, inventory_quantity,
+         order_count,limit_quantity,
+         vm_buyer_quantity, distribution, bonus_points, rush_start, rush_end, writeoff_start, writeoff_end, picture, introduction,
+         ship_mode, ship_cost, create_time, update_time, operator_id, operator_name, is_deleted from fac_product
     </sql>
 
     <select id="selectProductList" parameterType="Product" resultMap="ProductResult">
@@ -51,6 +55,7 @@
             <if test="businessId != null ">and business_id = #{businessId}</if>
             <if test="originalPrice != null ">and original_price = #{originalPrice}</if>
             <if test="inventoryQuantity != null ">and inventory_quantity = #{inventoryQuantity}</if>
+            <if test="orderCount != null ">and order_count = #{orderCount}</if>
             <if test="limitQuantity != null ">and limit_quantity = #{limitQuantity}</if>
             <if test="vmBuyerQuantity != null ">and vm_buyer_quantity = #{vmBuyerQuantity}</if>
             <if test="distribution != null ">and distribution = #{distribution}</if>
@@ -89,6 +94,7 @@
             <if test="businessId != null  ">business_id,</if>
             <if test="originalPrice != null  ">original_price,</if>
             <if test="inventoryQuantity != null  ">inventory_quantity,</if>
+            <if test="orderCount != null  ">order_count,</if>
             <if test="limitQuantity != null  ">limit_quantity,</if>
             <if test="vmBuyerQuantity != null  ">vm_buyer_quantity,</if>
             <if test="distribution != null  ">distribution,</if>
@@ -118,6 +124,7 @@
             <if test="businessId != null  ">#{businessId},</if>
             <if test="originalPrice != null  ">#{originalPrice},</if>
             <if test="inventoryQuantity != null  ">#{inventoryQuantity},</if>
+            <if test="orderCount != null  ">#{orderCount},</if>
             <if test="limitQuantity != null  ">#{limitQuantity},</if>
             <if test="vmBuyerQuantity != null  ">#{vmBuyerQuantity},</if>
             <if test="distribution != null  ">#{distribution},</if>
@@ -150,6 +157,7 @@
             <if test="businessId != null  ">business_id = #{businessId},</if>
             <if test="originalPrice != null  ">original_price = #{originalPrice},</if>
             <if test="inventoryQuantity != null  ">inventory_quantity = #{inventoryQuantity},</if>
+            <if test="orderCount != null  ">order_count = #{orderCount},</if>
             <if test="limitQuantity != null  ">limit_quantity = #{limitQuantity},</if>
             <if test="vmBuyerQuantity != null  ">vm_buyer_quantity = #{vmBuyerQuantity},</if>
             <if test="distribution != null  ">distribution = #{distribution},</if>
@@ -219,7 +227,7 @@
         </where>
         order by sort desc, create_time desc
         <if test="page != null and pageSize != null">
-            limit page, pageSize
+            limit #{page}, #{pageSize}
         </if>
     </select>
 

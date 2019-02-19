@@ -37,7 +37,8 @@ public class FacBannerController extends BaseController {
 
     @PostMapping("/list")
     @ResponseBody
-    public FacResult list(@RequestBody BannerReq req) {
+//    public FacResult list(@RequestBody BannerReq req) {
+    public FacResult list() {
         List<BannerVo> bannerVos = this.focusMapService.selectFocusMapList();
         if (CollectionUtils.isEmpty(bannerVos)) {
             return FacResult.error(FacCode.HAS_NO_DATA.getCode(), FacCode.HAS_NO_DATA.getMsg());
