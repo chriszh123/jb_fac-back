@@ -292,8 +292,22 @@ public class ProductServiceImpl implements IProductService {
         goodVo.setBarCode("");
         goodVo.setCategoryId(product.getCategoryId());
         goodVo.setCharacteristic("");
-        goodVo.setCommission(10.00);
-        goodVo.setCommissionType(1);
+        // 优先奖励积分：积分不为0，就奖励积分，积分为0，再看分销奖金，分销奖金再为0，就没有奖赏
+        String commission = "0";
+        int commissionType = 0;
+        if (product.getBonusPoints() != null && product.getBonusPoints().intValue() != 0) {
+            commission = product.getBonusPoints().toString();
+            commissionType = 1;
+        }
+        if (StringUtils.equals("0", commission) && product.getDistribution()!= null
+                && !StringUtils.equals("0", product.getDistribution().toString())) {
+            commission = product.getDistribution().toString();
+            commissionType = 2;
+        }
+        // 分享有赏送的积分
+        goodVo.setCommission(Double.valueOf(commission));
+        // 分享是否有赏：0-没有赏，1-赏积分，2-赏现金
+        goodVo.setCommissionType(commissionType);
         goodVo.setDateAdd(TimeUtils.date2Str(product.getCreateTime(), TimeUtils.DEFAULT_DATE_TIME_FORMAT_HH_MM_SS));
         goodVo.setDateStart(TimeUtils.date2Str(product.getRushStart(), TimeUtils.DEFAULT_DATE_TIME_FORMAT_HH_MM_SS));
         goodVo.setDateEnd(TimeUtils.date2Str(product.getRushEnd(), TimeUtils.DEFAULT_DATE_TIME_FORMAT_HH_MM_SS));
