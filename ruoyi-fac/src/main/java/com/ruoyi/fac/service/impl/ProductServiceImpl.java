@@ -10,6 +10,7 @@ import com.ruoyi.fac.enums.ProductStatus;
 import com.ruoyi.fac.mapper.ProductCategoryMapper;
 import com.ruoyi.fac.mapper.ProductMapper;
 import com.ruoyi.fac.service.IProductService;
+import com.ruoyi.fac.util.DecimalUtils;
 import com.ruoyi.fac.util.FacFileUtils;
 import com.ruoyi.fac.util.TimeUtils;
 import com.ruoyi.fac.vo.ProductImgVo;
@@ -21,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.math.BigDecimal;
 import java.sql.Time;
 import java.util.*;
 
@@ -299,8 +301,8 @@ public class ProductServiceImpl implements IProductService {
             commission = product.getBonusPoints().toString();
             commissionType = 1;
         }
-        if (StringUtils.equals("0", commission) && product.getDistribution()!= null
-                && !StringUtils.equals("0", product.getDistribution().toString())) {
+        if (StringUtils.equals("0", commission) && product.getDistribution() != null
+                && DecimalUtils.compare(product.getDistribution(), new BigDecimal("0.00")) != 0) {
             commission = product.getDistribution().toString();
             commissionType = 2;
         }
