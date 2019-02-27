@@ -8,14 +8,16 @@ import java.io.OutputStream;
 
 /**
  * 文件处理工具类
- * 
+ *
  * @author ruoyi
  */
 public class FileUtils
 {
+    public static String FILENAME_PATTERN = "[a-zA-Z0-9_\\-\\|\\.\\u4e00-\\u9fa5]+";
+
     /**
      * 输出指定文件的byte数组
-     * 
+     *
      * @param filePath 文件路径
      * @param os 输出流
      * @return
@@ -71,7 +73,7 @@ public class FileUtils
 
     /**
      * 删除文件
-     * 
+     *
      * @param filePath 文件
      * @return
      */
@@ -86,5 +88,16 @@ public class FileUtils
             flag = true;
         }
         return flag;
+    }
+
+    /**
+     * 文件名称验证
+     *
+     * @param filename 文件名称
+     * @return true 正常 false 非法
+     */
+    public static boolean isValidFilename(String filename)
+    {
+        return filename.matches(FILENAME_PATTERN);
     }
 }

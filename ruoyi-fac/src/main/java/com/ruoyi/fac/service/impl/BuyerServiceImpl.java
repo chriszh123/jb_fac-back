@@ -117,9 +117,11 @@ public class BuyerServiceImpl implements IBuyerService {
                 buyerBusiness.setIsDeleted(0);
                 list.add(buyerBusiness);
             }
-            return this.buyerBusinessMapper.batchInsert(list);
+            if (!CollectionUtils.isEmpty(list)) {
+                return this.buyerBusinessMapper.batchInsert(list);
+            }
         }
-        return 0;
+        return 1;
     }
 
     /**
@@ -339,7 +341,7 @@ public class BuyerServiceImpl implements IBuyerService {
         Date nowDate = new Date();
         Buyer buyer = this.buyerMapper.selectBuyerByOpenId(openId);
         if (buyer != null) {
-           // update
+            // update
         } else {
             // add
             buyer = new Buyer();

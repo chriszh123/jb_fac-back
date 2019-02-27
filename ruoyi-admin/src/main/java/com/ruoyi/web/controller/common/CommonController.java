@@ -1,6 +1,7 @@
 package com.ruoyi.web.controller.common;
 
 import com.ruoyi.common.config.Global;
+import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.file.FileUploadUtils;
 import com.ruoyi.common.utils.file.FileUtils;
 import com.ruoyi.fac.constant.FacConstant;
@@ -8,7 +9,6 @@ import com.ruoyi.fac.vo.FileVo;
 import com.ruoyi.fac.vo.ProductImgVo;
 import com.ruoyi.framework.util.CkImageUploadUtil;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -39,6 +39,10 @@ public class CommonController {
     @RequestMapping("common/download")
     public void fileDownload(String fileName, Boolean delete, HttpServletResponse response, HttpServletRequest request) {
         try {
+            if (!FileUtils.isValidFilename(fileName))
+            {
+                throw new Exception(StringUtils.format(" 文件名称({})非法，不允许下载。 ", fileName));
+            }
             SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
             String prefixFileName = fileName.substring(0, fileName.lastIndexOf("."));
             String fileStufix = fileName.substring(fileName.lastIndexOf("."));
