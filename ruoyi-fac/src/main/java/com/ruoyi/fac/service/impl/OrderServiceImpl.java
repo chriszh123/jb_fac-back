@@ -69,7 +69,13 @@ public class OrderServiceImpl implements IOrderService {
     @Override
     public List<Order> selectOrderList(Order order) {
         order.setIsDeleted(0);
-        return orderMapper.selectOrderList(order);
+        List<Order> orders = orderMapper.selectOrderList(order);
+        if (CollectionUtils.isNotEmpty(orders)) {
+            for (Order item : orders) {
+                item.setPrice(DecimalUtils.mul(item.getPrice(), new BigDecimal(item.getProdNumber())));
+            }
+        }
+        return orders;
     }
 
     /**

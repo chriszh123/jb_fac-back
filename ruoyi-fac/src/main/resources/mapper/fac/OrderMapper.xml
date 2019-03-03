@@ -44,7 +44,7 @@
             <if test="orderNo != null  and orderNo != '' ">and order_no = #{orderNo}</if>
             <if test="prodId != null ">and prod_id = #{prodId}</if>
             <if test="prodName != null  and prodName != '' ">and prod_name = #{prodName}</if>
-            <if test="prodNumber != null ">and prod_number = #{prodNumber}</if>
+            <if test="prodNumber != null and prodNumber != 0">and prod_number = #{prodNumber}</if>
             <if test="price != null ">and price = #{price}</if>
             <if test="status != null ">and status = #{status}</if>
             <if test="payTime != null ">and pay_time = #{payTime}</if>
@@ -178,7 +178,7 @@
 
     <update id="cancelOrderByIds" parameterType="String">
         UPDATE fac_order
-        set status = 3
+        set status = 5
         where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}

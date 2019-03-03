@@ -20,10 +20,13 @@
                             订单状态：
                             <select id="status" name="status">
                                 <option value="">请选择...</option>
-                                <option value="1">已付款</option>
-                                <option value="2">待付款</option>
-                                <option value="3">已取消</option>
-                                <option value="4">未取消</option>
+                                <option value="0">待付款</option>
+                                <option value="1">待发货</option>
+                                <option value="2">待收货</option>
+                                <option value="3">待评价</option>
+                                <option value="4">已完成</option>
+                                <option value="5">已取消</option>
+                                <option value="6">未取消</option>
                             </select>
                         </li>
                         <li>
@@ -81,9 +84,14 @@
                     sortable: true
                 },
                 {
+                    field: 'prodNumber',
+                    title: '商品数量',
+                    sortable: true
+                },
+                {
                     field: 'price',
                     title: '金额',
-                    sortable: true
+                    sortable: false
                 },
                 {
                     field: 'status',
@@ -105,7 +113,7 @@
                     visible: false
                 },
                 {
-                    field: 'userName',
+                    field: 'nickName',
                     title: '用户',
                     sortable: true
                 },
