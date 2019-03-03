@@ -128,7 +128,7 @@ public class BuyerAddressServiceImpl implements IBuyerAddressService {
 
     @Override
     public List<ShippingAddress> shippingAddressList(String token) {
-        List<BuyerAddress> buyerAddresses = this.buyerAddressMapper.selectBuyerAddressByOpenId(token);
+        List<BuyerAddress> buyerAddresses = this.buyerAddressMapper.selectBuyerAddressByTokenId(token);
         if (CollectionUtils.isEmpty(buyerAddresses)) {
             return null;
         }
@@ -160,7 +160,7 @@ public class BuyerAddressServiceImpl implements IBuyerAddressService {
 
     @Override
     public ShippingAddress detailShippingAddress(String token, String id) {
-        BuyerAddress buyerAddress = this.buyerAddressMapper.selectBuyerAddressByOpenIdAndId(token, Long.valueOf(id));
+        BuyerAddress buyerAddress = this.buyerAddressMapper.selectBuyerAddressByTokenAndId(token, Long.valueOf(id));
         if (buyerAddress == null) {
             return null;
         }
@@ -222,6 +222,7 @@ public class BuyerAddressServiceImpl implements IBuyerAddressService {
         if (buyer == null) {
             return -1L;
         }
+        Date nowDate = new Date();
         BuyerAddress buyerAddress = new BuyerAddress();
         buyerAddress.setBuyerId(buyer.getId());
         buyerAddress.setToken(shippingAddress.getToken());
@@ -237,8 +238,10 @@ public class BuyerAddressServiceImpl implements IBuyerAddressService {
         buyerAddress.setLinkMan(shippingAddress.getLinkMan());
         buyerAddress.setPhoneNumber(shippingAddress.getMobile());
         buyerAddress.setCode(shippingAddress.getCode());
-        buyerAddress.setUpdateTime(new Date());
+        buyerAddress.setCreateTime(nowDate);
+        buyerAddress.setUpdateTime(nowDate);
         buyerAddress.setIsDefault(StringUtils.equals("true", shippingAddress.getIsDefault()) ? 1 : 0);
+        buyerAddress.setIsDeleted(0);
         this.buyerAddressMapper.insertBuyerAddress(buyerAddress);
 
         return buyerAddress.getId();

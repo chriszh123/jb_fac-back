@@ -1,6 +1,7 @@
 package com.ruoyi.fac.mapper;
 
 import com.ruoyi.fac.domain.BuyerAddress;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -61,7 +62,7 @@ public interface BuyerAddressMapper {
 
     BuyerAddress getDefaultAddress(String openId);
 
-    List<BuyerAddress> selectBuyerAddressByOpenId(String token);
+    List<BuyerAddress> selectBuyerAddressByTokenId(String token);
 
-    BuyerAddress selectBuyerAddressByOpenIdAndId(String token, long id);
+    BuyerAddress selectBuyerAddressByTokenAndId(@Param("token") String token, @Param("id") long id);
 }

@@ -19,6 +19,7 @@ public class OrderVo implements Serializable {
 
     private double amount = 0.00;
     private double amountLogistics = 0.00;
+    // 订单实际总价
     private double amountReal = 0.00;
     private String dateAdd;
     private String dateClose;

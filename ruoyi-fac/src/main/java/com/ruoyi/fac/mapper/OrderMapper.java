@@ -95,4 +95,13 @@ public interface OrderMapper {
     List<Order> orderList(QueryVo queryVo);
 
     int updateOrderStatus(QueryVo queryVo);
+
+    /**
+     * 查询指定订单信息
+     *
+     * @param id    订单id
+     * @param token 当前用户id
+     * @return
+     */
+    Order selectOrderByIdAndToken(@Param("id") long id, @Param("token") String token);
 }

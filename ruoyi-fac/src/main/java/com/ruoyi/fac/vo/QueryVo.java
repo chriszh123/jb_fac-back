@@ -12,7 +12,7 @@ public class QueryVo {
     private Date endDate;
     private String token;
     private String openId;
-    private int status;
+    private Integer status;
     private Long[] orderIds;
 
     public QueryVo() {
@@ -47,14 +47,6 @@ public class QueryVo {
         this.token = token;
     }
 
-    public int getStatus() {
-        return status;
-    }
-
-    public void setStatus(int status) {
-        this.status = status;
-    }
-
     public Long[] getOrderIds() {
         return orderIds;
     }
@@ -69,5 +61,13 @@ public class QueryVo {
 
     public void setOpenId(String openId) {
         this.openId = openId;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
     }
 }

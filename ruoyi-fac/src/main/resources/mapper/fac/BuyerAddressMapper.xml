@@ -151,14 +151,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where open_id = #{openId} and is_default = 1 and is_deleted = 0
     </select>
 
-    <select id="selectBuyerAddressByOpenId" parameterType="String" resultMap="BuyerAddressResult">
+    <select id="selectBuyerAddressByTokenId" parameterType="String" resultMap="BuyerAddressResult">
         <include refid="selectBuyerAddressVo"/>
-        where open_id = #{openId} and is_deleted = 0
+        where token = #{token} and is_deleted = 0
         order by create_time desc
     </select>
 
-    <select id="selectBuyerAddressByOpenIdAndId" resultMap="BuyerAddressResult">
+    <select id="selectBuyerAddressByTokenAndId" resultMap="BuyerAddressResult">
         <include refid="selectBuyerAddressVo"/>
-        where is_deleted = 0 and open_id = #{openId} and id = #{id}
+        where is_deleted = 0 and token = #{token} and id = #{id}
     </select>
 </mapper>

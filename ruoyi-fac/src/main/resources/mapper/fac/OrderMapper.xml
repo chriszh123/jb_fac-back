@@ -208,18 +208,18 @@
         insert into
         fac_order
         (order_no, prod_id, prod_name, prod_number, price, status, user_id, user_name, nick_name, remark, ship, create_time,
-        update_time, operator_id, operator_name, is_deleted)
+        update_time, operator_id, operator_name, is_deleted,token, open_id)
         values
         <foreach collection="list" item="item" index="index" separator=",">
             (
             #{item.orderNo,jdbcType=VARCHAR}, #{item.prodId,jdbcType=BIGINT},
             #{item.prodName,jdbcType=VARCHAR}, #{item.prodNumber, jdbcType=TINYINT}, #{item.price, jdbcType=DECIMAL},
-            #{item.status,jdbcType=TINYINT}, #{item.user_id, jdbcType=BIGINT},
-            #{item.user_name,jdbcType=VARCHAR}, #{item.nick_name, jdbcType=VARCHAR},
+            #{item.status,jdbcType=TINYINT}, #{item.userId, jdbcType=BIGINT},
+            #{item.userName,jdbcType=VARCHAR}, #{item.nickName, jdbcType=VARCHAR},
             #{item.remark,jdbcType=VARCHAR}, #{item.ship, jdbcType=TINYINT},
             #{item.createTime,jdbcType=TIMESTAMP}, #{item.updateTime,jdbcType=TIMESTAMP},
             #{item.operatorId,jdbcType=BIGINT}, #{item.operatorName,jdbcType=VARCHAR},
-            #{item.isDeleted,jdbcType=TINYINT}
+            #{item.isDeleted,jdbcType=TINYINT},#{item.token,jdbcType=VARCHAR},#{item.openId,jdbcType=VARCHAR}
             )
         </foreach>
     </insert>
@@ -227,7 +227,7 @@
     <select id="orderList" parameterType="QueryVo" resultMap="OrderResult">
         <include refid="selectOrderVo"/>
         where is_deleted = 0
-        and open_id = #{openId}
+        and token = #{token}
         <if test="status != null">
             and status = #{status}
         </if>
@@ -243,4 +243,9 @@
             #{id}
         </foreach>
     </update>
+
+    <select id="selectOrderByIdAndToken" resultMap="OrderResult">
+        <include refid="selectOrderVo"/>
+        where id = #{id} and is_deleted = 0 and token = #{token}
+    </select>
 </mapper>

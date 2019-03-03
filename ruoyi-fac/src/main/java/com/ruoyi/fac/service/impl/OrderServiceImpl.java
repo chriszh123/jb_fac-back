@@ -1,16 +1,17 @@
 package com.ruoyi.fac.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.ruoyi.common.support.Convert;
 import com.ruoyi.fac.domain.Buyer;
 import com.ruoyi.fac.domain.Order;
 import com.ruoyi.fac.domain.Product;
 import com.ruoyi.fac.enums.OrderStatus;
-import com.ruoyi.fac.enums.ProductStatus;
 import com.ruoyi.fac.mapper.BusinessMapper;
 import com.ruoyi.fac.mapper.BuyerMapper;
 import com.ruoyi.fac.mapper.OrderMapper;
 import com.ruoyi.fac.mapper.ProductMapper;
 import com.ruoyi.fac.service.IOrderService;
+import com.ruoyi.fac.util.DecimalUtils;
 import com.ruoyi.fac.util.TimeUtils;
 import com.ruoyi.fac.vo.FacStaticVo;
 import com.ruoyi.fac.vo.OrderDiagramVo;
@@ -18,13 +19,13 @@ import com.ruoyi.fac.vo.OrderItemVo;
 import com.ruoyi.fac.vo.QueryVo;
 import com.ruoyi.fac.vo.client.*;
 import com.ruoyi.fac.vo.condition.QueryGoodVo;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -277,10 +278,10 @@ public class OrderServiceImpl implements IOrderService {
     @Override
     public OrderCreateRes createOrderFromClient(OrderCreateVo orderCreateVo) {
         OrderCreateRes res = new OrderCreateRes();
-        List<GoodsJsonStrVo> goodsJsonStr = orderCreateVo.getGoodsJsonStr();
-        if (CollectionUtils.isEmpty(goodsJsonStr) || StringUtils.isEmpty(orderCreateVo.getToken())) {
+        if (StringUtils.isBlank(orderCreateVo.getGoodsJsonStr()) || StringUtils.isEmpty(orderCreateVo.getToken())) {
             return res;
         }
+        List<GoodsJsonStrVo> goodsJsonStr = JSON.parseArray(orderCreateVo.getGoodsJsonStr(), GoodsJsonStrVo.class);
         // 当前用户信息
         Buyer buyer = this.buyerMapper.selectBuyerByOpenId(orderCreateVo.getToken());
         if (buyer == null) {
@@ -305,6 +306,9 @@ public class OrderServiceImpl implements IOrderService {
         // 转换用户选择的商品信息
         List<Order> orders = new ArrayList<>();
         Date nowDate = new Date();
+        BigDecimal amountLogistics = new BigDecimal("0");
+        // 当前订单单号
+        String orderNo = DateFormatUtils.format(new Date(), "yyyyMMddHHmmssSSSS");
         for (GoodsJsonStrVo good : goodsJsonStr) {
             Product product = productMap.get(good.getGoodsId());
             if (product == null) {
@@ -313,7 +317,6 @@ public class OrderServiceImpl implements IOrderService {
             Order order = new Order();
             orders.add(order);
 
-            String orderNo = DateFormatUtils.format(new Date(), "yyyyMMddHHmmssSSSS");
             order.setOrderNo(orderNo);
             order.setProdId(good.getGoodsId());
             order.setProdName(product.getName());
@@ -321,6 +324,7 @@ public class OrderServiceImpl implements IOrderService {
             order.setPrice(product.getPrice());
             order.setStatus(OrderStatus.PAYING.getCode());
             order.setToken(orderCreateVo.getToken());
+            order.setOpenId(orderCreateVo.getToken());
             order.setUserId(buyer.getId());
             order.setUserName(buyer.getName());
             order.setNickName(buyer.getNickName());
@@ -331,12 +335,18 @@ public class OrderServiceImpl implements IOrderService {
             order.setOperatorId(buyer.getId());
             order.setOperatorName(buyer.getName());
             order.setIsDeleted(0);
+
+            // 累积商品总价:暂时不考虑积分
+            amountLogistics = DecimalUtils.add(amountLogistics,
+                    DecimalUtils.mul(product.getPrice(), new BigDecimal(String.valueOf(good.getNumber()))));
         }
         // 批量保存用户选择的商品信息
         int goodsNumber = this.orderMapper.batchInsertOrders(orders);
 
+        // 所有商品总价
+        amountLogistics = DecimalUtils.formatDecimal(amountLogistics);
         // 创建返回结果
-        res.setAmountLogistics(0);
+        res.setAmountLogistics(Double.valueOf(amountLogistics.toString()));
         res.setScore(0);
         res.setGoodsNumber(goodsNumber);
         res.setNeedLogistics(false);
@@ -351,6 +361,26 @@ public class OrderServiceImpl implements IOrderService {
     @Override
     public OrderStatisticsVo orderStatistics(String token) {
         OrderStatisticsVo vo = new OrderStatisticsVo();
+        // 当前用户下的所有订单
+        QueryVo queryVo = new QueryVo();
+        queryVo.setToken(token);
+        List<Order> orders = this.orderMapper.orderList(queryVo);
+        if (CollectionUtils.isEmpty(orders)) {
+            return vo;
+        }
+        // 1.待付款
+        int count_id_no_pay = 0;
+        for (Order item : orders) {
+            if (item.getStatus() == null) {
+                log.error("order status is null, orderId = " + item.getId());
+                continue;
+            }
+            if (OrderStatus.PAYING.getCode().intValue() == item.getStatus().intValue()) {
+                count_id_no_pay = count_id_no_pay + 1;
+            }
+        }
+        vo.setCount_id_no_pay(count_id_no_pay);
+
         return vo;
     }
 
@@ -369,7 +399,6 @@ public class OrderServiceImpl implements IOrderService {
         }
         QueryVo queryVo = new QueryVo();
         queryVo.setToken(token);
-        queryVo.setOpenId(token);
         queryVo.setStatus(status);
         // 当前条件下所有商品
         List<Order> orders = this.orderMapper.orderList(queryVo);
@@ -398,10 +427,55 @@ public class OrderServiceImpl implements IOrderService {
         this.orderMapper.updateOrderStatus(queryVo);
     }
 
+    /**
+     * 指定订单详情
+     *
+     * @param id    订单id
+     * @param token 用户token
+     * @return OrderDetailVo
+     */
+    @Override
+    public OrderDetailVo orderDetail(long id, String token) {
+        OrderDetailVo orderDetailVo = new OrderDetailVo();
+        Order order = this.orderMapper.selectOrderByIdAndToken(id, token);
+        if (order == null) {
+            return null;
+        }
+        // 1.当前订单信息
+        OrderInfoVo orderInfo = new OrderInfoVo();
+        orderDetailVo.setOrderInfo(orderInfo);
+        // 商品金额
+        orderInfo.setAmount(Double.valueOf(order.getPrice().toString()));
+        // 应付总额
+        BigDecimal orderTotalPrice = DecimalUtils.mul(order.getPrice(), new BigDecimal(String.valueOf(order.getProdNumber())));
+        orderInfo.setAmountReal(Double.valueOf(orderTotalPrice.toString()));
+        // 订单状态
+        orderInfo.setStatus(order.getStatus().intValue());
+        orderInfo.setStatusStr(OrderStatus.getNameByCode(order.getStatus()));
+
+        // 2.订单商品信息:暂时一个订单就涉及一个商品
+        List<GoodSpecification> goods = new ArrayList<>();
+        orderDetailVo.setGoods(goods);
+        GoodSpecification good = new GoodSpecification();
+        goods.add(good);
+        good.setGoodsName(order.getProdName());
+        good.setNumber(order.getProdNumber());
+        good.setAmount(Double.valueOf(order.getPrice().toString()));
+        // 商品图片
+        Product product = this.productMapper.selectProductById(order.getProdId());
+        if (product != null && StringUtils.isNotBlank(product.getPicture())) {
+            good.setPic(product.getPicture());
+        }
+
+        return orderDetailVo;
+    }
+
     private void convertOrders(OrderListVo vo, List<Order> orders) {
         List<OrderVo> orderVos = new ArrayList<>();
         // <goodId, Order>
         Map<Long, Order> good2Order = new HashMap<>(16);
+        BigDecimal orderTotalPrice;
+        double amountReal;
         for (Order order : orders) {
             OrderVo orderVo = new OrderVo();
             orderVos.add(orderVo);
@@ -413,8 +487,12 @@ public class OrderServiceImpl implements IOrderService {
             orderVo.setRemark(order.getRemark());
             orderVo.setShopId(order.getShipId());
             orderVo.setStatus(order.getStatus());
-            orderVo.setStatusStr(OrderStatus.getNameByCode(order.getStatus().toString()));
+            orderVo.setStatusStr(OrderStatus.getNameByCode(order.getStatus()));
             orderVo.setUserId(order.getUserId());
+            // 当前订单的实际总价
+            orderTotalPrice = DecimalUtils.mul(order.getPrice(), new BigDecimal(String.valueOf(order.getProdNumber())));
+            amountReal = Double.valueOf(orderTotalPrice.toString());
+            orderVo.setAmountReal(amountReal);
 
             good2Order.put(order.getProdId(), order);
         }

@@ -35,14 +35,13 @@ public class FacOrderController extends BaseController {
     @PostMapping("/listData")
     @ResponseBody
     public FacResult list(@RequestBody OrderReq req) {
-        OrderListVo list = new OrderListVo();
-
+        OrderListVo list = this.orderService.orderList(req.getToken(), req.getStatus());
         return FacResult.success(list);
     }
 
     @PostMapping("/create")
     @ResponseBody
-    public FacResult create(OrderCreateVo order) {
+    public FacResult create(@RequestBody OrderCreateVo order) {
         OrderCreateRes res = this.orderService.createOrderFromClient(order);
         return FacResult.success(res);
     }
@@ -67,10 +66,15 @@ public class FacOrderController extends BaseController {
     @PostMapping("/detail")
     @ResponseBody
     public FacResult detail(@RequestBody OrderReq req) {
-        // 根据订单id(订单no)和用户token(openid)查询当前指定的订单下的商品
+        // 根据订单id和用户token(openid)查询当前指定的订单商品详情
         if (StringUtils.isEmpty(req.getToken()) || StringUtils.isEmpty(req.getId())) {
             return FacResult.error(FacCode.PARAMTER_NULL.getCode(), FacCode.PARAMTER_NULL.getMsg());
         }
-        return FacResult.success("");
+        OrderDetailVo orderDetailVo = this.orderService.orderDetail(Long.valueOf(req.getId()), req.getToken());
+        if (orderDetailVo != null) {
+            return FacResult.success(orderDetailVo);
+        } else {
+            return FacResult.error("当前订单已不存在，请联系管理员");
+        }
     }
 }

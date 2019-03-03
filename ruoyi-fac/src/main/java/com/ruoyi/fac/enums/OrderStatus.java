@@ -7,10 +7,13 @@ package com.ruoyi.fac.enums;
  * Description
  */
 public enum OrderStatus {
-    PAYED("已付款", 1),
-    PAYING("待付款", 2),
-    CACELED("已取消", 3),
-    CACELING("未取消", 4);
+    PAYING("待付款", 0),
+    TOSHIP("待发货", 1),
+    TORECIVE("待收货", 2),
+    TOEVALUATE("待评价", 3),
+    PAYED("已完成", 4),
+    CACELED("已取消", 5),
+    CACELING("未取消", 6);
 
     private String name;
     private Integer code;
@@ -20,16 +23,16 @@ public enum OrderStatus {
         this.code = code;
     }
 
-    public static String getCodeByName(String name) {
+    public static Integer getCodeByName(String name) {
         for (OrderStatus s : OrderStatus.values()) {
             if (s.getName().equals(name)) {
-                return s.getName();
+                return s.getCode();
             }
         }
-        return "0";
+        return null;
     }
 
-    public static String getNameByCode(String value) {
+    public static String getNameByCode(Integer value) {
         for (OrderStatus s : OrderStatus.values()) {
             if (s.getCode().equals(value)) {
                 return s.getName();

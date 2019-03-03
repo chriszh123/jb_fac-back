@@ -20,7 +20,8 @@ public class OrderCreateVo implements Serializable {
     private static final long serialVersionUID = 2538253829809441783L;
 
     private String token;
-    private List<GoodsJsonStrVo> goodsJsonStr = new ArrayList<>();
+    private String goodsJsonStr;
+    private List<GoodsJsonStrVo> goodsJson = new ArrayList<>();
     private String remark;
     private boolean calculate;
 
@@ -30,14 +31,6 @@ public class OrderCreateVo implements Serializable {
 
     public void setToken(String token) {
         this.token = token;
-    }
-
-    public List<GoodsJsonStrVo> getGoodsJsonStr() {
-        return goodsJsonStr;
-    }
-
-    public void setGoodsJsonStr(List<GoodsJsonStrVo> goodsJsonStr) {
-        this.goodsJsonStr = goodsJsonStr;
     }
 
     public String getRemark() {
@@ -54,5 +47,21 @@ public class OrderCreateVo implements Serializable {
 
     public void setCalculate(boolean calculate) {
         this.calculate = calculate;
+    }
+
+    public String getGoodsJsonStr() {
+        return goodsJsonStr;
+    }
+
+    public void setGoodsJsonStr(String goodsJsonStr) {
+        this.goodsJsonStr = goodsJsonStr;
+    }
+
+    public List<GoodsJsonStrVo> getGoodsJson() {
+        return goodsJson;
+    }
+
+    public void setGoodsJson(List<GoodsJsonStrVo> goodsJson) {
+        this.goodsJson = goodsJson;
     }
 }

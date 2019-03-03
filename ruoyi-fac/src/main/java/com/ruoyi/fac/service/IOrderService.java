@@ -4,10 +4,7 @@ import com.ruoyi.fac.domain.Order;
 import com.ruoyi.fac.vo.FacStaticVo;
 import com.ruoyi.fac.vo.OrderDiagramVo;
 import com.ruoyi.fac.vo.OrderItemVo;
-import com.ruoyi.fac.vo.client.OrderCreateRes;
-import com.ruoyi.fac.vo.client.OrderCreateVo;
-import com.ruoyi.fac.vo.client.OrderListVo;
-import com.ruoyi.fac.vo.client.OrderStatisticsVo;
+import com.ruoyi.fac.vo.client.*;
 
 import java.util.List;
 
@@ -117,4 +114,13 @@ public interface IOrderService {
      * @param orderIds
      */
     void closeOrder(String token, String orderIds);
+
+    /**
+     * 指定订单详情
+     *
+     * @param id    订单id
+     * @param token 用户token
+     * @return OrderDetailVo
+     */
+    OrderDetailVo orderDetail(long id, String token);
 }
