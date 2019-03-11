@@ -104,4 +104,30 @@ public interface OrderMapper {
      * @return
      */
     Order selectOrderByIdAndToken(@Param("id") long id, @Param("token") String token);
+
+    /**
+     * 更新指定订单对应的预支付id
+     *
+     * @param id       订单id
+     * @param prepayId 预支付id
+     * @return 影响数据条数
+     */
+    int updateOrderPrePayId(@Param("id") long id, @Param("prepayId") long prepayId);
+
+    /**
+     * 查询指定订单号对应的订单
+     *
+     * @param orderNo 订单号
+     * @return
+     */
+    Order selectOrderByOrderNo(@Param("orderNo") String orderNo);
+
+    /**
+     * 支付完成后更新订单状态
+     *
+     * @param orderNo
+     * @param status
+     * @return
+     */
+    int updateOrderStatusAfterPayed(@Param("orderNo") String orderNo, @Param("status") int status);
 }

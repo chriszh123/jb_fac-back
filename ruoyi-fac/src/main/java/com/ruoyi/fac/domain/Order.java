@@ -111,6 +111,10 @@ public class Order extends BaseEntity {
      */
     private Date cacelTime;
     /**
+     * 微信预支付id
+     */
+    private Long prepayId;
+    /**
      * 操作者ID
      */
     private Long operatorId;
@@ -313,6 +317,14 @@ public class Order extends BaseEntity {
 
     public void setOpenId(String openId) {
         this.openId = openId;
+    }
+
+    public Long getPrepayId() {
+        return prepayId;
+    }
+
+    public void setPrepayId(Long prepayId) {
+        this.prepayId = prepayId;
     }
 
     @Override

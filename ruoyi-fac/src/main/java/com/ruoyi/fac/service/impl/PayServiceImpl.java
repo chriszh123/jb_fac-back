@@ -1,15 +1,14 @@
 package com.ruoyi.fac.service.impl;
 
-import com.alibaba.fastjson.JSONObject;
 import com.ruoyi.common.config.Global;
 import com.ruoyi.fac.domain.Order;
+import com.ruoyi.fac.enums.OrderStatus;
 import com.ruoyi.fac.mapper.OrderMapper;
 import com.ruoyi.fac.service.IPayService;
-import com.ruoyi.fac.util.MD5Utils;
+import com.ruoyi.fac.util.MD5;
 import com.ruoyi.fac.util.WebUtils;
 import com.ruoyi.fac.vo.wxpay.WxPrePayReq;
 import com.ruoyi.fac.vo.wxpay.WxPrePayRes;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -26,16 +25,20 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.SortedMap;
-import java.util.TreeMap;
-import java.util.UUID;
 import java.util.*;
 
 /**
  * Created by zgf
  * https://www.cnblogs.com/yi1036943655/p/7211275.html
  * Date 2019/2/18 17:16
- * Description
+ * 注意事项：
+ * 　　1)、所有的签名和发送微信服务器的数据必须一致 包括Key的大小写 否则签名失败
+ * 　　2)、微信小程序 前端调用 接口的时候 文档上并没有写appId参数 该参数一定要穿 并且是大写
+ * 　　3)、交易类型 为 JSAPI 的时候 则必须传入openid
+ * 　　4)、body格式问题 写的是UTF-8 实际要的格式则是ISO8859-1 而且单独对body进行设置好像不好使 所以必须全部都改成该格式
+ * 　　5)、生成签名 最后加上key的那块 加的格式是 &key = KEY 这种 而且不是直接 + key 这个地方需要注意一下 我碰了个坑 文档没看仔细
+ * 　　6)、数据包ID 格式 不是 value直接设置成 数据包ID就可以 前面需要加 "prepay_id="
+ * 　　7)、最后一点强调 生成签名的数据和发送服务器的数据 必须保持一致
  */
 @Service("payService")
 public class PayServiceImpl implements IPayService {
@@ -56,7 +59,7 @@ public class PayServiceImpl implements IPayService {
     @Override
     public WxPrePayRes getWxPrePayInfo(WxPrePayReq req, HttpServletRequest request, HttpServletResponse response) throws Exception {
         //设置最终返回对象
-        JSONObject resultJson = new JSONObject();
+        WxPrePayRes res = new WxPrePayRes();
         String openid = req.getToken();
         //接口调用总金额单位为分换算一下(测试金额改成1,单位为分则是0.01,根据自己业务场景判断是转换成float类型还是int类型)
         //String amountFen = Integer.valueOf((Integer.parseInt(amount)*100)).toString();
@@ -98,7 +101,7 @@ public class PayServiceImpl implements IPayService {
         //调用逻辑传入参数按照字段名的 ASCII 码从小到大排序（字典序）
         String stringA = formatUrlMap(paraMap, false, false);
         //第二步，在stringA最后拼接上key得到stringSignTemp字符串，并对stringSignTemp进行MD5运算，再将得到的字符串所有字符转换为大写，得到sign值signValue。(签名)
-        String sign = MD5Utils.MD5Encode(stringA + "&key=" + Global.getFacMchSecret()).toUpperCase();
+        String sign = MD5.MD5Encode(stringA + "&key=" + Global.getFacMchSecret()).toUpperCase();
         //将参数 编写XML格式
         StringBuffer paramBuffer = new StringBuffer();
         paramBuffer.append("<xml>");
@@ -115,71 +118,108 @@ public class PayServiceImpl implements IPayService {
         paramBuffer.append("<openid>" + paraMap.get("openid") + "</openid>");
         paramBuffer.append("</xml>");
 
-
         try {
             //发送请求(POST)(获得数据包ID)(这有个注意的地方 如果不转码成ISO8859-1则会告诉你body不是UTF8编码 就算你改成UTF8编码也一样不好使 所以修改成ISO8859-1)
             Map<String, String> map = doXMLParse(getRemotePortData(prepayUrl, new String(paramBuffer.toString().getBytes(), "ISO8859-1")));
             //应该创建 支付表数据
             if (map != null) {
-                //清空
-                criteria.clear();
-                //设置openId条件
-                criteria.put("openId", openid);
-                //获取数据
-                List<WechatAppletGolfPayInfo> payInfoList = appletGolfPayInfoMapper.selectByExample(criteria);
-                //如果等于空 则证明是第一次支付
-                if (CollectionUtils.isEmpty(payInfoList)) {
-                    //创建支付信息对象
-                    WechatAppletGolfPayInfo appletGolfPayInfo = new WechatAppletGolfPayInfo();
-                    //设置主键
-                    appletGolfPayInfo.setPayId(outTradeNo);
-                    //设置openid
-                    appletGolfPayInfo.setOpenId(openid);
-                    //设置金额
-                    appletGolfPayInfo.setAmount(Long.valueOf(amount));
-                    //设置支付状态
-                    appletGolfPayInfo.setPayStatus("0");
-                    //插入Dao
-                    int sqlRow = appletGolfPayInfoMapper.insert(appletGolfPayInfo);
-                    //判断
-                    if (sqlRow == 1) {
-                        logger.info("微信 统一下单 接口调用成功 并且新增支付信息成功");
-                        resultJson.put("prepayId", map.get("prepay_id"));
-                        resultJson.put("outTradeNo", paraMap.get("out_trade_no"));
-                        return resultJson;
+                if (map.containsKey("prepay_id")) {
+                    Long prepayId = Long.valueOf(map.get("prepay_id"));
+                    this.orderMapper.updateOrderPrePayId(order.getId(), prepayId);
+
+                    //创建 时间戳
+                    String timeStamp = Long.valueOf(System.currentTimeMillis()).toString();
+                    // 签名
+                    //创建hashmap(用户获得签名)
+                    paraMap = new TreeMap<String, String>();
+                    //设置(小程序ID)(这块一定要是大写)
+                    paraMap.put("appId", Global.getFacAppId().toLowerCase());
+                    //设置(时间戳)
+                    paraMap.put("timeStamp", timeStamp);
+                    //设置(随机串)
+                    paraMap.put("nonceStr", nonceStr);
+                    //设置(数据包)
+                    paraMap.put("package", "prepay_id=" + prepayId);
+                    //设置(签名方式)
+                    paraMap.put("signType", "MD5");
+                    //调用逻辑传入参数按照字段名的 ASCII 码从小到大排序（字典序）
+                    stringA = formatUrlMap(paraMap, false, false);
+                    //第二步，在stringA最后拼接上key得到stringSignTemp字符串，并对stringSignTemp进行MD5运算，再将得到的字符串所有字符转换为大写，得到sign值signValue。(签名)
+                    sign = MD5.MD5Encode(stringA + "&key=" + Global.getFacMchSecret()).toUpperCase();
+                    if (StringUtils.isNotBlank(sign)) {
+                        res.setTimeStamp(timeStamp);
+                        res.setNonceStr(paraMap.get("nonce_str"));
+                        res.setPrepayId(prepayId.toString());
+                        res.setSign(sign);
+                        logger.info("微信 支付接口生成签名 设置返回值");
                     }
-                } else {
-                    //判断 是否等于一条
-                    if (payInfoList.size() == 1) {
-                        //获取 需要更新数据
-                        WechatAppletGolfPayInfo wechatAppletGolfPayInfo = payInfoList.get(0);
-                        //更新 该条的 金额
-                        wechatAppletGolfPayInfo.setAmount(Long.valueOf(amount));
-                        //更新Dao
-                        int sqlRow = appletGolfPayInfoMapper.updateByPrimaryKey(wechatAppletGolfPayInfo);
-                        //判断
+                }
+            }
+            logger.info("微信 支付接口生成签名 方法结束");
+        } catch (UnsupportedEncodingException e) {
+            logger.info("微信 统一下单 异常：" + e.getMessage(), e);
+        } catch (Exception e) {
+            logger.info("微信 统一下单 异常：" + e.getMessage(), e);
+        }
+
+        return res;
+    }
+
+    /**
+     * 微信支付结果通知接口
+     *
+     * @param request
+     * @param response
+     */
+    @Override
+    public void payCallback(HttpServletRequest request, HttpServletResponse response) {
+        logger.info("微信回调接口方法 start");
+        logger.info("微信回调接口 操作逻辑 start");
+        String inputLine = "";
+        String notityXml = "";
+        try {
+            while ((inputLine = request.getReader().readLine()) != null) {
+                notityXml += inputLine;
+            }
+            //关闭流
+            request.getReader().close();
+            logger.info("微信回调内容信息：" + notityXml);
+            //解析成Map
+            Map<String, String> map = doXMLParse(notityXml);
+            //判断 支付是否成功
+            if ("SUCCESS".equals(map.get("result_code"))) {
+                logger.info("微信回调返回是否支付成功：是");
+                //获得 返回的商户订单号
+                String outTradeNo = map.get("out_trade_no");
+                logger.info("微信回调返回商户订单号：" + outTradeNo);
+                //访问DB
+                Order order = this.orderMapper.selectOrderByOrderNo(outTradeNo);
+                if (order != null) {
+                    logger.info("微信回调 根据订单号查询订单状态：" + order.getStatus());
+                    if (OrderStatus.PAYING.getCode().equals(order.getStatus())) {
+                        //修改支付状态
+                        int sqlRow = this.orderMapper.updateOrderStatusAfterPayed(outTradeNo, OrderStatus.PAYED.getCode().intValue());
                         if (sqlRow == 1) {
-                            logger.info("微信 统一下单 接口调用成功 修改支付信息成功");
-                            resultJson.put("prepayId", map.get("prepay_id"));
-                            resultJson.put("outTradeNo", paraMap.get("out_trade_no"));
-                            return resultJson;
+                            logger.info("微信回调  订单号：" + outTradeNo + ",修改状态成功");
+                            //封装 返回值
+                            StringBuffer buffer = new StringBuffer();
+                            buffer.append("<xml>");
+                            buffer.append("<return_code>SUCCESS</return_code>");
+                            buffer.append("<return_msg>OK</return_msg>");
+                            buffer.append("</xml>");
+                            //给微信服务器返回 成功标示 否则会一直询问 咱们服务器 是否回调成功
+                            PrintWriter writer = response.getWriter();
+                            //返回
+                            writer.print(buffer.toString());
                         }
                     }
                 }
             }
-            //将 数据包ID 返回
-
-            System.out.println(map);
-        } catch (UnsupportedEncodingException e) {
-            logger.info("微信 统一下单 异常：" + e.getMessage());
+        } catch (IOException e) {
             e.printStackTrace();
         } catch (Exception e) {
-            logger.info("微信 统一下单 异常：" + e.getMessage());
             e.printStackTrace();
         }
-        logger.info("微信 统一下单 失败");
-
-        return null;
     }
 
     /**

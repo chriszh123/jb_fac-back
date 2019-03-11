@@ -11,7 +11,7 @@ public enum OrderStatus {
     TOSHIP("待发货", 1),
     TORECIVE("待收货", 2),
     TOEVALUATE("待评价", 3),
-    PAYED("已完成", 4),
+    PAYED("已支付", 4),
     CACELED("已取消", 5),
     CACELING("未取消", 6);
 

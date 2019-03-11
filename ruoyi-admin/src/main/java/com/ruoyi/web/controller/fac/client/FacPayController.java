@@ -53,4 +53,15 @@ public class FacPayController extends BaseController {
             return FacResult.error(ex.getMessage());
         }
     }
+
+    @PostMapping("/wx/payCallback")
+    @ResponseBody
+    public void payCallback(HttpServletRequest request, HttpServletResponse response) {
+        // 通知地址 回调服务器 支付结果(这个回调 如果不返回给微信服务器 是否成功回调标示 则会一直回调8次 一直到返回成功标示位置)
+        try {
+            this.payService.payCallback(request, response);
+        } catch (Exception ex) {
+            logger.error("[payCallback] error", ex);
+        }
+    }
 }

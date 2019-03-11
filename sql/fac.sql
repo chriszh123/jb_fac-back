@@ -97,6 +97,7 @@ CREATE TABLE `fac_order` (
   `cacel_id` bigint(20) DEFAULT NULL COMMENT '取消订单操作人id',
   `cacel_name` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '取消订单操作人名称',
   `cacel_time` datetime DEFAULT NULL COMMENT '取消订单操作时间',
+  `prepay_id` bigint(20) DEFAULT NULL COMMENT '微信预支付id',
   `create_time` datetime NOT NULL COMMENT '创建时间',
   `update_time` datetime NOT NULL COMMENT '最近更新时间',
   `operator_id` bigint(20) DEFAULT NULL COMMENT '操作者ID',

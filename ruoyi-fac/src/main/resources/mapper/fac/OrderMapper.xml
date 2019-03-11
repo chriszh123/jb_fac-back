@@ -31,10 +31,11 @@
         <result property="operatorName" column="operator_name"/>
         <result property="isDeleted" column="is_deleted"/>
         <result property="orderRemark" column="remark"/>
+        <result property="prepayId" column="prepay_id"/>
     </resultMap>
 
     <sql id="selectOrderVo">
-        select id, order_no, prod_id, prod_name, prod_number, price, status, pay_time, token,open_id, user_id, user_name, nick_name, remark, ship_id, ship_code, remark_mngt, ship, cacel_id, cacel_name, cacel_time, create_time, update_time, operator_id, operator_name, is_deleted from fac_order
+        select id, order_no, prod_id, prod_name, prod_number, price, status, pay_time, token,open_id, user_id, user_name, nick_name, remark, ship_id, ship_code, remark_mngt, ship, cacel_id, cacel_name, cacel_time, prepay_id,create_time, update_time, operator_id, operator_name, is_deleted from fac_order
     </sql>
 
     <select id="selectOrderList" parameterType="Order" resultMap="OrderResult">
@@ -248,4 +249,21 @@
         <include refid="selectOrderVo"/>
         where id = #{id} and is_deleted = 0 and token = #{token}
     </select>
+
+    <update id="updateOrderPrePayId" parameterType="QueryVo">
+        UPDATE fac_order
+        set prepay_id = #{prepayId}
+        where id = #{id}
+    </update>
+
+    <select id="selectOrderByOrderNo" parameterType="String" resultMap="OrderResult">
+        <include refid="selectOrderVo"/>
+        where order_no = #{orderNo}
+    </select>
+
+    <update id="updateOrderStatusAfterPayed">
+        UPDATE fac_order
+        set status = #{status}
+        where order_no = #{orderNo}
+    </update>
 </mapper>

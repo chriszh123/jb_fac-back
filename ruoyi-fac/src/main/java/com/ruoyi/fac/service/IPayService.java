@@ -20,4 +20,12 @@ public interface IPayService {
      * @throws Exception
      */
     WxPrePayRes getWxPrePayInfo(WxPrePayReq req, HttpServletRequest request, HttpServletResponse response) throws Exception;
+
+    /**
+     * 微信支付结果通知接口
+     *
+     * @param request
+     * @param response
+     */
+    void payCallback(HttpServletRequest request, HttpServletResponse response);
 }
