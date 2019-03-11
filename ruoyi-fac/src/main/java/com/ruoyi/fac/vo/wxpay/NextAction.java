@@ -12,7 +12,7 @@ public class NextAction implements Serializable{
 
     private Integer type;
     /**
-     * 订单no
+     * 订单id
      */
     private String id;
 

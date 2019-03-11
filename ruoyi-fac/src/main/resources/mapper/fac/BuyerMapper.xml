@@ -131,7 +131,7 @@
 
     <select id="selectBuyerByOpenId" parameterType="String" resultMap="BuyerResult">
         <include refid="selectBuyerVo"/>
-        where is_deleted = 0 AND open_id = #{openId}
+        where is_deleted = 0 AND token = #{token}
     </select>
 
 </mapper>

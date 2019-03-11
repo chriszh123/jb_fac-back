@@ -139,3 +139,5 @@ wxapp:
   fac:
     appid: wx29494f30fe5e1026
     secret: af2302f2654412a62b805e4b2b2e823b
+    mchId:
+    mchsecret:

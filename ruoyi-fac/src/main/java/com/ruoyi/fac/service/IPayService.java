@@ -3,6 +3,9 @@ package com.ruoyi.fac.service;
 import com.ruoyi.fac.vo.wxpay.WxPrePayReq;
 import com.ruoyi.fac.vo.wxpay.WxPrePayRes;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 /**
  * Created by zgf
  * Date 2019/2/18 17:15
@@ -16,5 +19,5 @@ public interface IPayService {
      * @return
      * @throws Exception
      */
-    WxPrePayRes getWxPrePayInfo(WxPrePayReq req) throws Exception;
+    WxPrePayRes getWxPrePayInfo(WxPrePayReq req, HttpServletRequest request, HttpServletResponse response) throws Exception;
 }
