@@ -237,7 +237,7 @@
     <update id="updateOrderStatus" parameterType="QueryVo">
         UPDATE fac_order
         set status = #{status}
-        where is_deleted = 0 and open_id = #{openId}
+        where is_deleted = 0 and token = #{token}
         and id in
         <foreach item="id" collection="orderIds" open="(" separator="," close=")">
             #{id}
