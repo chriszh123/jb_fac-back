@@ -10,6 +10,8 @@ ruoyi:
   profile: D:/profile/
   # 获取ip地址开关
   addressEnabled: true
+  #域名
+  domain: https://zlz.herokuapp.com
 
 # 开发环境配置
 server:

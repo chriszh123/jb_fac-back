@@ -190,4 +190,8 @@ public class Global {
     public static String getFacMchSecret() {
         return getConfig("wxapp.fac.mchsecret");
     }
+
+    public static String getDomain() {
+        return getConfig("ruoyi.domain");
+    }
 }

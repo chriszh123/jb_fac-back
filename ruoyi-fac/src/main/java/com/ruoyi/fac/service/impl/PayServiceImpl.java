@@ -92,8 +92,8 @@ public class PayServiceImpl implements IPayService {
         paraMap.put("total_fee", amountFen);
         //设置请求参数(终端IP)
         paraMap.put("spbill_create_ip", WebUtils.getIpAddress(request));
-        //设置请求参数(通知地址) zgf
-        paraMap.put("notify_url", "");
+        //设置请求参数(通知地址)
+        paraMap.put("notify_url", Global.getDomain() + "/fac/client/pay/wx/payCallback");
         //设置请求参数(交易类型)
         paraMap.put("trade_type", "JSAPI");
         //设置请求参数(openid)(在接口文档中 该参数 是否必填项 但是一定要注意 如果交易类型设置成'JSAPI'则必须传入openid)
