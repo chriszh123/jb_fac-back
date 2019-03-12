@@ -216,9 +216,9 @@ public class PayServiceImpl implements IPayService {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("[payCallback IOException] error", e);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("[payCallback Exception] error", e);
         }
     }
 
