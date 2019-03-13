@@ -53,6 +53,12 @@
             <version>3.1</version>
         </dependency>
 
+        <!--部署war，在servlet容器中运行，需要放开下边这个依赖-->
+        <!--<dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-tomcat</artifactId>
+            <scope>provided</scope>
+        </dependency>-->
     </dependencies>
 
     <build>
