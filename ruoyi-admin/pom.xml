@@ -87,7 +87,8 @@
                 </configuration>   
 		   </plugin>   
         </plugins>
-        <finalName>${artifactId}</finalName>
+        <!--<finalName>${artifactId}</finalName>-->
+        <finalName>fac</finalName>
     </build>
 	
 </project>
