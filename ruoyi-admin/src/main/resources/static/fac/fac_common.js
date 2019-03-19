@@ -290,7 +290,7 @@ var initFileInput = function (id, uploadUrl, maxFilesNum) {
         if (data && data.response && data.response.code && data.response.code == "0") {
             var lastPicture = $('#picture').val();
             var lastImgPath = $('#imgPath').val();
-            lastPicture = lastPicture + "," + data.response.fileName;
+            lastPicture = lastPicture + "," + data.response.imgPath;  // 这里取完整的图片路径
             lastImgPath = lastImgPath + "," + data.response.imgPath;
             $('#picture').val(lastPicture);
             $('#imgPath').val(lastImgPath);
@@ -310,7 +310,7 @@ var initFileInput = function (id, uploadUrl, maxFilesNum) {
         if (data && data.response && data.response.code && data.response.code == "0") {
             var lastPicture = $('#picture').val();
             var lastImgPath = $('#imgPath').val();
-            lastPicture = lastPicture + "," + data.response.fileName;
+            lastPicture = lastPicture + "," + data.response.imgPath;  // 这里取完整的图片路径;
             lastImgPath = lastImgPath + "," + data.response.imgPath;
             $('#picture').val(lastPicture);
             $('#imgPath').val(lastImgPath);

@@ -118,25 +118,23 @@ public class CkImageUploadUtil {
     public String uploadFile(MultipartFile file) throws Exception {
         String result = "";
         FileVo fileVo = new FileVo();
-        // 本地开发 start
-        String fileName = file.getOriginalFilename();
-        File targetFile = new File(Global.getProductPath());
-        if (!targetFile.exists()) {
-            targetFile.mkdirs();
-        }
-        String imagePath = Global.getProductPath() + fileName;
-        FileOutputStream out = new FileOutputStream(imagePath);
-        out.write(file.getBytes());
-        out.flush();
-        out.close();
-        // 本地开发 end
+//        // 本地开发 start
+//        String fileName = file.getOriginalFilename();
+//        File targetFile = new File(Global.getProductPath());
+//        if (!targetFile.exists()) {
+//            targetFile.mkdirs();
+//        }
+//        String imagePath = Global.getProductPath() + fileName;
+//        FileOutputStream out = new FileOutputStream(imagePath);
+//        out.write(file.getBytes());
+//        out.flush();
+//        out.close();
+//        // 本地开发 end
 
         // 腾讯云上传图片
-//        String fileName = COSClientUtils.getInstance().uploadFile2Cos(file);
-//      String imagePath = COSClientUtils.getInstance().getImgUrl(fileName);
+        String fileName = COSClientUtils.getInstance().uploadFile2Cos(file);
+        String imagePath = COSClientUtils.getInstance().getImgUrl(fileName);
 
-        // TODO:测试网络图片地址
-        imagePath = FacConstant.TEST_IMG_URL;
         result = fileVo.success(1, file.getOriginalFilename(), imagePath, null);
 
         return result;

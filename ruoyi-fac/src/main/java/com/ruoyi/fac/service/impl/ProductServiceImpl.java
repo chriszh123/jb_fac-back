@@ -86,7 +86,6 @@ public class ProductServiceImpl implements IProductService {
      */
     @Override
     public int insertProduct(Product product) {
-        this.resetProductImg(product);
         product.setOrderCount(0);
         return productMapper.insertProduct(product);
     }
@@ -99,7 +98,6 @@ public class ProductServiceImpl implements IProductService {
      */
     @Override
     public int updateProduct(Product product) {
-        this.resetProductImg(product);
         // 编辑场景下用introductionEdit字段存储最新的商品介绍内容
         product.setIntroduction(product.getIntroductionEdit());
         return productMapper.updateProduct(product);
@@ -130,9 +128,8 @@ public class ProductServiceImpl implements IProductService {
             return vo;
         }
         Product dstProduct = this.productMapper.selectProductById(product.getId());
-        // zgf
-//        String pictures = dstProduct.getPicture();
-        String pictures = FacConstant.TEST_IMG_URL;
+        String pictures = dstProduct.getPicture();
+//        String pictures = FacConstant.TEST_IMG_URL;
         if (StringUtils.isNotEmpty(pictures)) {
             vo.setCode(FacConstant.AJAX_CODE_SUCCESS);
             String[] imgPaths = pictures.split(",");
@@ -156,16 +153,6 @@ public class ProductServiceImpl implements IProductService {
         }
 
         return vo;
-    }
-
-    private void resetProductImg(Product product) {
-        if (product != null && StringUtils.isNotEmpty(product.getImgPath())) {
-            String imgPath = product.getImgPath();
-            if (imgPath.startsWith(",")) {
-                imgPath = imgPath.substring(1);
-            }
-            product.setPicture(imgPath);
-        }
     }
 
     /**

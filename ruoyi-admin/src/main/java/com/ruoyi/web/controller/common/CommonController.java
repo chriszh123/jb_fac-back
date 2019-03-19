@@ -40,8 +40,7 @@ public class CommonController {
     @RequestMapping("common/download")
     public void fileDownload(String fileName, Boolean delete, HttpServletResponse response, HttpServletRequest request) {
         try {
-            if (!FileUtils.isValidFilename(fileName))
-            {
+            if (!FileUtils.isValidFilename(fileName)) {
                 throw new Exception(StringUtils.format(" 文件名称({})非法，不允许下载。 ", fileName));
             }
             SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
@@ -116,14 +115,8 @@ public class CommonController {
             List<String> imgPaths = new ArrayList<>();
             try {
                 System.out.println("batchUploadProductImg,file.length = " + file.length);
-                String basePath = Global.getProductPath();
                 for (int i = 0; i < file.length; i++) {
                     if (!file[i].isEmpty()) {
-                        //上传文件，原始文件名称
-//                        String fileName = FileUploadUtils.upload(basePath, file[i]);
-//                        System.out.println("fileName = " + fileName);
-//                        String imgUrl = basePath + fileName;
-//                        imgUrl = FacConstant.TEST_IMG_URL;
                         // 腾讯云上传图片
                         String fileName = COSClientUtils.getInstance().uploadFile2Cos(file[i]);
                         String imgUrl = COSClientUtils.getInstance().getImgUrl(fileName);
