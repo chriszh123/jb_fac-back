@@ -192,6 +192,24 @@ public class COSClientUtils {
     }
 
     /**
+     * 删除
+     */
+    public static void delete(String fileName) {
+        new Thread(new Runnable() {
+            public void run() {
+                // 指定要删除的 bucket 和路径
+                try {
+                    String key = DIR_PICTURE + fileName;
+                    cosClient.deleteObject(bucketName, key);
+                    logger.info("[delete] success, fileName = " + fileName);
+                } catch (Exception ex) {
+                    logger.error("[delete] failure, fileName = " + fileName, ex);
+                }
+            }
+        }).start();
+    }
+
+    /**
      * Description: 判断Cos服务文件上传时文件的contentType
      *
      * @param filenameExtension 文件后缀
