@@ -7,6 +7,7 @@ import com.ruoyi.common.utils.file.FileUtils;
 import com.ruoyi.fac.constant.FacConstant;
 import com.ruoyi.fac.vo.FileVo;
 import com.ruoyi.fac.vo.ProductImgVo;
+import com.ruoyi.framework.util.COSClientUtils;
 import com.ruoyi.framework.util.CkImageUploadUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
@@ -119,13 +120,13 @@ public class CommonController {
                 for (int i = 0; i < file.length; i++) {
                     if (!file[i].isEmpty()) {
                         //上传文件，原始文件名称
-                        String fileName = FileUploadUtils.upload(basePath, file[i]);
-                        System.out.println("fileName = " + fileName);
-                        String imgUrl = basePath + fileName;
-                        imgUrl = FacConstant.TEST_IMG_URL;
+//                        String fileName = FileUploadUtils.upload(basePath, file[i]);
+//                        System.out.println("fileName = " + fileName);
+//                        String imgUrl = basePath + fileName;
+//                        imgUrl = FacConstant.TEST_IMG_URL;
                         // 腾讯云上传图片
-//                        String fileName = COSClientUtils.getInstance().uploadFile2Cos(file[i]);
-//                        String imgUrl = COSClientUtils.getInstance().getImgUrl(fileName);
+                        String fileName = COSClientUtils.getInstance().uploadFile2Cos(file[i]);
+                        String imgUrl = COSClientUtils.getInstance().getImgUrl(fileName);
 
                         fileNames.add(fileName);
                         imgPaths.add(imgUrl);
