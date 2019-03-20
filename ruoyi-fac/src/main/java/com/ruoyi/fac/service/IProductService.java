@@ -89,4 +89,12 @@ public interface IProductService {
      * @return
      */
     GoodsPriceVo goodPrice(String id);
+
+    /**
+     * 删除商品信息
+     *
+     * @param key 需要删除的图片 : 商品id + "+" + imgPath
+     * @return 结果
+     */
+    int deletePic(String key);
 }

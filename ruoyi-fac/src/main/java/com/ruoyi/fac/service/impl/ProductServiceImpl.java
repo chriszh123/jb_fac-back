@@ -1,7 +1,6 @@
 package com.ruoyi.fac.service.impl;
 
 import com.ruoyi.common.support.Convert;
-import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.fac.constant.FacConstant;
 import com.ruoyi.fac.domain.Product;
 import com.ruoyi.fac.domain.ProductCategory;
@@ -16,14 +15,14 @@ import com.ruoyi.fac.util.TimeUtils;
 import com.ruoyi.fac.vo.ProductImgVo;
 import com.ruoyi.fac.vo.client.*;
 import com.ruoyi.fac.vo.condition.QueryGoodVo;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
-import java.sql.Time;
 import java.util.*;
 
 /**
@@ -128,22 +127,25 @@ public class ProductServiceImpl implements IProductService {
             return vo;
         }
         Product dstProduct = this.productMapper.selectProductById(product.getId());
+        if (dstProduct == null) {
+            return vo;
+        }
         String pictures = dstProduct.getPicture();
-//        String pictures = FacConstant.TEST_IMG_URL;
         if (StringUtils.isNotEmpty(pictures)) {
             vo.setCode(FacConstant.AJAX_CODE_SUCCESS);
             String[] imgPaths = pictures.split(",");
             vo.setImgPaths(imgPaths);
-            List<String> imgList = Arrays.asList(imgPaths);
             List<Map<String, Object>> cfgs = new ArrayList<>();
             Map<String, Object> cfg;
             String imgPath;
-            for (int i = 0, size = imgList.size(); i < size; i++) {
+            for (int i = 0, size = imgPaths.length; i < size; i++) {
                 cfg = new HashMap<>(16);
-                imgPath = imgList.get(i);
+                imgPath = imgPaths[i];
                 cfg.put("caption", FacFileUtils.getInstance().getFileName(imgPath));
                 cfg.put("size", FacFileUtils.getInstance().getFileSize(imgPath));
-                cfg.put("key", (i + 1));
+                // 删除当前图片对应的参数: 商品id + "+" + imgPath
+                String key = dstProduct.getId().toString() + FacConstant.SEPARATOR_JIA + imgPath;
+                cfg.put("key", key);
                 cfg.put("width", "200px");
                 // 每个图片元素上的小删除按钮对应的接口url地址
                 cfg.put("url", "");
@@ -274,6 +276,49 @@ public class ProductServiceImpl implements IProductService {
         vo.setUserId(product.getOperatorId());
 
         return vo;
+    }
+
+    /**
+     * 删除商品信息
+     *
+     * @param key 需要删除的图片 : 商品id + "+" + imgPath
+     * @return 结果
+     */
+    @Override
+    public int deletePic(String key) {
+        // 1.删除db中对应的数据
+        if (StringUtils.isBlank(key) || !key.contains(FacConstant.SEPARATOR_JIA) || key.split(FacConstant.SEPARATOR_JIA).length < 2) {
+            return 0;
+        }
+        String prodId = key.split(FacConstant.SEPARATOR_JIA)[0];
+        String fullImgPath = key.split(FacConstant.SEPARATOR_JIA)[1];
+        Product product = this.productMapper.selectProductById(Long.valueOf(prodId));
+        if (product == null) {
+            return 0;
+        }
+        String picture = product.getPicture();
+        if (StringUtils.isBlank(picture)) {
+            return 0;
+        }
+        String[] pictureArr = picture.split(",");
+        List<String> newImgPaths = new ArrayList<>();
+        for (int i = 0, size = pictureArr.length; i < size; i++) {
+            if (!StringUtils.equals(fullImgPath, pictureArr[i])) {
+                newImgPaths.add(pictureArr[i]);
+            }
+        }
+        if (CollectionUtils.isNotEmpty(newImgPaths)) {
+            picture = StringUtils.join(newImgPaths, ",");
+        } else {
+            picture = "";
+        }
+        product.setPicture(picture);
+        product.setUpdateTime(new Date());
+        this.productMapper.updateProduct(product);
+
+        // 2.删除cos中对应的数据 : 暂时不删除cos里的图片
+
+        return 1;
     }
 
     private GoodVo convertGoodVo(Product product) {

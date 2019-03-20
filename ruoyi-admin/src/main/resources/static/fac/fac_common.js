@@ -320,6 +320,13 @@ var initFileInput = function (id, uploadUrl, maxFilesNum) {
         }
     }).on('fileerror', function (event, data, msg) {  //一个文件上传失败
         console.log('文件上传失败！' + data.id);
+    }).on('filepredelete', function (event, key, jqXHR, data) {
+        console.log('Key = ' + key);
+        console.log(jqXHR);
+        console.log(data);
+        if (!confirm("确定删除原文件？删除后不可恢复")) {
+            return false;
+        }
     })
 }
 
@@ -370,6 +377,13 @@ var initFileInputWithImgData = function (id, uploadUrl, maxFilesNum, imgPaths, c
         layoutTemplates: {
             actionDelete: '',
             actionUpload: ''
+        }
+    }).on('filepredelete', function (event, key, jqXHR, data) {
+        console.log('Key = ' + key);
+        console.log(jqXHR);
+        console.log(data);
+        if (!confirm("确定删除原文件？删除后不可恢复")) {
+            return false;
         }
     });
 }

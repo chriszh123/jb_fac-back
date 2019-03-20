@@ -160,4 +160,14 @@ public class ProductController extends BaseController {
         ProductImgVo vo = this.productService.getProductImgs(product);
         return vo;
     }
+
+    /**
+     * 删除商品单个已经存在的图片
+     */
+    @Log(title = "商品", businessType = BusinessType.DELETE)
+    @PostMapping("/deletePic")
+    @ResponseBody
+    public AjaxResult deletePic(String key) {
+        return toAjax(productService.deletePic(key));
+    }
 }

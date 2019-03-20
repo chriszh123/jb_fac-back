@@ -37,4 +37,8 @@ public class FacConstant {
      * fac模块涉及到的文件大小:500K
      */
     public static int FILE_SIZE_FAC = 1024 * 500;
+    /**
+     * 分隔符：+
+     */
+    public static String SEPARATOR_JIA = "+";
 }
