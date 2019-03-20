@@ -40,5 +40,5 @@ public class FacConstant {
     /**
      * 分隔符：+
      */
-    public static String SEPARATOR_JIA = "+";
+    public static String SEPARATOR_SEMICOLON = ";";
 }

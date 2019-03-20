@@ -13,14 +13,14 @@
         <input type="hidden" id="introductionEdit" name="introductionEdit"/>
         <input id="id" name="id" th:field="*{id}" type="hidden">
         <div class="form-group">
-            <label class="col-sm-3 control-label">商品名称：</label>
-            <div class="col-sm-8">
+            <label class="col-sm-3 control-label product-lable">商品名称：</label>
+            <div class="col-sm-9">
                 <input id="name" name="name" th:field="*{name}" class="form-control" type="text">
             </div>
         </div>
         <div class="form-group">
-            <label class="col-sm-3 control-label">商品类目：</label>
-            <div class="col-sm-8">
+            <label class="col-sm-3 control-label product-lable">商品类目：</label>
+            <div class="col-sm-9">
                 <select id="categoryId" name="categoryId" class="form-control m-b" th:field="*{categoryId}"
                         th:with="productCategorys=${@ps.getProductCategorys()}">
                     <option value="">请选择...</option>
@@ -30,8 +30,8 @@
         </div>
 
         <div class="form-group">
-            <label class="col-sm-3 control-label">所属商家：</label>
-            <div class="col-sm-8">
+            <label class="col-sm-3 control-label product-lable">所属商家：</label>
+            <div class="col-sm-9">
                 <select id="businessId" name="businessId" class="form-control m-b" th:field="*{businessId}"
                         th:with="businesses=${@ps.getBusinesses()}">
                     <option value="">请选择...</option>
@@ -40,54 +40,54 @@
             </div>
         </div>
         <div class="form-group">
-            <label class="col-sm-3 control-label">原价：</label>
-            <div class="col-sm-8">
+            <label class="col-sm-3 control-label product-lable">原价：</label>
+            <div class="col-sm-9">
                 <input id="originalPrice" name="originalPrice" th:field="*{originalPrice}" class="form-control"
                        type="text">
             </div>
         </div>
         <div class="form-group">
-            <label class="col-sm-3 control-label">抢购价：</label>
-            <div class="col-sm-8">
+            <label class="col-sm-3 control-label product-lable">抢购价：</label>
+            <div class="col-sm-9">
                 <input id="price" name="price" th:field="*{price}" class="form-control" type="text">
             </div>
         </div>
         <div class="form-group">
-            <label class="col-sm-3 control-label">库存数量：</label>
-            <div class="col-sm-8">
+            <label class="col-sm-3 control-label product-lable">库存数量：</label>
+            <div class="col-sm-9">
                 <input id="inventoryQuantity" name="inventoryQuantity" th:field="*{inventoryQuantity}"
                        class="form-control" type="text">
             </div>
         </div>
         <div class="form-group">
-            <label class="col-sm-3 control-label">每人限购数量：</label>
-            <div class="col-sm-8">
+            <label class="col-sm-3 control-label product-lable">每人限购数量：</label>
+            <div class="col-sm-9">
                 <input id="limitQuantity" name="limitQuantity" th:field="*{limitQuantity}" class="form-control"
                        type="text">
             </div>
         </div>
         <div class="form-group">
-            <label class="col-sm-3 control-label">虚拟购买人数：</label>
-            <div class="col-sm-8">
+            <label class="col-sm-3 control-label product-lable">虚拟购买人数：</label>
+            <div class="col-sm-9">
                 <input id="vmBuyerQuantity" name="vmBuyerQuantity" th:field="*{vmBuyerQuantity}" class="form-control"
                        type="text">
             </div>
         </div>
         <div class="form-group">
-            <label class="col-sm-3 control-label">分销奖金：</label>
-            <div class="col-sm-8">
+            <label class="col-sm-3 control-label product-lable">分销奖金：</label>
+            <div class="col-sm-9">
                 <input id="distribution" name="distribution" th:field="*{distribution}" class="form-control"
                        type="text">
             </div>
         </div>
         <div class="form-group">
-            <label class="col-sm-3 control-label">奖励积分：</label>
-            <div class="col-sm-8">
+            <label class="col-sm-3 control-label product-lable">奖励积分：</label>
+            <div class="col-sm-9">
                 <input id="bonusPoints" name="bonusPoints" th:field="*{bonusPoints}" class="form-control" type="text">
             </div>
         </div>
         <div class="form-group form-inline">
-            <label class="col-sm-3 control-label">抢购开始时间：</label>
+            <label class="col-sm-3 control-label product-lable">抢购开始时间：</label>
             <div id="rushStartDate" class="col-sm-3 input-group date" style="margin-left: 15px;"><span
                     class="input-group-addon"><i
                     class="fa fa-calendar"></i></span>
@@ -102,7 +102,7 @@
             </div>
         </div>
         <div class="form-group form-inline">
-            <label class="col-sm-3 control-label">核销开始时间：</label>
+            <label class="col-sm-3 control-label product-lable">核销开始时间：</label>
             <div class="col-sm-3 input-group date" style="margin-left: 15px;"><span class="input-group-addon"><i
                     class="fa fa-calendar"></i></span>
                 <input type="text" class="form-control" id="writeoffStart" name="writeoffStart"
@@ -117,8 +117,8 @@
             </div>
         </div>
         <div class="form-group">
-            <label class="col-sm-3 control-label">发货方式：</label>
-            <div class="col-sm-8">
+            <label class="col-sm-3 control-label product-lable">发货方式：</label>
+            <div class="col-sm-9">
                 <label class="radio-box"> <input type="radio" name="shipMode" value="1"
                                                  th:checked="${product.shipMode == 1 ? true : false}"/> 送货上门 </label>
                 <label class="radio-box"> <input type="radio" name="shipMode" value="2"
@@ -126,20 +126,20 @@
             </div>
         </div>
         <div class="form-group">
-            <label class="col-sm-3 control-label">运费：</label>
-            <div class="col-sm-8">
+            <label class="col-sm-3 control-label product-lable">运费：</label>
+            <div class="col-sm-9">
                 <input id="shipCost" name="shipCost" th:field="*{shipCost}" class="form-control" type="text">
             </div>
         </div>
         <div class="form-group">
-            <label class="col-sm-3 control-label">排序：</label>
-            <div class="col-sm-8">
+            <label class="col-sm-3 control-label product-lable">排序：</label>
+            <div class="col-sm-9">
                 <input id="sort" name="sort" th:field="*{sort}" class="form-control" type="text">
             </div>
         </div>
         <div class="form-group">
-            <label class="col-sm-3 control-label">商品图片：</label>
-            <div class="col-sm-8">
+            <label class="col-sm-3 control-label product-lable">商品图片：</label>
+            <div class="col-sm-9">
                 <!--<form id="form" action="" method="post" enctype="multipart/form-data">-->
                 <div class="row form-group">
                     <div class="panel panel-primary" style="margin-left: 16px;margin-right: 13px;">
@@ -157,15 +157,15 @@
             </div>
         </div>
         <div class="form-group" style="margin-bottom: 25px;">
-            <label class="col-sm-3 control-label">商品介绍：</label>
-            <div class="col-sm-8">
-                <textarea cols="80" id="spjs" name="spjs" rows="10" th:field="*{introduction}"
-                          style="width: 100%;height: 100%;"></textarea>
+            <label class="col-sm-3 control-label product-lable">商品介绍：</label>
+            <div class="col-sm-9">
+                <textarea cols="80" id="spjs" name="spjs" rows="200" th:field="*{introduction}"
+                          style="width: 100%;height: 120%;"></textarea>
             </div>
         </div>
         <div class="form-group">
-            <label class="col-sm-3 control-label">上架：</label>
-            <div class="col-sm-8">
+            <label class="col-sm-3 control-label product-lable">上架：</label>
+            <div class="col-sm-9">
                 <div class="onoffswitch">
                     <input type="checkbox" th:checked="${product.status == 1 ? true : false}"
                            class="onoffswitch-checkbox" value="1" id="status"
@@ -180,7 +180,7 @@
 
         <div class="form-group" style="text-align: center;">
             <label class="col-sm-3 control-label" style="margin-bottom: 30px;"></label>
-            <div class="col-sm-8" style="margin-bottom: 30px;">
+            <div class="col-sm-9" style="margin-bottom: 30px;">
                 <button type="button" class="btn btn-success" onclick="editProduct()">确定</button>
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                 <button type="button" class="btn btn-default" onclick="closeCurrentTab('1')">取消</button>

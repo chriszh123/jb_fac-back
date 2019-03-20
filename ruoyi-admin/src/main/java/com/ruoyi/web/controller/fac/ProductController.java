@@ -165,7 +165,7 @@ public class ProductController extends BaseController {
      * 删除商品单个已经存在的图片
      */
     @Log(title = "商品", businessType = BusinessType.DELETE)
-    @PostMapping("/deletePic")
+    @PostMapping("/edit/deletePic")
     @ResponseBody
     public AjaxResult deletePic(String key) {
         return toAjax(productService.deletePic(key));

@@ -144,11 +144,11 @@ public class ProductServiceImpl implements IProductService {
                 cfg.put("caption", FacFileUtils.getInstance().getFileName(imgPath));
                 cfg.put("size", FacFileUtils.getInstance().getFileSize(imgPath));
                 // 删除当前图片对应的参数: 商品id + "+" + imgPath
-                String key = dstProduct.getId().toString() + FacConstant.SEPARATOR_JIA + imgPath;
+                String key = dstProduct.getId().toString() + FacConstant.SEPARATOR_SEMICOLON + imgPath;
                 cfg.put("key", key);
                 cfg.put("width", "200px");
                 // 每个图片元素上的小删除按钮对应的接口url地址
-                cfg.put("url", "");
+                cfg.put("url", "deletePic");
                 cfgs.add(cfg);
             }
             vo.setCfg(cfgs);
@@ -287,11 +287,11 @@ public class ProductServiceImpl implements IProductService {
     @Override
     public int deletePic(String key) {
         // 1.删除db中对应的数据
-        if (StringUtils.isBlank(key) || !key.contains(FacConstant.SEPARATOR_JIA) || key.split(FacConstant.SEPARATOR_JIA).length < 2) {
+        if (StringUtils.isBlank(key) || key.indexOf(FacConstant.SEPARATOR_SEMICOLON) < 0 || key.split(FacConstant.SEPARATOR_SEMICOLON).length < 2) {
             return 0;
         }
-        String prodId = key.split(FacConstant.SEPARATOR_JIA)[0];
-        String fullImgPath = key.split(FacConstant.SEPARATOR_JIA)[1];
+        String prodId = key.split(FacConstant.SEPARATOR_SEMICOLON)[0];
+        String fullImgPath = key.split(FacConstant.SEPARATOR_SEMICOLON)[1];
         Product product = this.productMapper.selectProductById(Long.valueOf(prodId));
         if (product == null) {
             return 0;
