@@ -1,6 +1,7 @@
 package com.ruoyi.fac.service;
 
 import com.ruoyi.fac.domain.Product;
+import com.ruoyi.fac.exception.FacException;
 import com.ruoyi.fac.vo.ProductImgVo;
 import com.ruoyi.fac.vo.client.GoodDetailVo;
 import com.ruoyi.fac.vo.client.GoodVo;
@@ -46,7 +47,7 @@ public interface IProductService {
      * @param product 商品信息
      * @return 结果
      */
-    int updateProduct(Product product);
+    int updateProduct(Product product) throws FacException;
 
     /**
      * 删除商品信息

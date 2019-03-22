@@ -8,6 +8,7 @@ package com.ruoyi.web.controller.fac.client;
 
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.fac.enums.FacCode;
+import com.ruoyi.fac.exception.FacException;
 import com.ruoyi.fac.service.IOrderService;
 import com.ruoyi.fac.vo.client.*;
 import com.ruoyi.fac.vo.client.req.OrderReq;
@@ -42,8 +43,14 @@ public class FacOrderController extends BaseController {
     @PostMapping("/create")
     @ResponseBody
     public FacResult create(@RequestBody OrderCreateVo order) {
-        OrderCreateRes res = this.orderService.createOrderFromClient(order);
-        return FacResult.success(res);
+        try {
+            OrderCreateRes res = this.orderService.createOrderFromClient(order);
+            return FacResult.success(res);
+        } catch (FacException fe) {
+            return FacResult.error(fe.getMessage());
+        } catch (Exception ex) {
+            return FacResult.error();
+        }
     }
 
     @PostMapping("/statistics")

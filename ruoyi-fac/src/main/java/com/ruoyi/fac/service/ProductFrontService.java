@@ -1,23 +1,26 @@
-package com.ruoyi.framework.web.service;
+/**
+ * Copyright (C) 2006-2019 Wisedu All rights reserved
+ * Author：zhangguifeng
+ * Date：2019/3/22
+ * Description: 前端html直接调用这里的服务接口
+ */
+package com.ruoyi.fac.service;
 
 import com.ruoyi.fac.domain.Business;
 import com.ruoyi.fac.domain.ProductCategory;
-import com.ruoyi.fac.service.IBusinessService;
-import com.ruoyi.fac.service.IProductCategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 /**
- * 商品相关附件信息
- * Created by zgf
- * Date 2019/1/4 23:34
- * Description
- */
-@Service("ps")
-public class ProductService {
-
+ * 前端html直接调用这里的服务接口
+ *
+ * @author zhangguifeng
+ * @create 2019-03-22 14:10
+ **/
+@Service("pfs")
+public class ProductFrontService {
     @Autowired
     private IProductCategoryService productCategoryService;
 
@@ -47,5 +50,4 @@ public class ProductService {
         List<Business> businesses = this.businessService.selectBusinessList(business);
         return businesses;
     }
-
 }

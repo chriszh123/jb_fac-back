@@ -1,6 +1,7 @@
 package com.ruoyi.fac.service;
 
 import com.ruoyi.fac.domain.Order;
+import com.ruoyi.fac.exception.FacException;
 import com.ruoyi.fac.vo.FacStaticVo;
 import com.ruoyi.fac.vo.OrderDiagramVo;
 import com.ruoyi.fac.vo.OrderItemVo;
@@ -94,7 +95,7 @@ public interface IOrderService {
      *
      * @param order
      */
-    OrderCreateRes createOrderFromClient(OrderCreateVo order);
+    OrderCreateRes createOrderFromClient(OrderCreateVo order) throws FacException;
 
     OrderStatisticsVo orderStatistics(String token);
 

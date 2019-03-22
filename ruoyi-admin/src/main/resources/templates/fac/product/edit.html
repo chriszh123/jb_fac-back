@@ -22,7 +22,7 @@
             <label class="col-sm-3 control-label product-lable">商品类目：</label>
             <div class="col-sm-9">
                 <select id="categoryId" name="categoryId" class="form-control m-b" th:field="*{categoryId}"
-                        th:with="productCategorys=${@ps.getProductCategorys()}">
+                        th:with="productCategorys=${@pfs.getProductCategorys()}">
                     <option value="">请选择...</option>
                     <option th:each="pc : ${productCategorys}" th:text="${pc.name}" th:value="${pc.id}"></option>
                 </select>
@@ -33,7 +33,7 @@
             <label class="col-sm-3 control-label product-lable">所属商家：</label>
             <div class="col-sm-9">
                 <select id="businessId" name="businessId" class="form-control m-b" th:field="*{businessId}"
-                        th:with="businesses=${@ps.getBusinesses()}">
+                        th:with="businesses=${@pfs.getBusinesses()}">
                     <option value="">请选择...</option>
                     <option th:each="bs : ${businesses}" th:text="${bs.name}" th:value="${bs.id}"></option>
                 </select>

@@ -266,4 +266,22 @@
         set status = #{status}
         where order_no = #{orderNo}
     </update>
+
+    <select id="selectProductsByProdAndStatus"  resultMap="OrderResult">
+        <include refid="selectOrderVo"/>
+        where is_deleted = 0
+        <if test="prodIds != null and !prodIds.isEmpty()">
+            AND prod_id IN
+            <foreach item="item" index="index" collection="prodIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="status != null and !status.isEmpty()">
+            AND status IN
+            <foreach item="item" index="index" collection="status" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        order by create_time desc
+    </select>
 </mapper>

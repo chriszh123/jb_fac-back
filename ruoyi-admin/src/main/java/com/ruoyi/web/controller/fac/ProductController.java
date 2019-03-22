@@ -10,6 +10,7 @@ import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.fac.constant.FacConstant;
 import com.ruoyi.fac.domain.Product;
 import com.ruoyi.fac.enums.ProductStatus;
+import com.ruoyi.fac.exception.FacException;
 import com.ruoyi.fac.service.IProductService;
 import com.ruoyi.fac.vo.FacStaticVo;
 import com.ruoyi.fac.vo.ProductImgVo;
@@ -130,7 +131,13 @@ public class ProductController extends BaseController {
         if (product.getStatus() == null) {
             product.setStatus(ProductStatus.LOWER_SHELF.getValue());
         }
-        return toAjax(productService.updateProduct(product));
+        try {
+            return toAjax(productService.updateProduct(product));
+        } catch (FacException fe) {
+            return AjaxResult.error(fe.getMessage());
+        } catch (Exception ex) {
+            return AjaxResult.error();
+        }
     }
 
     /**

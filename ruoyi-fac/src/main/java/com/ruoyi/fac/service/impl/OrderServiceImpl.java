@@ -6,6 +6,8 @@ import com.ruoyi.fac.domain.Buyer;
 import com.ruoyi.fac.domain.Order;
 import com.ruoyi.fac.domain.Product;
 import com.ruoyi.fac.enums.OrderStatus;
+import com.ruoyi.fac.enums.ProductStatus;
+import com.ruoyi.fac.exception.FacException;
 import com.ruoyi.fac.mapper.BusinessMapper;
 import com.ruoyi.fac.mapper.BuyerMapper;
 import com.ruoyi.fac.mapper.OrderMapper;
@@ -282,7 +284,7 @@ public class OrderServiceImpl implements IOrderService {
      * @param orderCreateVo
      */
     @Override
-    public OrderCreateRes createOrderFromClient(OrderCreateVo orderCreateVo) {
+    public OrderCreateRes createOrderFromClient(OrderCreateVo orderCreateVo) throws FacException {
         OrderCreateRes res = new OrderCreateRes();
         if (StringUtils.isBlank(orderCreateVo.getGoodsJsonStr()) || StringUtils.isEmpty(orderCreateVo.getToken())) {
             return res;
@@ -306,8 +308,18 @@ public class OrderServiceImpl implements IOrderService {
             return res;
         }
         Map<Long, Product> productMap = new HashMap<>();
+        // 下架的商品
+        StringBuilder lowerProds = new StringBuilder();
         for (Product product : products) {
+            // 下架的商品能创建订单
+            if (product.getStatus().equals(ProductStatus.LOWER_SHELF)) {
+                lowerProds.append(product.getName()).append(",");
+            }
             productMap.put(product.getId(), product);
+        }
+        if (StringUtils.isNotBlank(lowerProds.toString())) {
+            lowerProds = lowerProds.deleteCharAt(lowerProds.toString().length() - 1);
+            throw new FacException("以下商品已下架，不能创建订单:\n" + lowerProds.toString());
         }
         // 转换用户选择的商品信息
         List<Order> orders = new ArrayList<>();

@@ -1,6 +1,7 @@
 package com.ruoyi.fac.mapper;
 
 import com.ruoyi.fac.domain.Order;
+import com.ruoyi.fac.domain.Product;
 import com.ruoyi.fac.vo.QueryVo;
 import org.apache.ibatis.annotations.Param;
 
@@ -130,4 +131,13 @@ public interface OrderMapper {
      * @return
      */
     int updateOrderStatusAfterPayed(@Param("orderNo") String orderNo, @Param("status") int status);
+
+    /**
+     * 查询指定商品、相应状态对应的订单
+     *
+     * @param prodIds 商品ids
+     * @param status  订单状态
+     * @return List<Product>
+     */
+    List<Order> selectProductsByProdAndStatus(@Param("prodIds") List<Long> prodIds, @Param("status") List<Integer> status);
 }

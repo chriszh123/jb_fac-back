@@ -2,10 +2,13 @@ package com.ruoyi.fac.service.impl;
 
 import com.ruoyi.common.support.Convert;
 import com.ruoyi.fac.constant.FacConstant;
+import com.ruoyi.fac.domain.Order;
 import com.ruoyi.fac.domain.Product;
 import com.ruoyi.fac.domain.ProductCategory;
 import com.ruoyi.fac.enums.FocusStatus;
 import com.ruoyi.fac.enums.ProductStatus;
+import com.ruoyi.fac.exception.FacException;
+import com.ruoyi.fac.mapper.OrderMapper;
 import com.ruoyi.fac.mapper.ProductCategoryMapper;
 import com.ruoyi.fac.mapper.ProductMapper;
 import com.ruoyi.fac.service.IProductService;
@@ -39,6 +42,8 @@ public class ProductServiceImpl implements IProductService {
     private ProductMapper productMapper;
     @Autowired
     private ProductCategoryMapper productCategoryMapper;
+    @Autowired
+    private OrderMapper orderMapper;
 
     /**
      * 查询商品信息
@@ -96,9 +101,31 @@ public class ProductServiceImpl implements IProductService {
      * @return 结果
      */
     @Override
-    public int updateProduct(Product product) {
+    public int updateProduct(Product product) throws FacException {
         // 编辑场景下用introductionEdit字段存储最新的商品介绍内容
         product.setIntroduction(product.getIntroductionEdit());
+        Product productdb = this.productMapper.selectProductById(product.getId());
+        if (productdb == null || productdb.getIsDeleted().intValue() == 1) {
+            throw new FacException("当前商品已被删除，请确认");
+        }
+        // 商品被下架前需要校验当前商品是否存在于待付款的订单中
+        if (productdb.getStatus().equals(ProductStatus.UPPER_SHELF) && product.getStatus().equals(ProductStatus.LOWER_SHELF)) {
+            // 当前商品处于待付款的订单
+            List<Long> prodIds = new ArrayList<>();
+            prodIds.add(productdb.getId());
+            List<Integer> status = new ArrayList<>();
+            status.add(Integer.valueOf("0"));
+            List<Order> pendingPaymentOrders = this.orderMapper.selectProductsByProdAndStatus(prodIds, status);
+            if (CollectionUtils.isNotEmpty(pendingPaymentOrders)) {
+                StringBuilder pendingPayment = new StringBuilder("当前商品在以下订单中处于待付款状态，请处理订单后再下架：\n");
+                for (Order order : pendingPaymentOrders) {
+                    pendingPayment.append(order.getOrderNo()).append(",");
+                }
+                pendingPayment = pendingPayment.deleteCharAt(pendingPayment.toString().length() - 1);
+                throw new FacException(pendingPayment.toString());
+            }
+        }
+//        SysUser user = ShiroUtils.getSysUser();
         return productMapper.updateProduct(product);
     }
 

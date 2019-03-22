@@ -8,7 +8,6 @@ package com.ruoyi.framework.util;
 
 import com.ruoyi.common.config.Global;
 import com.ruoyi.common.utils.file.FileUploadUtils;
-import com.ruoyi.fac.constant.FacConstant;
 import com.ruoyi.fac.vo.FileVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +18,6 @@ import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
