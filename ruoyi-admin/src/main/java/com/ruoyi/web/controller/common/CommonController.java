@@ -62,22 +62,6 @@ public class CommonController {
         }
     }
 
-    /**
-     * ckeditor组件上传图片
-     *
-     * @param request
-     * @param response
-     */
-    @RequestMapping(value = "/image/ckeditorUploadImg")
-    @ResponseBody
-    public void ckeditorUploadImg(HttpServletRequest request, HttpServletResponse response) {
-        try {
-            CkImageUploadUtil.getInstance().ckeditor(request, response);
-        } catch (Exception ex) {
-            log.error("[ckeditorUploadImg] error", ex);
-        }
-    }
-
     @RequestMapping("/image/uploadImg")
     public void uplodaImg(@RequestParam("upload") MultipartFile file, HttpServletRequest request, HttpServletResponse response) {
         FileVo fileVo = new FileVo();

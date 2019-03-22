@@ -14,7 +14,6 @@ import com.qcloud.cos.model.ObjectMetadata;
 import com.qcloud.cos.model.PutObjectResult;
 import com.qcloud.cos.region.Region;
 import com.ruoyi.common.utils.file.FileUploadUtils;
-import com.ruoyi.fac.constant.FacConstant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,22 +30,25 @@ import java.util.Date;
  **/
 public class COSClientUtils {
     private static final Logger logger = LoggerFactory.getLogger(COSClientUtils.class);
-
+    /**
+     * fac模块涉及到的文件大小:500K
+     */
+    private static int FILE_SIZE_FAC = 1024 * 500;
     private static COSClientUtils instance = null;
     private static final Object obj = new Object();
 
     /**
      * 存储桶名称，替换成自己的
      */
-    private static final String bucketName = "xxxxxxxxxxxxxxxxxxxxxxxxx";
+    private static final String bucketName = "*******************";
     /**
      * secretId ，替换成自己的
      */
-    private static final String secretId = "xxxxxxxxxxxxxxxxxxxxxxxxx";
+    private static final String secretId = "****************";
     /**
      * secretKey，替换成自己的
      */
-    private static final String secretKey = "xxxxxxxxxxxxxxxxxxxxxxxxx";
+    private static final String secretKey = "*******************";
     /**
      * 1 初始化用户身份信息(secretId, secretKey)
      */
@@ -109,7 +111,7 @@ public class COSClientUtils {
     }
 
     public String uploadFile2Cos(MultipartFile file) throws Exception {
-        if (file.getSize() > FacConstant.FILE_SIZE_FAC) {
+        if (file.getSize() > FILE_SIZE_FAC) {
             throw new Exception("上传图片大小不能超过500K！");
         }
         try {

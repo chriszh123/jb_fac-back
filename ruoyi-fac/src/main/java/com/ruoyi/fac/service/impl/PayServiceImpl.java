@@ -73,6 +73,9 @@ public class PayServiceImpl implements IPayService {
         if (order == null) {
             throw new Exception("当前订单已不存在，请确认");
         }
+        if (!OrderStatus.PAYING.equals(order.getStatus())) {
+            throw new Exception("当前订单处于非待付款状态，请核对后再操作");
+        }
         //设置随机字符串
         String nonceStr = UUID.randomUUID().toString().replaceAll("-", "");
         //设置商户订单号

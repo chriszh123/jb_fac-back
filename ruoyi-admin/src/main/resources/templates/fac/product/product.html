@@ -16,7 +16,7 @@
                         <li>
                             商品类目：
                             <select id="categoryId" name="categoryId"
-                                    th:with="productCategorys=${@ps.getProductCategorys()}">
+                                    th:with="productCategorys=${@pfs.getProductCategorys()}">
                                 <option value="">请选择...</option>
                                 <option th:each="pc : ${productCategorys}" th:text="${pc.name}"
                                         th:value="${pc.id}"></option>
@@ -121,7 +121,7 @@
                     sortable: false,
                     formatter: function (value, row, index) {
                         if (value == 1) {
-                            return "上架";
+                            return "<span style='color: green;font-weight:bold;'>上架<span>";;
                         } else {
                             return "<span style='color: red;font-weight:bold;'>下架<span>";
                         }
