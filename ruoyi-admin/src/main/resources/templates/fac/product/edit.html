@@ -282,10 +282,14 @@
                     dataType: "json",
                     data: data,
                     success: function (result) {
-                        // 重新加载商品主页面数据
-                        refreshParentIFramePage(DATA_ID.PRODUCT);
-                        // 关闭当前TAB页面
-                        closeCurrentTab("");
+                        if (result.code != 0) {
+                            $.modal.alertWarning(result.msg);
+                        } else {
+                            // 重新加载商品主页面数据
+                            refreshParentIFramePage(DATA_ID.PRODUCT);
+                            // 关闭当前TAB页面
+                            closeCurrentTab("");
+                        }
                     }
                 };
                 $.ajax(config);

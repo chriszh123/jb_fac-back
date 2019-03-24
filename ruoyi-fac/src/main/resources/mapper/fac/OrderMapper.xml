@@ -42,9 +42,9 @@
         <include refid="selectOrderVo"/>
         <where>
             <if test="id != null ">and id = #{id}</if>
-            <if test="orderNo != null  and orderNo != '' ">and order_no = #{orderNo}</if>
+            <if test="orderNo != null  and orderNo != '' ">and order_no like concat('%', #{orderNo}, '%')</if>
             <if test="prodId != null ">and prod_id = #{prodId}</if>
-            <if test="prodName != null  and prodName != '' ">and prod_name = #{prodName}</if>
+            <if test="prodName != null  and prodName != '' ">and prod_name like concat('%', #{prodName}, '%')</if>
             <if test="prodNumber != null and prodNumber != 0">and prod_number = #{prodNumber}</if>
             <if test="price != null ">and price = #{price}</if>
             <if test="status != null ">and status = #{status}</if>
@@ -208,7 +208,8 @@
     <insert id="batchInsertOrders">
         insert into
         fac_order
-        (order_no, prod_id, prod_name, prod_number, price, status, user_id, user_name, nick_name, remark, ship, create_time,
+        (order_no, prod_id, prod_name, prod_number, price, status, user_id, user_name, nick_name, remark, ship,
+        create_time,
         update_time, operator_id, operator_name, is_deleted,token, open_id)
         values
         <foreach collection="list" item="item" index="index" separator=",">
@@ -267,7 +268,7 @@
         where order_no = #{orderNo}
     </update>
 
-    <select id="selectProductsByProdAndStatus"  resultMap="OrderResult">
+    <select id="selectProductsByProdAndStatus" resultMap="OrderResult">
         <include refid="selectOrderVo"/>
         where is_deleted = 0
         <if test="prodIds != null and !prodIds.isEmpty()">

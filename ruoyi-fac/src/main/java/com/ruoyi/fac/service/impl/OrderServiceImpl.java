@@ -482,7 +482,7 @@ public class OrderServiceImpl implements IOrderService {
         // 商品图片
         Product product = this.productMapper.selectProductById(order.getProdId());
         if (product != null && StringUtils.isNotBlank(product.getPicture())) {
-            good.setPic(product.getPicture());
+            good.setPic(product.getPicture().split(",")[0]);
         }
 
         return orderDetailVo;

@@ -109,7 +109,8 @@ public class ProductServiceImpl implements IProductService {
             throw new FacException("当前商品已被删除，请确认");
         }
         // 商品被下架前需要校验当前商品是否存在于待付款的订单中
-        if (productdb.getStatus().equals(ProductStatus.UPPER_SHELF) && product.getStatus().equals(ProductStatus.LOWER_SHELF)) {
+        if (productdb.getStatus().equals(ProductStatus.UPPER_SHELF.getValue())
+                && product.getStatus().equals(ProductStatus.LOWER_SHELF.getValue())) {
             // 当前商品处于待付款的订单
             List<Long> prodIds = new ArrayList<>();
             prodIds.add(productdb.getId());

@@ -347,7 +347,7 @@ public class BuyerServiceImpl implements IBuyerService {
             buyer = new Buyer();
             buyer.setNickName("nickName");
             buyer.setName("name");
-            buyer.setToken(code);
+            buyer.setToken(openId);
             buyer.setOpenId(openId);
             buyer.setBalance(new BigDecimal("0.00"));
             buyer.setPoints(0);
