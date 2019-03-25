@@ -1,6 +1,6 @@
 /**
  * 通用方法封装处理
- * Copyright (c) 2019 ruoyi 
+ * Copyright (c) 2019 ruoyi
  */
 $(function() {
 	// select2复选框事件绑定
@@ -72,12 +72,18 @@ $(function() {
 	    layui.use('laydate', function() {
 	        var laydate = layui.laydate;
 	        var times = $(".time-input");
+            // 控制控件外观
+            var type = times.attr("data-type") || 'date';
+            // 控制回显格式
+            var format = times.attr("data-format") || 'yyyy-MM-dd';
 	        for (var i = 0; i < times.length; i++) {
 	            var time = times[i];
 	            laydate.render({
 	                elem: time,
 	                theme: 'molv',
 	                trigger: 'click',
+                    type: type,
+                    format: format,
 	                done: function(value, date) {}
 	            });
 	        }
@@ -97,9 +103,13 @@ $(function() {
 		}).bind("input propertychange", $.tree.searchNode);
 	}
 	// tree表格树 展开/折叠
-	var expandFlag = false;
+	// var expandFlag = false;
+    var expandFlag;
 	$("#expandAllBtn").click(function() {
-	    if (expandFlag) {
+        // 菜单表格树第一级默认不展开
+        var dataExpand = $.common.isEmpty($.table._option.expandAll) ? true : $.table._option.expandAll;
+        expandFlag = $.common.isEmpty(expandFlag) ? dataExpand : expandFlag;
+        if (!expandFlag) {
 	        $('#' + $.table._option.id).bootstrapTreeTable('expandAll');
 	    } else {
 	        $('#' + $.table._option.id).bootstrapTreeTable('collapseAll');
@@ -166,7 +176,7 @@ function createMenuItem(dataUrl, menuName) {
         // 添加选项卡对应的iframe
         var str1 = '<iframe class="RuoYi_iframe" name="iframe' + dataIndex + '" width="100%" height="100%" src="' + dataUrl + '" frameborder="0" data-id="' + dataUrl + '" data-panel="' + panelUrl + '" seamless></iframe>';
         $('.mainContent', topWindow).find('iframe.RuoYi_iframe').hide().parents('.mainContent').append(str1);
-        
+
         window.parent.$.modal.loading("数据加载中，请稍后...");
         $('.mainContent iframe:visible', topWindow).load(function () {
         	window.parent.$.modal.closeLoading();

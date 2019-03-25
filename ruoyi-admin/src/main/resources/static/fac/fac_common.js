@@ -45,6 +45,9 @@ var STATUS_VISIBLE = {
     "2": "隐藏"
 }
 
+// fileInput上传文件支持扩展名
+var FILEINPUTEXTENDTION = ["jpg", "jpeg", "gif", "bmp"];
+
 // option：首页相关统计图
 var homepageOption = {
     title: {
@@ -250,7 +253,7 @@ var initFileInput = function (id, uploadUrl, maxFilesNum) {
         language: 'zh', //设置语言
         browseLabel: '选择图片',
         uploadUrl: uploadUrl, //上传的地址
-        allowedFileExtensions: ["jpg", "jpeg", "gif", "png","bmp"],
+        allowedFileExtensions: FILEINPUTEXTENDTION,
         maxFilesNum: maxFilesNum,//上传最大的文件数量
         //uploadExtraData:{"id": 1, "fileName":'123.mp3'},
         uploadAsync: false, //默认异步上传
@@ -362,10 +365,11 @@ var initFileInputWithImgData = function (id, uploadUrl, maxFilesNum, imgPaths, c
         showRemove: true, //显示移除按钮，输入框后面的按钮
         showPreview: true, //是否显示预览
         overwriteInitial: false, //不覆盖已存在的图片
+        maxFilesNum: maxFilesNum,//上传最大的文件数量
         removeFromPreviewOnError: true, //当选择的文件不符合规则时，例如不是指定后缀文件、大小超出配置等，选择的文件不会出现在预览框中，只会显示错误信息
         maxFileCount: 5,
         maxFileSize: 1024 * 500,
-        allowedFileExtensions: ["jpg", "jpeg", "gif", "png","bmp"],
+        allowedFileExtensions: FILEINPUTEXTENDTION,
         previewFileIcon: "<i class='glyphicon glyphicon-king'></i>",
         //下面几个就是初始化预览图片的配置
         initialPreviewAsData: true,
