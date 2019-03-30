@@ -1,10 +1,10 @@
 package com.ruoyi.fac.mapper;
 
-import com.ruoyi.fac.domain.BuyerBusiness;
 import com.ruoyi.fac.domain.Order;
+import com.ruoyi.fac.domain.Product;
 import com.ruoyi.fac.vo.QueryVo;
+import org.apache.ibatis.annotations.Param;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -85,4 +85,59 @@ public interface OrderMapper {
      * @return
      */
     int countOrders(QueryVo queryVo);
+
+    /**
+     * 批量保存订单信息
+     *
+     * @param list
+     */
+    int batchInsertOrders(@Param("list") List<Order> list);
+
+    List<Order> orderList(QueryVo queryVo);
+
+    int updateOrderStatus(QueryVo queryVo);
+
+    /**
+     * 查询指定订单信息
+     *
+     * @param id    订单id
+     * @param token 当前用户id
+     * @return
+     */
+    Order selectOrderByIdAndToken(@Param("id") long id, @Param("token") String token);
+
+    /**
+     * 更新指定订单对应的预支付id
+     *
+     * @param id       订单id
+     * @param prepayId 预支付id
+     * @return 影响数据条数
+     */
+    int updateOrderPrePayId(@Param("id") long id, @Param("prepayId") long prepayId);
+
+    /**
+     * 查询指定订单号对应的订单
+     *
+     * @param orderNo 订单号
+     * @return
+     */
+    Order selectOrderByOrderNo(@Param("orderNo") String orderNo);
+
+    /**
+     * 支付完成后更新订单状态
+     *
+     * @param orderNo
+     * @param status
+     * @return
+     */
+    int updateOrderStatusAfterPayed(@Param("orderNo") String orderNo, @Param("status") int status);
+
+    /**
+     * 查询指定商品、相应状态对应的订单
+     *
+     * @param prodIds 商品ids
+     * @param status  订单状态
+     * @return List<Product>
+     */
+    List<Order> selectProductsByProdAndStatus(@Param("prodIds") List<Long> prodIds, @Param("status") List<Integer> status);
 }

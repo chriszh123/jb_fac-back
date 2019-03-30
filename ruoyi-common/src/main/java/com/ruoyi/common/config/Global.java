@@ -75,7 +75,7 @@ public class Global {
      * 获取项目版本
      */
     public static String getVersion() {
-        return StringUtils.nvl(getConfig("ruoyi.version"), "3.1.0");
+        return StringUtils.nvl(getConfig("ruoyi.version"), "3.2.0");
     }
 
     /**
@@ -107,13 +107,6 @@ public class Global {
     }
 
     /**
-     * 获取下载路径
-     */
-    public static String getDownloadPath() {
-        return getConfig("ruoyi.profile") + "download/";
-    }
-
-    /**
      * 获取商品图片上传路径
      */
     public static String getProductPath() {
@@ -121,8 +114,14 @@ public class Global {
     }
 
     /**
-     * +     * 获取上传路径
-     * +
+     * 获取下载路径
+     */
+    public static String getDownloadPath() {
+        return getConfig("ruoyi.profile") + "download/";
+    }
+
+    /**
+     * 获取上传路径
      */
     public static String getUploadPath() {
         return getConfig("ruoyi.profile") + "upload/";
@@ -154,5 +153,45 @@ public class Global {
      */
     public static String getTablePrefix() {
         return StringUtils.nvl(getConfig("gen.tablePrefix"), "sys_");
+    }
+
+    /**
+     * FAC 小程序appId
+     *
+     * @return
+     */
+    public static String getFacAppId() {
+        return getConfig("wxapp.fac.appid");
+    }
+
+    /**
+     * FAC 小程序 secret
+     *
+     * @return
+     */
+    public static String getFacSecret() {
+        return getConfig("wxapp.fac.secret");
+    }
+
+    /**
+     * FAC 小程序 商户id
+     *
+     * @return
+     */
+    public static String getFacMchId() {
+        return getConfig("wxapp.fac.mchId");
+    }
+
+    /**
+     * FAC 小程序 商户的api秘钥
+     *
+     * @return
+     */
+    public static String getFacMchSecret() {
+        return getConfig("wxapp.fac.mchsecret");
+    }
+
+    public static String getDomain() {
+        return getConfig("ruoyi.domain");
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2019 Wisedu All rights reserved
+ * Copyright (C) 2006-2019 zgf All rights reserved
  * Author：zhangguifeng
  * Date：2019/1/17
  * Description: ckEditor组件图片上传
@@ -7,8 +7,7 @@
 package com.ruoyi.framework.util;
 
 import com.ruoyi.common.config.Global;
-import com.ruoyi.fac.constant.FacConstant;
-import com.ruoyi.fac.vo.FileVo;
+import com.ruoyi.common.utils.file.FileUploadUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,10 +15,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -98,7 +94,7 @@ public class CkImageUploadUtil {
                         if (realPathDirectory == null || !realPathDirectory.exists()) {
                             realPathDirectory.mkdirs();
                         }
-                        fileName = FileUploadUtils.encodingFilename(originalFilename, suffix);
+                        fileName = FileUploadUtils.encodingFilename(originalFilename) + suffix;
                         File uploadFile = new File(realPathDirectory + fileName);
                         System.out.println(uploadFile);
                         file.transferTo(uploadFile);
@@ -116,52 +112,12 @@ public class CkImageUploadUtil {
 
     public String uploadFile(MultipartFile file) throws Exception {
         String result = "";
-        FileVo fileVo = new FileVo();
-        // 本地开发 start
-        String fileName = file.getOriginalFilename();
-        File targetFile = new File(Global.getProductPath());
-        if (!targetFile.exists()) {
-            targetFile.mkdirs();
-        }
-        String imagePath = Global.getProductPath() + fileName;
-        FileOutputStream out = new FileOutputStream(imagePath);
-        out.write(file.getBytes());
-        out.flush();
-        out.close();
-        // 本地开发 end
-
+        FileBean fileBean = new FileBean();
         // 腾讯云上传图片
-//        String fileName = COSClientUtils.getInstance().uploadFile2Cos(file);
-//      String imagePath = COSClientUtils.getInstance().getImgUrl(fileName);
-
-        // TODO:测试网络图片地址
-        imagePath = FacConstant.TEST_IMG_URL;
-        result = fileVo.success(1, file.getOriginalFilename(), imagePath, null);
+        String fileName = COSClientUtils.getInstance().uploadFile2Cos(file);
+        String imagePath = COSClientUtils.getInstance().getImgUrl(fileName);
+        result = fileBean.success(1, file.getOriginalFilename(), imagePath, null);
 
         return result;
-    }
-
-    /**
-     * ckeditor文件上传功能，回调，传回图片路径，实现预览效果。
-     *
-     * @param request  HttpServletRequest
-     * @param response HttpServletResponse
-     * @throws Exception
-     */
-    public void ckeditor(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        String fileName = upload(request);
-        // 结合ckeditor功能,imagePath为图片在服务器地址
-        String imagePath = Global.getProductPath() + fileName;
-        // 腾讯云上传图片
-//      String imagePath = COSClientUtils.getInstance().getImgUrl(fileName);
-        logger.info("[ckeditor] imagePath = " + imagePath);
-        response.setContentType("text/html;charset=UTF-8");
-        String callback = request.getParameter("CKEditorFuncNum");
-        PrintWriter out = response.getWriter();
-        out.println("<script type=\"text/javascript\">");
-        out.println("window.parent.CKEDITOR.tools.callFunction(" + callback + ",'" + imagePath + "',''" + ")");
-        out.println("</script>");
-        out.flush();
-        out.close();
     }
 }

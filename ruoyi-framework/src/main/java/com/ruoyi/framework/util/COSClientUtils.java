@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2006-2019 Wisedu All rights reserved
+ * Copyright (C) 2006-2019 zgf All rights reserved
  * Author：zhangguifeng
  * Date：2019/1/17
  * Description: 腾讯云文件操作工具类
@@ -13,13 +13,14 @@ import com.qcloud.cos.auth.COSCredentials;
 import com.qcloud.cos.model.ObjectMetadata;
 import com.qcloud.cos.model.PutObjectResult;
 import com.qcloud.cos.region.Region;
-import com.ruoyi.common.constant.Constants;
+import com.ruoyi.common.utils.file.FileUploadUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.net.URL;
 import java.util.Date;
-import java.util.Random;
 
 /**
  * 腾讯云文件操作工具类
@@ -28,22 +29,26 @@ import java.util.Random;
  * @create 2019-01-17 14:33
  **/
 public class COSClientUtils {
+    private static final Logger logger = LoggerFactory.getLogger(COSClientUtils.class);
+    /**
+     * fac模块涉及到的文件大小:500K
+     */
+    private static int FILE_SIZE_FAC = 1024 * 500;
     private static COSClientUtils instance = null;
     private static final Object obj = new Object();
 
-    //todo 这些变量信息自行到 腾讯云对象存储控制台 获取
     /**
      * 存储桶名称，替换成自己的
      */
-    private static final String bucketName = "storage-1254279902";
+    private static final String bucketName = "*******************";
     /**
      * secretId ，替换成自己的
      */
-    private static final String secretId = "xxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+    private static final String secretId = "****************";
     /**
      * secretKey，替换成自己的
      */
-    private static final String secretKey = "xxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+    private static final String secretKey = "*******************";
     /**
      * 1 初始化用户身份信息(secretId, secretKey)
      */
@@ -51,7 +56,7 @@ public class COSClientUtils {
     /**
      * 2 设置bucket的区域, COS地域的简称请参照 https://cloud.tencent.com/document/product/436/6224
      */
-    private static final ClientConfig clientConfig = new ClientConfig(new Region("ap-guangzhou"));
+    private static final ClientConfig clientConfig = new ClientConfig(new Region("ap-shanghai"));
     /**
      * 3 生成cos客户端
      */
@@ -60,6 +65,11 @@ public class COSClientUtils {
      * 文件存储目录
      */
     private COSClient cOSClient;
+
+    /**
+     * 图片存放在cos上的文件夹目录
+     */
+    private static final String DIR_PICTURE = "fac/test/";
 
     public COSClientUtils() {
         cOSClient = new COSClient(cred, clientConfig);
@@ -101,17 +111,19 @@ public class COSClientUtils {
     }
 
     public String uploadFile2Cos(MultipartFile file) throws Exception {
-        if (file.getSize() > Constants.FILE_SIZE_FAC) {
+        if (file.getSize() > FILE_SIZE_FAC) {
             throw new Exception("上传图片大小不能超过500K！");
         }
         try {
             String originalFilename = file.getOriginalFilename();
             String extension = originalFilename.substring(originalFilename.lastIndexOf(".")).toLowerCase();
-            String fileName = FileUploadUtils.encodingFilename(originalFilename, extension);
+            String fileName = FileUploadUtils.encodingFilename(originalFilename) + extension;
             InputStream inputStream = file.getInputStream();
             this.uploadFile2Cos(inputStream, fileName);
+            logger.info("[uploadFile2Cos] success, fileName = " + fileName);
             return fileName;
         } catch (Exception e) {
+            logger.error("[uploadFile2Cos] error", e);
             throw new Exception("图片上传失败");
         }
     }
@@ -129,13 +141,14 @@ public class COSClientUtils {
     /**
      * 获得url链接
      *
-     * @param key cos上唯一的名称
+     * @param fileName cos上唯一的名称
      * @return 文件对应的访问地址url
      */
-    public String getUrl(String key) {
+    public String getUrl(String fileName) {
         // 设置URL过期时间为10年 3600l* 1000*24*365*10
         Date expiration = new Date(System.currentTimeMillis() + 3600L * 1000 * 24 * 365 * 10);
         // 生成URL
+        String key = DIR_PICTURE + fileName;
         URL url = cosClient.generatePresignedUrl(bucketName, key, expiration);
         if (url != null) {
             String imgUrl = url.toString();
@@ -163,20 +176,39 @@ public class COSClientUtils {
             objectMetadata.setContentType(getContentType(fileName.substring(fileName.lastIndexOf("."))));
             objectMetadata.setContentDisposition("inline;filename=" + fileName);
             // 上传文件
-            PutObjectResult putResult = cOSClient.putObject(bucketName, fileName, instream, objectMetadata);
+            String key = DIR_PICTURE + fileName;
+            PutObjectResult putResult = cOSClient.putObject(bucketName, key, instream, objectMetadata);
             ret = putResult.getETag();
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("[uploadFile2Cos] IOException", e);
         } finally {
             try {
                 if (instream != null) {
                     instream.close();
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.error("[uploadFile2Cos] instream close:IOException", e);
             }
         }
         return ret;
+    }
+
+    /**
+     * 删除
+     */
+    public static void delete(String fileName) {
+        new Thread(new Runnable() {
+            public void run() {
+                // 指定要删除的 bucket 和路径
+                try {
+                    String key = DIR_PICTURE + fileName;
+                    cosClient.deleteObject(bucketName, key);
+                    logger.info("[delete] success, fileName = " + fileName);
+                } catch (Exception ex) {
+                    logger.error("[delete] failure, fileName = " + fileName, ex);
+                }
+            }
+        }).start();
     }
 
     /**

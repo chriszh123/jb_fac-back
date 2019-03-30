@@ -49,14 +49,14 @@
         FRAMES: '.kv-preview-thumb',
         SORT_CSS: 'file-sortable',
         OBJECT_PARAMS: '<param name="controller" value="true" />\n' +
-        '<param name="allowFullScreen" value="true" />\n' +
-        '<param name="allowScriptAccess" value="always" />\n' +
-        '<param name="autoPlay" value="false" />\n' +
-        '<param name="autoStart" value="false" />\n' +
-        '<param name="quality" value="high" />\n',
+            '<param name="allowFullScreen" value="true" />\n' +
+            '<param name="allowScriptAccess" value="always" />\n' +
+            '<param name="autoPlay" value="false" />\n' +
+            '<param name="autoStart" value="false" />\n' +
+            '<param name="quality" value="high" />\n',
         DEFAULT_PREVIEW: '<div class="file-preview-other">\n' +
-        '<span class="{previewFileIconClass}">{previewFileIcon}</span>\n' +
-        '</div>',
+            '<span class="{previewFileIconClass}">{previewFileIcon}</span>\n' +
+            '</div>',
         MODAL_ID: 'kvFileinputModal',
         MODAL_EVENTS: ['show', 'shown', 'hide', 'hidden', 'loaded'],
         objUrl: window.URL || window.webkitURL,
@@ -2765,7 +2765,8 @@
                 params = {id: $el.attr('id'), key: vKey, extra: extraData};
                 fnBefore = function (jqXHR) {
                     self.ajaxAborted = false;
-                    self._raise('filepredelete', [vKey, jqXHR, extraData]);
+                    var btn = self._raise('filepredelete', [vKey, jqXHR, extraData]);
+                    if (!btn) return false;
                     if (self._abort()) {
                         jqXHR.abort();
                     } else {

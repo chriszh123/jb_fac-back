@@ -15,14 +15,10 @@
                     <i class="fa icon-grid"></i> 组织机构
                 </div>
                 <div class="box-tools pull-right">
-                    <a type="button" class="btn btn-box-tool menuItem" href="#" onclick="dept()" title="管理部门"><i
-                            class="fa fa-edit"></i></a>
-                    <button type="button" class="btn btn-box-tool" id="btnExpand" title="展开" style="display:none;"><i
-                            class="fa fa-chevron-up"></i></button>
-                    <button type="button" class="btn btn-box-tool" id="btnCollapse" title="折叠"><i
-                            class="fa fa-chevron-down"></i></button>
-                    <button type="button" class="btn btn-box-tool" id="btnRefresh" title="刷新部门"><i
-                            class="fa fa-refresh"></i></button>
+                    <a type="button" class="btn btn-box-tool menuItem" href="#" onclick="dept()" title="管理部门"><i class="fa fa-edit"></i></a>
+                    <button type="button" class="btn btn-box-tool" id="btnExpand" title="展开" style="display:none;"><i class="fa fa-chevron-up"></i></button>
+                    <button type="button" class="btn btn-box-tool" id="btnCollapse" title="折叠"><i class="fa fa-chevron-down"></i></button>
+                    <button type="button" class="btn btn-box-tool" id="btnRefresh" title="刷新部门"><i class="fa fa-refresh"></i></button>
                 </div>
             </div>
             <div class="ui-layout-content">
@@ -49,23 +45,18 @@
                         <li>
                             用户状态：<select name="status" th:with="type=${@dict.getType('sys_normal_disable')}">
                             <option value="">所有</option>
-                            <option th:each="dict : ${type}" th:text="${dict.dictLabel}"
-                                    th:value="${dict.dictValue}"></option>
+                            <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
                         </select>
                         </li>
                         <li class="select-time">
                             <label>创建时间： </label>
-                            <input type="text" class="time-input" id="startTime" placeholder="开始时间"
-                                   name="params[beginTime]"/>
+                            <input type="text" class="time-input" id="startTime" placeholder="开始时间" name="params[beginTime]"/>
                             <span>-</span>
-                            <input type="text" class="time-input" id="endTime" placeholder="结束时间"
-                                   name="params[endTime]"/>
+                            <input type="text" class="time-input" id="endTime" placeholder="结束时间" name="params[endTime]"/>
                         </li>
                         <li>
-                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i
-                                    class="fa fa-search"></i>&nbsp;搜索</a>
-                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i
-                                    class="fa fa-refresh"></i>&nbsp;重置</a>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
                         </li>
                     </ul>
                 </div>
@@ -73,19 +64,17 @@
         </div>
 
         <div class="btn-group-sm hidden-xs" id="toolbar" role="group">
-            <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="system:user:add">
+            <a class="btn btn-success" onclick="$.operate.addTab()" shiro:hasPermission="system:user:add">
                 <i class="fa fa-plus"></i> 新增
             </a>
-            <a class="btn btn-primary btn-edit disabled" onclick="$.operate.edit()"
-               shiro:hasPermission="system:user:edit">
+            <a class="btn btn-primary btn-edit disabled" onclick="$.operate.editTab()" shiro:hasPermission="system:user:edit">
                 <i class="fa fa-edit"></i> 修改
             </a>
-            <a class="btn btn-danger btn-del disabled" onclick="$.operate.removeAll()"
-               shiro:hasPermission="system:user:remove">
+            <a class="btn btn-danger btn-del disabled" onclick="$.operate.removeAll()" shiro:hasPermission="system:user:remove">
                 <i class="fa fa-remove"></i> 删除
             </a>
             <a class="btn btn-info" onclick="$.table.importExcel()" shiro:hasPermission="system:user:import">
-                <i class="fa fa-download"></i> 导入
+                <i class="fa fa-upload"></i> 导入
             </a>
             <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="system:user:export">
                 <i class="fa fa-download"></i> 导出
@@ -108,12 +97,12 @@
     var datas = [[${@dict.getType('sys_normal_disable')}]];
     var prefix = ctx + "system/user";
 
-    $(function () {
+    $(function() {
         var panehHidden = false;
         if ($(this).width() < 769) {
             panehHidden = true;
         }
-        $('body').layout({initClosed: panehHidden, west__size: 185});
+        $('body').layout({ initClosed: panehHidden, west__size: 185 });
         queryUserList();
         queryDeptTree();
     });
@@ -177,9 +166,9 @@
                 {
                     title: '操作',
                     align: 'center',
-                    formatter: function (value, row, index) {
+                    formatter: function(value, row, index) {
                         var actions = [];
-                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="#" onclick="$.operate.edit(\'' + row.userId + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="#" onclick="$.operate.editTab(\'' + row.userId + '\')"><i class="fa fa-edit"></i>编辑</a> ');
                         actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="#" onclick="$.operate.remove(\'' + row.userId + '\')"><i class="fa fa-remove"></i>删除</a> ');
                         actions.push('<a class="btn btn-info btn-xs ' + resetPwdFlag + '" href="#" onclick="resetPwd(\'' + row.userId + '\')"><i class="fa fa-key"></i>重置</a>');
                         return actions.join('');
@@ -189,12 +178,13 @@
         $.table.init(options);
     }
 
-    function queryDeptTree() {
+    function queryDeptTree()
+    {
         var url = ctx + "system/dept/treeData";
         var options = {
             url: url,
             expandLevel: 2,
-            onClick: zOnClick
+            onClick : zOnClick
         };
         $.tree.init(options);
 
@@ -205,19 +195,19 @@
         }
     }
 
-    $('#btnExpand').click(function () {
+    $('#btnExpand').click(function() {
         $._tree.expandAll(true);
         $(this).hide();
         $('#btnCollapse').show();
     });
 
-    $('#btnCollapse').click(function () {
+    $('#btnCollapse').click(function() {
         $._tree.expandAll(false);
         $(this).hide();
         $('#btnExpand').show();
     });
 
-    $('#btnRefresh').click(function () {
+    $('#btnRefresh').click(function() {
         queryDeptTree();
     });
 
@@ -244,15 +234,15 @@
 
     /* 用户管理-停用 */
     function disable(userId) {
-        $.modal.confirm("确认要停用用户吗？", function () {
-            $.operate.post(prefix + "/changeStatus", {"userId": userId, "status": 1});
+        $.modal.confirm("确认要停用用户吗？", function() {
+            $.operate.post(prefix + "/changeStatus", { "userId": userId, "status": 1 });
         })
     }
 
     /* 用户管理启用 */
     function enable(userId) {
-        $.modal.confirm("确认要启用用户吗？", function () {
-            $.operate.post(prefix + "/changeStatus", {"userId": userId, "status": 0});
+        $.modal.confirm("确认要启用用户吗？", function() {
+            $.operate.post(prefix + "/changeStatus", { "userId": userId, "status": 0 });
         })
     }
 </script>
@@ -262,8 +252,7 @@
         <input type="file" id="file" name="file"/>
         <div class="mt10 pt5">
             <input type="checkbox" id="updateSupport" name="updateSupport" title="如果登录账户已经存在，更新这条数据。"> 是否更新已经存在的用户数据
-            &nbsp; <a onclick="$.table.importTemplate()" class="btn btn-default btn-xs"><i
-                class="fa fa-file-excel-o"></i> 下载模板</a>
+            &nbsp;	<a onclick="$.table.importTemplate()" class="btn btn-default btn-xs"><i class="fa fa-file-excel-o"></i> 下载模板</a>
         </div>
         <font color="red" class="pull-left mt10">
             提示：仅允许导入“xls”或“xlsx”格式文件！

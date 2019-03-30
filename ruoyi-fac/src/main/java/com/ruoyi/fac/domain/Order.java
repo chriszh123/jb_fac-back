@@ -20,7 +20,7 @@ public class Order extends BaseEntity {
     /**  */
     private Long id;
     /**
-     * 订单号,eg:201812231410342545
+     * 订单号,eg:2018 12 231410342545
      */
     @Excel(name = "订单号")
     private String orderNo;
@@ -33,6 +33,11 @@ public class Order extends BaseEntity {
      */
     @Excel(name = "商品名称")
     private String prodName;
+    /**
+     * 商品数量
+     */
+    @Excel(name = "商品数量")
+    private int prodNumber;
     /**
      * 金额
      */
@@ -48,6 +53,14 @@ public class Order extends BaseEntity {
      */
     @Excel(name = "付款时间", dateFormat = "yyyy-MM-dd HH:mm:ss")
     private Date payTime;
+    /**
+     * 用户token
+     */
+    private String token;
+    /**
+     * 用户微信openid，唯一
+     */
+    private String openId;
     /**
      * 买者用户id
      */
@@ -97,6 +110,10 @@ public class Order extends BaseEntity {
      * 取消订单操作时间
      */
     private Date cacelTime;
+    /**
+     * 微信预支付id
+     */
+    private Long prepayId;
     /**
      * 操作者ID
      */
@@ -276,6 +293,38 @@ public class Order extends BaseEntity {
 
     public void setOrderRemark(String orderRemark) {
         this.orderRemark = orderRemark;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public int getProdNumber() {
+        return prodNumber;
+    }
+
+    public void setProdNumber(int prodNumber) {
+        this.prodNumber = prodNumber;
+    }
+
+    public String getOpenId() {
+        return openId;
+    }
+
+    public void setOpenId(String openId) {
+        this.openId = openId;
+    }
+
+    public Long getPrepayId() {
+        return prepayId;
+    }
+
+    public void setPrepayId(Long prepayId) {
+        this.prepayId = prepayId;
     }
 
     @Override

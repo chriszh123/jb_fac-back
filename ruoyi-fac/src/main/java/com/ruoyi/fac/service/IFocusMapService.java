@@ -1,6 +1,7 @@
 package com.ruoyi.fac.service;
 
 import com.ruoyi.fac.domain.FocusMap;
+import com.ruoyi.fac.vo.client.BannerVo;
 
 import java.util.List;
 
@@ -51,4 +52,10 @@ public interface IFocusMapService {
      */
     int deleteFocusMapByIds(String ids);
 
+    /**
+     * 当前轮播图片
+     *
+     * @return
+     */
+    List<BannerVo> selectFocusMapList();
 }

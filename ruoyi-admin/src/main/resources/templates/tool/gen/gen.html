@@ -18,17 +18,13 @@
                         </li>
                         <li class="select-time">
                             <label>表时间： </label>
-                            <input type="text" class="time-input" id="startTime" placeholder="开始时间"
-                                   name="params[beginTime]"/>
+                            <input type="text" class="time-input" id="startTime" placeholder="开始时间" name="params[beginTime]"/>
                             <span>-</span>
-                            <input type="text" class="time-input" id="endTime" placeholder="结束时间"
-                                   name="params[endTime]"/>
+                            <input type="text" class="time-input" id="endTime" placeholder="结束时间" name="params[endTime]"/>
                         </li>
                         <li>
-                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i
-                                    class="fa fa-search"></i>&nbsp;搜索</a>
-                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i
-                                    class="fa fa-refresh"></i>&nbsp;重置</a>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
                         </li>
                     </ul>
                 </div>
@@ -50,18 +46,17 @@
 <script type="text/javascript">
     var prefix = ctx + "tool/gen";
 
-    $(function () {
+    $(function() {
         var options = {
             url: prefix + "/list",
             sortName: "createTime",
             sortOrder: "desc",
-            search: false,
+            showExport: true,
             columns: [{
                 checkbox: true
             },
                 {
                     title: "序号",
-                    align: "center",
                     formatter: function (value, row, index) {
                         return $.table.serialNumber(index);
                     }
@@ -94,7 +89,7 @@
                     title: '操作',
                     width: '20%',
                     align: 'center',
-                    formatter: function (value, row, index) {
+                    formatter: function(value, row, index) {
                         var msg = '<a class="btn btn-primary btn-xs" href="#" onclick="genCode(\'' + row.tableName + '\')"><i class="fa fa-bug"></i>生成代码</a> ';
                         return msg;
                     }
@@ -105,9 +100,9 @@
 
     // 生成代码
     function genCode(tableName) {
-        $.modal.confirm("确定要生成" + tableName + "表代码吗？", function () {
+        $.modal.confirm("确定要生成" + tableName + "表代码吗？", function() {
             location.href = prefix + "/genCode/" + tableName;
-            layer.msg('执行成功,正在生成代码请稍后…', {icon: 1});
+            layer.msg('执行成功,正在生成代码请稍后…', { icon: 1 });
         })
     }
 
@@ -118,9 +113,9 @@
             $.modal.alertWarning("请选择要生成的数据");
             return;
         }
-        $.modal.confirm("确认要生成选中的" + rows.length + "条数据吗?", function () {
+        $.modal.confirm("确认要生成选中的" + rows.length + "条数据吗?", function() {
             location.href = prefix + "/batchGenCode?tables=" + rows;
-            layer.msg('执行成功,正在生成代码请稍后…', {icon: 1});
+            layer.msg('执行成功,正在生成代码请稍后…', { icon: 1 });
         });
     }
 </script>

@@ -8,11 +8,11 @@
         <result property="id" column="id"/>
         <result property="nickName" column="nick_name"/>
         <result property="name" column="name"/>
-        <result property="phoneNumber" column="phone_number"/>
+        <result property="token" column="token"/>
+        <result property="openId" column="open_id"/>
         <result property="balance" column="balance"/>
         <result property="points" column="points"/>
         <result property="registryTime" column="registry_time"/>
-        <result property="harvestAddress" column="harvest_address"/>
         <result property="createTime" column="create_time"/>
         <result property="updateTime" column="update_time"/>
         <result property="operatorId" column="operator_id"/>
@@ -21,7 +21,7 @@
     </resultMap>
 
     <sql id="selectBuyerVo">
-        select id, nick_name, name, phone_number, balance, points, registry_time, harvest_address, create_time, update_time, operator_id, operator_name, is_deleted from fac_buyer
+        select id, nick_name, name, token,open_id, balance, points, registry_time,  create_time, update_time, operator_id, operator_name, is_deleted from fac_buyer
     </sql>
 
     <select id="selectBuyerList" parameterType="Buyer" resultMap="BuyerResult">
@@ -30,11 +30,11 @@
             <if test="id != null ">and id = #{id}</if>
             <if test="nickName != null  and nickName != '' ">and nick_name like "%"#{nickName}"%"</if>
             <if test="name != null  and name != '' ">and name = #{name}</if>
-            <if test="phoneNumber != null  and phoneNumber != '' ">and phone_number like "%"#{phoneNumber}"%"</if>
+            <if test="token != null  and token != '' ">and token = #{token}</if>
+            <if test="openId != null  and openId != '' ">and open_id = #{openId}</if>
             <if test="balance != null ">and balance = #{balance}</if>
             <if test="points != null ">and points = #{points}</if>
             <if test="registryTime != null ">and registry_time = #{registryTime}</if>
-            <if test="harvestAddress != null  and harvestAddress != '' ">and harvest_address = #{harvestAddress}</if>
             <if test="createTime != null ">and create_time = #{createTime}</if>
             <if test="updateTime != null ">and update_time = #{updateTime}</if>
             <if test="operatorId != null ">and operator_id = #{operatorId}</if>
@@ -54,11 +54,11 @@
             <if test="id != null  ">id,</if>
             <if test="nickName != null  and nickName != ''  ">nick_name,</if>
             <if test="name != null  and name != ''  ">name,</if>
-            <if test="phoneNumber != null  and phoneNumber != ''  ">phone_number,</if>
+            <if test="token != null  and token != ''  ">token,</if>
+            <if test="openId != null  and openId != ''  ">open_id,</if>
             <if test="balance != null  ">balance,</if>
             <if test="points != null  ">points,</if>
             <if test="registryTime != null  ">registry_time,</if>
-            <if test="harvestAddress != null  and harvestAddress != ''  ">harvest_address,</if>
             <if test="createTime != null  ">create_time,</if>
             <if test="updateTime != null  ">update_time,</if>
             <if test="operatorId != null  ">operator_id,</if>
@@ -69,11 +69,11 @@
             <if test="id != null  ">#{id},</if>
             <if test="nickName != null  and nickName != ''  ">#{nickName},</if>
             <if test="name != null  and name != ''  ">#{name},</if>
-            <if test="phoneNumber != null  and phoneNumber != ''  ">#{phoneNumber},</if>
+            <if test="token != null  and token != ''  ">#{token},</if>
+            <if test="openId != null  and openId != ''  ">#{openId},</if>
             <if test="balance != null  ">#{balance},</if>
             <if test="points != null  ">#{points},</if>
             <if test="registryTime != null  ">#{registryTime},</if>
-            <if test="harvestAddress != null  and harvestAddress != ''  ">#{harvestAddress},</if>
             <if test="createTime != null  ">#{createTime},</if>
             <if test="updateTime != null  ">#{updateTime},</if>
             <if test="operatorId != null  ">#{operatorId},</if>
@@ -87,11 +87,9 @@
         <trim prefix="SET" suffixOverrides=",">
             <if test="nickName != null  and nickName != ''  ">nick_name = #{nickName},</if>
             <if test="name != null  and name != ''  ">name = #{name},</if>
-            <if test="phoneNumber != null  and phoneNumber != ''  ">phone_number = #{phoneNumber},</if>
             <if test="balance != null  ">balance = #{balance},</if>
             <if test="points != null  ">points = #{points},</if>
             <if test="registryTime != null  ">registry_time = #{registryTime},</if>
-            <if test="harvestAddress != null  and harvestAddress != ''  ">harvest_address = #{harvestAddress},</if>
             <if test="createTime != null  ">create_time = #{createTime},</if>
             <if test="updateTime != null  ">update_time = #{updateTime},</if>
             <if test="operatorId != null  ">operator_id = #{operatorId},</if>
@@ -124,11 +122,16 @@
         from fac_buyer
         where is_deleted = 0
         <if test="startDate != null">
-            and DATE_FORMAT(create_time,'%Y-%m-%d') &gt;= DATE_FORMAT(#{startDate},'%Y-%m-%d')
+            AND DATE_FORMAT(create_time,'%Y-%m-%d') &gt;= DATE_FORMAT(#{startDate},'%Y-%m-%d')
         </if>
         <if test="endDate != null">
-            and DATE_FORMAT(create_time,'%Y-%m-%d') &lt;= DATE_FORMAT(#{endDate},'%Y-%m-%d')
+            AND DATE_FORMAT(create_time,'%Y-%m-%d') &lt;= DATE_FORMAT(#{endDate},'%Y-%m-%d')
         </if>
+    </select>
+
+    <select id="selectBuyerByOpenId" parameterType="String" resultMap="BuyerResult">
+        <include refid="selectBuyerVo"/>
+        where is_deleted = 0 AND token = #{token}
     </select>
 
 </mapper>

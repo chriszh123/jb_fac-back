@@ -9,9 +9,11 @@
         <result property="orderNo" column="order_no"/>
         <result property="prodId" column="prod_id"/>
         <result property="prodName" column="prod_name"/>
+        <result property="prodNumber" column="prod_number"/>
         <result property="price" column="price"/>
         <result property="status" column="status"/>
         <result property="payTime" column="pay_time"/>
+        <result property="token" column="token"/>
         <result property="userId" column="user_id"/>
         <result property="userName" column="user_name"/>
         <result property="nickName" column="nick_name"/>
@@ -29,22 +31,26 @@
         <result property="operatorName" column="operator_name"/>
         <result property="isDeleted" column="is_deleted"/>
         <result property="orderRemark" column="remark"/>
+        <result property="prepayId" column="prepay_id"/>
     </resultMap>
 
     <sql id="selectOrderVo">
-        select id, order_no, prod_id, prod_name, price, status, pay_time, user_id, user_name, nick_name, remark, ship_id, ship_code, remark_mngt, ship, cacel_id, cacel_name, cacel_time, create_time, update_time, operator_id, operator_name, is_deleted from fac_order
+        select id, order_no, prod_id, prod_name, prod_number, price, status, pay_time, token,open_id, user_id, user_name, nick_name, remark, ship_id, ship_code, remark_mngt, ship, cacel_id, cacel_name, cacel_time, prepay_id,create_time, update_time, operator_id, operator_name, is_deleted from fac_order
     </sql>
 
     <select id="selectOrderList" parameterType="Order" resultMap="OrderResult">
         <include refid="selectOrderVo"/>
         <where>
             <if test="id != null ">and id = #{id}</if>
-            <if test="orderNo != null  and orderNo != '' ">and order_no = #{orderNo}</if>
+            <if test="orderNo != null  and orderNo != '' ">and order_no like concat('%', #{orderNo}, '%')</if>
             <if test="prodId != null ">and prod_id = #{prodId}</if>
-            <if test="prodName != null  and prodName != '' ">and prod_name = #{prodName}</if>
+            <if test="prodName != null  and prodName != '' ">and prod_name like concat('%', #{prodName}, '%')</if>
+            <if test="prodNumber != null and prodNumber != 0">and prod_number = #{prodNumber}</if>
             <if test="price != null ">and price = #{price}</if>
             <if test="status != null ">and status = #{status}</if>
             <if test="payTime != null ">and pay_time = #{payTime}</if>
+            <if test="token != null ">and token = #{token}</if>
+            <if test="openId != null ">and open_id = #{openId}</if>
             <if test="userId != null ">and user_id = #{userId}</if>
             <if test="userName != null  and userName != '' ">and user_name = #{userName}</if>
             <if test="nickName != null  and nickName != '' ">and nick_name = #{nickName}</if>
@@ -79,6 +85,8 @@
             <if test="price != null  ">price,</if>
             <if test="status != null  ">status,</if>
             <if test="payTime != null  ">pay_time,</if>
+            <if test="token != null  ">token,</if>
+            <if test="openId != null  ">open_id,</if>
             <if test="userId != null  ">user_id,</if>
             <if test="userName != null  and userName != ''  ">user_name,</if>
             <if test="nickName != null  and nickName != ''  ">nick_name,</if>
@@ -104,6 +112,8 @@
             <if test="price != null  ">#{price},</if>
             <if test="status != null  ">#{status},</if>
             <if test="payTime != null  ">#{payTime},</if>
+            <if test="token != null  ">#{token},</if>
+            <if test="openId != null  ">#{openId},</if>
             <if test="userId != null  ">#{userId},</if>
             <if test="userName != null  and userName != ''  ">#{userName},</if>
             <if test="nickName != null  and nickName != ''  ">#{nickName},</if>
@@ -132,6 +142,8 @@
             <if test="price != null  ">price = #{price},</if>
             <if test="status != null  ">status = #{status},</if>
             <if test="payTime != null  ">pay_time = #{payTime},</if>
+            <if test="token != null  ">token = #{token},</if>
+            <if test="openId != null  ">open_id = #{openId},</if>
             <if test="userId != null  ">user_id = #{userId},</if>
             <if test="userName != null  and userName != ''  ">user_name = #{userName},</if>
             <if test="nickName != null  and nickName != ''  ">nick_name = #{nickName},</if>
@@ -167,7 +179,7 @@
 
     <update id="cancelOrderByIds" parameterType="String">
         UPDATE fac_order
-        set status = 3
+        set status = 5
         where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
@@ -193,4 +205,84 @@
         </if>
     </select>
 
+    <insert id="batchInsertOrders">
+        insert into
+        fac_order
+        (order_no, prod_id, prod_name, prod_number, price, status, user_id, user_name, nick_name, remark, ship,
+        create_time,
+        update_time, operator_id, operator_name, is_deleted,token, open_id)
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.orderNo,jdbcType=VARCHAR}, #{item.prodId,jdbcType=BIGINT},
+            #{item.prodName,jdbcType=VARCHAR}, #{item.prodNumber, jdbcType=TINYINT}, #{item.price, jdbcType=DECIMAL},
+            #{item.status,jdbcType=TINYINT}, #{item.userId, jdbcType=BIGINT},
+            #{item.userName,jdbcType=VARCHAR}, #{item.nickName, jdbcType=VARCHAR},
+            #{item.remark,jdbcType=VARCHAR}, #{item.ship, jdbcType=TINYINT},
+            #{item.createTime,jdbcType=TIMESTAMP}, #{item.updateTime,jdbcType=TIMESTAMP},
+            #{item.operatorId,jdbcType=BIGINT}, #{item.operatorName,jdbcType=VARCHAR},
+            #{item.isDeleted,jdbcType=TINYINT},#{item.token,jdbcType=VARCHAR},#{item.openId,jdbcType=VARCHAR}
+            )
+        </foreach>
+    </insert>
+
+    <select id="orderList" parameterType="QueryVo" resultMap="OrderResult">
+        <include refid="selectOrderVo"/>
+        where is_deleted = 0
+        and token = #{token}
+        <if test="status != null">
+            and status = #{status}
+        </if>
+        order by create_time desc
+    </select>
+
+    <update id="updateOrderStatus" parameterType="QueryVo">
+        UPDATE fac_order
+        set status = #{status}
+        where is_deleted = 0 and token = #{token}
+        and id in
+        <foreach item="id" collection="orderIds" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <select id="selectOrderByIdAndToken" resultMap="OrderResult">
+        <include refid="selectOrderVo"/>
+        where id = #{id} and is_deleted = 0 and token = #{token}
+    </select>
+
+    <update id="updateOrderPrePayId" parameterType="QueryVo">
+        UPDATE fac_order
+        set prepay_id = #{prepayId}
+        where id = #{id}
+    </update>
+
+    <select id="selectOrderByOrderNo" parameterType="String" resultMap="OrderResult">
+        <include refid="selectOrderVo"/>
+        where order_no = #{orderNo}
+    </select>
+
+    <update id="updateOrderStatusAfterPayed">
+        UPDATE fac_order
+        set status = #{status}
+        where order_no = #{orderNo}
+    </update>
+
+    <select id="selectProductsByProdAndStatus" resultMap="OrderResult">
+        <include refid="selectOrderVo"/>
+        where is_deleted = 0
+        <if test="prodIds != null and !prodIds.isEmpty()">
+            AND prod_id IN
+            <foreach item="item" index="index" collection="prodIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="status != null and !status.isEmpty()">
+            AND status IN
+            <foreach item="item" index="index" collection="status" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        order by create_time desc
+    </select>
 </mapper>

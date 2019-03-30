@@ -31,10 +31,13 @@ public class Buyer extends BaseEntity {
     @Excel(name = "真实姓名")
     private String name;
     /**
-     * 手机号
+     * token
      */
-    @Excel(name = "手机号")
-    private String phoneNumber;
+    private String token;
+    /**
+     * 用户微信openid，唯一
+     */
+    private String openId;
     /**
      * 余额:分销的奖金
      */
@@ -50,11 +53,6 @@ public class Buyer extends BaseEntity {
      */
     @Excel(name = "注册日期", dateFormat = "yyyy-MM-dd HH:mm:ss")
     private Date registryTime;
-    /**
-     * 收获地址
-     */
-    @Excel(name = "收获地址")
-    private String harvestAddress;
     /**
      * 操作者ID
      */
@@ -97,14 +95,6 @@ public class Buyer extends BaseEntity {
         return name;
     }
 
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
     public void setBalance(BigDecimal balance) {
         this.balance = balance;
     }
@@ -127,14 +117,6 @@ public class Buyer extends BaseEntity {
 
     public Date getRegistryTime() {
         return registryTime;
-    }
-
-    public void setHarvestAddress(String harvestAddress) {
-        this.harvestAddress = harvestAddress;
-    }
-
-    public String getHarvestAddress() {
-        return harvestAddress;
     }
 
     public void setOperatorId(Long operatorId) {
@@ -169,17 +151,31 @@ public class Buyer extends BaseEntity {
         this.prodIds = prodIds;
     }
 
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public String getOpenId() {
+        return openId;
+    }
+
+    public void setOpenId(String openId) {
+        this.openId = openId;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
                 .append("id", getId())
                 .append("nickName", getNickName())
                 .append("name", getName())
-                .append("phoneNumber", getPhoneNumber())
                 .append("balance", getBalance())
                 .append("points", getPoints())
                 .append("registryTime", getRegistryTime())
-                .append("harvestAddress", getHarvestAddress())
                 .append("createTime", getCreateTime())
                 .append("updateTime", getUpdateTime())
                 .append("operatorId", getOperatorId())

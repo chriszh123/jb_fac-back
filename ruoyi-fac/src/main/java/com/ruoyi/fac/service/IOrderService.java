@@ -1,9 +1,11 @@
 package com.ruoyi.fac.service;
 
 import com.ruoyi.fac.domain.Order;
+import com.ruoyi.fac.exception.FacException;
 import com.ruoyi.fac.vo.FacStaticVo;
 import com.ruoyi.fac.vo.OrderDiagramVo;
-import com.ruoyi.fac.vo.OrderVo;
+import com.ruoyi.fac.vo.OrderItemVo;
+import com.ruoyi.fac.vo.client.*;
 
 import java.util.List;
 
@@ -68,7 +70,7 @@ public interface IOrderService {
      * @param id
      * @return
      */
-    OrderVo detailOrderById(Long id);
+    OrderItemVo detailOrderById(Long id);
 
     /**
      * 查询指定日期内的订单信息
@@ -87,4 +89,39 @@ public interface IOrderService {
      * @return
      */
     FacStaticVo queryFacStaticInfo(String startDateStr, String endDateStr);
+
+    /**
+     * 用户客户端创建订单
+     *
+     * @param order
+     */
+    OrderCreateRes createOrderFromClient(OrderCreateVo order) throws FacException;
+
+    OrderStatisticsVo orderStatistics(String token);
+
+    /**
+     * 客户端商品查询接口
+     *
+     * @param token
+     * @param status
+     * @return
+     */
+    OrderListVo orderList(String token, int status);
+
+    /**
+     * 取消订单
+     *
+     * @param token
+     * @param orderIds
+     */
+    void closeOrder(String token, String orderIds);
+
+    /**
+     * 指定订单详情
+     *
+     * @param id    订单id
+     * @param token 用户token
+     * @return OrderDetailVo
+     */
+    OrderDetailVo orderDetail(long id, String token);
 }

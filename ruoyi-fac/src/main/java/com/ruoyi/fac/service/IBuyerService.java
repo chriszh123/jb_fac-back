@@ -2,6 +2,9 @@ package com.ruoyi.fac.service;
 
 import com.ruoyi.fac.domain.Buyer;
 import com.ruoyi.fac.vo.UserDiagramVo;
+import com.ruoyi.fac.vo.client.ShippingAddress;
+import com.ruoyi.fac.vo.client.UserAmountVo;
+import com.ruoyi.fac.vo.client.UserDetailVo;
 
 import java.util.List;
 import java.util.Map;
@@ -69,4 +72,24 @@ public interface IBuyerService {
      * @return
      */
     UserDiagramVo queryRecentUserInfo(String startDate, String endDate);
+
+    /**
+     * 查询指定token对应的用户
+     *
+     * @param token
+     * @return
+     */
+    Buyer selectBuyerByToken(String token);
+
+    UserDetailVo detailUser(String token);
+
+    UserAmountVo userAmount(String token);
+
+    /**
+     * 保存微信用户信息
+     * @param openId
+     * @param code
+     * @return
+     */
+    Long saveBuyer(String openId, String code);
 }

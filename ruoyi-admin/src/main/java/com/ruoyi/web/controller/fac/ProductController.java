@@ -10,6 +10,7 @@ import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.fac.constant.FacConstant;
 import com.ruoyi.fac.domain.Product;
 import com.ruoyi.fac.enums.ProductStatus;
+import com.ruoyi.fac.exception.FacException;
 import com.ruoyi.fac.service.IProductService;
 import com.ruoyi.fac.vo.FacStaticVo;
 import com.ruoyi.fac.vo.ProductImgVo;
@@ -130,7 +131,13 @@ public class ProductController extends BaseController {
         if (product.getStatus() == null) {
             product.setStatus(ProductStatus.LOWER_SHELF.getValue());
         }
-        return toAjax(productService.updateProduct(product));
+        try {
+            return toAjax(productService.updateProduct(product));
+        } catch (FacException fe) {
+            return AjaxResult.error(fe.getMessage());
+        } catch (Exception ex) {
+            return AjaxResult.error();
+        }
     }
 
     /**
@@ -159,5 +166,15 @@ public class ProductController extends BaseController {
     public ProductImgVo getProductImgs(Product product) {
         ProductImgVo vo = this.productService.getProductImgs(product);
         return vo;
+    }
+
+    /**
+     * 删除商品单个已经存在的图片
+     */
+    @Log(title = "商品", businessType = BusinessType.DELETE)
+    @PostMapping("/edit/deletePic")
+    @ResponseBody
+    public AjaxResult deletePic(String key) {
+        return toAjax(productService.deletePic(key));
     }
 }

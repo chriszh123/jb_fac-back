@@ -2,18 +2,17 @@ package com.ruoyi.fac.service.impl;
 
 import com.ruoyi.common.support.Convert;
 import com.ruoyi.fac.constant.FacConstant;
-import com.ruoyi.fac.domain.Business;
-import com.ruoyi.fac.domain.Buyer;
-import com.ruoyi.fac.domain.BuyerBusiness;
-import com.ruoyi.fac.domain.Product;
-import com.ruoyi.fac.mapper.BusinessMapper;
-import com.ruoyi.fac.mapper.BuyerBusinessMapper;
-import com.ruoyi.fac.mapper.BuyerMapper;
-import com.ruoyi.fac.mapper.ProductMapper;
+import com.ruoyi.fac.domain.*;
+import com.ruoyi.fac.enums.OrderStatus;
+import com.ruoyi.fac.mapper.*;
 import com.ruoyi.fac.service.IBuyerService;
 import com.ruoyi.fac.util.TimeUtils;
 import com.ruoyi.fac.vo.QueryVo;
 import com.ruoyi.fac.vo.UserDiagramVo;
+import com.ruoyi.fac.vo.client.ShippingAddress;
+import com.ruoyi.fac.vo.client.UserAmountVo;
+import com.ruoyi.fac.vo.client.UserBaseVo;
+import com.ruoyi.fac.vo.client.UserDetailVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +21,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -37,15 +37,14 @@ public class BuyerServiceImpl implements IBuyerService {
 
     @Autowired
     private BuyerMapper buyerMapper;
-
     @Autowired
     private BusinessMapper businessMapper;
-
     @Autowired
     private ProductMapper productMapper;
-
     @Autowired
     private BuyerBusinessMapper buyerBusinessMapper;
+    @Autowired
+    private OrderMapper orderMapper;
 
     /**
      * 查询买者用户信息
@@ -118,9 +117,11 @@ public class BuyerServiceImpl implements IBuyerService {
                 buyerBusiness.setIsDeleted(0);
                 list.add(buyerBusiness);
             }
-            return this.buyerBusinessMapper.batchInsert(list);
+            if (!CollectionUtils.isEmpty(list)) {
+                return this.buyerBusinessMapper.batchInsert(list);
+            }
         }
-        return 0;
+        return 1;
     }
 
     /**
@@ -262,6 +263,104 @@ public class BuyerServiceImpl implements IBuyerService {
         }
 
         return vo;
+    }
+
+    /**
+     * 查询指定token对应的用户
+     *
+     * @param token
+     * @return
+     */
+    @Override
+    public Buyer selectBuyerByToken(String token) {
+        if (StringUtils.isEmpty(token)) {
+            return null;
+        }
+        return this.buyerMapper.selectBuyerByOpenId(token);
+    }
+
+    @Override
+    public UserDetailVo detailUser(String token) {
+        Buyer buyer = this.buyerMapper.selectBuyerByOpenId(token);
+        if (buyer == null) {
+            return null;
+        }
+        UserDetailVo vo = new UserDetailVo();
+        UserBaseVo base = new UserBaseVo();
+        vo.setBase(base);
+        base.setId(buyer.getId());
+        base.setCity("");
+        base.setProvince("");
+        base.setDateAdd(TimeUtils.date2Str(buyer.getCreateTime(), TimeUtils.DEFAULT_DATE_TIME_FORMAT_HH_MM_SS));
+        base.setDateLogin("");
+        base.setIpAdd("");
+        base.setIpLogin("");
+        base.setAvatarUrl("");
+        base.setNick("");
+
+        return vo;
+    }
+
+    @Override
+    public UserAmountVo userAmount(String token) {
+        Buyer buyer = this.buyerMapper.selectBuyerByOpenId(token);
+        if (buyer == null) {
+            return null;
+        }
+        UserAmountVo vo = new UserAmountVo();
+        // 余额
+        vo.setBalance(Double.valueOf(buyer.getBalance().toString()));
+        // 积分
+        vo.setScore(buyer.getPoints());
+        // 总消费金额
+        QueryVo queryVo = new QueryVo();
+        queryVo.setToken(token);
+        queryVo.setOpenId(token);
+        queryVo.setStatus(OrderStatus.PAYED.getCode());
+        List<Order> orders = this.orderMapper.orderList(queryVo);
+        if (!CollectionUtils.isEmpty(orders)) {
+            BigDecimal total = new BigDecimal("0.00");
+            for (Order item : orders) {
+                total = total.add(item.getPrice());
+            }
+            vo.setTotleConsumed(Double.valueOf(total.toString()));
+        }
+
+        return vo;
+    }
+
+    /**
+     * 保存微信用户信息
+     *
+     * @param openId
+     * @param code
+     * @return
+     */
+    @Override
+    public Long saveBuyer(String openId, String code) {
+        Date nowDate = new Date();
+        Buyer buyer = this.buyerMapper.selectBuyerByOpenId(openId);
+        if (buyer != null) {
+            // update
+        } else {
+            // add
+            buyer = new Buyer();
+            buyer.setNickName("nickName");
+            buyer.setName("name");
+            buyer.setToken(openId);
+            buyer.setOpenId(openId);
+            buyer.setBalance(new BigDecimal("0.00"));
+            buyer.setPoints(0);
+            buyer.setRegistryTime(nowDate);
+            buyer.setCreateTime(nowDate);
+            buyer.setUpdateTime(nowDate);
+            buyer.setIsDeleted(0);
+            this.buyerMapper.insertBuyer(buyer);
+
+            buyer = this.selectBuyerByToken(openId);
+        }
+
+        return buyer.getId();
     }
 
     private boolean checkProdBuyed(String prodId, List<BuyerBusiness> buyerBusinesses) {

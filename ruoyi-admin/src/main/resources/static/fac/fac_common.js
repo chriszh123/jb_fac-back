@@ -12,10 +12,13 @@ var OBJECT_COUNT = {
 
 // 订单状态
 var ORDER_STATUS = {
-    1: "已付款",
-    2: "待付款",
-    3: "已取消",
-    4: "未取消"
+    0: "待付款",
+    1: "待发货",
+    2: "待收货",
+    3: "待评价",
+    4: "已完成",
+    5: "已取消",
+    6: "未取消"
 };
 
 // 商品核销状态
@@ -41,6 +44,9 @@ var STATUS_VISIBLE = {
     "1": "显示",
     "2": "隐藏"
 }
+
+// fileInput上传文件支持扩展名
+var FILEINPUTEXTENDTION = ["jpg", "jpeg", "gif", "bmp"];
 
 // option：首页相关统计图
 var homepageOption = {
@@ -247,7 +253,7 @@ var initFileInput = function (id, uploadUrl, maxFilesNum) {
         language: 'zh', //设置语言
         browseLabel: '选择图片',
         uploadUrl: uploadUrl, //上传的地址
-        allowedFileExtensions: ['jpg', 'gif', 'png'],//接收的文件后缀
+        allowedFileExtensions: FILEINPUTEXTENDTION,
         maxFilesNum: maxFilesNum,//上传最大的文件数量
         //uploadExtraData:{"id": 1, "fileName":'123.mp3'},
         uploadAsync: false, //默认异步上传
@@ -287,7 +293,7 @@ var initFileInput = function (id, uploadUrl, maxFilesNum) {
         if (data && data.response && data.response.code && data.response.code == "0") {
             var lastPicture = $('#picture').val();
             var lastImgPath = $('#imgPath').val();
-            lastPicture = lastPicture + "," + data.response.fileName;
+            lastPicture = lastPicture + "," + data.response.imgPath;  // 这里取完整的图片路径
             lastImgPath = lastImgPath + "," + data.response.imgPath;
             $('#picture').val(lastPicture);
             $('#imgPath').val(lastImgPath);
@@ -307,7 +313,7 @@ var initFileInput = function (id, uploadUrl, maxFilesNum) {
         if (data && data.response && data.response.code && data.response.code == "0") {
             var lastPicture = $('#picture').val();
             var lastImgPath = $('#imgPath').val();
-            lastPicture = lastPicture + "," + data.response.fileName;
+            lastPicture = lastPicture + "," + data.response.imgPath;  // 这里取完整的图片路径;
             lastImgPath = lastImgPath + "," + data.response.imgPath;
             $('#picture').val(lastPicture);
             $('#imgPath').val(lastImgPath);
@@ -317,7 +323,7 @@ var initFileInput = function (id, uploadUrl, maxFilesNum) {
         }
     }).on('fileerror', function (event, data, msg) {  //一个文件上传失败
         console.log('文件上传失败！' + data.id);
-    })
+    });
 }
 
 // 关闭选项卡菜单:从iFrame内部调用
@@ -359,14 +365,27 @@ var initFileInputWithImgData = function (id, uploadUrl, maxFilesNum, imgPaths, c
         showRemove: true, //显示移除按钮，输入框后面的按钮
         showPreview: true, //是否显示预览
         overwriteInitial: false, //不覆盖已存在的图片
+        maxFilesNum: maxFilesNum,//上传最大的文件数量
+        removeFromPreviewOnError: true, //当选择的文件不符合规则时，例如不是指定后缀文件、大小超出配置等，选择的文件不会出现在预览框中，只会显示错误信息
+        maxFileCount: 5,
+        maxFileSize: 1024 * 500,
+        allowedFileExtensions: FILEINPUTEXTENDTION,
+        previewFileIcon: "<i class='glyphicon glyphicon-king'></i>",
         //下面几个就是初始化预览图片的配置
         initialPreviewAsData: true,
         initialPreviewFileType: 'image',
         initialPreview: imgPaths, //要显示的图片的路径
         initialPreviewConfig: cfg,
         layoutTemplates: {
-            actionDelete: '',
+            // actionDelete: '',
             actionUpload: ''
+        }
+    }).on('filepredelete', function (event, key, jqXHR, data) {
+        console.log('Key = ' + key);
+        console.log(jqXHR);
+        console.log(data);
+        if (!confirm("确定删除这个图片？删除后不可恢复")) {
+            return false;
         }
     });
 }

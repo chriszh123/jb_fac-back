@@ -2,6 +2,7 @@ package com.ruoyi.fac.mapper;
 
 import com.ruoyi.fac.domain.Product;
 import com.ruoyi.fac.vo.QueryVo;
+import com.ruoyi.fac.vo.condition.QueryGoodVo;
 
 import java.util.List;
 
@@ -70,4 +71,7 @@ public interface ProductMapper {
 
     int countProducts(QueryVo queryVo);
 
+    List<Product> goodsList(QueryGoodVo vo);
+
+    List<Product> selectProductsByIds(Long[] ids);
 }

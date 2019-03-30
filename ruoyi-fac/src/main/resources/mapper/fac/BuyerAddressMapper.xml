@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.fac.mapper.BuyerAddressMapper">
+    
+    <resultMap type="BuyerAddress" id="BuyerAddressResult">
+        <result property="id"    column="id"    />
+        <result property="buyerId"    column="buyer_id"    />
+        <result property="token"    column="token"    />
+        <result property="openId"    column="open_id"    />
+        <result property="address"    column="address"    />
+        <result property="provinceId"    column="provinceId"    />
+        <result property="provinceStr"    column="province_str"    />
+        <result property="cityId"    column="cityId"    />
+        <result property="cityStr"    column="city_str"    />
+        <result property="districtId"    column="districtId"    />
+        <result property="districtStr"    column="district_str"    />
+        <result property="linkMan"    column="linkMan"    />
+        <result property="phoneNumber"    column="phone_number"    />
+        <result property="code"    column="code"    />
+        <result property="isDefault"    column="is_default"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="operatorId"    column="operator_id"    />
+        <result property="operatorName"    column="operator_name"    />
+        <result property="isDeleted"    column="is_deleted"    />
+    </resultMap>
+	
+	<sql id="selectBuyerAddressVo">
+        select id, buyer_id, token,open_id, address, provinceId, province_str, cityId, city_str, districtId, district_str, linkMan, phone_number, code, is_default, create_time, update_time, operator_id, operator_name, is_deleted from fac_buyer_address
+    </sql>
+	
+    <select id="selectBuyerAddressList" parameterType="BuyerAddress" resultMap="BuyerAddressResult">
+        <include refid="selectBuyerAddressVo"/>
+        <where>  
+            <if test="id != null "> and id = #{id}</if>
+             <if test="buyerId != null "> and buyer_id = #{buyerId}</if>
+             <if test="token != null  and token != '' "> and token = #{token}</if>
+             <if test="openId != null  and openId != '' "> and open_id = #{openId}</if>
+             <if test="address != null  and address != '' "> and address = #{address}</if>
+             <if test="provinceId != null "> and provinceId = #{provinceId}</if>
+             <if test="provinceStr != null  and provinceStr != '' "> and province_str = #{provinceStr}</if>
+             <if test="cityId != null "> and cityId = #{cityId}</if>
+             <if test="cityStr != null  and cityStr != '' "> and city_str = #{cityStr}</if>
+             <if test="districtId != null "> and districtId = #{districtId}</if>
+             <if test="districtStr != null  and districtStr != '' "> and district_str = #{districtStr}</if>
+             <if test="linkMan != null  and linkMan != '' "> and linkMan = #{linkMan}</if>
+             <if test="phoneNumber != null  and phoneNumber != '' "> and phone_number = #{phoneNumber}</if>
+             <if test="code != null  and code != '' "> and code = #{code}</if>
+             <if test="isDefault != null "> and is_default = #{isDefault}</if>
+             <if test="createTime != null "> and create_time = #{createTime}</if>
+             <if test="updateTime != null "> and update_time = #{updateTime}</if>
+             <if test="operatorId != null "> and operator_id = #{operatorId}</if>
+             <if test="operatorName != null  and operatorName != '' "> and operator_name = #{operatorName}</if>
+             <if test="isDeleted != null "> and is_deleted = #{isDeleted}</if>
+         </where>
+    </select>
+    
+    <select id="selectBuyerAddressById" parameterType="Long" resultMap="BuyerAddressResult">
+        <include refid="selectBuyerAddressVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertBuyerAddress" parameterType="BuyerAddress">
+        insert into fac_buyer_address
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null  ">id,</if>
+			<if test="buyerId != null  ">buyer_id,</if>
+			<if test="token != null  and token != ''  ">token,</if>
+            <if test="openId != null  and openId != ''  ">open_id,</if>
+			<if test="address != null  and address != ''  ">address,</if>
+			<if test="provinceId != null  ">provinceId,</if>
+			<if test="provinceStr != null  and provinceStr != ''  ">province_str,</if>
+			<if test="cityId != null  ">cityId,</if>
+			<if test="cityStr != null  and cityStr != ''  ">city_str,</if>
+			<if test="districtId != null  ">districtId,</if>
+			<if test="districtStr != null  and districtStr != ''  ">district_str,</if>
+			<if test="linkMan != null  and linkMan != ''  ">linkMan,</if>
+			<if test="phoneNumber != null  and phoneNumber != ''  ">phone_number,</if>
+			<if test="code != null  and code != ''  ">code,</if>
+			<if test="isDefault != null  ">is_default,</if>
+			<if test="createTime != null  ">create_time,</if>
+			<if test="updateTime != null  ">update_time,</if>
+			<if test="operatorId != null  ">operator_id,</if>
+			<if test="operatorName != null  and operatorName != ''  ">operator_name,</if>
+			<if test="isDeleted != null  ">is_deleted,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null  ">#{id},</if>
+			<if test="buyerId != null  ">#{buyerId},</if>
+			<if test="token != null  and token != ''  ">#{token},</if>
+            <if test="openId != null  and openId != ''  ">#{openId},</if>
+			<if test="address != null  and address != ''  ">#{address},</if>
+			<if test="provinceId != null  ">#{provinceId},</if>
+			<if test="provinceStr != null  and provinceStr != ''  ">#{provinceStr},</if>
+			<if test="cityId != null  ">#{cityId},</if>
+			<if test="cityStr != null  and cityStr != ''  ">#{cityStr},</if>
+			<if test="districtId != null  ">#{districtId},</if>
+			<if test="districtStr != null  and districtStr != ''  ">#{districtStr},</if>
+			<if test="linkMan != null  and linkMan != ''  ">#{linkMan},</if>
+			<if test="phoneNumber != null  and phoneNumber != ''  ">#{phoneNumber},</if>
+			<if test="code != null  and code != ''  ">#{code},</if>
+			<if test="isDefault != null  ">#{isDefault},</if>
+			<if test="createTime != null  ">#{createTime},</if>
+			<if test="updateTime != null  ">#{updateTime},</if>
+			<if test="operatorId != null  ">#{operatorId},</if>
+			<if test="operatorName != null  and operatorName != ''  ">#{operatorName},</if>
+			<if test="isDeleted != null  ">#{isDeleted},</if>
+         </trim>
+    </insert>
+	 
+    <update id="updateBuyerAddress" parameterType="BuyerAddress">
+        update fac_buyer_address
+        <trim prefix="SET" suffixOverrides=",">
+            <!--<if test="buyerId != null  ">buyer_id = #{buyerId},</if>-->
+            <!--<if test="token != null  and token != ''  ">token = #{token},</if>-->
+            <if test="address != null  and address != ''  ">address = #{address},</if>
+            <if test="provinceId != null  ">provinceId = #{provinceId},</if>
+            <if test="provinceStr != null  and provinceStr != ''  ">province_str = #{provinceStr},</if>
+            <if test="cityId != null  ">cityId = #{cityId},</if>
+            <if test="cityStr != null  and cityStr != ''  ">city_str = #{cityStr},</if>
+            <if test="districtId != null  ">districtId = #{districtId},</if>
+            <if test="districtStr != null  and districtStr != ''  ">district_str = #{districtStr},</if>
+            <if test="linkMan != null  and linkMan != ''  ">linkMan = #{linkMan},</if>
+            <if test="phoneNumber != null  and phoneNumber != ''  ">phone_number = #{phoneNumber},</if>
+            <if test="code != null  and code != ''  ">code = #{code},</if>
+            <if test="isDefault != null  ">is_default = #{isDefault},</if>
+            <if test="createTime != null  ">create_time = #{createTime},</if>
+            <if test="updateTime != null  ">update_time = #{updateTime},</if>
+            <if test="operatorId != null  ">operator_id = #{operatorId},</if>
+            <if test="operatorName != null  and operatorName != ''  ">operator_name = #{operatorName},</if>
+            <if test="isDeleted != null  ">is_deleted = #{isDeleted},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+	<delete id="deleteBuyerAddressById" parameterType="Long">
+        delete from fac_buyer_address where id = #{id}
+    </delete>
+	
+    <delete id="deleteBuyerAddressByIds" parameterType="String">
+        delete from fac_buyer_address where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="getDefaultAddress" parameterType="String" resultMap="BuyerAddressResult">
+        <include refid="selectBuyerAddressVo"/>
+        where open_id = #{openId} and is_default = 1 and is_deleted = 0
+    </select>
+
+    <select id="selectBuyerAddressByTokenId" parameterType="String" resultMap="BuyerAddressResult">
+        <include refid="selectBuyerAddressVo"/>
+        where token = #{token} and is_deleted = 0
+        order by create_time desc
+    </select>
+
+    <select id="selectBuyerAddressByTokenAndId" resultMap="BuyerAddressResult">
+        <include refid="selectBuyerAddressVo"/>
+        where is_deleted = 0 and token = #{token} and id = #{id}
+    </select>
+</mapper>

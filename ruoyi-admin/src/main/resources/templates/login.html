@@ -7,23 +7,18 @@
     <title>江北便利站管理系统</title>
     <meta name="keywords" content="江北便利站">
     <meta name="description" content="江北便利站">
-    <link href="../static/css/bootstrap.min.css" th:href="@{css/bootstrap.min.css}" rel="stylesheet"/>
-    <link href="../static/css/font-awesome.min.css" th:href="@{css/font-awesome.min.css}" rel="stylesheet"/>
-    <link href="../static/css/style.css" th:href="@{css/style.css}" rel="stylesheet"/>
-    <link href="../static/css/login.min.css" th:href="@{css/login.min.css}" rel="stylesheet"/>
-    <link href="../static/ruoyi/css/ry-ui.css" th:href="@{/ruoyi/css/ry-ui.css?v=3.1.0}" rel="stylesheet"/>
+    <link href="../static/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}" rel="stylesheet"/>
+    <link href="../static/css/font-awesome.min.css" th:href="@{/css/font-awesome.min.css}" rel="stylesheet"/>
+    <link href="../static/css/style.css" th:href="@{/css/style.css}" rel="stylesheet"/>
+    <link href="../static/css/login.min.css" th:href="@{/css/login.min.css}" rel="stylesheet"/>
+    <link href="../static/ruoyi/css/ry-ui.css" th:href="@{/ruoyi/css/ry-ui.css?v=3.2.0}" rel="stylesheet"/>
     <!--[if lt IE 9]>
-    <meta http-equiv="refresh" content="0;ie.html"/>
+    <meta http-equiv="refresh" content="0;ie.html" />
     <![endif]-->
     <link rel="shortcut icon" href="../static/favicon.ico" th:href="@{favicon.ico}"/>
-    <style type="text/css">label.error {
-        position: inherit;
-    }</style>
+    <style type="text/css">label.error { position:inherit;  }</style>
     <script>
-        if (window.top !== window.self) {
-            window.top.location = window.location
-        }
-        ;
+        if(window.top!==window.self){window.top.location=window.location};
     </script>
 </head>
 
@@ -42,13 +37,11 @@
         <div class="col-sm-5">
             <form id="signupForm">
                 <h4 class="no-margins">登录 JB FAC：</h4>
-                <input type="text" name="username" class="form-control uname" placeholder="用户名" value="admin"/>
-                <input type="password" name="password" class="form-control pword m-b" placeholder="密码"
-                       value="admin123"/>
+                <input type="text" name="username" class="form-control uname" placeholder="用户名"/>
+                <input type="password" name="password" class="form-control pword m-b" placeholder="密码"/>
                 <div class="row m-t" th:if="${captchaEnabled}==true">
                     <div class="col-xs-6">
-                        <input type="text" name="validateCode" class="form-control code" placeholder="验证码"
-                               maxlength="5">
+                        <<input type="text" name="validateCode" class="form-control code" placeholder="验证码" maxlength="5" autocomplete="off">
                     </div>
                     <div class="col-xs-6">
                         <a href="javascript:void(0);" title="点击更换验证码">
@@ -56,7 +49,7 @@
                         </a>
                     </div>
                 </div>
-                <div class="checkbox-custom">
+                <div class="checkbox-custom" th:classappend="${captchaEnabled==false} ? 'm-t'">
                     <input type="checkbox" id="rememberme" name="rememberme"> <label for="rememberme">记住我</label>
                 </div>
                 <button class="btn btn-success btn-block" id="btnSubmit" data-loading="正在验证登录，请稍后...">登录</button>

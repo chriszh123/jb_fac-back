@@ -1,10 +1,9 @@
 package com.ruoyi.fac.mapper;
 
 import com.ruoyi.fac.domain.Buyer;
-import com.ruoyi.fac.domain.BuyerBusiness;
 import com.ruoyi.fac.vo.QueryVo;
+import org.apache.ibatis.annotations.Param;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -71,4 +70,12 @@ public interface BuyerMapper {
      * @return
      */
     int countBuyers(QueryVo queryVo);
+
+    /**
+     * 查询指定token对应的用户
+     *
+     * @param token
+     * @return
+     */
+    Buyer selectBuyerByOpenId(@Param("token") String token);
 }

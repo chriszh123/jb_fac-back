@@ -9,7 +9,7 @@ import com.ruoyi.fac.domain.Order;
 import com.ruoyi.fac.service.IOrderService;
 import com.ruoyi.fac.vo.FacStaticVo;
 import com.ruoyi.fac.vo.OrderDiagramVo;
-import com.ruoyi.fac.vo.OrderVo;
+import com.ruoyi.fac.vo.OrderItemVo;
 import com.ruoyi.framework.web.base.BaseController;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,8 +89,8 @@ public class OrderController extends BaseController {
      */
     @GetMapping("/edit/{id}")
     public String edit(@PathVariable("id") Long id, ModelMap mmap) {
-        OrderVo orderVo = orderService.detailOrderById(id);
-        mmap.put("order", orderVo);
+        OrderItemVo orderItemVo = orderService.detailOrderById(id);
+        mmap.put("order", orderItemVo);
         return prefix + "/edit";
     }
 

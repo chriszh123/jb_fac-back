@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
 <meta charset="utf-8">
 <head th:include="include :: header"></head>
 <body class="white-bg">
 <div class="wrapper wrapper-content animated fadeInRight ibox-content">
     <form class="form-horizontal m" id="form-user-resetPwd">
-        <input name="userId" type="hidden" th:value="${user.userId}"/>
+        <input name="userId"  type="hidden"  th:value="${user.userId}" />
         <div class="form-group">
             <label class="col-sm-3 control-label ">登录名称：</label>
             <div class="col-sm-8">
@@ -37,15 +37,15 @@
 
 <script>
     $("#form-user-resetPwd").validate({
-        rules: {
-            oldPassword: {
-                required: true,
+        rules:{
+            oldPassword:{
+                required:true,
                 remote: {
                     url: ctx + "system/user/profile/checkPassword",
                     type: "get",
                     dataType: "json",
                     data: {
-                        password: function () {
+                        password: function() {
                             return $("input[name='oldPassword']").val();
                         }
                     }
@@ -76,7 +76,8 @@
                 equalTo: "两次密码输入不一致"
             }
 
-        }
+        },
+        focusCleanup: true
     });
 
     function submitHandler() {

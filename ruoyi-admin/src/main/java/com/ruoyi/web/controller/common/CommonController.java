@@ -1,19 +1,18 @@
 package com.ruoyi.web.controller.common;
 
-import com.alibaba.fastjson.JSON;
 import com.ruoyi.common.config.Global;
-import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.common.utils.file.FileUploadUtils;
 import com.ruoyi.common.utils.file.FileUtils;
 import com.ruoyi.fac.constant.FacConstant;
 import com.ruoyi.fac.vo.FileVo;
 import com.ruoyi.fac.vo.ProductImgVo;
+import com.ruoyi.framework.util.COSClientUtils;
 import com.ruoyi.framework.util.CkImageUploadUtil;
-import com.ruoyi.framework.util.FileUploadUtils;
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -41,6 +40,9 @@ public class CommonController {
     @RequestMapping("common/download")
     public void fileDownload(String fileName, Boolean delete, HttpServletResponse response, HttpServletRequest request) {
         try {
+            if (!FileUtils.isValidFilename(fileName)) {
+                throw new Exception(StringUtils.format(" 文件名称({})非法，不允许下载。 ", fileName));
+            }
             SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
             String prefixFileName = fileName.substring(0, fileName.lastIndexOf("."));
             String fileStufix = fileName.substring(fileName.lastIndexOf("."));
@@ -60,22 +62,6 @@ public class CommonController {
         }
     }
 
-    /**
-     * ckeditor组件上传图片
-     *
-     * @param request
-     * @param response
-     */
-    @RequestMapping(value = "/image/ckeditorUploadImg")
-    @ResponseBody
-    public void ckeditorUploadImg(HttpServletRequest request, HttpServletResponse response) {
-        try {
-            CkImageUploadUtil.getInstance().ckeditor(request, response);
-        } catch (Exception ex) {
-            log.error("[ckeditorUploadImg] error", ex);
-        }
-    }
-
     @RequestMapping("/image/uploadImg")
     public void uplodaImg(@RequestParam("upload") MultipartFile file, HttpServletRequest request, HttpServletResponse response) {
         FileVo fileVo = new FileVo();
@@ -83,7 +69,7 @@ public class CommonController {
             PrintWriter out = response.getWriter();
             log.info("[uplodaImg] fileSize: " + file.getSize());
             // 图片大小不超过500K
-            if (file.getSize() > Constants.FILE_SIZE_FAC) {
+            if (file.getSize() > FacConstant.FILE_SIZE_FAC) {
                 String error = fileVo.error(0, "图片大小超过500K");
                 out.println(error);
                 return;
@@ -113,17 +99,11 @@ public class CommonController {
             List<String> imgPaths = new ArrayList<>();
             try {
                 System.out.println("batchUploadProductImg,file.length = " + file.length);
-                String basePath = Global.getProductPath();
                 for (int i = 0; i < file.length; i++) {
                     if (!file[i].isEmpty()) {
-                        //上传文件，原始文件名称
-                        String fileName = FileUploadUtils.upload(basePath, file[i], false);
-                        System.out.println("fileName = " + fileName);
-                        String imgUrl = basePath + fileName;
-                        imgUrl = FacConstant.TEST_IMG_URL;
                         // 腾讯云上传图片
-//                        String fileName = COSClientUtils.getInstance().uploadFile2Cos(file[i]);
-//                        String imgUrl = COSClientUtils.getInstance().getImgUrl(fileName);
+                        String fileName = COSClientUtils.getInstance().uploadFile2Cos(file[i]);
+                        String imgUrl = COSClientUtils.getInstance().getImgUrl(fileName);
 
                         fileNames.add(fileName);
                         imgPaths.add(imgUrl);
