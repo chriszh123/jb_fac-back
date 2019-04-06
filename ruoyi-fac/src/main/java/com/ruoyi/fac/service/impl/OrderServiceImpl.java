@@ -120,7 +120,19 @@ public class OrderServiceImpl implements IOrderService {
      */
     @Override
     public int cancelOrderByIds(String ids) {
-        return this.orderMapper.cancelOrderByIds(Convert.toStrArray(ids));
+        String[] idsArr = Convert.toStrArray(ids);
+        List<String> orderNos = new ArrayList<>();
+        for (int i = 0; i < idsArr.length; i++) {
+            Order order = this.orderMapper.selectOrderById(Long.valueOf(idsArr[i]));
+            if (order != null) {
+                orderNos.add(order.getOrderNo());
+            }
+        }
+        if (CollectionUtils.isNotEmpty(orderNos)) {
+            // 删除相应核销记录
+            this.facProductWriteoffMapper.deleteFacProductWriteoffByOrderNos(orderNos);
+        }
+        return this.orderMapper.cancelOrderByIds(idsArr);
     }
 
     /**
@@ -447,16 +459,21 @@ public class OrderServiceImpl implements IOrderService {
      * 取消订单
      *
      * @param token
-     * @param orderIds
+     * @param orderNo
      */
     @Override
-    public void closeOrder(String token, String orderIds) {
+    public void closeOrder(String token, String orderNo) {
+        // 更改订单状态为取消状态
         QueryVo queryVo = new QueryVo();
         queryVo.setToken(token);
         queryVo.setOpenId(token);
-        queryVo.setOrderIds(Convert.toLongArray(orderIds));
         queryVo.setStatus(OrderStatus.CACELED.getCode());
+        queryVo.setOrderNo(orderNo);
         this.orderMapper.updateOrderStatus(queryVo);
+        // 删除订单对应的核销记录
+        List<String> orderNos = new ArrayList<>();
+        orderNos.add(orderNo);
+        this.facProductWriteoffMapper.deleteFacProductWriteoffByOrderNos(orderNos);
     }
 
     /**

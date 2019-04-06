@@ -63,10 +63,10 @@ public class FacOrderController extends BaseController {
     @PostMapping("/close")
     @ResponseBody
     public FacResult close(@RequestBody OrderReq req) {
-        if (StringUtils.isEmpty(req.getToken()) || StringUtils.isEmpty(req.getOrderId())) {
+        if (StringUtils.isEmpty(req.getToken()) || StringUtils.isEmpty(req.getOrderNo())) {
             return FacResult.error(FacCode.PARAMTER_NULL.getCode(), FacCode.PARAMTER_NULL.getMsg());
         }
-        this.orderService.closeOrder(req.getToken(), req.getOrderId());
+        this.orderService.closeOrder(req.getToken(), req.getOrderNo());
         return FacResult.success("");
     }
 

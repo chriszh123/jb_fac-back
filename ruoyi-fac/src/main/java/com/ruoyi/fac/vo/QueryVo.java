@@ -17,6 +17,7 @@ public class QueryVo {
     private Integer status;
     private Long[] orderIds;
     private List<Integer> statuses = new ArrayList<>();
+    private String orderNo;
 
     public QueryVo() {
     }
@@ -80,5 +81,13 @@ public class QueryVo {
 
     public void setStatuses(List<Integer> statuses) {
         this.statuses = statuses;
+    }
+
+    public String getOrderNo() {
+        return orderNo;
+    }
+
+    public void setOrderNo(String orderNo) {
+        this.orderNo = orderNo;
     }
 }

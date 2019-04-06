@@ -179,7 +179,7 @@
 
     <update id="cancelOrderByIds" parameterType="String">
         UPDATE fac_order
-        set status = 5
+        set status = 4
         where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
@@ -246,10 +246,15 @@
         UPDATE fac_order
         set status = #{status}
         where is_deleted = 0 and token = #{token}
-        and id in
-        <foreach item="id" collection="orderIds" open="(" separator="," close=")">
-            #{id}
-        </foreach>
+        <if test="orderNo != null and orderNo != ''.toString()">
+            and order_no = #{orderNo}
+        </if>
+        <if test="orderIds != null and !orderIds.isEmpty()">
+            and id in
+            <foreach item="id" collection="orderIds" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </if>
     </update>
 
     <select id="selectOrderByIdAndToken" resultMap="OrderResult">

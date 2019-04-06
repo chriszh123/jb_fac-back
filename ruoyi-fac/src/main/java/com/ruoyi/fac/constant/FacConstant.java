@@ -42,7 +42,7 @@ public class FacConstant {
      */
     public static String SEPARATOR_SEMICOLON = ";";
     /**
-     * 商品核销码数字位数:10位整数
+     * 商品核销码数字位数
      */
-    public static int PRODUCT_WRITEOFF_CODE_LENGTH = 10;
+    public static int PRODUCT_WRITEOFF_CODE_LENGTH = 8;
 }

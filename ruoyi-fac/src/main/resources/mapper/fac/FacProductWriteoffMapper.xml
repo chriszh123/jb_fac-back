@@ -112,5 +112,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
         order by create_time DESC
     </select>
+
+    <update id="deleteFacProductWriteoffByOrderNos">
+        update fac_product_writeoff
+        set is_deleted = 1, update_time = now()
+        where is_deleted = 0
+        <if test="orderNos != null and !orderNos.isEmpty()">
+            AND order_no IN
+            <foreach item="item" index="index" collection="orderNos" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </update>
     
 </mapper>

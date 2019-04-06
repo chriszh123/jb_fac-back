@@ -23,7 +23,7 @@ public class OrderReq implements Serializable {
     private String id;
     private String token;
     private int status;
-    private String orderId;
+    private String orderNo;
 
     public String getToken() {
         return token;
@@ -49,11 +49,11 @@ public class OrderReq implements Serializable {
         this.id = id;
     }
 
-    public String getOrderId() {
-        return orderId;
+    public String getOrderNo() {
+        return orderNo;
     }
 
-    public void setOrderId(String orderId) {
-        this.orderId = orderId;
+    public void setOrderNo(String orderNo) {
+        this.orderNo = orderNo;
     }
 }
