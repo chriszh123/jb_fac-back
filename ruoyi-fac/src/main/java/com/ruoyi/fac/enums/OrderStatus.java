@@ -8,12 +8,10 @@ package com.ruoyi.fac.enums;
  */
 public enum OrderStatus {
     PAYING("待付款", 0),
-    TOSHIP("待发货", 1),
-    TORECIVE("待收货", 2),
-    TOEVALUATE("待评价", 3),
-    PAYED("已支付", 4),
-    CACELED("已取消", 5),
-    CACELING("未取消", 6);
+    TOWRITEOFF("待核销", 1),
+    TOEVALUATE("待评价", 2),
+    COMPLETED("已完成", 3),
+    CACELED("已取消", 4);
 
     private String name;
     private Integer code;

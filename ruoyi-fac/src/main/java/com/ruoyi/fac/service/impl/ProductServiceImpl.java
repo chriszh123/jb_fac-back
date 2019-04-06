@@ -213,6 +213,10 @@ public class ProductServiceImpl implements IProductService {
             GoodVo goodVo = null;
             for (int i = 0, size = products.size(); i < size; i++) {
                 Product product = products.get(i);
+                // 处于下架状态的商品不展示
+                if (ProductStatus.LOWER_SHELF.getValue().equals(product.getStatus())) {
+                    continue;
+                }
                 goodVo = this.convertGoodVo(product);
                 goodVos.add(goodVo);
 

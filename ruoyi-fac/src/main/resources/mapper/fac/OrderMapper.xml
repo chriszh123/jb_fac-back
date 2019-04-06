@@ -233,6 +233,12 @@
         <if test="status != null">
             and status = #{status}
         </if>
+        <if test="statuses != null and !statuses.isEmpty()">
+            AND status IN
+            <foreach item="item" index="index" collection="statuses" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
         order by create_time desc
     </select>
 

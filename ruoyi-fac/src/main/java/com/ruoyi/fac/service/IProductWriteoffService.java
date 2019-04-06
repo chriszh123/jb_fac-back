@@ -1,6 +1,6 @@
 package com.ruoyi.fac.service;
 
-import com.ruoyi.fac.domain.ProductWriteoff;
+import com.ruoyi.fac.domain.FacProductWriteoff;
 
 import java.util.List;
 
@@ -17,7 +17,7 @@ public interface IProductWriteoffService {
      * @param id 核销记录ID
      * @return 核销记录信息
      */
-    ProductWriteoff selectProductWriteoffById(Integer id);
+    FacProductWriteoff selectProductWriteoffById(Integer id);
 
     /**
      * 查询核销记录列表
@@ -25,7 +25,7 @@ public interface IProductWriteoffService {
      * @param productWriteoff 核销记录信息
      * @return 核销记录集合
      */
-    List<ProductWriteoff> selectProductWriteoffList(ProductWriteoff productWriteoff);
+    List<FacProductWriteoff> selectProductWriteoffList(FacProductWriteoff productWriteoff);
 
     /**
      * 新增核销记录
@@ -33,7 +33,7 @@ public interface IProductWriteoffService {
      * @param productWriteoff 核销记录信息
      * @return 结果
      */
-    int insertProductWriteoff(ProductWriteoff productWriteoff);
+    int insertProductWriteoff(FacProductWriteoff productWriteoff);
 
     /**
      * 修改核销记录
@@ -41,7 +41,7 @@ public interface IProductWriteoffService {
      * @param productWriteoff 核销记录信息
      * @return 结果
      */
-    int updateProductWriteoff(ProductWriteoff productWriteoff);
+    int updateProductWriteoff(FacProductWriteoff productWriteoff);
 
     /**
      * 删除核销记录信息

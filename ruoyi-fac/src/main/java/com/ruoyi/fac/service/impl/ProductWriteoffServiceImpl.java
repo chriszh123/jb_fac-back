@@ -2,10 +2,10 @@ package com.ruoyi.fac.service.impl;
 
 import java.util.List;
 
+import com.ruoyi.fac.domain.FacProductWriteoff;
+import com.ruoyi.fac.mapper.FacProductWriteoffMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.ruoyi.fac.mapper.ProductWriteoffMapper;
-import com.ruoyi.fac.domain.ProductWriteoff;
 import com.ruoyi.fac.service.IProductWriteoffService;
 import com.ruoyi.common.support.Convert;
 
@@ -18,7 +18,7 @@ import com.ruoyi.common.support.Convert;
 @Service
 public class ProductWriteoffServiceImpl implements IProductWriteoffService {
     @Autowired
-    private ProductWriteoffMapper productWriteoffMapper;
+    private FacProductWriteoffMapper productWriteoffMapper;
 
     /**
      * 查询核销记录信息
@@ -27,8 +27,8 @@ public class ProductWriteoffServiceImpl implements IProductWriteoffService {
      * @return 核销记录信息
      */
     @Override
-    public ProductWriteoff selectProductWriteoffById(Integer id) {
-        return productWriteoffMapper.selectProductWriteoffById(id);
+    public FacProductWriteoff selectProductWriteoffById(Integer id) {
+        return productWriteoffMapper.selectFacProductWriteoffById(id);
     }
 
     /**
@@ -38,9 +38,9 @@ public class ProductWriteoffServiceImpl implements IProductWriteoffService {
      * @return 核销记录集合
      */
     @Override
-    public List<ProductWriteoff> selectProductWriteoffList(ProductWriteoff productWriteoff) {
+    public List<FacProductWriteoff> selectProductWriteoffList(FacProductWriteoff productWriteoff) {
         productWriteoff.setIsDeleted(0);
-        return productWriteoffMapper.selectProductWriteoffList(productWriteoff);
+        return productWriteoffMapper.selectFacProductWriteoffList(productWriteoff);
     }
 
     /**
@@ -50,8 +50,8 @@ public class ProductWriteoffServiceImpl implements IProductWriteoffService {
      * @return 结果
      */
     @Override
-    public int insertProductWriteoff(ProductWriteoff productWriteoff) {
-        return productWriteoffMapper.insertProductWriteoff(productWriteoff);
+    public int insertProductWriteoff(FacProductWriteoff productWriteoff) {
+        return productWriteoffMapper.insertFacProductWriteoff(productWriteoff);
     }
 
     /**
@@ -61,8 +61,8 @@ public class ProductWriteoffServiceImpl implements IProductWriteoffService {
      * @return 结果
      */
     @Override
-    public int updateProductWriteoff(ProductWriteoff productWriteoff) {
-        return productWriteoffMapper.updateProductWriteoff(productWriteoff);
+    public int updateProductWriteoff(FacProductWriteoff productWriteoff) {
+        return productWriteoffMapper.updateFacProductWriteoff(productWriteoff);
     }
 
     /**
@@ -73,7 +73,7 @@ public class ProductWriteoffServiceImpl implements IProductWriteoffService {
      */
     @Override
     public int deleteProductWriteoffByIds(String ids) {
-        return productWriteoffMapper.deleteProductWriteoffByIds(Convert.toStrArray(ids));
+        return productWriteoffMapper.deleteFacProductWriteoffByIds(Convert.toStrArray(ids));
     }
 
 }

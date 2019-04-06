@@ -200,8 +200,8 @@ public class PayServiceImpl implements IPayService {
                 if (order != null) {
                     logger.info("微信回调 根据订单号查询订单状态：" + order.getStatus());
                     if (OrderStatus.PAYING.getCode().equals(order.getStatus())) {
-                        //修改支付状态
-                        int sqlRow = this.orderMapper.updateOrderStatusAfterPayed(outTradeNo, OrderStatus.PAYED.getCode().intValue());
+                        //修改支付状态:订单支付成功后状态变为待核销状态
+                        int sqlRow = this.orderMapper.updateOrderStatusAfterPayed(outTradeNo, OrderStatus.TOWRITEOFF.getCode().intValue());
                         if (sqlRow == 1) {
                             logger.info("微信回调  订单号：" + outTradeNo + ",修改状态成功");
                             //封装 返回值

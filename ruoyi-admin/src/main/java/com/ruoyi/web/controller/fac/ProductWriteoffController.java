@@ -5,7 +5,7 @@ import com.ruoyi.common.base.AjaxResult;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.page.TableDataInfo;
 import com.ruoyi.common.utils.poi.ExcelUtil;
-import com.ruoyi.fac.domain.ProductWriteoff;
+import com.ruoyi.fac.domain.FacProductWriteoff;
 import com.ruoyi.fac.service.IProductWriteoffService;
 import com.ruoyi.framework.web.base.BaseController;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -42,9 +42,9 @@ public class ProductWriteoffController extends BaseController {
     @RequiresPermissions("fac:productWriteoff:list")
     @PostMapping("/list")
     @ResponseBody
-    public TableDataInfo list(ProductWriteoff productWriteoff) {
+    public TableDataInfo list(FacProductWriteoff productWriteoff) {
         startPage();
-        List<ProductWriteoff> list = productWriteoffService.selectProductWriteoffList(productWriteoff);
+        List<FacProductWriteoff> list = productWriteoffService.selectProductWriteoffList(productWriteoff);
         return getDataTable(list);
     }
 
@@ -55,9 +55,9 @@ public class ProductWriteoffController extends BaseController {
     @RequiresPermissions("fac:productWriteoff:export")
     @PostMapping("/export")
     @ResponseBody
-    public AjaxResult export(ProductWriteoff productWriteoff) {
-        List<ProductWriteoff> list = productWriteoffService.selectProductWriteoffList(productWriteoff);
-        ExcelUtil<ProductWriteoff> util = new ExcelUtil<ProductWriteoff>(ProductWriteoff.class);
+    public AjaxResult export(FacProductWriteoff productWriteoff) {
+        List<FacProductWriteoff> list = productWriteoffService.selectProductWriteoffList(productWriteoff);
+        ExcelUtil<FacProductWriteoff> util = new ExcelUtil<FacProductWriteoff>(FacProductWriteoff.class);
         return util.exportExcel(list, ("核销记录_" + productWriteoff.getId()));
     }
 
@@ -76,7 +76,7 @@ public class ProductWriteoffController extends BaseController {
     @Log(title = "核销记录", businessType = BusinessType.INSERT)
     @PostMapping("/add")
     @ResponseBody
-    public AjaxResult addSave(ProductWriteoff productWriteoff) {
+    public AjaxResult addSave(FacProductWriteoff productWriteoff) {
         return toAjax(productWriteoffService.insertProductWriteoff(productWriteoff));
     }
 
@@ -85,7 +85,7 @@ public class ProductWriteoffController extends BaseController {
      */
     @GetMapping("/edit/{id}")
     public String edit(@PathVariable("id") Integer id, ModelMap mmap) {
-        ProductWriteoff productWriteoff = productWriteoffService.selectProductWriteoffById(id);
+        FacProductWriteoff productWriteoff = productWriteoffService.selectProductWriteoffById(id);
         mmap.put("productWriteoff", productWriteoff);
         return prefix + "/edit";
     }
@@ -97,7 +97,7 @@ public class ProductWriteoffController extends BaseController {
     @Log(title = "核销记录", businessType = BusinessType.UPDATE)
     @PostMapping("/edit")
     @ResponseBody
-    public AjaxResult editSave(ProductWriteoff productWriteoff) {
+    public AjaxResult editSave(FacProductWriteoff productWriteoff) {
         return toAjax(productWriteoffService.updateProductWriteoff(productWriteoff));
     }
 

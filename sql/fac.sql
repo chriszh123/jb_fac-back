@@ -58,7 +58,7 @@ CREATE TABLE `fac_product_category` (
 drop table if exists `fac_product_writeoff`;
 CREATE TABLE `fac_product_writeoff` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
-  `product_id` bigint(20) NOT NULL COMMENT '商品ID',
+  `order_no` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '订单号,eg:201812231410342545',
   `buyer_id` bigint(20) NOT NULL COMMENT '买者ID',
   `code` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '核销码',
   `writeoff_time` datetime COMMENT '核销时间',

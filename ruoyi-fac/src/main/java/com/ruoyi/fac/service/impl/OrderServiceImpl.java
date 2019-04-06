@@ -2,18 +2,15 @@ package com.ruoyi.fac.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.ruoyi.common.support.Convert;
-import com.ruoyi.fac.domain.Buyer;
-import com.ruoyi.fac.domain.Order;
-import com.ruoyi.fac.domain.Product;
+import com.ruoyi.fac.constant.FacConstant;
+import com.ruoyi.fac.domain.*;
 import com.ruoyi.fac.enums.OrderStatus;
 import com.ruoyi.fac.enums.ProductStatus;
 import com.ruoyi.fac.exception.FacException;
-import com.ruoyi.fac.mapper.BusinessMapper;
-import com.ruoyi.fac.mapper.BuyerMapper;
-import com.ruoyi.fac.mapper.OrderMapper;
-import com.ruoyi.fac.mapper.ProductMapper;
+import com.ruoyi.fac.mapper.*;
 import com.ruoyi.fac.service.IOrderService;
 import com.ruoyi.fac.util.DecimalUtils;
+import com.ruoyi.fac.util.FacCommonUtils;
 import com.ruoyi.fac.util.TimeUtils;
 import com.ruoyi.fac.vo.FacStaticVo;
 import com.ruoyi.fac.vo.OrderDiagramVo;
@@ -50,6 +47,8 @@ public class OrderServiceImpl implements IOrderService {
     private BusinessMapper businessMapper;
     @Autowired
     private ProductMapper productMapper;
+    @Autowired
+    private FacProductWriteoffMapper facProductWriteoffMapper;
 
     /**
      * 查询订单信息
@@ -373,6 +372,21 @@ public class OrderServiceImpl implements IOrderService {
         res.setStatus(OrderStatus.PAYING.getCode());
         res.setStatusStr(OrderStatus.PAYING.getName());
 
+        // 创建一个订单后，同时生成当前订单对应的一条默认的待核销的核销记录，核销码动态随机生成:10位整数随机码
+        // 后面这块代码会移到用户付款成功后那里再创建一条对应的核销记录数据：zgf
+        String writeOffCode = FacCommonUtils.randomInt(FacConstant.PRODUCT_WRITEOFF_CODE_LENGTH);
+        FacProductWriteoff productWriteoff = new FacProductWriteoff();
+        productWriteoff.setOrderNo(orderNo);
+        productWriteoff.setBuyerId(buyer.getId());
+        productWriteoff.setCode(writeOffCode);
+        productWriteoff.setStatus(2);
+        productWriteoff.setCreateTime(nowDate);
+        productWriteoff.setUpdateTime(nowDate);
+        productWriteoff.setOperatorId(buyer.getId());
+        productWriteoff.setOperatorName(buyer.getName());
+        productWriteoff.setIsDeleted(0);
+        this.facProductWriteoffMapper.insertFacProductWriteoff(productWriteoff);
+
         return res;
     }
 
@@ -494,6 +508,7 @@ public class OrderServiceImpl implements IOrderService {
         Map<Long, Order> good2Order = new HashMap<>(16);
         BigDecimal orderTotalPrice;
         double amountReal;
+        List<String> orderNos = new ArrayList<>();
         for (Order order : orders) {
             OrderVo orderVo = new OrderVo();
             orderVos.add(orderVo);
@@ -513,6 +528,18 @@ public class OrderServiceImpl implements IOrderService {
             orderVo.setAmountReal(amountReal);
 
             good2Order.put(order.getProdId(), order);
+            orderNos.add(order.getOrderNo());
+        }
+        List<FacProductWriteoff> productWriteoffs = this.facProductWriteoffMapper.selectFacProductWriteoffListByOrderNos(orderNos);
+        if (CollectionUtils.isNotEmpty(productWriteoffs)) {
+            // 设置核销码
+            Map<String, String> order2WriteCode = new HashMap<>(16);
+            for (FacProductWriteoff item : productWriteoffs) {
+                order2WriteCode.put(item.getOrderNo(), item.getCode());
+            }
+            for (OrderVo item : orderVos) {
+                item.setWriteOffCode(order2WriteCode.get(item.getOrderNumber()));
+            }
         }
         // 订单信息
         vo.setOrderList(orderVos);

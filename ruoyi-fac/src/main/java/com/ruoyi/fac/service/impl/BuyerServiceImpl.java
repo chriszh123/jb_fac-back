@@ -316,7 +316,11 @@ public class BuyerServiceImpl implements IBuyerService {
         QueryVo queryVo = new QueryVo();
         queryVo.setToken(token);
         queryVo.setOpenId(token);
-        queryVo.setStatus(OrderStatus.PAYED.getCode());
+        List<Integer> statuses = new ArrayList<>();
+        statuses.add(OrderStatus.TOWRITEOFF.getCode());
+        statuses.add(OrderStatus.TOEVALUATE.getCode());
+        statuses.add(OrderStatus.COMPLETED.getCode());
+        queryVo.setStatuses(statuses);
         List<Order> orders = this.orderMapper.orderList(queryVo);
         if (!CollectionUtils.isEmpty(orders)) {
             BigDecimal total = new BigDecimal("0.00");
