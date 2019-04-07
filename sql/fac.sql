@@ -161,6 +161,8 @@ CREATE TABLE `fac_buyer` (
   `name` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '真实姓名 ',
   `token` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'token ',
   `open_id` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '用户微信openid，唯一 ',
+  `gender` varchar(2)  COMMENT '性别',
+  `avatarUrl` varchar(1024)  COMMENT '微信头像地址',
   `balance` decimal(8,2) NOT NULL COMMENT '余额:分销的奖金',
   `points` tinyint(4) NOT NULL COMMENT '积分',
   `registry_time` datetime NOT NULL COMMENT '注册日期,第一次使用本产品时间',

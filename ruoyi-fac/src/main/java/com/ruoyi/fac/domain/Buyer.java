@@ -30,6 +30,11 @@ public class Buyer extends BaseEntity {
      */
     @Excel(name = "真实姓名")
     private String name;
+    /** 性别 */
+    @Excel(name = "性别",readConverterExp="1=男,2=女,3=未知")
+    private String gender;
+    /** 微信头像地址 */
+    private String avatarUrl;
     /**
      * token
      */
@@ -165,6 +170,22 @@ public class Buyer extends BaseEntity {
 
     public void setOpenId(String openId) {
         this.openId = openId;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
     }
 
     @Override
