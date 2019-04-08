@@ -5,6 +5,7 @@ import com.ruoyi.fac.vo.UserDiagramVo;
 import com.ruoyi.fac.vo.client.ShippingAddress;
 import com.ruoyi.fac.vo.client.UserAmountVo;
 import com.ruoyi.fac.vo.client.UserDetailVo;
+import com.ruoyi.fac.vo.client.req.UserInfo;
 
 import java.util.List;
 import java.util.Map;
@@ -87,9 +88,17 @@ public interface IBuyerService {
 
     /**
      * 保存微信用户信息
+     *
      * @param openId
      * @param code
      * @return
      */
     Long saveBuyer(String openId, String code);
+
+    /**
+     * 更新用户信息:昵称、用户微信头像
+     *
+     * @param userInfo
+     */
+    String updateUserInfo(UserInfo userInfo);
 }

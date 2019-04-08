@@ -136,4 +136,10 @@
         where is_deleted = 0 AND token = #{token}
     </select>
 
+    <update id="updateUserInfo">
+        update fac_buyer
+        set nick_name = #{nickName}, gender = #{gender}, avatarUrl = #{avatarUrl},update_time = now()
+        where id = #{uid}
+    </update>
+
 </mapper>

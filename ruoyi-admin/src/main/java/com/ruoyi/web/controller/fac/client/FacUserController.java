@@ -13,6 +13,7 @@ import com.ruoyi.fac.service.IBuyerAddressService;
 import com.ruoyi.fac.service.IBuyerService;
 import com.ruoyi.fac.service.WechatAdapterService;
 import com.ruoyi.fac.vo.client.*;
+import com.ruoyi.fac.vo.client.req.UserInfo;
 import com.ruoyi.fac.vo.client.req.UserReq;
 import com.ruoyi.fac.vo.client.res.LoginVo;
 import com.ruoyi.framework.web.base.BaseController;
@@ -189,5 +190,16 @@ public class FacUserController extends BaseController {
     @ResponseBody
     public FacResult wxappRegister(@RequestBody UserReq req) {
         return FacResult.success("");
+    }
+
+    @PostMapping("/updateUserInfo")
+    @ResponseBody
+    public FacResult updateUserInfo(@RequestBody UserInfo userInfo) {
+        String result = this.buyerService.updateUserInfo(userInfo);
+        if (StringUtils.isBlank(result)) {
+            return FacResult.success("");
+        } else {
+            return FacResult.error(result);
+        }
     }
 }

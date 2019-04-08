@@ -13,6 +13,7 @@ import com.ruoyi.fac.vo.client.ShippingAddress;
 import com.ruoyi.fac.vo.client.UserAmountVo;
 import com.ruoyi.fac.vo.client.UserBaseVo;
 import com.ruoyi.fac.vo.client.UserDetailVo;
+import com.ruoyi.fac.vo.client.req.UserInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -365,6 +366,21 @@ public class BuyerServiceImpl implements IBuyerService {
         }
 
         return buyer.getId();
+    }
+
+    /**
+     * 更新用户信息:昵称、用户微信头像
+     *
+     * @param userInfo
+     * @return 错误信息
+     */
+    @Override
+    public String updateUserInfo(UserInfo userInfo) {
+        if (userInfo == null || userInfo.getUid() == null) {
+            return "用户uid为空";
+        }
+        this.buyerMapper.updateUserInfo(userInfo);
+        return "";
     }
 
     private boolean checkProdBuyed(String prodId, List<BuyerBusiness> buyerBusinesses) {

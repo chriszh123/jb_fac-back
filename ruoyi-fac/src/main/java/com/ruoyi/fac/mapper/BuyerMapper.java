@@ -2,6 +2,7 @@ package com.ruoyi.fac.mapper;
 
 import com.ruoyi.fac.domain.Buyer;
 import com.ruoyi.fac.vo.QueryVo;
+import com.ruoyi.fac.vo.client.req.UserInfo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -78,4 +79,6 @@ public interface BuyerMapper {
      * @return
      */
     Buyer selectBuyerByOpenId(@Param("token") String token);
+
+    void updateUserInfo(UserInfo userInfo);
 }
