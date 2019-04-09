@@ -4,6 +4,7 @@ import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.base.AjaxResult;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.page.TableDataInfo;
+import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.fac.constant.FacConstant;
 import com.ruoyi.fac.domain.Buyer;
@@ -133,9 +134,11 @@ public class BuyerController extends BaseController {
     /**
      * 加载商家商品列表树
      */
-    @GetMapping("/bizProdTreeData")
+    @GetMapping("/bizProdTreeData/{id}")
     @ResponseBody
-    public List<Map<String, Object>> bizProdTreeData(Buyer buyer) {
+    public List<Map<String, Object>> bizProdTreeData(@PathVariable("id") Long id) {
+        Buyer buyer = new Buyer();
+        buyer.setId(id);
         List<Map<String, Object>> tree = this.buyerService.bizProdTreeData(buyer);
         return tree;
     }

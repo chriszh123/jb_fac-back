@@ -9,18 +9,17 @@ import com.ruoyi.fac.service.IBuyerService;
 import com.ruoyi.fac.util.TimeUtils;
 import com.ruoyi.fac.vo.QueryVo;
 import com.ruoyi.fac.vo.UserDiagramVo;
-import com.ruoyi.fac.vo.client.ShippingAddress;
 import com.ruoyi.fac.vo.client.UserAmountVo;
 import com.ruoyi.fac.vo.client.UserBaseVo;
 import com.ruoyi.fac.vo.client.UserDetailVo;
 import com.ruoyi.fac.vo.client.req.UserInfo;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
-import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
@@ -55,7 +54,15 @@ public class BuyerServiceImpl implements IBuyerService {
      */
     @Override
     public Buyer selectBuyerById(Long id) {
-        return buyerMapper.selectBuyerById(id);
+        Buyer buyer = buyerMapper.selectBuyerById(id);
+        if (StringUtils.equals("1", buyer.getGender())) {
+            buyer.setGender("男");
+        } else if (StringUtils.equals("2", buyer.getGender())) {
+            buyer.setGender("女");
+        } else {
+            buyer.setGender("其它");
+        }
+        return buyer;
     }
 
     /**
@@ -144,6 +151,9 @@ public class BuyerServiceImpl implements IBuyerService {
      */
     @Override
     public List<Map<String, Object>> bizProdTreeData(Buyer buyer) {
+        if (buyer == null || buyer.getId() == null) {
+            return null;
+        }
         List<Map<String, Object>> data = new ArrayList<>();
         Business business = new Business();
         business.setIsDeleted(0);
