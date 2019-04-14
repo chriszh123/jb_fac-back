@@ -11,7 +11,8 @@ public enum OrderStatus {
     TOWRITEOFF("待核销", 1),
     TOEVALUATE("待评价", 2),
     COMPLETED("已完成", 3),
-    CACELED("已取消", 4);
+    CACELED("已取消", 4),
+    TOWRITEOFF_BIZ("商家待核销", 5);
 
     private String name;
     private Integer code;

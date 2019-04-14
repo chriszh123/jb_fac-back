@@ -12,7 +12,9 @@ import com.ruoyi.fac.exception.FacException;
 import com.ruoyi.fac.service.IOrderService;
 import com.ruoyi.fac.vo.client.*;
 import com.ruoyi.fac.vo.client.req.OrderReq;
+import com.ruoyi.framework.util.ShiroUtils;
 import com.ruoyi.framework.web.base.BaseController;
+import com.ruoyi.system.domain.SysUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -83,5 +85,15 @@ public class FacOrderController extends BaseController {
         } else {
             return FacResult.error("当前订单已不存在，请联系管理员");
         }
+    }
+
+    @PostMapping("/writeOffOrder")
+    @ResponseBody
+    public FacResult writeOffOrder(@RequestBody OrderReq req) {
+        if (StringUtils.isEmpty(req.getToken()) || StringUtils.isEmpty(req.getOrderNo())) {
+            return FacResult.error(FacCode.PARAMTER_NULL.getCode(), FacCode.PARAMTER_NULL.getMsg());
+        }
+        this.orderService.writeOffOrder(req.getToken(), req.getOrderNo());
+        return FacResult.success("");
     }
 }

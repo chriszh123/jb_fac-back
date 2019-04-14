@@ -97,6 +97,10 @@ public class BuyerServiceImpl implements IBuyerService {
     @Override
     public int updateBuyer(Buyer buyer) {
         // 删除用户与商家商品关联表
+        Buyer buyerDB = this.buyerMapper.selectBuyerById(buyer.getId());
+        if (buyerDB == null) {
+            return 0;
+        }
         BuyerBusiness buyerBusiness = new BuyerBusiness();
         buyerBusiness.setUserId(buyer.getId());
         this.buyerBusinessMapper.deleteBuyerBusinessByUserId(buyerBusiness);
@@ -116,6 +120,7 @@ public class BuyerServiceImpl implements IBuyerService {
                 }
                 buyerBusiness.setUserId(buyer.getId());
                 buyerBusiness.setBusinessId(Long.valueOf(prodRefArr[2]));
+                buyerBusiness.setToken(buyerDB.getToken());
                 prodId = prodRefArr[1].substring(prodRefArr[2].length());
                 buyerBusiness.setBusinessProdId(Long.valueOf(prodId));
                 buyerBusiness.setCreateTime(now);

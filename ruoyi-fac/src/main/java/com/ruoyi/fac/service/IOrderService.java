@@ -124,4 +124,12 @@ public interface IOrderService {
      * @return OrderDetailVo
      */
     OrderDetailVo orderDetail(long id, String token);
+
+    /**
+     * 核销商品订单
+     *
+     * @param token
+     * @param orderNo
+     */
+    void writeOffOrder(String token, String orderNo);
 }

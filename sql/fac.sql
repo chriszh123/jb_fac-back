@@ -181,6 +181,7 @@ drop table if exists `fac_buyer_business`;
 CREATE TABLE `fac_buyer_business` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
   `user_id` bigint(20) DEFAULT NULL COMMENT '用户id',
+  `token` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'token ',
   `business_id` bigint(20) DEFAULT NULL COMMENT '绑定商家',
   `business_prod_id` bigint(20) DEFAULT NULL COMMENT '绑定商家的某一个商品',
   `create_time` datetime NOT NULL COMMENT '创建时间',

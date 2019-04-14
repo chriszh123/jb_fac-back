@@ -49,6 +49,8 @@ public class OrderServiceImpl implements IOrderService {
     private ProductMapper productMapper;
     @Autowired
     private FacProductWriteoffMapper facProductWriteoffMapper;
+    @Autowired
+    private BuyerBusinessMapper buyerBusinessMapper;
 
     /**
      * 查询订单信息
@@ -412,18 +414,48 @@ public class OrderServiceImpl implements IOrderService {
         if (CollectionUtils.isEmpty(orders)) {
             return vo;
         }
-        // 1.待付款
-        int count_id_no_pay = 0;
+        int paying = 0, toWriteoff = 0, toEvaluate = 0, complete = 0, cancel = 0;
         for (Order item : orders) {
             if (item.getStatus() == null) {
                 log.error("order status is null, orderId = " + item.getId());
                 continue;
             }
             if (OrderStatus.PAYING.getCode().intValue() == item.getStatus().intValue()) {
-                count_id_no_pay = count_id_no_pay + 1;
+                paying++;
+            } else if (OrderStatus.TOWRITEOFF.getCode().intValue() == item.getStatus().intValue()) {
+                toWriteoff++;
+            } else if (OrderStatus.TOEVALUATE.getCode().intValue() == item.getStatus().intValue()) {
+                toEvaluate++;
+            } else if (OrderStatus.COMPLETED.getCode().intValue() == item.getStatus().intValue()) {
+                complete++;
+            } else if (OrderStatus.CACELED.getCode().intValue() == item.getStatus().intValue()) {
+                cancel++;
             }
         }
-        vo.setCount_id_no_pay(count_id_no_pay);
+        vo.setPaying(paying);
+        vo.setToWriteoff(toWriteoff);
+        vo.setToEvaluate(toEvaluate);
+        vo.setComplete(complete);
+        int writeoffing = 0;
+        // 查询当前用户是不是商家，有没有自己的商品
+        BuyerBusiness buyerBusiness = new BuyerBusiness();
+        buyerBusiness.setToken(token);
+        buyerBusiness.setIsDeleted(0);
+        List<BuyerBusiness> buyerBusinesses = this.buyerBusinessMapper.selectBuyerBusinessList(buyerBusiness);
+        // 用户类型:0-普通购买用户,1-商家
+        vo.setUserType(CollectionUtils.isEmpty(buyerBusinesses) ? 0 : 1);
+        if (CollectionUtils.isNotEmpty(buyerBusinesses)) {
+            List<Long> prodIds = new ArrayList<>();
+            for (BuyerBusiness item : buyerBusinesses) {
+                prodIds.add(item.getBusinessProdId());
+            }
+            // 查询当前用户名下的商品是否存在处于待核销(买家已付款)的订单
+            List<Integer> status = new ArrayList<>();
+            status.add(OrderStatus.TOWRITEOFF.getCode());
+            List<Order> orderList = this.orderMapper.selectProductsByProdAndStatus(prodIds, status);
+            // 待核销：商家要核销的自己的商品
+            vo.setWriteoffing(CollectionUtils.isNotEmpty(orderList) ? orderList.size() : 0);
+        }
 
         return vo;
     }
@@ -517,6 +549,46 @@ public class OrderServiceImpl implements IOrderService {
         }
 
         return orderDetailVo;
+    }
+
+    /**
+     * 核销商品订单
+     *
+     * @param token
+     * @param orderNo
+     */
+    @Override
+    public void writeOffOrder(String token, String orderNo) {
+        if (StringUtils.isBlank(orderNo)) {
+            return;
+        }
+        Order order = this.orderMapper.selectOrderByOrderNo(orderNo);
+        if (order == null) {
+            return;
+        }
+        Product product = this.productMapper.selectProductById(order.getProdId());
+        if (product == null) {
+            return;
+        }
+        Business business = this.businessMapper.selectBusinessById(product.getBusinessId());
+        if (business == null) {
+            return;
+        }
+        // 更新核销时间、操作人
+        Date nowDate = new Date();
+        FacProductWriteoff facProductWriteoff = new FacProductWriteoff();
+        facProductWriteoff.setOrderNo(orderNo);
+        List<FacProductWriteoff> records = this.facProductWriteoffMapper.selectFacProductWriteoffList(facProductWriteoff);
+        if (CollectionUtils.isEmpty(records)) {
+            return;
+        }
+        facProductWriteoff = records.get(0);
+        facProductWriteoff.setWriteoffTime(nowDate);
+        facProductWriteoff.setStatus(1);
+        facProductWriteoff.setUpdateTime(nowDate);
+        facProductWriteoff.setOperatorId(Long.valueOf(business.getId()));
+        facProductWriteoff.setOperatorName(business.getName());
+        this.facProductWriteoffMapper.updateFacProductWriteoff(facProductWriteoff);
     }
 
     private void convertOrders(OrderListVo vo, List<Order> orders) {

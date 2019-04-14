@@ -63,4 +63,12 @@ public interface FacProductWriteoffMapper {
     int deleteFacProductWriteoffByOrderNos(@Param("orderNos") List<String> orderNos);
 
     List<FacProductWriteoff> selectFacProductWriteoffListByOrderNos(@Param("orderNos") List<String> orderNos);
+
+    /**
+     * 商家核销商品订单
+     *
+     * @param facProductWriteoff 核销记录信息
+     * @return 结果
+     */
+    int WriteoffByOrderNo(FacProductWriteoff facProductWriteoff);
 }

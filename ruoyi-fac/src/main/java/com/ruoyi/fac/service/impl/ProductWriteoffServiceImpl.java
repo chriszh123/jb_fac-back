@@ -39,6 +39,9 @@ public class ProductWriteoffServiceImpl implements IProductWriteoffService {
      */
     @Override
     public List<FacProductWriteoff> selectProductWriteoffList(FacProductWriteoff productWriteoff) {
+        if (productWriteoff.getProductId() == null) {
+            return null;
+        }
         productWriteoff.setIsDeleted(0);
         return productWriteoffMapper.selectFacProductWriteoffList(productWriteoff);
     }
