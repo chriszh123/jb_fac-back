@@ -9,9 +9,11 @@
         <!--查询区域-->
         <div class="col-sm-12 search-collapse">
             <form id="form-product-writeOff" th:object="${product}">
-                <input type="hidden" id="productId" name="productId" th:field="*{id}"/>
                 <div class="select-list">
                     <ul>
+                        <li>
+                            商品ID：<input type="text" id="productId" name="productId" th:field="*{id}" disabled="true"/>
+                        </li>
                         <li>
                             核销ID：<input type="text" id="id" name="id"/>
                         </li>
