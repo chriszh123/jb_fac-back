@@ -3,6 +3,7 @@ package com.ruoyi.fac.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.fac.domain.FacProductWriteoff;
 import com.ruoyi.fac.domain.Order;
 import com.ruoyi.fac.mapper.FacProductWriteoffMapper;
@@ -46,7 +47,7 @@ public class ProductWriteoffServiceImpl implements IProductWriteoffService {
     @Override
     public List<FacProductWriteoff> selectProductWriteoffList(FacProductWriteoff productWriteoff) {
         if (productWriteoff.getProductId() == null) {
-            return null;
+            return new ArrayList<>();
         }
         // 当前商品涉及到的订单
         Order order = new Order();
@@ -54,14 +55,18 @@ public class ProductWriteoffServiceImpl implements IProductWriteoffService {
         order.setIsDeleted(0);
         List<Order> orders = this.orderMapper.selectOrderList(order);
         if (CollectionUtils.isEmpty(orders)) {
-            return null;
+            return new ArrayList<>();
         }
         List<String> orderNos = new ArrayList<>();
         for (Order item : orders) {
             orderNos.add(item.getOrderNo());
         }
         // 当前订单对应的核销记录
-        List<FacProductWriteoff> productWriteoffs = this.productWriteoffMapper.selectFacProductWriteoffListByOrderNos(orderNos);
+        List<Integer> status = new ArrayList<>();
+        if (productWriteoff.getStatus() != null) {
+            status.add(productWriteoff.getStatus());
+        }
+        List<FacProductWriteoff> productWriteoffs = this.productWriteoffMapper.selectFacProductWriteoffListByOrderNos(orderNos, status);
 
         return productWriteoffs;
     }

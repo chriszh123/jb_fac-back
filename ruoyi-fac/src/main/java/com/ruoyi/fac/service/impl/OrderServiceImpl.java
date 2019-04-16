@@ -619,7 +619,7 @@ public class OrderServiceImpl implements IOrderService {
             good2Order.put(order.getProdId(), order);
             orderNos.add(order.getOrderNo());
         }
-        List<FacProductWriteoff> productWriteoffs = this.facProductWriteoffMapper.selectFacProductWriteoffListByOrderNos(orderNos);
+        List<FacProductWriteoff> productWriteoffs = this.facProductWriteoffMapper.selectFacProductWriteoffListByOrderNos(orderNos, null);
         if (CollectionUtils.isNotEmpty(productWriteoffs)) {
             // 设置核销码
             Map<String, String> order2WriteCode = new HashMap<>(16);
