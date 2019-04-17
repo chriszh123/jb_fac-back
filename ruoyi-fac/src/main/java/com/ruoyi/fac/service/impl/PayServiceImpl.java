@@ -1,5 +1,6 @@
 package com.ruoyi.fac.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.ruoyi.common.config.Global;
 import com.ruoyi.fac.domain.Order;
 import com.ruoyi.fac.enums.OrderStatus;
@@ -9,6 +10,7 @@ import com.ruoyi.fac.util.MD5;
 import com.ruoyi.fac.util.WebUtils;
 import com.ruoyi.fac.vo.wxpay.WxPrePayReq;
 import com.ruoyi.fac.vo.wxpay.WxPrePayRes;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -59,53 +61,53 @@ public class PayServiceImpl implements IPayService {
     @Override
     public WxPrePayRes getWxPrePayInfo(WxPrePayReq req, HttpServletRequest request, HttpServletResponse response) throws Exception {
         //设置最终返回对象
-        WxPrePayRes res = new WxPrePayRes();
+        final WxPrePayRes res = new WxPrePayRes();
         String openid = req.getToken();
-        //接口调用总金额单位为分换算一下(测试金额改成1,单位为分则是0.01,根据自己业务场景判断是转换成float类型还是int类型)
+        //接口调用总金额单位为分,需要换算一下(测试金额改成1,单位为分则是0.01,根据自己业务场景判断是转换成float类型还是int类型)
         //String amountFen = Integer.valueOf((Integer.parseInt(amount)*100)).toString();
 //        String amountFen = Float.valueOf((Float.parseFloat(req.getMoney()) * 100)).toString();
         String amountFen = "1";
-        //创建hashmap(用户获得签名)
+        // 创建hashmap(用户获得签名)
         SortedMap<String, String> paraMap = new TreeMap<String, String>();
-        //设置body变量 (支付成功显示在微信支付 商品详情中)
-        String body = "啦啦啦测试";
-        Order order = this.orderMapper.selectOrderById(Long.valueOf(req.getNextAction().getId()));
+        // 设置body变量 (支付成功显示在微信支付 商品详情中)
+        String body = "测试预支付接口：zgf";
+        // id为订单号
+        final Order order = this.orderMapper.selectOrderByOrderNo(req.getNextAction().getId());
         if (order == null) {
             throw new Exception("当前订单已不存在，请确认");
         }
         if (!OrderStatus.PAYING.getCode().equals(order.getStatus())) {
             throw new Exception("当前订单处于非待付款状态，请核对后再操作");
         }
-        //设置随机字符串
-        String nonceStr = UUID.randomUUID().toString().replaceAll("-", "");
-        //设置商户订单号
+        // 设置随机字符串
+        final String nonceStr = UUID.randomUUID().toString().replaceAll("-", "");
+        // 设置商户订单号
         String outTradeNo = order.getOrderNo();
-
-        //设置请求参数(小程序ID)
+        // 设置请求参数(小程序ID)
         paraMap.put("appid", Global.getFacAppId().toUpperCase());
-        //设置请求参数(商户号)
+        // 设置请求参数(商户号)
         paraMap.put("mch_id", Global.getFacMchId().toUpperCase());
-        //设置请求参数(随机字符串)
+        // 设置请求参数(随机字符串)
         paraMap.put("nonce_str", nonceStr);
-        //设置请求参数(商品描述)
+        // 设置请求参数(商品描述)
         paraMap.put("body", body);
-        //设置请求参数(商户订单号)
+        // 设置请求参数(商户订单号)
         paraMap.put("out_trade_no", outTradeNo);
-        //设置请求参数(总金额)
+        // 设置请求参数(总金额)
         paraMap.put("total_fee", amountFen);
-        //设置请求参数(终端IP)
+        // 设置请求参数(终端IP)
         paraMap.put("spbill_create_ip", WebUtils.getIpAddress(request));
-        //设置请求参数(通知地址)
+        // 设置请求参数(通知地址)
         paraMap.put("notify_url", Global.getDomain() + "/fac/client/pay/wx/payCallback");
-        //设置请求参数(交易类型)
+        // 设置请求参数(交易类型)
         paraMap.put("trade_type", "JSAPI");
-        //设置请求参数(openid)(在接口文档中 该参数 是否必填项 但是一定要注意 如果交易类型设置成'JSAPI'则必须传入openid)
+        // 设置请求参数(openid)(在接口文档中 该参数 是否必填项 但是一定要注意 如果交易类型设置成'JSAPI'则必须传入openid)
         paraMap.put("openid", openid);
-        //调用逻辑传入参数按照字段名的 ASCII 码从小到大排序（字典序）
+        // 调用逻辑传入参数按照字段名的 ASCII 码从小到大排序（字典序）
         String stringA = formatUrlMap(paraMap, false, false);
-        //第二步，在stringA最后拼接上key得到stringSignTemp字符串，并对stringSignTemp进行MD5运算，再将得到的字符串所有字符转换为大写，得到sign值signValue。(签名)
+        // 第二步，在stringA最后拼接上key得到stringSignTemp字符串，并对stringSignTemp进行MD5运算，再将得到的字符串所有字符转换为大写，得到sign值signValue(签名)
         String sign = MD5.MD5Encode(stringA + "&key=" + Global.getFacMchSecret()).toUpperCase();
-        //将参数 编写XML格式
+        // 将参数 编写XML格式
         StringBuffer paramBuffer = new StringBuffer();
         paramBuffer.append("<xml>");
         paramBuffer.append("<appid>" + Global.getFacAppId().toUpperCase() + "</appid>");
@@ -122,19 +124,20 @@ public class PayServiceImpl implements IPayService {
         paramBuffer.append("</xml>");
 
         try {
-            //发送请求(POST)(获得数据包ID)(这有个注意的地方 如果不转码成ISO8859-1则会告诉你body不是UTF8编码 就算你改成UTF8编码也一样不好使 所以修改成ISO8859-1)
+            // 发送请求(POST)(获得数据包ID)(这有个注意的地方 如果不转码成ISO8859-1则会告诉你body不是UTF8编码 就算你改成UTF8编码也一样不好使 所以修改成ISO8859-1)
             Map<String, String> map = doXMLParse(getRemotePortData(prepayUrl, new String(paramBuffer.toString().getBytes(), "ISO8859-1")));
-            //应该创建 支付表数据
+            logger.info(MapUtils.isNotEmpty(map) ? JSON.toJSONString(map) : "调用微信获取预支付信息接口没有响应数据");
+            // 应该创建支付表数据
             if (map != null) {
                 if (map.containsKey("prepay_id")) {
+                    // 更新当前订单对应的微信预支付id
                     Long prepayId = Long.valueOf(map.get("prepay_id"));
                     this.orderMapper.updateOrderPrePayId(order.getId(), prepayId);
-
                     //创建 时间戳
                     String timeStamp = Long.valueOf(System.currentTimeMillis()).toString();
                     // 签名
                     //创建hashmap(用户获得签名)
-                    paraMap = new TreeMap<String, String>();
+                    paraMap = new TreeMap<>();
                     //设置(小程序ID)(这块一定要是大写)
                     paraMap.put("appId", Global.getFacAppId().toLowerCase());
                     //设置(时间戳)
@@ -244,7 +247,7 @@ public class PayServiceImpl implements IPayService {
             Collections.sort(infoIds, new Comparator<Map.Entry<String, String>>() {
                 @Override
                 public int compare(Map.Entry<String, String> o1, Map.Entry<String, String> o2) {
-                    return (o1.getKey()).toString().compareTo(o2.getKey());
+                    return (o1.getKey()).compareTo(o2.getKey());
                 }
             });
             // 构造URL 键值对的格式
