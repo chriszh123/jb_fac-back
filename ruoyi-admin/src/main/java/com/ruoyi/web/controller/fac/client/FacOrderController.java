@@ -93,7 +93,11 @@ public class FacOrderController extends BaseController {
         if (StringUtils.isEmpty(req.getToken()) || StringUtils.isEmpty(req.getOrderNo())) {
             return FacResult.error(FacCode.PARAMTER_NULL.getCode(), FacCode.PARAMTER_NULL.getMsg());
         }
-        this.orderService.writeOffOrder(req.getToken(), req.getOrderNo());
-        return FacResult.success("");
+        try {
+            this.orderService.writeOffOrder(req.getToken(), req.getOrderNo());
+            return FacResult.success("");
+        } catch (Exception ex) {
+            return FacResult.error(ex.getMessage());
+        }
     }
 }

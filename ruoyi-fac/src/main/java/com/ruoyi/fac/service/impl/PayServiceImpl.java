@@ -7,6 +7,7 @@ import com.ruoyi.fac.enums.OrderStatus;
 import com.ruoyi.fac.mapper.OrderMapper;
 import com.ruoyi.fac.service.IPayService;
 import com.ruoyi.fac.util.MD5;
+import com.ruoyi.fac.util.TimeUtils;
 import com.ruoyi.fac.util.WebUtils;
 import com.ruoyi.fac.vo.wxpay.WxPrePayReq;
 import com.ruoyi.fac.vo.wxpay.WxPrePayRes;
@@ -179,7 +180,6 @@ public class PayServiceImpl implements IPayService {
      */
     @Override
     public void payCallback(HttpServletRequest request, HttpServletResponse response) {
-        logger.info("微信回调接口方法 start");
         logger.info("微信回调接口 操作逻辑 start");
         String inputLine = "";
         String notityXml = "";
@@ -194,7 +194,7 @@ public class PayServiceImpl implements IPayService {
             Map<String, String> map = doXMLParse(notityXml);
             //判断 支付是否成功
             if ("SUCCESS".equals(map.get("result_code"))) {
-                logger.info("微信回调返回是否支付成功：是");
+                logger.info("微信回调返回是否支付成功：是, " + JSON.toJSONString(map));
                 //获得 返回的商户订单号
                 String outTradeNo = map.get("out_trade_no");
                 logger.info("微信回调返回商户订单号：" + outTradeNo);
@@ -220,6 +220,7 @@ public class PayServiceImpl implements IPayService {
                         }
                     }
                 }
+                logger.info("微信回调接口 操作逻辑 end, at:" + TimeUtils.getCurrentTimeSSS());
             }
         } catch (IOException e) {
             logger.error("[payCallback IOException] error", e);

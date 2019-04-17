@@ -436,7 +436,7 @@ public class OrderServiceImpl implements IOrderService {
         vo.setToWriteoff(toWriteoff);
         vo.setToEvaluate(toEvaluate);
         vo.setComplete(complete);
-        int writeoffing = 0;
+        vo.setCancel(cancel);
         // 查询当前用户是不是商家，有没有自己的商品
         BuyerBusiness buyerBusiness = new BuyerBusiness();
         buyerBusiness.setToken(token);
@@ -558,7 +558,7 @@ public class OrderServiceImpl implements IOrderService {
      * @param orderNo
      */
     @Override
-    public void writeOffOrder(String token, String orderNo) {
+    public void writeOffOrder(String token, String orderNo) throws Exception {
         if (StringUtils.isBlank(orderNo)) {
             return;
         }
@@ -583,6 +583,11 @@ public class OrderServiceImpl implements IOrderService {
             return;
         }
         facProductWriteoff = records.get(0);
+        if (facProductWriteoff.getStatus().intValue() == 1) {
+            throw new Exception(String.format("当前订单已被【%s】于%s 核销过，请核实后再操作"
+                    , facProductWriteoff.getOperatorName(), TimeUtils.date2Str(facProductWriteoff.getUpdateTime()
+                            , TimeUtils.DEFAULT_DATE_TIME_FORMAT_HH_MM_SS)));
+        }
         facProductWriteoff.setWriteoffTime(nowDate);
         facProductWriteoff.setStatus(1);
         facProductWriteoff.setUpdateTime(nowDate);
