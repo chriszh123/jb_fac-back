@@ -145,12 +145,14 @@ public class ProductServiceImpl implements IProductService {
         }
         List<Order> orders = this.orderMapper.selectProductsByProdAndStatus(prodIds, null);
         if (CollectionUtils.isNotEmpty(orders)) {
-            StringBuilder sb = new StringBuilder();
+            prodIds = new ArrayList<>();
             for (Order item : orders) {
-                sb.append(item.getProdId()).append("、");
+                if (!prodIds.contains(item.getProdId())) {
+                    prodIds.add(item.getProdId());
+                }
             }
-            sb = sb.deleteCharAt(sb.toString().length() - 1);
-            throw new FacException("以下商品ID对应的商品已存在订单信息，不能被删除:\n" + sb.toString());
+            String prodIdsStr = StringUtils.join(prodIds, ",");
+            throw new FacException("以下商品ID对应的商品已存在订单信息，不能被删除:\n" + prodIdsStr);
         }
 
         return productMapper.deleteProductByIds(Convert.toStrArray(ids));
