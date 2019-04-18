@@ -239,4 +239,10 @@
         </foreach>
         order by create_time desc
     </select>
+
+    <update id="updateProductSaleNumber">
+      update fac_product
+      set sales = sales + #{number}, order_count = order_count + 1, inventory_quantity = inventory_quantity - #{number}
+      where id = #{id}
+    </update>
 </mapper>

@@ -3,8 +3,10 @@ package com.ruoyi.fac.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.ruoyi.common.config.Global;
 import com.ruoyi.fac.domain.Order;
+import com.ruoyi.fac.domain.Product;
 import com.ruoyi.fac.enums.OrderStatus;
 import com.ruoyi.fac.mapper.OrderMapper;
+import com.ruoyi.fac.mapper.ProductMapper;
 import com.ruoyi.fac.service.IPayService;
 import com.ruoyi.fac.util.FacCommonUtils;
 import com.ruoyi.fac.util.MD5;
@@ -55,6 +57,8 @@ public class PayServiceImpl implements IPayService {
 
     @Autowired
     private OrderMapper orderMapper;
+    @Autowired
+    private ProductMapper productMapper;
 
     /**
      * 微信支付预支付接口
@@ -83,6 +87,21 @@ public class PayServiceImpl implements IPayService {
         }
         if (!OrderStatus.PAYING.getCode().equals(order.getStatus())) {
             throw new Exception("当前订单处于非待付款状态，请核对后再操作");
+        }
+        // 校验当前商品是否还可以购买:库存数据
+        Product product = this.productMapper.selectProductById(order.getProdId());
+        if (product == null || product.getIsDeleted() == 1) {
+            throw new Exception("当前商品已被删除，请选择其它商品购买");
+        }
+        if (product.getInventoryQuantity() < order.getProdNumber()) {
+            throw new Exception("当前商品库存数量已不足，请选择其它商品购买");
+        }
+        if (product.getStatus().intValue() == 2) {
+            throw new Exception("当前商品已下架，请选择其它商品购买");
+        }
+        Date nowDate = new Date();
+        if (nowDate.compareTo(product.getRushEnd()) > 0) {
+            throw new Exception("当前商品抢购时间已结束，请选择其它商品购买");
         }
         // 设置随机字符串
         final String nonceStr = UUID.randomUUID().toString().replaceAll("-", "");
@@ -212,6 +231,8 @@ public class PayServiceImpl implements IPayService {
                         //修改支付状态:订单支付成功后状态变为待核销状态
                         int sqlRow = this.orderMapper.updateOrderStatusAfterPayed(outTradeNo, OrderStatus.TOWRITEOFF.getCode().intValue());
                         if (sqlRow == 1) {
+                            // 更新当前商品对应的销售数量
+
                             logger.info("微信回调  订单号：" + outTradeNo + ",修改状态成功");
                             //封装 返回值
                             StringBuffer buffer = new StringBuffer();

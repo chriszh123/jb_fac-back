@@ -342,8 +342,17 @@ public class OrderServiceImpl implements IOrderService {
         String orderNo = DateFormatUtils.format(new Date(), "yyyyMMddHHmmssSSSS");
         for (GoodsJsonStrVo good : goodsJsonStr) {
             Product product = productMap.get(good.getGoodsId());
-            if (product == null) {
-                continue;
+            if (product == null || product.getIsDeleted() == 1) {
+                throw new FacException(String.format("商品【%s】已被删除，请选择其它商品购买", product.getName()));
+            }
+            if (product.getStatus().intValue() == 2) {
+                throw new FacException(String.format("商品【%s】已下架，请选择其它商品购买", product.getName()));
+            }
+            if (nowDate.compareTo(product.getRushEnd()) > 0) {
+                throw new FacException(String.format("商品【%s】抢购时间已结束，请选择其它商品购买", product.getName()));
+            }
+            if (product.getInventoryQuantity() == 0 || (product.getInventoryQuantity() < good.getNumber())) {
+                throw new FacException(String.format("商品【%s】库存数量已不足，请选择其它商品购买", product.getName()));
             }
             Order order = new Order();
             orders.add(order);

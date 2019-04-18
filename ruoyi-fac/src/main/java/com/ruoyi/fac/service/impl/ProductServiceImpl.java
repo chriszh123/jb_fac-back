@@ -137,7 +137,22 @@ public class ProductServiceImpl implements IProductService {
      * @return 结果
      */
     @Override
-    public int deleteProductByIds(String ids) {
+    public int deleteProductByIds(String ids) throws FacException {
+        List<Long> prodIds = new ArrayList<>();
+        String[] idsArr = ids.split(",");
+        for (int i = 0, size = idsArr.length; i < size; i++) {
+            prodIds.add(Long.valueOf(idsArr[i]));
+        }
+        List<Order> orders = this.orderMapper.selectProductsByProdAndStatus(prodIds, null);
+        if (CollectionUtils.isNotEmpty(orders)) {
+            StringBuilder sb = new StringBuilder();
+            for (Order item : orders) {
+                sb.append(item.getProdId()).append("、");
+            }
+            sb = sb.deleteCharAt(sb.toString().length() - 1);
+            throw new FacException("以下商品ID对应的商品已存在订单信息，不能被删除:\n" + sb.toString());
+        }
+
         return productMapper.deleteProductByIds(Convert.toStrArray(ids));
     }
 

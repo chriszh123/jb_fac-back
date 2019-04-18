@@ -148,7 +148,11 @@ public class ProductController extends BaseController {
     @PostMapping("/remove")
     @ResponseBody
     public AjaxResult remove(String ids) {
-        return toAjax(productService.deleteProductByIds(ids));
+        try {
+            return toAjax(productService.deleteProductByIds(ids));
+        } catch (Exception ex) {
+            return error(ex.getMessage());
+        }
     }
 
     /**
