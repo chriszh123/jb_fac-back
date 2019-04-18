@@ -6,6 +6,7 @@ import com.ruoyi.fac.domain.Order;
 import com.ruoyi.fac.enums.OrderStatus;
 import com.ruoyi.fac.mapper.OrderMapper;
 import com.ruoyi.fac.service.IPayService;
+import com.ruoyi.fac.util.FacCommonUtils;
 import com.ruoyi.fac.util.MD5;
 import com.ruoyi.fac.util.TimeUtils;
 import com.ruoyi.fac.util.WebUtils;
@@ -32,7 +33,8 @@ import java.util.*;
 
 /**
  * Created by zgf
- * https://www.cnblogs.com/yi1036943655/p/7211275.html
+ * https://www.cnblogs.com/yi1036943655/p/7211275.html  或者 https://www.cnblogs.com/yimiyan/p/5603657.html
+ * 微信官方给的代码例子：https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=11_1
  * Date 2019/2/18 17:16
  * 注意事项：
  * 　　1)、所有的签名和发送微信服务器的数据必须一致 包括Key的大小写 否则签名失败
@@ -42,6 +44,8 @@ import java.util.*;
  * 　　5)、生成签名 最后加上key的那块 加的格式是 &key = KEY 这种 而且不是直接 + key 这个地方需要注意一下 我碰了个坑 文档没看仔细
  * 　　6)、数据包ID 格式 不是 value直接设置成 数据包ID就可以 前面需要加 "prepay_id="
  * 　　7)、最后一点强调 生成签名的数据和发送服务器的数据 必须保持一致
+ * <p>
+ * https://www.cnblogs.com/yimiyan/p/5603657.html
  */
 @Service("payService")
 public class PayServiceImpl implements IPayService {
@@ -70,8 +74,8 @@ public class PayServiceImpl implements IPayService {
         String amountFen = "1";
         // 创建hashmap(用户获得签名)
         SortedMap<String, String> paraMap = new TreeMap<String, String>();
-        // 设置body变量 (支付成功显示在微信支付 商品详情中)
-        String body = "测试预支付接口：zgf";
+        // 设置body变量 (支付成功显示在微信支付 商品详情中)：如果是中文，可能会遇到毫无头绪的签名错误，严重者开始怀疑人生
+        String body = "JB FAC";
         // id为订单号
         final Order order = this.orderMapper.selectOrderByOrderNo(req.getNextAction().getId());
         if (order == null) {
@@ -84,25 +88,26 @@ public class PayServiceImpl implements IPayService {
         final String nonceStr = UUID.randomUUID().toString().replaceAll("-", "");
         // 设置商户订单号
         String outTradeNo = order.getOrderNo();
-        // 设置请求参数(小程序ID)
-        paraMap.put("appid", Global.getFacAppId().toUpperCase());
-        // 设置请求参数(商户号)
+        // 设置请求参数
+        // 公众账号ID：微信支付分配的公众账号ID（企业号corpid即为此appId）：应用ID==登陆微信公众号后台-开发-基本配置
+        paraMap.put("appid", Global.getFacAppId().toLowerCase());
+        // 设置请求参数(商户号)：微信支付分配的商户号
         paraMap.put("mch_id", Global.getFacMchId().toUpperCase());
-        // 设置请求参数(随机字符串)
-        paraMap.put("nonce_str", nonceStr);
+        // 设置请求参数(随机字符串)：随机字符串，长度要求在32位以内
+        paraMap.put("nonce_str", FacCommonUtils.substringStr(nonceStr, 32));
         // 设置请求参数(商品描述)
         paraMap.put("body", body);
-        // 设置请求参数(商户订单号)
+        // 设置请求参数(商户订单号)：商户系统内部订单号，要求32个字符内，只能是数字、大小写字母_-|* 且在同一个商户号下唯一
         paraMap.put("out_trade_no", outTradeNo);
-        // 设置请求参数(总金额)
+        // 设置请求参数(总金额)：订单总金额，单位为分
         paraMap.put("total_fee", amountFen);
-        // 设置请求参数(终端IP)
+        // 设置请求参数(终端IP)：支持IPV4和IPV6两种格式的IP地址。调用微信支付API的机器IP
         paraMap.put("spbill_create_ip", WebUtils.getIpAddress(request));
-        // 设置请求参数(通知地址)
+        // 设置请求参数(通知地址)：异步接收微信支付结果通知的回调地址，通知url必须为外网可访问的url，不能携带参数
         paraMap.put("notify_url", Global.getDomain() + "/fac/client/pay/wx/payCallback");
         // 设置请求参数(交易类型)
         paraMap.put("trade_type", "JSAPI");
-        // 设置请求参数(openid)(在接口文档中 该参数 是否必填项 但是一定要注意 如果交易类型设置成'JSAPI'则必须传入openid)
+        // 设置请求参数(openid)：trade_type=JSAPI时（即JSAPI支付），此参数必传，此参数为微信用户在商户对应appid下的唯一标识
         paraMap.put("openid", openid);
         // 调用逻辑传入参数按照字段名的 ASCII 码从小到大排序（字典序）
         String stringA = formatUrlMap(paraMap, false, false);
@@ -112,6 +117,7 @@ public class PayServiceImpl implements IPayService {
         StringBuffer paramBuffer = new StringBuffer();
         paramBuffer.append("<xml>");
         paramBuffer.append("<appid>" + Global.getFacAppId().toUpperCase() + "</appid>");
+        paramBuffer.append("<attach>支付测试</attach>");
         paramBuffer.append("<mch_id>" + Global.getFacMchId().toUpperCase() + "</mch_id>");
         paramBuffer.append("<nonce_str>" + paraMap.get("nonce_str") + "</nonce_str>");
         paramBuffer.append("<sign>" + sign + "</sign>");
@@ -140,7 +146,7 @@ public class PayServiceImpl implements IPayService {
                     //创建hashmap(用户获得签名)
                     paraMap = new TreeMap<>();
                     //设置(小程序ID)(这块一定要是大写)
-                    paraMap.put("appId", Global.getFacAppId().toLowerCase());
+                    paraMap.put("appId", Global.getFacAppId().toUpperCase());
                     //设置(时间戳)
                     paraMap.put("timeStamp", timeStamp);
                     //设置(随机串)

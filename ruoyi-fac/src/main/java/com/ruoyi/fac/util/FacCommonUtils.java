@@ -1,5 +1,7 @@
 package com.ruoyi.fac.util;
 
+import com.ruoyi.common.utils.StringUtils;
+
 import java.util.Random;
 
 /**
@@ -18,6 +20,17 @@ public class FacCommonUtils {
         }
 
         return data.toString();
+    }
+
+    public static String substringStr(String data, int length) {
+        if (StringUtils.isBlank(data) || data.length() <= length) {
+            return data;
+        }
+        if (data.trim().length() > length) {
+            data = data.trim().substring(0, length);
+        }
+
+        return data.trim();
     }
 
     public static void main(String[] args) {
