@@ -32,10 +32,12 @@
         <result property="isDeleted" column="is_deleted"/>
         <result property="orderRemark" column="remark"/>
         <result property="prepayId" column="prepay_id"/>
+        <result property="inviterId" column="inviter_id"/>
     </resultMap>
 
     <sql id="selectOrderVo">
-        select id, order_no, prod_id, prod_name, prod_number, price, status, pay_time, token,open_id, user_id, user_name, nick_name, remark, ship_id, ship_code, remark_mngt, ship, cacel_id, cacel_name, cacel_time, prepay_id,create_time, update_time, operator_id, operator_name, is_deleted from fac_order
+        select id, order_no, prod_id, prod_name, prod_number, price, status, pay_time, token,open_id, user_id, user_name, nick_name, remark, ship_id
+        , ship_code, remark_mngt, ship, cacel_id, cacel_name, cacel_time, prepay_id,inviter_id,create_time, update_time, operator_id, operator_name, is_deleted from fac_order
     </sql>
 
     <select id="selectOrderList" parameterType="Order" resultMap="OrderResult">
@@ -103,6 +105,8 @@
             <if test="operatorId != null  ">operator_id,</if>
             <if test="operatorName != null  and operatorName != ''  ">operator_name,</if>
             <if test="isDeleted != null  ">is_deleted,</if>
+            <if test="prepayId != null  ">prepay_id,</if>
+            <if test="inviterId != null  ">inviter_id,</if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null  ">#{id},</if>
@@ -130,6 +134,8 @@
             <if test="operatorId != null  ">#{operatorId},</if>
             <if test="operatorName != null  and operatorName != ''  ">#{operatorName},</if>
             <if test="isDeleted != null  ">#{isDeleted},</if>
+            <if test="prepayId != null  ">#{prepayId},</if>
+            <if test="inviterId != null  ">#{inviterId},</if>
         </trim>
     </insert>
 
@@ -209,8 +215,7 @@
         insert into
         fac_order
         (order_no, prod_id, prod_name, prod_number, price, status, user_id, user_name, nick_name, remark, ship,
-        create_time,
-        update_time, operator_id, operator_name, is_deleted,token, open_id)
+        create_time,update_time, operator_id, operator_name, is_deleted,token, open_id, inviter_id)
         values
         <foreach collection="list" item="item" index="index" separator=",">
             (
@@ -221,7 +226,8 @@
             #{item.remark,jdbcType=VARCHAR}, #{item.ship, jdbcType=TINYINT},
             #{item.createTime,jdbcType=TIMESTAMP}, #{item.updateTime,jdbcType=TIMESTAMP},
             #{item.operatorId,jdbcType=BIGINT}, #{item.operatorName,jdbcType=VARCHAR},
-            #{item.isDeleted,jdbcType=TINYINT},#{item.token,jdbcType=VARCHAR},#{item.openId,jdbcType=VARCHAR}
+            #{item.isDeleted,jdbcType=TINYINT},#{item.token,jdbcType=VARCHAR},
+            #{item.openId,jdbcType=VARCHAR},#{item.inviterId, jdbcType=BIGINT}
             )
         </foreach>
     </insert>

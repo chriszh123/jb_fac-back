@@ -115,6 +115,10 @@ public class Order extends BaseEntity {
      */
     private Long prepayId;
     /**
+     * 商品分享人
+     */
+    private Long inviterId;
+    /**
      * 操作者ID
      */
     private Long operatorId;
@@ -325,6 +329,14 @@ public class Order extends BaseEntity {
 
     public void setPrepayId(Long prepayId) {
         this.prepayId = prepayId;
+    }
+
+    public Long getInviterId() {
+        return inviterId;
+    }
+
+    public void setInviterId(Long inviterId) {
+        this.inviterId = inviterId;
     }
 
     @Override

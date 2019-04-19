@@ -121,7 +121,7 @@ public interface OrderMapper {
      * @param orderNo 订单号
      * @return
      */
-    Order selectOrderByOrderNo(@Param("orderNo") String orderNo);
+    List<Order> selectOrderByOrderNo(@Param("orderNo") String orderNo);
 
     /**
      * 支付完成后更新订单状态

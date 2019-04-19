@@ -59,6 +59,7 @@ drop table if exists `fac_product_writeoff`;
 CREATE TABLE `fac_product_writeoff` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
   `order_no` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '订单号,eg:201812231410342545',
+  `prod_id` bigint(20) DEFAULT NULL COMMENT '商品id',
   `buyer_id` bigint(20) NOT NULL COMMENT '买者ID',
   `code` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '核销码',
   `writeoff_time` datetime COMMENT '核销时间',
@@ -98,6 +99,7 @@ CREATE TABLE `fac_order` (
   `cacel_name` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '取消订单操作人名称',
   `cacel_time` datetime DEFAULT NULL COMMENT '取消订单操作时间',
   `prepay_id` bigint(20) DEFAULT NULL COMMENT '微信预支付id',
+  `inviter_id` bigint(20) DEFAULT NULL COMMENT '商品分享人id',
   `create_time` datetime NOT NULL COMMENT '创建时间',
   `update_time` datetime NOT NULL COMMENT '最近更新时间',
   `operator_id` bigint(20) DEFAULT NULL COMMENT '操作者ID',

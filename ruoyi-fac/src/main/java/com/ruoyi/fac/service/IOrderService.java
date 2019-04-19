@@ -131,5 +131,5 @@ public interface IOrderService {
      * @param token
      * @param orderNo
      */
-    void writeOffOrder(String token, String orderNo) throws Exception;
+    void writeOffOrder(String token, String orderNo, String prodId) throws Exception;
 }

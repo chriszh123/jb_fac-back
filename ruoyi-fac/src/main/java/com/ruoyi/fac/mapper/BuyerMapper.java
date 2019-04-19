@@ -81,4 +81,6 @@ public interface BuyerMapper {
     Buyer selectBuyerByOpenId(@Param("token") String token);
 
     void updateUserInfo(UserInfo userInfo);
+
+    void batchUpdatePoints(@Param("list") List<Buyer> list);
 }

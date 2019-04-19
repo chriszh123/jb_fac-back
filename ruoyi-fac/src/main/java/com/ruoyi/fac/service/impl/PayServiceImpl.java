@@ -2,18 +2,21 @@ package com.ruoyi.fac.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.ruoyi.common.config.Global;
+import com.ruoyi.fac.constant.FacConstant;
+import com.ruoyi.fac.domain.Buyer;
+import com.ruoyi.fac.domain.FacProductWriteoff;
 import com.ruoyi.fac.domain.Order;
 import com.ruoyi.fac.domain.Product;
 import com.ruoyi.fac.enums.OrderStatus;
+import com.ruoyi.fac.mapper.BuyerMapper;
+import com.ruoyi.fac.mapper.FacProductWriteoffMapper;
 import com.ruoyi.fac.mapper.OrderMapper;
 import com.ruoyi.fac.mapper.ProductMapper;
 import com.ruoyi.fac.service.IPayService;
-import com.ruoyi.fac.util.FacCommonUtils;
-import com.ruoyi.fac.util.MD5;
-import com.ruoyi.fac.util.TimeUtils;
-import com.ruoyi.fac.util.WebUtils;
+import com.ruoyi.fac.util.*;
 import com.ruoyi.fac.vo.wxpay.WxPrePayReq;
 import com.ruoyi.fac.vo.wxpay.WxPrePayRes;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jdom2.Document;
@@ -23,10 +26,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.math.BigDecimal;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -58,7 +63,11 @@ public class PayServiceImpl implements IPayService {
     @Autowired
     private OrderMapper orderMapper;
     @Autowired
+    private BuyerMapper buyerMapper;
+    @Autowired
     private ProductMapper productMapper;
+    @Autowired
+    private FacProductWriteoffMapper facProductWriteoffMapper;
 
     /**
      * 微信支付预支付接口
@@ -81,32 +90,41 @@ public class PayServiceImpl implements IPayService {
         // 设置body变量 (支付成功显示在微信支付 商品详情中)：如果是中文，可能会遇到毫无头绪的签名错误，严重者开始怀疑人生
         String body = "JB FAC";
         // id为订单号
-        final Order order = this.orderMapper.selectOrderByOrderNo(req.getNextAction().getId());
-        if (order == null) {
+        final List<Order> orders = this.orderMapper.selectOrderByOrderNo(req.getNextAction().getId());
+        if (CollectionUtils.isEmpty(orders)) {
             throw new Exception("当前订单已不存在，请确认");
         }
-        if (!OrderStatus.PAYING.getCode().equals(order.getStatus())) {
+        if (!OrderStatus.PAYING.getCode().equals(orders.get(0).getStatus())) {
             throw new Exception("当前订单处于非待付款状态，请核对后再操作");
         }
         // 校验当前商品是否还可以购买:库存数据
-        Product product = this.productMapper.selectProductById(order.getProdId());
-        if (product == null || product.getIsDeleted() == 1) {
-            throw new Exception("当前商品已被删除，请选择其它商品购买");
+        Long[] ids = new Long[orders.size()];
+        // <prodId, Order>
+        Map<Long, Order> prod2Order = new HashMap<>(orders.size());
+        for (int i = 0, size = orders.size(); i < size; i++) {
+            ids[i] = orders.get(i).getProdId();
+            prod2Order.put(orders.get(i).getProdId(), orders.get(i));
         }
-        if (product.getInventoryQuantity() < order.getProdNumber()) {
-            throw new Exception("当前商品库存数量已不足，请选择其它商品购买");
-        }
-        if (product.getStatus().intValue() == 2) {
-            throw new Exception("当前商品已下架，请选择其它商品购买");
-        }
-        Date nowDate = new Date();
-        if (nowDate.compareTo(product.getRushEnd()) > 0) {
-            throw new Exception("当前商品抢购时间已结束，请选择其它商品购买");
+        List<Product> products = this.productMapper.selectProductsByIds(ids);
+        for (Product item : products) {
+            if (item == null || item.getIsDeleted() == 1) {
+                throw new Exception(String.format("商品【%s】已被删除，请选择其它商品购买", item.getName()));
+            }
+            if (prod2Order.containsKey(item.getId()) && item.getInventoryQuantity() < prod2Order.get(item.getId()).getProdNumber()) {
+                throw new Exception(String.format("商品【%s】库存数量已不足，请选择其它商品购买", item.getName()));
+            }
+            if (item.getStatus().intValue() == 2) {
+                throw new Exception(String.format("商品【%s】已下架，请选择其它商品购买", item.getName()));
+            }
+            Date nowDate = new Date();
+            if (nowDate.compareTo(item.getRushEnd()) > 0) {
+                throw new Exception(String.format("商品【%s】抢购时间已结束，请选择其它商品购买", item.getName()));
+            }
         }
         // 设置随机字符串
         final String nonceStr = UUID.randomUUID().toString().replaceAll("-", "");
         // 设置商户订单号
-        String outTradeNo = order.getOrderNo();
+        String outTradeNo = orders.get(0).getOrderNo();
         // 设置请求参数
         // 公众账号ID：微信支付分配的公众账号ID（企业号corpid即为此appId）：应用ID==登陆微信公众号后台-开发-基本配置
         paraMap.put("appid", Global.getFacAppId().toLowerCase());
@@ -158,7 +176,9 @@ public class PayServiceImpl implements IPayService {
                 if (map.containsKey("prepay_id")) {
                     // 更新当前订单对应的微信预支付id
                     Long prepayId = Long.valueOf(map.get("prepay_id"));
-                    this.orderMapper.updateOrderPrePayId(order.getId(), prepayId);
+                    for (Order order : orders) {
+                        this.orderMapper.updateOrderPrePayId(order.getId(), prepayId);
+                    }
                     //创建 时间戳
                     String timeStamp = Long.valueOf(System.currentTimeMillis()).toString();
                     // 签名
@@ -224,14 +244,15 @@ public class PayServiceImpl implements IPayService {
                 String outTradeNo = map.get("out_trade_no");
                 logger.info("微信回调返回商户订单号：" + outTradeNo);
                 //访问DB
-                Order order = this.orderMapper.selectOrderByOrderNo(outTradeNo);
-                if (order != null) {
-                    logger.info("微信回调 根据订单号查询订单状态：" + order.getStatus());
-                    if (OrderStatus.PAYING.getCode().equals(order.getStatus())) {
+                List<Order> orders = this.orderMapper.selectOrderByOrderNo(outTradeNo);
+                if (CollectionUtils.isNotEmpty(orders)) {
+                    logger.info("微信回调 根据订单号查询订单状态：" + orders.get(0).getStatus());
+                    if (OrderStatus.PAYING.getCode().equals(orders.get(0).getStatus())) {
                         //修改支付状态:订单支付成功后状态变为待核销状态
                         int sqlRow = this.orderMapper.updateOrderStatusAfterPayed(outTradeNo, OrderStatus.TOWRITEOFF.getCode().intValue());
-                        if (sqlRow == 1) {
-                            // 更新当前商品对应的销售数量
+                        if (sqlRow >= 1) {
+                            // 支付成功后，处理当前订单、商品、用户相关信息
+                            this.dealOrderAndProdDataAfterPayed(orders);
 
                             logger.info("微信回调  订单号：" + outTradeNo + ",修改状态成功");
                             //封装 返回值
@@ -250,10 +271,93 @@ public class PayServiceImpl implements IPayService {
                 logger.info("微信回调接口 操作逻辑 end, at:" + TimeUtils.getCurrentTimeSSS());
             }
         } catch (IOException e) {
-            logger.error("[payCallback IOException] error", e);
+            logger.error("[payCallback IOException] error: " + e.getMessage(), e);
         } catch (Exception e) {
-            logger.error("[payCallback Exception] error", e);
+            logger.error("[payCallback Exception] error: " + e.getMessage(), e);
         }
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void dealOrderAndProdDataAfterPayed(List<Order> orders) {
+        // 支付成功后，处理当前订单、商品、用户相关信息
+        if (CollectionUtils.isNotEmpty(orders)) {
+            return;
+        }
+        // 批量更新当前商品对应的销售数量
+        // <inviterId, [prodId]>
+        Map<Long, List<Long>> inviterId2ProdId = new HashMap<>();
+        List<Product> products = new ArrayList<>();
+        List<Long> ids = new ArrayList<>();
+        for (Order order : orders) {
+            Product product = new Product();
+            product.setId(order.getProdId());
+            product.setSales(order.getProdNumber());
+            products.add(product);
+            // 商品是通过别人分享购买的
+            if (order.getInviterId() != null) {
+                if (!inviterId2ProdId.containsKey(order.getInviterId())) {
+                    inviterId2ProdId.put(order.getInviterId(), new ArrayList<>());
+                }
+                inviterId2ProdId.get(order.getInviterId()).add(order.getProdId());
+                ids.add(order.getProdId());
+            }
+        }
+        this.productMapper.batchUpdateProductSales(products);
+        // 给分享人加积分/佣金啥的
+        if (MapUtils.isNotEmpty(inviterId2ProdId)) {
+            Long[] idsArr = new Long[ids.size()];
+            idsArr = ids.toArray(idsArr);
+            List<Product> productList = this.productMapper.selectProductsByIds(idsArr);
+            if (CollectionUtils.isNotEmpty(productList)) {
+                Map<Long, Product> productMap = new HashMap<>(productList.size());
+                for (Product item : productList) {
+                    productMap.put(item.getId(), item);
+                }
+                // <inviterId, [prodId]>
+                List<Buyer> updateObjs = new ArrayList<>();
+                for (Map.Entry<Long, List<Long>> entry : inviterId2ProdId.entrySet()) {
+                    Buyer buyer = new Buyer();
+                    // 积分
+                    int points = 0;
+                    BigDecimal balance = new BigDecimal("0.0");
+                    for (Long prodId : entry.getValue()) {
+                        if (productMap.containsKey(prodId)) {
+                            points = points + productMap.get(prodId).getBonusPoints();
+                            balance = DecimalUtils.add(balance, productMap.get(prodId).getDistribution());
+                        }
+                    }
+                    buyer.setId(entry.getKey());
+                    buyer.setPoints(points);
+                    buyer.setBalance(balance);
+                    updateObjs.add(buyer);
+                }
+                this.buyerMapper.batchUpdatePoints(updateObjs);
+            }
+        }
+
+        // 用户付款成功后订单涉及到的每个商品再创建一条对应的待核销记录数据
+        Date nowDate = new Date();
+        FacProductWriteoff productWriteoff;
+        List<FacProductWriteoff> productWriteoffs = new ArrayList<>();
+        String writeOffCode;
+        for (Order item : orders) {
+            // 核销码动态随机生成:8位整数随机码
+            writeOffCode = FacCommonUtils.randomInt(FacConstant.PRODUCT_WRITEOFF_CODE_LENGTH);
+            productWriteoff = new FacProductWriteoff();
+            productWriteoff.setOrderNo(item.getOrderNo());
+            productWriteoff.setProductId(item.getProdId());
+            productWriteoff.setBuyerId(item.getUserId());
+            productWriteoff.setCode(writeOffCode);
+            productWriteoff.setStatus(2);
+            productWriteoff.setWriteoffTime(null);
+            productWriteoff.setCreateTime(nowDate);
+            productWriteoff.setUpdateTime(nowDate);
+            productWriteoff.setOperatorId(item.getUserId());
+            productWriteoff.setOperatorName(item.getUserName());
+            productWriteoff.setIsDeleted(0);
+            productWriteoffs.add(productWriteoff);
+        }
+        this.facProductWriteoffMapper.batchInsert(productWriteoffs);
     }
 
     /**

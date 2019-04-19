@@ -7,6 +7,7 @@
     <resultMap type="FacProductWriteoff" id="FacProductWriteoffResult">
         <result property="id" column="id"/>
         <result property="orderNo" column="order_no"/>
+        <result property="productId" column="prod_id"/>
         <result property="buyerId" column="buyer_id"/>
         <result property="code" column="code"/>
         <result property="writeoffTime" column="writeoff_time"/>
@@ -19,7 +20,7 @@
     </resultMap>
 
     <sql id="selectFacProductWriteoffVo">
-        select id, order_no, buyer_id, code, writeoff_time, status, create_time, update_time, operator_id, operator_name, is_deleted from fac_product_writeoff
+        select id, order_no,prod_id, buyer_id, code, writeoff_time, status, create_time, update_time, operator_id, operator_name, is_deleted from fac_product_writeoff
     </sql>
 
     <select id="selectFacProductWriteoffList" parameterType="FacProductWriteoff" resultMap="FacProductWriteoffResult">
@@ -27,6 +28,7 @@
         <where>
             <if test="id != null ">and id = #{id}</if>
             <if test="orderNo != null  and orderNo != '' ">and order_no = #{orderNo}</if>
+            <if test="productId != null ">and prod_id = #{productId}</if>
             <if test="buyerId != null ">and buyer_id = #{buyerId}</if>
             <if test="code != null  and code != '' ">and code = #{code}</if>
             <if test="writeoffTime != null ">and writeoff_time = #{writeoffTime}</if>
@@ -49,6 +51,7 @@
         insert into fac_product_writeoff
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="orderNo != null  and orderNo != ''  ">order_no,</if>
+            <if test="productId != null  ">prod_id,</if>
             <if test="buyerId != null  ">buyer_id,</if>
             <if test="code != null  and code != ''  ">code,</if>
             <if test="writeoffTime != null  ">writeoff_time,</if>
@@ -61,6 +64,7 @@
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="orderNo != null  and orderNo != ''  ">#{orderNo},</if>
+            <if test="productId != null  ">#{productId},</if>
             <if test="buyerId != null  ">#{buyerId},</if>
             <if test="code != null  and code != ''  ">#{code},</if>
             <if test="writeoffTime != null  ">#{writeoffTime},</if>
@@ -77,6 +81,7 @@
         update fac_product_writeoff
         <trim prefix="SET" suffixOverrides=",">
             <if test="orderNo != null  and orderNo != ''  ">order_no = #{orderNo},</if>
+            <if test="productId != null  ">prod_id = #{productId},</if>
             <if test="buyerId != null  ">buyer_id = #{buyerId},</if>
             <if test="code != null  and code != ''  ">code = #{code},</if>
             <if test="writeoffTime != null  ">writeoff_time = #{writeoffTime},</if>
@@ -132,11 +137,28 @@
         </if>
     </update>
 
-    <update id="WriteoffByOrderNo">
+    <update id="writeoffByOrderNo">
         update fac_product_writeoff
         set writeoff_time = #{writeoffTime},status = #{status},update_time = #{updateTime},operator_id = #{operatorId},
            operator_name = #{operatorName}
-        where order_no = #{orderNo} and is_deleted = 0
+        where order_no = #{orderNo} and is_deleted = 0 and prod_id = #{productId}
     </update>
+
+    <insert id="batchInsert">
+        insert into
+        fac_product_writeoff
+        (order_no, prod_id, buyer_id, code, writeoff_time, status, create_time, update_time, operator_id, operator_name, is_deleted)
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+                #{item.orderNo,jdbcType=VARCHAR}, #{item.productId,jdbcType=BIGINT},
+                #{item.buyerId,jdbcType=BIGINT}, #{item.code, jdbcType=VARCHAR},
+                #{item.writeoffTime,jdbcType=TIMESTAMP}, #{item.status, jdbcType=TINYINT},
+                #{item.createTime,jdbcType=TIMESTAMP}, #{item.updateTime, jdbcType=TIMESTAMP},
+                #{item.operatorId,jdbcType=BIGINT}, #{item.operatorName, jdbcType=VARCHAR},
+                #{item.isDeleted,jdbcType=TINYINT}
+            )
+        </foreach>
+    </insert>
 
 </mapper>

@@ -308,9 +308,23 @@ public class OrderServiceImpl implements IOrderService {
         if (buyer == null) {
             return res;
         }
+        // <prodId, 当前订单购买次数>
+        Map<Long, Integer> prodCount = new HashMap<>(goodsJsonStr.size());
         List<Long> prodIds = new ArrayList<>();
+        int tempCount = 0;
         for (GoodsJsonStrVo good : goodsJsonStr) {
             prodIds.add(good.getGoodsId());
+            if (!prodCount.containsKey(good.getGoodsId())) {
+                prodCount.put(good.getGoodsId(), 0);
+            }
+            tempCount = prodCount.get(good.getGoodsId());
+            prodCount.put(good.getGoodsId(), ++tempCount);
+        }
+        // 每种商品在每个订单中只能出现一次
+        for (Map.Entry<Long, Integer> entry : prodCount.entrySet()) {
+            if (entry.getValue() > 1) {
+                throw new FacException("每种商品在每个订单中只能出现一次，请核实后再购买");
+            }
         }
         // 当前用户选择的商品
         QueryGoodVo vo = new QueryGoodVo();
@@ -375,6 +389,8 @@ public class OrderServiceImpl implements IOrderService {
             order.setOperatorId(buyer.getId());
             order.setOperatorName(buyer.getName());
             order.setIsDeleted(0);
+            // 分享人
+            order.setInviterId(good.getInviter_id());
 
             // 累积商品总价:暂时不考虑积分
             amountLogistics = DecimalUtils.add(amountLogistics,
@@ -394,21 +410,6 @@ public class OrderServiceImpl implements IOrderService {
         res.setDateAdd(TimeUtils.date2Str(nowDate, TimeUtils.DEFAULT_DATE_TIME_FORMAT_HH_MM_SS));
         res.setStatus(OrderStatus.PAYING.getCode());
         res.setStatusStr(OrderStatus.PAYING.getName());
-
-        // 创建一个订单后，同时生成当前订单对应的一条默认的待核销的核销记录，核销码动态随机生成:10位整数随机码
-        // 后面这块代码会移到用户付款成功后那里再创建一条对应的核销记录数据：zgf
-        String writeOffCode = FacCommonUtils.randomInt(FacConstant.PRODUCT_WRITEOFF_CODE_LENGTH);
-        FacProductWriteoff productWriteoff = new FacProductWriteoff();
-        productWriteoff.setOrderNo(orderNo);
-        productWriteoff.setBuyerId(buyer.getId());
-        productWriteoff.setCode(writeOffCode);
-        productWriteoff.setStatus(2);
-        productWriteoff.setCreateTime(nowDate);
-        productWriteoff.setUpdateTime(nowDate);
-        productWriteoff.setOperatorId(buyer.getId());
-        productWriteoff.setOperatorName(buyer.getName());
-        productWriteoff.setIsDeleted(0);
-        this.facProductWriteoffMapper.insertFacProductWriteoff(productWriteoff);
 
         return res;
     }
@@ -567,17 +568,20 @@ public class OrderServiceImpl implements IOrderService {
      * @param orderNo
      */
     @Override
-    public void writeOffOrder(String token, String orderNo) throws Exception {
-        if (StringUtils.isBlank(orderNo)) {
-            return;
+    public void writeOffOrder(String token, String orderNo, String prodId) throws Exception {
+        // 一次指定核销一个商品对应的订单
+        Order order = new Order();
+        order.setOrderNo(orderNo);
+        order.setProdId(Long.valueOf(prodId));
+        order.setIsDeleted(0);
+        List<Order> orders = this.orderMapper.selectOrderList(order);
+        if (CollectionUtils.isEmpty(orders)) {
+            throw new Exception("当前订单已不存在,请联系管理员");
         }
-        Order order = this.orderMapper.selectOrderByOrderNo(orderNo);
-        if (order == null) {
-            return;
-        }
+        order = orders.get(0);
         Product product = this.productMapper.selectProductById(order.getProdId());
         if (product == null) {
-            return;
+            throw new Exception(String.format("商品【%s】已不存在,请联系管理员", product.getName()));
         }
         Business business = this.businessMapper.selectBusinessById(product.getBusinessId());
         if (business == null) {
@@ -587,6 +591,7 @@ public class OrderServiceImpl implements IOrderService {
         Date nowDate = new Date();
         FacProductWriteoff facProductWriteoff = new FacProductWriteoff();
         facProductWriteoff.setOrderNo(orderNo);
+        facProductWriteoff.setProductId(product.getId());
         List<FacProductWriteoff> records = this.facProductWriteoffMapper.selectFacProductWriteoffList(facProductWriteoff);
         if (CollectionUtils.isEmpty(records)) {
             return;
@@ -625,6 +630,7 @@ public class OrderServiceImpl implements IOrderService {
             orderVo.setStatus(order.getStatus());
             orderVo.setStatusStr(OrderStatus.getNameByCode(order.getStatus()));
             orderVo.setUserId(order.getUserId());
+            orderVo.setProdId(order.getProdId());
             // 当前订单的实际总价
             orderTotalPrice = DecimalUtils.mul(order.getPrice(), new BigDecimal(String.valueOf(order.getProdNumber())));
             amountReal = Double.valueOf(orderTotalPrice.toString());

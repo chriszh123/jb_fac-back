@@ -39,6 +39,7 @@ public class OrderVo implements Serializable {
     private int type;
     private long uid;
     private long userId;
+    private long prodId;
     // 核销码
     private String writeOffCode;
 
@@ -216,5 +217,13 @@ public class OrderVo implements Serializable {
 
     public void setWriteOffCode(String writeOffCode) {
         this.writeOffCode = writeOffCode;
+    }
+
+    public long getProdId() {
+        return prodId;
+    }
+
+    public void setProdId(long prodId) {
+        this.prodId = prodId;
     }
 }

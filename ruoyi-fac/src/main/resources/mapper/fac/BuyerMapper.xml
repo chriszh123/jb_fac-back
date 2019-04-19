@@ -8,8 +8,8 @@
         <result property="id" column="id"/>
         <result property="nickName" column="nick_name"/>
         <result property="name" column="name"/>
-        <result property="gender"    column="gender"    />
-        <result property="avatarUrl"    column="avatarUrl"    />
+        <result property="gender" column="gender"/>
+        <result property="avatarUrl" column="avatarUrl"/>
         <result property="token" column="token"/>
         <result property="openId" column="open_id"/>
         <result property="balance" column="balance"/>
@@ -140,6 +140,14 @@
         update fac_buyer
         set nick_name = #{nickName}, gender = #{gender}, avatarUrl = #{avatarUrl},update_time = now()
         where id = #{uid}
+    </update>
+
+    <update id="batchUpdatePoints">
+        <foreach collection="list" item="record" index="index" separator=";" open="" close="">
+            UPDATE fac_buyer
+            set points = points + #{record.points}, balance = balance + #{record.balance}
+            WHERE is_deleted = 0 and id = #{record.id}
+        </foreach>
     </update>
 
 </mapper>

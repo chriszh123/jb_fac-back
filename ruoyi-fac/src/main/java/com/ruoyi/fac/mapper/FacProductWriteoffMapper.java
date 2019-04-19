@@ -1,6 +1,7 @@
 package com.ruoyi.fac.mapper;
 
 import com.ruoyi.fac.domain.FacProductWriteoff;
+import com.ruoyi.fac.domain.Order;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -70,5 +71,7 @@ public interface FacProductWriteoffMapper {
      * @param facProductWriteoff 核销记录信息
      * @return 结果
      */
-    int WriteoffByOrderNo(FacProductWriteoff facProductWriteoff);
+    int writeoffByOrderNo(FacProductWriteoff facProductWriteoff);
+
+    int batchInsert(@Param("list") List<FacProductWriteoff> list);
 }
