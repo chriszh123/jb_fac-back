@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN" "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+<generatorConfiguration>
+
+    <!-- 本地数据库驱动程序jar包的全路径 -->
+    <classPathEntry location="D:\\tools\\mysql\\mysql-connector-java-8.0.13.jar"/>
+    <context id="context" targetRuntime="MyBatis3">
+        <commentGenerator>
+            <property name="suppressAllComments" value="false"/>
+            <property name="suppressDate" value="true"/>
+        </commentGenerator>
+
+        <!-- 数据库的相关配置 -->
+        <jdbcConnection
+                driverClass="com.mysql.jdbc.Driver"
+                connectionURL="jdbc:mysql://localhost:3306/ry?serverTimezone=GMT"
+                userId="root"
+                password="123456"/>
+
+        <javaTypeResolver>
+            <property name="forceBigDecimals" value="false"/>
+        </javaTypeResolver>
+
+        <!-- 实体类生成的位置 -->
+        <javaModelGenerator
+                targetPackage="com.ruoyi.fac.model"
+                targetProject="..\ruoyi-fac\src\main\java">
+            <property name="enableSubPackages" value="false"/>
+            <property name="trimStrings" value="true"/>
+        </javaModelGenerator>
+
+        <!-- *Mapper.xml 文件的位置  sqlMapGenerator-->
+        <sqlMapGenerator
+                targetPackage="auto.mapper"
+                targetProject="..\ruoyi-fac\src\main\resources\mapper\fac">
+            <property name="enableSubPackages" value="true"/>
+        </sqlMapGenerator>
+
+        <!-- Mapper接口文件的位置 -->
+        <javaClientGenerator type="XMLMAPPER"
+                             targetPackage="com.ruoyi.fac.automapper"
+                             targetProject="..\ruoyi-fac\src\main\java">
+            <property name="enableSubPackages" value="false"/>
+        </javaClientGenerator>
+
+        <!-- 相关表的配置 -->
+        <table tableName="fac_product" domainObjectName="FacProduct"
+               enableInsert="true" enableSelectByPrimaryKey="true"
+               enableSelectByExample="true" enableUpdateByPrimaryKey="true"
+               enableDeleteByPrimaryKey="true" enableDeleteByExample="true"
+               enableCountByExample="true" enableUpdateByExample="true"
+               selectByExampleQueryId="true">
+            <generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />
+        </table>
+
+        <table tableName="fac_product_category" domainObjectName="FacProductCategory"
+               enableInsert="true" enableSelectByPrimaryKey="true"
+               enableSelectByExample="true" enableUpdateByPrimaryKey="true"
+               enableDeleteByPrimaryKey="true" enableDeleteByExample="true"
+               enableCountByExample="true" enableUpdateByExample="true"
+               selectByExampleQueryId="true">
+            <generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />
+        </table>
+
+        <table tableName="fac_product_writeoff" domainObjectName="FacProductWriteOffBean"
+               enableInsert="true" enableSelectByPrimaryKey="true"
+               enableSelectByExample="true" enableUpdateByPrimaryKey="true"
+               enableDeleteByPrimaryKey="true" enableDeleteByExample="true"
+               enableCountByExample="true" enableUpdateByExample="true"
+               selectByExampleQueryId="true">
+            <generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />
+        </table>
+
+        <table tableName="fac_order" domainObjectName="FacOrder"
+               enableInsert="true" enableSelectByPrimaryKey="true"
+               enableSelectByExample="true" enableUpdateByPrimaryKey="true"
+               enableDeleteByPrimaryKey="true" enableDeleteByExample="true"
+               enableCountByExample="true" enableUpdateByExample="true"
+               selectByExampleQueryId="true">
+            <generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />
+        </table>
+
+        <table tableName="fac_business" domainObjectName="FacBusiness"
+               enableInsert="true" enableSelectByPrimaryKey="true"
+               enableSelectByExample="true" enableUpdateByPrimaryKey="true"
+               enableDeleteByPrimaryKey="true" enableDeleteByExample="true"
+               enableCountByExample="true" enableUpdateByExample="true"
+               selectByExampleQueryId="true">
+            <generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />
+        </table>
+
+        <table tableName="fac_channel" domainObjectName="FacChannel"
+               enableInsert="true" enableSelectByPrimaryKey="true"
+               enableSelectByExample="true" enableUpdateByPrimaryKey="true"
+               enableDeleteByPrimaryKey="true" enableDeleteByExample="true"
+               enableCountByExample="true" enableUpdateByExample="true"
+               selectByExampleQueryId="true">
+            <generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />
+        </table>
+
+        <table tableName="fac_buyer" domainObjectName="FacBuyer"
+               enableInsert="true" enableSelectByPrimaryKey="true"
+               enableSelectByExample="true" enableUpdateByPrimaryKey="true"
+               enableDeleteByPrimaryKey="true" enableDeleteByExample="true"
+               enableCountByExample="true" enableUpdateByExample="true"
+               selectByExampleQueryId="true">
+            <generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />
+        </table>
+
+        <table tableName="fac_buyer_business" domainObjectName="FacBuyerBusiness"
+               enableInsert="true" enableSelectByPrimaryKey="true"
+               enableSelectByExample="true" enableUpdateByPrimaryKey="true"
+               enableDeleteByPrimaryKey="true" enableDeleteByExample="true"
+               enableCountByExample="true" enableUpdateByExample="true"
+               selectByExampleQueryId="true">
+            <generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />
+        </table>
+
+        <table tableName="fac_cash" domainObjectName="FacCash"
+               enableInsert="true" enableSelectByPrimaryKey="true"
+               enableSelectByExample="true" enableUpdateByPrimaryKey="true"
+               enableDeleteByPrimaryKey="true" enableDeleteByExample="true"
+               enableCountByExample="true" enableUpdateByExample="true"
+               selectByExampleQueryId="true">
+            <generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />
+        </table>
+
+        <table tableName="fac_focus_map" domainObjectName="FacFocusMap"
+               enableInsert="true" enableSelectByPrimaryKey="true"
+               enableSelectByExample="true" enableUpdateByPrimaryKey="true"
+               enableDeleteByPrimaryKey="true" enableDeleteByExample="true"
+               enableCountByExample="true" enableUpdateByExample="true"
+               selectByExampleQueryId="true">
+            <generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />
+        </table>
+
+        <table tableName="fac_menu" domainObjectName="FacMenu"
+               enableInsert="true" enableSelectByPrimaryKey="true"
+               enableSelectByExample="true" enableUpdateByPrimaryKey="true"
+               enableDeleteByPrimaryKey="true" enableDeleteByExample="true"
+               enableCountByExample="true" enableUpdateByExample="true"
+               selectByExampleQueryId="true">
+            <generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />
+        </table>
+
+        <table tableName="fac_buyer_address" domainObjectName="FacBuyerAddress"
+               enableInsert="true" enableSelectByPrimaryKey="true"
+               enableSelectByExample="true" enableUpdateByPrimaryKey="true"
+               enableDeleteByPrimaryKey="true" enableDeleteByExample="true"
+               enableCountByExample="true" enableUpdateByExample="true"
+               selectByExampleQueryId="true">
+            <generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />
+        </table>
+
+    </context>
+</generatorConfiguration>
