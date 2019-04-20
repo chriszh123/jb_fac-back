@@ -91,6 +91,7 @@ public class ProductServiceImpl implements IProductService {
     @Override
     public int insertProduct(Product product) {
         product.setOrderCount(0);
+        product.setPicture(this.filterBlankPictures(product.getPicture()));
         return productMapper.insertProduct(product);
     }
 
@@ -127,6 +128,7 @@ public class ProductServiceImpl implements IProductService {
             }
         }
 //        SysUser user = ShiroUtils.getSysUser();
+        product.setPicture(this.filterBlankPictures(product.getPicture()));
         return productMapper.updateProduct(product);
     }
 
@@ -280,6 +282,9 @@ public class ProductServiceImpl implements IProductService {
             List<PicsVo> pics = new ArrayList<>();
             List<String> picList = Arrays.asList(product.getPicture().split(","));
             for (int i = 0, size = picList.size(); i < size; i++) {
+                if (StringUtils.isBlank(picList.get(i))) {
+                    continue;
+                }
                 PicsVo picsVo = new PicsVo();
                 pics.add(picsVo);
                 picsVo.setGoodsId(product.getId());
@@ -416,7 +421,7 @@ public class ProductServiceImpl implements IProductService {
         // 默认取第一张图片
         if (StringUtils.isNotEmpty(product.getPicture())) {
             String pics = product.getPicture();
-            goodVo.setPic(pics.split(",")[0]);
+            goodVo.setPic(this.getFirstNotBlankPic(pics));
         }
         goodVo.setPingtuan(false);
         goodVo.setPingtuanPrice(0.00);
@@ -433,5 +438,38 @@ public class ProductServiceImpl implements IProductService {
         goodVo.setWeight(0.00);
 
         return goodVo;
+    }
+
+    private String getFirstNotBlankPic(String pics) {
+        if (StringUtils.isBlank(pics)) {
+            return "";
+        }
+        String[] picsArr = pics.split(",");
+        for (int i = 0, size = picsArr.length; i < size; i++) {
+            if (StringUtils.isNotBlank(picsArr[i])) {
+                return picsArr[i];
+            }
+        }
+        return "";
+    }
+
+    private String filterBlankPictures(String pictures) {
+        // 去掉空地址的记录
+        if (StringUtils.isBlank(pictures)) {
+            return "";
+        }
+        String[] picturesArr = pictures.split(",");
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0, size = picturesArr.length; i < size; i++) {
+            if (StringUtils.isBlank(picturesArr[i])) {
+                continue;
+            }
+            sb.append(picturesArr[i]).append(",");
+        }
+        if (StringUtils.isNotBlank(sb.toString())) {
+            sb = sb.deleteCharAt(sb.toString().length() - 1);
+            return sb.toString();
+        }
+        return "";
     }
 }

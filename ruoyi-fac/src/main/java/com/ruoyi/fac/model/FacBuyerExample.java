@@ -746,52 +746,52 @@ public class FacBuyerExample {
             return (Criteria) this;
         }
 
-        public Criteria andPointsEqualTo(Byte value) {
+        public Criteria andPointsEqualTo(Short value) {
             addCriterion("points =", value, "points");
             return (Criteria) this;
         }
 
-        public Criteria andPointsNotEqualTo(Byte value) {
+        public Criteria andPointsNotEqualTo(Short value) {
             addCriterion("points <>", value, "points");
             return (Criteria) this;
         }
 
-        public Criteria andPointsGreaterThan(Byte value) {
+        public Criteria andPointsGreaterThan(Short value) {
             addCriterion("points >", value, "points");
             return (Criteria) this;
         }
 
-        public Criteria andPointsGreaterThanOrEqualTo(Byte value) {
+        public Criteria andPointsGreaterThanOrEqualTo(Short value) {
             addCriterion("points >=", value, "points");
             return (Criteria) this;
         }
 
-        public Criteria andPointsLessThan(Byte value) {
+        public Criteria andPointsLessThan(Short value) {
             addCriterion("points <", value, "points");
             return (Criteria) this;
         }
 
-        public Criteria andPointsLessThanOrEqualTo(Byte value) {
+        public Criteria andPointsLessThanOrEqualTo(Short value) {
             addCriterion("points <=", value, "points");
             return (Criteria) this;
         }
 
-        public Criteria andPointsIn(List<Byte> values) {
+        public Criteria andPointsIn(List<Short> values) {
             addCriterion("points in", values, "points");
             return (Criteria) this;
         }
 
-        public Criteria andPointsNotIn(List<Byte> values) {
+        public Criteria andPointsNotIn(List<Short> values) {
             addCriterion("points not in", values, "points");
             return (Criteria) this;
         }
 
-        public Criteria andPointsBetween(Byte value1, Byte value2) {
+        public Criteria andPointsBetween(Short value1, Short value2) {
             addCriterion("points between", value1, value2, "points");
             return (Criteria) this;
         }
 
-        public Criteria andPointsNotBetween(Byte value1, Byte value2) {
+        public Criteria andPointsNotBetween(Short value1, Short value2) {
             addCriterion("points not between", value1, value2, "points");
             return (Criteria) this;
         }

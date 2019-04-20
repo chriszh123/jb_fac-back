@@ -466,52 +466,52 @@ public class FacOrderExample {
             return (Criteria) this;
         }
 
-        public Criteria andProdNumberEqualTo(Byte value) {
+        public Criteria andProdNumberEqualTo(Short value) {
             addCriterion("prod_number =", value, "prodNumber");
             return (Criteria) this;
         }
 
-        public Criteria andProdNumberNotEqualTo(Byte value) {
+        public Criteria andProdNumberNotEqualTo(Short value) {
             addCriterion("prod_number <>", value, "prodNumber");
             return (Criteria) this;
         }
 
-        public Criteria andProdNumberGreaterThan(Byte value) {
+        public Criteria andProdNumberGreaterThan(Short value) {
             addCriterion("prod_number >", value, "prodNumber");
             return (Criteria) this;
         }
 
-        public Criteria andProdNumberGreaterThanOrEqualTo(Byte value) {
+        public Criteria andProdNumberGreaterThanOrEqualTo(Short value) {
             addCriterion("prod_number >=", value, "prodNumber");
             return (Criteria) this;
         }
 
-        public Criteria andProdNumberLessThan(Byte value) {
+        public Criteria andProdNumberLessThan(Short value) {
             addCriterion("prod_number <", value, "prodNumber");
             return (Criteria) this;
         }
 
-        public Criteria andProdNumberLessThanOrEqualTo(Byte value) {
+        public Criteria andProdNumberLessThanOrEqualTo(Short value) {
             addCriterion("prod_number <=", value, "prodNumber");
             return (Criteria) this;
         }
 
-        public Criteria andProdNumberIn(List<Byte> values) {
+        public Criteria andProdNumberIn(List<Short> values) {
             addCriterion("prod_number in", values, "prodNumber");
             return (Criteria) this;
         }
 
-        public Criteria andProdNumberNotIn(List<Byte> values) {
+        public Criteria andProdNumberNotIn(List<Short> values) {
             addCriterion("prod_number not in", values, "prodNumber");
             return (Criteria) this;
         }
 
-        public Criteria andProdNumberBetween(Byte value1, Byte value2) {
+        public Criteria andProdNumberBetween(Short value1, Short value2) {
             addCriterion("prod_number between", value1, value2, "prodNumber");
             return (Criteria) this;
         }
 
-        public Criteria andProdNumberNotBetween(Byte value1, Byte value2) {
+        public Criteria andProdNumberNotBetween(Short value1, Short value2) {
             addCriterion("prod_number not between", value1, value2, "prodNumber");
             return (Criteria) this;
         }

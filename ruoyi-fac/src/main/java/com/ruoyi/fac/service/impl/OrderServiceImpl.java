@@ -691,7 +691,6 @@ public class OrderServiceImpl implements IOrderService {
         }
     }
 
-
     public static void main(String[] args) {
         String orderNo = DateFormatUtils.format(new Date(), "yyyyMMddHHmmssSSSS");
         System.out.println("orderNo = " + orderNo);

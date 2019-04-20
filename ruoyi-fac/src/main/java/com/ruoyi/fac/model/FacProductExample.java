@@ -266,52 +266,52 @@ public class FacProductExample {
             return (Criteria) this;
         }
 
-        public Criteria andSortEqualTo(Byte value) {
+        public Criteria andSortEqualTo(Short value) {
             addCriterion("sort =", value, "sort");
             return (Criteria) this;
         }
 
-        public Criteria andSortNotEqualTo(Byte value) {
+        public Criteria andSortNotEqualTo(Short value) {
             addCriterion("sort <>", value, "sort");
             return (Criteria) this;
         }
 
-        public Criteria andSortGreaterThan(Byte value) {
+        public Criteria andSortGreaterThan(Short value) {
             addCriterion("sort >", value, "sort");
             return (Criteria) this;
         }
 
-        public Criteria andSortGreaterThanOrEqualTo(Byte value) {
+        public Criteria andSortGreaterThanOrEqualTo(Short value) {
             addCriterion("sort >=", value, "sort");
             return (Criteria) this;
         }
 
-        public Criteria andSortLessThan(Byte value) {
+        public Criteria andSortLessThan(Short value) {
             addCriterion("sort <", value, "sort");
             return (Criteria) this;
         }
 
-        public Criteria andSortLessThanOrEqualTo(Byte value) {
+        public Criteria andSortLessThanOrEqualTo(Short value) {
             addCriterion("sort <=", value, "sort");
             return (Criteria) this;
         }
 
-        public Criteria andSortIn(List<Byte> values) {
+        public Criteria andSortIn(List<Short> values) {
             addCriterion("sort in", values, "sort");
             return (Criteria) this;
         }
 
-        public Criteria andSortNotIn(List<Byte> values) {
+        public Criteria andSortNotIn(List<Short> values) {
             addCriterion("sort not in", values, "sort");
             return (Criteria) this;
         }
 
-        public Criteria andSortBetween(Byte value1, Byte value2) {
+        public Criteria andSortBetween(Short value1, Short value2) {
             addCriterion("sort between", value1, value2, "sort");
             return (Criteria) this;
         }
 
-        public Criteria andSortNotBetween(Byte value1, Byte value2) {
+        public Criteria andSortNotBetween(Short value1, Short value2) {
             addCriterion("sort not between", value1, value2, "sort");
             return (Criteria) this;
         }
@@ -456,52 +456,52 @@ public class FacProductExample {
             return (Criteria) this;
         }
 
-        public Criteria andSalesEqualTo(Byte value) {
+        public Criteria andSalesEqualTo(Short value) {
             addCriterion("sales =", value, "sales");
             return (Criteria) this;
         }
 
-        public Criteria andSalesNotEqualTo(Byte value) {
+        public Criteria andSalesNotEqualTo(Short value) {
             addCriterion("sales <>", value, "sales");
             return (Criteria) this;
         }
 
-        public Criteria andSalesGreaterThan(Byte value) {
+        public Criteria andSalesGreaterThan(Short value) {
             addCriterion("sales >", value, "sales");
             return (Criteria) this;
         }
 
-        public Criteria andSalesGreaterThanOrEqualTo(Byte value) {
+        public Criteria andSalesGreaterThanOrEqualTo(Short value) {
             addCriterion("sales >=", value, "sales");
             return (Criteria) this;
         }
 
-        public Criteria andSalesLessThan(Byte value) {
+        public Criteria andSalesLessThan(Short value) {
             addCriterion("sales <", value, "sales");
             return (Criteria) this;
         }
 
-        public Criteria andSalesLessThanOrEqualTo(Byte value) {
+        public Criteria andSalesLessThanOrEqualTo(Short value) {
             addCriterion("sales <=", value, "sales");
             return (Criteria) this;
         }
 
-        public Criteria andSalesIn(List<Byte> values) {
+        public Criteria andSalesIn(List<Short> values) {
             addCriterion("sales in", values, "sales");
             return (Criteria) this;
         }
 
-        public Criteria andSalesNotIn(List<Byte> values) {
+        public Criteria andSalesNotIn(List<Short> values) {
             addCriterion("sales not in", values, "sales");
             return (Criteria) this;
         }
 
-        public Criteria andSalesBetween(Byte value1, Byte value2) {
+        public Criteria andSalesBetween(Short value1, Short value2) {
             addCriterion("sales between", value1, value2, "sales");
             return (Criteria) this;
         }
 
-        public Criteria andSalesNotBetween(Byte value1, Byte value2) {
+        public Criteria andSalesNotBetween(Short value1, Short value2) {
             addCriterion("sales not between", value1, value2, "sales");
             return (Criteria) this;
         }
@@ -756,52 +756,52 @@ public class FacProductExample {
             return (Criteria) this;
         }
 
-        public Criteria andInventoryQuantityEqualTo(Byte value) {
+        public Criteria andInventoryQuantityEqualTo(Short value) {
             addCriterion("inventory_quantity =", value, "inventoryQuantity");
             return (Criteria) this;
         }
 
-        public Criteria andInventoryQuantityNotEqualTo(Byte value) {
+        public Criteria andInventoryQuantityNotEqualTo(Short value) {
             addCriterion("inventory_quantity <>", value, "inventoryQuantity");
             return (Criteria) this;
         }
 
-        public Criteria andInventoryQuantityGreaterThan(Byte value) {
+        public Criteria andInventoryQuantityGreaterThan(Short value) {
             addCriterion("inventory_quantity >", value, "inventoryQuantity");
             return (Criteria) this;
         }
 
-        public Criteria andInventoryQuantityGreaterThanOrEqualTo(Byte value) {
+        public Criteria andInventoryQuantityGreaterThanOrEqualTo(Short value) {
             addCriterion("inventory_quantity >=", value, "inventoryQuantity");
             return (Criteria) this;
         }
 
-        public Criteria andInventoryQuantityLessThan(Byte value) {
+        public Criteria andInventoryQuantityLessThan(Short value) {
             addCriterion("inventory_quantity <", value, "inventoryQuantity");
             return (Criteria) this;
         }
 
-        public Criteria andInventoryQuantityLessThanOrEqualTo(Byte value) {
+        public Criteria andInventoryQuantityLessThanOrEqualTo(Short value) {
             addCriterion("inventory_quantity <=", value, "inventoryQuantity");
             return (Criteria) this;
         }
 
-        public Criteria andInventoryQuantityIn(List<Byte> values) {
+        public Criteria andInventoryQuantityIn(List<Short> values) {
             addCriterion("inventory_quantity in", values, "inventoryQuantity");
             return (Criteria) this;
         }
 
-        public Criteria andInventoryQuantityNotIn(List<Byte> values) {
+        public Criteria andInventoryQuantityNotIn(List<Short> values) {
             addCriterion("inventory_quantity not in", values, "inventoryQuantity");
             return (Criteria) this;
         }
 
-        public Criteria andInventoryQuantityBetween(Byte value1, Byte value2) {
+        public Criteria andInventoryQuantityBetween(Short value1, Short value2) {
             addCriterion("inventory_quantity between", value1, value2, "inventoryQuantity");
             return (Criteria) this;
         }
 
-        public Criteria andInventoryQuantityNotBetween(Byte value1, Byte value2) {
+        public Criteria andInventoryQuantityNotBetween(Short value1, Short value2) {
             addCriterion("inventory_quantity not between", value1, value2, "inventoryQuantity");
             return (Criteria) this;
         }
@@ -816,52 +816,52 @@ public class FacProductExample {
             return (Criteria) this;
         }
 
-        public Criteria andOrderCountEqualTo(Byte value) {
+        public Criteria andOrderCountEqualTo(Short value) {
             addCriterion("order_count =", value, "orderCount");
             return (Criteria) this;
         }
 
-        public Criteria andOrderCountNotEqualTo(Byte value) {
+        public Criteria andOrderCountNotEqualTo(Short value) {
             addCriterion("order_count <>", value, "orderCount");
             return (Criteria) this;
         }
 
-        public Criteria andOrderCountGreaterThan(Byte value) {
+        public Criteria andOrderCountGreaterThan(Short value) {
             addCriterion("order_count >", value, "orderCount");
             return (Criteria) this;
         }
 
-        public Criteria andOrderCountGreaterThanOrEqualTo(Byte value) {
+        public Criteria andOrderCountGreaterThanOrEqualTo(Short value) {
             addCriterion("order_count >=", value, "orderCount");
             return (Criteria) this;
         }
 
-        public Criteria andOrderCountLessThan(Byte value) {
+        public Criteria andOrderCountLessThan(Short value) {
             addCriterion("order_count <", value, "orderCount");
             return (Criteria) this;
         }
 
-        public Criteria andOrderCountLessThanOrEqualTo(Byte value) {
+        public Criteria andOrderCountLessThanOrEqualTo(Short value) {
             addCriterion("order_count <=", value, "orderCount");
             return (Criteria) this;
         }
 
-        public Criteria andOrderCountIn(List<Byte> values) {
+        public Criteria andOrderCountIn(List<Short> values) {
             addCriterion("order_count in", values, "orderCount");
             return (Criteria) this;
         }
 
-        public Criteria andOrderCountNotIn(List<Byte> values) {
+        public Criteria andOrderCountNotIn(List<Short> values) {
             addCriterion("order_count not in", values, "orderCount");
             return (Criteria) this;
         }
 
-        public Criteria andOrderCountBetween(Byte value1, Byte value2) {
+        public Criteria andOrderCountBetween(Short value1, Short value2) {
             addCriterion("order_count between", value1, value2, "orderCount");
             return (Criteria) this;
         }
 
-        public Criteria andOrderCountNotBetween(Byte value1, Byte value2) {
+        public Criteria andOrderCountNotBetween(Short value1, Short value2) {
             addCriterion("order_count not between", value1, value2, "orderCount");
             return (Criteria) this;
         }
@@ -876,52 +876,52 @@ public class FacProductExample {
             return (Criteria) this;
         }
 
-        public Criteria andLimitQuantityEqualTo(Byte value) {
+        public Criteria andLimitQuantityEqualTo(Short value) {
             addCriterion("limit_quantity =", value, "limitQuantity");
             return (Criteria) this;
         }
 
-        public Criteria andLimitQuantityNotEqualTo(Byte value) {
+        public Criteria andLimitQuantityNotEqualTo(Short value) {
             addCriterion("limit_quantity <>", value, "limitQuantity");
             return (Criteria) this;
         }
 
-        public Criteria andLimitQuantityGreaterThan(Byte value) {
+        public Criteria andLimitQuantityGreaterThan(Short value) {
             addCriterion("limit_quantity >", value, "limitQuantity");
             return (Criteria) this;
         }
 
-        public Criteria andLimitQuantityGreaterThanOrEqualTo(Byte value) {
+        public Criteria andLimitQuantityGreaterThanOrEqualTo(Short value) {
             addCriterion("limit_quantity >=", value, "limitQuantity");
             return (Criteria) this;
         }
 
-        public Criteria andLimitQuantityLessThan(Byte value) {
+        public Criteria andLimitQuantityLessThan(Short value) {
             addCriterion("limit_quantity <", value, "limitQuantity");
             return (Criteria) this;
         }
 
-        public Criteria andLimitQuantityLessThanOrEqualTo(Byte value) {
+        public Criteria andLimitQuantityLessThanOrEqualTo(Short value) {
             addCriterion("limit_quantity <=", value, "limitQuantity");
             return (Criteria) this;
         }
 
-        public Criteria andLimitQuantityIn(List<Byte> values) {
+        public Criteria andLimitQuantityIn(List<Short> values) {
             addCriterion("limit_quantity in", values, "limitQuantity");
             return (Criteria) this;
         }
 
-        public Criteria andLimitQuantityNotIn(List<Byte> values) {
+        public Criteria andLimitQuantityNotIn(List<Short> values) {
             addCriterion("limit_quantity not in", values, "limitQuantity");
             return (Criteria) this;
         }
 
-        public Criteria andLimitQuantityBetween(Byte value1, Byte value2) {
+        public Criteria andLimitQuantityBetween(Short value1, Short value2) {
             addCriterion("limit_quantity between", value1, value2, "limitQuantity");
             return (Criteria) this;
         }
 
-        public Criteria andLimitQuantityNotBetween(Byte value1, Byte value2) {
+        public Criteria andLimitQuantityNotBetween(Short value1, Short value2) {
             addCriterion("limit_quantity not between", value1, value2, "limitQuantity");
             return (Criteria) this;
         }
@@ -936,52 +936,52 @@ public class FacProductExample {
             return (Criteria) this;
         }
 
-        public Criteria andVmBuyerQuantityEqualTo(Byte value) {
+        public Criteria andVmBuyerQuantityEqualTo(Short value) {
             addCriterion("vm_buyer_quantity =", value, "vmBuyerQuantity");
             return (Criteria) this;
         }
 
-        public Criteria andVmBuyerQuantityNotEqualTo(Byte value) {
+        public Criteria andVmBuyerQuantityNotEqualTo(Short value) {
             addCriterion("vm_buyer_quantity <>", value, "vmBuyerQuantity");
             return (Criteria) this;
         }
 
-        public Criteria andVmBuyerQuantityGreaterThan(Byte value) {
+        public Criteria andVmBuyerQuantityGreaterThan(Short value) {
             addCriterion("vm_buyer_quantity >", value, "vmBuyerQuantity");
             return (Criteria) this;
         }
 
-        public Criteria andVmBuyerQuantityGreaterThanOrEqualTo(Byte value) {
+        public Criteria andVmBuyerQuantityGreaterThanOrEqualTo(Short value) {
             addCriterion("vm_buyer_quantity >=", value, "vmBuyerQuantity");
             return (Criteria) this;
         }
 
-        public Criteria andVmBuyerQuantityLessThan(Byte value) {
+        public Criteria andVmBuyerQuantityLessThan(Short value) {
             addCriterion("vm_buyer_quantity <", value, "vmBuyerQuantity");
             return (Criteria) this;
         }
 
-        public Criteria andVmBuyerQuantityLessThanOrEqualTo(Byte value) {
+        public Criteria andVmBuyerQuantityLessThanOrEqualTo(Short value) {
             addCriterion("vm_buyer_quantity <=", value, "vmBuyerQuantity");
             return (Criteria) this;
         }
 
-        public Criteria andVmBuyerQuantityIn(List<Byte> values) {
+        public Criteria andVmBuyerQuantityIn(List<Short> values) {
             addCriterion("vm_buyer_quantity in", values, "vmBuyerQuantity");
             return (Criteria) this;
         }
 
-        public Criteria andVmBuyerQuantityNotIn(List<Byte> values) {
+        public Criteria andVmBuyerQuantityNotIn(List<Short> values) {
             addCriterion("vm_buyer_quantity not in", values, "vmBuyerQuantity");
             return (Criteria) this;
         }
 
-        public Criteria andVmBuyerQuantityBetween(Byte value1, Byte value2) {
+        public Criteria andVmBuyerQuantityBetween(Short value1, Short value2) {
             addCriterion("vm_buyer_quantity between", value1, value2, "vmBuyerQuantity");
             return (Criteria) this;
         }
 
-        public Criteria andVmBuyerQuantityNotBetween(Byte value1, Byte value2) {
+        public Criteria andVmBuyerQuantityNotBetween(Short value1, Short value2) {
             addCriterion("vm_buyer_quantity not between", value1, value2, "vmBuyerQuantity");
             return (Criteria) this;
         }
@@ -1056,52 +1056,52 @@ public class FacProductExample {
             return (Criteria) this;
         }
 
-        public Criteria andBonusPointsEqualTo(Byte value) {
+        public Criteria andBonusPointsEqualTo(Short value) {
             addCriterion("bonus_points =", value, "bonusPoints");
             return (Criteria) this;
         }
 
-        public Criteria andBonusPointsNotEqualTo(Byte value) {
+        public Criteria andBonusPointsNotEqualTo(Short value) {
             addCriterion("bonus_points <>", value, "bonusPoints");
             return (Criteria) this;
         }
 
-        public Criteria andBonusPointsGreaterThan(Byte value) {
+        public Criteria andBonusPointsGreaterThan(Short value) {
             addCriterion("bonus_points >", value, "bonusPoints");
             return (Criteria) this;
         }
 
-        public Criteria andBonusPointsGreaterThanOrEqualTo(Byte value) {
+        public Criteria andBonusPointsGreaterThanOrEqualTo(Short value) {
             addCriterion("bonus_points >=", value, "bonusPoints");
             return (Criteria) this;
         }
 
-        public Criteria andBonusPointsLessThan(Byte value) {
+        public Criteria andBonusPointsLessThan(Short value) {
             addCriterion("bonus_points <", value, "bonusPoints");
             return (Criteria) this;
         }
 
-        public Criteria andBonusPointsLessThanOrEqualTo(Byte value) {
+        public Criteria andBonusPointsLessThanOrEqualTo(Short value) {
             addCriterion("bonus_points <=", value, "bonusPoints");
             return (Criteria) this;
         }
 
-        public Criteria andBonusPointsIn(List<Byte> values) {
+        public Criteria andBonusPointsIn(List<Short> values) {
             addCriterion("bonus_points in", values, "bonusPoints");
             return (Criteria) this;
         }
 
-        public Criteria andBonusPointsNotIn(List<Byte> values) {
+        public Criteria andBonusPointsNotIn(List<Short> values) {
             addCriterion("bonus_points not in", values, "bonusPoints");
             return (Criteria) this;
         }
 
-        public Criteria andBonusPointsBetween(Byte value1, Byte value2) {
+        public Criteria andBonusPointsBetween(Short value1, Short value2) {
             addCriterion("bonus_points between", value1, value2, "bonusPoints");
             return (Criteria) this;
         }
 
-        public Criteria andBonusPointsNotBetween(Byte value1, Byte value2) {
+        public Criteria andBonusPointsNotBetween(Short value1, Short value2) {
             addCriterion("bonus_points not between", value1, value2, "bonusPoints");
             return (Criteria) this;
         }
