@@ -1,4 +1,4 @@
-package com.ruoyi.fac.automapper;
+package com.ruoyi.fac.mapper;
 
 import com.ruoyi.fac.model.FacProductWriteOffBean;
 import com.ruoyi.fac.model.FacProductWriteOffBeanExample;

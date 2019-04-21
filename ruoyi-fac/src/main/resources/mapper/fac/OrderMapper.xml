@@ -185,7 +185,7 @@
 
     <update id="cancelOrderByIds" parameterType="String">
         UPDATE fac_order
-        set status = 4
+        set status = 4, remark_mngt = #{remarkMngt}
         where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}

@@ -2,12 +2,13 @@ package com.ruoyi.fac.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.ruoyi.common.support.Convert;
-import com.ruoyi.fac.constant.FacConstant;
 import com.ruoyi.fac.domain.*;
 import com.ruoyi.fac.enums.OrderStatus;
 import com.ruoyi.fac.enums.ProductStatus;
 import com.ruoyi.fac.exception.FacException;
 import com.ruoyi.fac.mapper.*;
+import com.ruoyi.fac.model.FacOrder;
+import com.ruoyi.fac.model.FacOrderExample;
 import com.ruoyi.fac.service.IOrderService;
 import com.ruoyi.fac.util.DecimalUtils;
 import com.ruoyi.fac.util.FacCommonUtils;
@@ -18,6 +19,7 @@ import com.ruoyi.fac.vo.OrderItemVo;
 import com.ruoyi.fac.vo.QueryVo;
 import com.ruoyi.fac.vo.client.*;
 import com.ruoyi.fac.vo.condition.QueryGoodVo;
+import com.ruoyi.system.domain.SysUser;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
@@ -51,6 +53,8 @@ public class OrderServiceImpl implements IOrderService {
     private FacProductWriteoffMapper facProductWriteoffMapper;
     @Autowired
     private BuyerBusinessMapper buyerBusinessMapper;
+    @Autowired
+    private FacOrderMapper facOrderMapper;
 
     /**
      * 查询订单信息
@@ -121,20 +125,23 @@ public class OrderServiceImpl implements IOrderService {
      * @return 结果
      */
     @Override
-    public int cancelOrderByIds(String ids) {
-        String[] idsArr = Convert.toStrArray(ids);
-        List<String> orderNos = new ArrayList<>();
-        for (int i = 0; i < idsArr.length; i++) {
-            Order order = this.orderMapper.selectOrderById(Long.valueOf(idsArr[i]));
-            if (order != null) {
-                orderNos.add(order.getOrderNo());
-            }
+    public int cancelOrderByIds(String ids, String remarkMngt, SysUser user) throws FacException {
+        if (StringUtils.isBlank(ids)) {
+            throw new FacException("订单id参数为空");
         }
-        if (CollectionUtils.isNotEmpty(orderNos)) {
-            // 删除相应核销记录
-            this.facProductWriteoffMapper.deleteFacProductWriteoffByOrderNos(orderNos);
+        List<Long> idsList = FacCommonUtils.convertToLongList(Arrays.asList(ids.split(",")));
+
+        FacOrder facOrder = new FacOrder();
+        facOrder.setStatus(Byte.valueOf(OrderStatus.CACELED.getCode().toString()));
+        facOrder.setRemarkMngt(remarkMngt);
+        facOrder.setUpdateTime(new Date());
+        if (user != null) {
+            facOrder.setOperatorId(user.getUserId());
+            facOrder.setOperatorName(user.getUserName());
         }
-        return this.orderMapper.cancelOrderByIds(idsArr);
+        FacOrderExample example = new FacOrderExample();
+        example.createCriteria().andIsDeletedEqualTo(false).andIdIn(idsList);
+        return this.facOrderMapper.updateByExampleSelective(facOrder, example);
     }
 
     /**
@@ -579,6 +586,9 @@ public class OrderServiceImpl implements IOrderService {
             throw new Exception("当前订单已不存在,请联系管理员");
         }
         order = orders.get(0);
+        if (!OrderStatus.TOWRITEOFF.getCode().equals(order.getStatus())) {
+            throw new Exception("当前商品订单处于非待核销状态，请联系管理员");
+        }
         Product product = this.productMapper.selectProductById(order.getProdId());
         if (product == null) {
             throw new Exception(String.format("商品【%s】已不存在,请联系管理员", product.getName()));

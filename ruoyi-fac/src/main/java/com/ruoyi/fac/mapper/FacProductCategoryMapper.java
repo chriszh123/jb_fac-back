@@ -1,4 +1,4 @@
-package com.ruoyi.fac.automapper;
+package com.ruoyi.fac.mapper;
 
 import com.ruoyi.fac.model.FacProductCategory;
 import com.ruoyi.fac.model.FacProductCategoryExample;

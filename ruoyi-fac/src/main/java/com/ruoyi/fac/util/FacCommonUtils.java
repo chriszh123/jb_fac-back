@@ -1,7 +1,10 @@
 package com.ruoyi.fac.util;
 
-import com.ruoyi.common.utils.StringUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -31,6 +34,23 @@ public class FacCommonUtils {
         }
 
         return data.trim();
+    }
+
+    public static List<Long> convertToLongList(List<String> stringList) {
+        List<Long> longList = new ArrayList<>();
+        if (CollectionUtils.isEmpty(stringList)) {
+            return longList;
+        }
+        Long wid = 0L;
+        for (String string : stringList) {
+            if (StringUtils.isNotBlank(string)) {
+                wid = Long.parseLong(string);
+                if (!longList.contains(wid)) {
+                    longList.add(wid);
+                }
+            }
+        }
+        return longList;
     }
 
     public static void main(String[] args) {

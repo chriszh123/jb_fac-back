@@ -68,7 +68,7 @@ public interface OrderMapper {
      * @param ids
      * @return 结果
      */
-    int cancelOrderByIds(String[] ids);
+    int cancelOrderByIds(@Param("array") String[] ids, @Param("remarkMngt") String remarkMngt);
 
     /**
      * 查询指定日期内的订单信息

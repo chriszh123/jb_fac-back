@@ -1,4 +1,4 @@
-package com.ruoyi.fac.automapper;
+package com.ruoyi.fac.mapper;
 
 import com.ruoyi.fac.model.FacBusiness;
 import com.ruoyi.fac.model.FacBusinessExample;

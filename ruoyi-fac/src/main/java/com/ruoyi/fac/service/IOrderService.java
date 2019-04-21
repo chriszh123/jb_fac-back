@@ -6,6 +6,7 @@ import com.ruoyi.fac.vo.FacStaticVo;
 import com.ruoyi.fac.vo.OrderDiagramVo;
 import com.ruoyi.fac.vo.OrderItemVo;
 import com.ruoyi.fac.vo.client.*;
+import com.ruoyi.system.domain.SysUser;
 
 import java.util.List;
 
@@ -62,7 +63,7 @@ public interface IOrderService {
      * @param ids
      * @return 结果
      */
-    int cancelOrderByIds(String ids);
+    int cancelOrderByIds(String ids, String remarkMngt, SysUser user) throws FacException;
 
     /**
      * 订单详情

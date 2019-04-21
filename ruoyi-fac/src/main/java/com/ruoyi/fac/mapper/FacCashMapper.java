@@ -1,4 +1,4 @@
-package com.ruoyi.fac.automapper;
+package com.ruoyi.fac.mapper;
 
 import com.ruoyi.fac.model.FacCash;
 import com.ruoyi.fac.model.FacCashExample;

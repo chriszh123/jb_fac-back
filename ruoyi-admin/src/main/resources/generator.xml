@@ -38,7 +38,7 @@
 
         <!-- Mapper接口文件的位置 -->
         <javaClientGenerator type="XMLMAPPER"
-                             targetPackage="com.ruoyi.fac.automapper"
+                             targetPackage="com.ruoyi.fac.mapper"
                              targetProject="..\ruoyi-fac\src\main\java">
             <property name="enableSubPackages" value="false"/>
         </javaClientGenerator>

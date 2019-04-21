@@ -128,7 +128,8 @@
                         actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="#" onclick="$.operate.edit(\'' + row.id + '\')"><i class="fa fa-edit"></i>详情</a> ');
                         if (row.status == '0') {
                             // 待付款状态订单可以取消订单
-                            actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="#" onclick="$.operate.remove(\'' + row.id + '\')"><i class="fa fa-remove"></i>取消订单</a>');
+                            // actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="#" onclick="$.operate.remove(\'' + row.id + '\')"><i class="fa fa-remove"></i>取消订单</a>');
+                            actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="#" onclick="openCacelOrderDlg(\'' + row.id + '\')"><i class="fa fa-remove"></i>取消订单</a>');
                         }
                         return actions.join('');
                     }
@@ -136,6 +137,11 @@
         };
         $.table.init(options);
     });
+
+    function openCacelOrderDlg(orderId) {
+        var url = prefix + '/cacelOrder/' + orderId;
+        $.modal.open("取消订单", url, '650', '300');
+    }
 </script>
 </body>
 </html>
