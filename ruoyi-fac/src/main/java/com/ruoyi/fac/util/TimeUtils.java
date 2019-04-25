@@ -28,6 +28,7 @@ public class TimeUtils {
     public static final String DEFAULT_DATE_FORMAT_MDHM = "MM月dd日HH:00";
     public static final String DEFAULT_DATE_FORMAT_YMDHM = "yyyy年MM月dd日HH:00";
     public static final String DEFAULT_DATE_TIME_FORMAT_HH_00 = "yyyy-MM-dd HH:00";
+    public static final String DEFAULT_DATE_TIME_FORMAT_00_00_00 = "yyyy-MM-dd 00:00:00";
 
     public static final String getCurrentDate() {
         return new SimpleDateFormat(DEFAULT_DATE_FORMAT).format(new Date(System.currentTimeMillis()));

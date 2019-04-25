@@ -283,3 +283,18 @@ CREATE TABLE `fac_buyer_address` (
   `is_deleted` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否删除',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='买者用户收货地址表';
+
+-- --------------------------
+-- 13、用户签到表
+-- --------------------------
+drop table if exists `fac_buyer_sign`;
+CREATE TABLE `fac_buyer_sign` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `token` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '用户token ',
+  `point` smallint NOT NULL DEFAULT '0' COMMENT '当前签到获得的积分',
+  `sign_time` datetime NOT NULL COMMENT '签到时间',
+  `create_time` datetime NOT NULL COMMENT '创建时间',
+  `update_time` datetime NOT NULL COMMENT '最近更新时间',
+  `is_deleted` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否删除',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='用户签到表';

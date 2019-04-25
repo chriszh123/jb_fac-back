@@ -53,6 +53,19 @@ public class FacCommonUtils {
         return longList;
     }
 
+    /**
+     * 获取指定范围内的随机值
+     *
+     * @param max
+     * @param min
+     * @return
+     */
+    public static int getRandomInt(int max, int min) {
+        Random random = new Random();
+        int value = random.nextInt(max - min) + min;
+        return value;
+    }
+
     public static void main(String[] args) {
         System.out.println(randomInt(11));
     }

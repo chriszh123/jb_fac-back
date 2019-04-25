@@ -9,13 +9,17 @@ package com.ruoyi.web.controller.fac.client;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.fac.domain.Buyer;
 import com.ruoyi.fac.enums.FacCode;
+import com.ruoyi.fac.exception.FacException;
 import com.ruoyi.fac.service.IBuyerAddressService;
 import com.ruoyi.fac.service.IBuyerService;
+import com.ruoyi.fac.service.IUserSignService;
 import com.ruoyi.fac.service.WechatAdapterService;
 import com.ruoyi.fac.vo.client.*;
+import com.ruoyi.fac.vo.client.req.SignReq;
 import com.ruoyi.fac.vo.client.req.UserInfo;
 import com.ruoyi.fac.vo.client.req.UserReq;
 import com.ruoyi.fac.vo.client.res.LoginVo;
+import com.ruoyi.fac.vo.client.res.UserSignLogs;
 import com.ruoyi.framework.web.base.BaseController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +40,7 @@ import java.util.UUID;
  * @author zhangguifeng
  * @create 2019-01-25 13:49
  **/
+
 @Controller
 @RequestMapping("/fac/client/user")
 public class FacUserController extends BaseController {
@@ -47,6 +52,8 @@ public class FacUserController extends BaseController {
     private IBuyerAddressService buyerAddressService;
     @Autowired
     private WechatAdapterService wechatAdapterService;
+    @Autowired
+    private IUserSignService userSignService;
 
     /**
      * 校验当前用户token
@@ -200,6 +207,34 @@ public class FacUserController extends BaseController {
             return FacResult.success("");
         } else {
             return FacResult.error(result);
+        }
+    }
+
+    @PostMapping("/sign")
+    @ResponseBody
+    public FacResult sign(@RequestBody SignReq req) {
+        try {
+            this.userSignService.sign(req);
+            return FacResult.success("");
+        } catch (FacException fe) {
+            return FacResult.error(fe.getMessage());
+        } catch (Exception ex) {
+            LOGGER.error(ex.getMessage(), ex);
+            return FacResult.error();
+        }
+    }
+
+    @PostMapping("/sign/logs")
+    @ResponseBody
+    public FacResult signLogs(@RequestBody SignReq req) {
+        try {
+            UserSignLogs logs = this.userSignService.queryUserSignLogs(req);
+            return FacResult.success(logs);
+        } catch (FacException fe) {
+            return FacResult.error(fe.getMessage());
+        } catch (Exception ex) {
+            LOGGER.error(ex.getMessage(), ex);
+            return FacResult.error();
         }
     }
 }
