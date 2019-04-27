@@ -3,7 +3,10 @@ package com.ruoyi.fac.service.impl;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.fac.constant.FacConstant;
 import com.ruoyi.fac.exception.FacException;
+import com.ruoyi.fac.mapper.FacBuyerMapper;
 import com.ruoyi.fac.mapper.FacBuyerSignMapper;
+import com.ruoyi.fac.model.FacBuyer;
+import com.ruoyi.fac.model.FacBuyerExample;
 import com.ruoyi.fac.model.FacBuyerSign;
 import com.ruoyi.fac.model.FacBuyerSignExample;
 import com.ruoyi.fac.service.IUserSignService;
@@ -31,6 +34,8 @@ import java.util.List;
 public class UserSignServiceImpl implements IUserSignService {
     @Autowired
     private FacBuyerSignMapper facBuyerSignMapper;
+    @Autowired
+    private FacBuyerMapper facBuyerMapper;
 
     @Override
     public void sign(SignReq req) throws FacException {
@@ -59,7 +64,20 @@ public class UserSignServiceImpl implements IUserSignService {
         sign.setCreateTime(now);
         sign.setUpdateTime(now);
         sign.setIsDeleted(false);
-        this.facBuyerSignMapper.insertSelective(sign);
+        int rows = this.facBuyerSignMapper.insertSelective(sign);
+        if (rows > 0) {
+            // 更新用户表里当前用户相应的积分
+            FacBuyerExample buyerExample = new FacBuyerExample();
+            buyerExample.createCriteria().andIsDeletedEqualTo(false).andTokenEqualTo(req.getToken());
+            List<FacBuyer> facBuyers = this.facBuyerMapper.selectByExample(buyerExample);
+            if (CollectionUtils.isNotEmpty(facBuyers)) {
+                FacBuyer buyer = facBuyers.get(0);
+                int newPoints = buyer.getPoints() + point;
+                buyer.setPoints(Short.valueOf(String.valueOf(newPoints)));
+                buyer.setUpdateTime(new Date());
+                this.facBuyerMapper.updateByExampleSelective(buyer, buyerExample);
+            }
+        }
     }
 
     @Override

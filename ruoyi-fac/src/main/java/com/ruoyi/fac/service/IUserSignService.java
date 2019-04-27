@@ -10,9 +10,20 @@ import com.ruoyi.fac.vo.client.res.UserSignLogs;
  * Description
  */
 public interface IUserSignService {
-    // 当前用户签到
+    /**
+     * 当前用户签到
+     *
+     * @param req
+     * @throws FacException
+     */
     void sign(SignReq req) throws FacException;
 
-    // 指定用户的签到记录
+    /**
+     * 指定用户的签到记录
+     *
+     * @param req
+     * @return
+     * @throws FacException
+     */
     UserSignLogs queryUserSignLogs(SignReq req) throws FacException;
 }
