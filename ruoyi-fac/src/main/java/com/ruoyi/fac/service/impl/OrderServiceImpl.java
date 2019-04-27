@@ -490,16 +490,39 @@ public class OrderServiceImpl implements IOrderService {
         if (StringUtils.isEmpty(token)) {
             return vo;
         }
-        QueryVo queryVo = new QueryVo();
-        queryVo.setToken(token);
-        queryVo.setStatus(status);
-        // 当前条件下所有商品
-        List<Order> orders = this.orderMapper.orderList(queryVo);
+        List<Order> orders = null;
+        if (OrderStatus.TOWRITEOFF_BIZ.getCode().intValue() != status) {
+            // 正常买者用户对应的订单
+            QueryVo queryVo = new QueryVo();
+            queryVo.setToken(token);
+            queryVo.setStatus(status);
+            // 当前条件下所有商品
+            orders = this.orderMapper.orderList(queryVo);
+        } else if (OrderStatus.TOWRITEOFF_BIZ.getCode().intValue() == status) {
+            // 当前用户是商家，其对应的待核销的商品订单
+            // 查询当前用户是不是商家，有没有自己的商品
+            BuyerBusiness buyerBusiness = new BuyerBusiness();
+            buyerBusiness.setToken(token);
+            buyerBusiness.setIsDeleted(0);
+            List<BuyerBusiness> buyerBusinesses = this.buyerBusinessMapper.selectBuyerBusinessList(buyerBusiness);
+            if (CollectionUtils.isNotEmpty(buyerBusinesses)) {
+                List<Long> prodIds = new ArrayList<>();
+                for (BuyerBusiness item : buyerBusinesses) {
+                    prodIds.add(item.getBusinessProdId());
+                }
+                // 查询当前用户名下的商品是否存在处于待核销(买家已付款)的订单
+                List<Integer> statuses = new ArrayList<>();
+                statuses.add(OrderStatus.TOWRITEOFF.getCode());
+                // 待核销：商家要核销的自己的商品
+                orders = this.orderMapper.selectProductsByProdAndStatus(prodIds, statuses);
+            }
+        }
+
         if (CollectionUtils.isEmpty(orders)) {
             return vo;
         }
         // 商品信息
-        this.convertOrders(vo, orders);
+        this.convertOrders(vo, orders, status);
 
         return vo;
     }
@@ -620,7 +643,7 @@ public class OrderServiceImpl implements IOrderService {
         this.facProductWriteoffMapper.updateFacProductWriteoff(facProductWriteoff);
     }
 
-    private void convertOrders(OrderListVo vo, List<Order> orders) {
+    private void convertOrders(OrderListVo vo, List<Order> orders, int status) {
         List<OrderVo> orderVos = new ArrayList<>();
         // <goodId, Order>
         Map<Long, Order> good2Order = new HashMap<>(16);
@@ -638,6 +661,10 @@ public class OrderServiceImpl implements IOrderService {
             orderVo.setRemark(order.getRemark());
             orderVo.setShopId(order.getShipId());
             orderVo.setStatus(order.getStatus());
+            if (OrderStatus.TOWRITEOFF_BIZ.getCode().intValue() == status) {
+                // 商家待核销的订单
+                orderVo.setStatus(status);
+            }
             orderVo.setStatusStr(OrderStatus.getNameByCode(order.getStatus()));
             orderVo.setUserId(order.getUserId());
             orderVo.setProdId(order.getProdId());

@@ -5,7 +5,10 @@ import com.ruoyi.fac.constant.FacConstant;
 import com.ruoyi.fac.domain.*;
 import com.ruoyi.fac.enums.OrderStatus;
 import com.ruoyi.fac.mapper.*;
+import com.ruoyi.fac.model.FacOrder;
+import com.ruoyi.fac.model.FacOrderExample;
 import com.ruoyi.fac.service.IBuyerService;
+import com.ruoyi.fac.util.DecimalUtils;
 import com.ruoyi.fac.util.TimeUtils;
 import com.ruoyi.fac.vo.QueryVo;
 import com.ruoyi.fac.vo.UserDiagramVo;
@@ -45,6 +48,8 @@ public class BuyerServiceImpl implements IBuyerService {
     private BuyerBusinessMapper buyerBusinessMapper;
     @Autowired
     private OrderMapper orderMapper;
+    @Autowired
+    private FacOrderMapper facOrderMapper;
 
     /**
      * 查询买者用户信息
@@ -329,19 +334,19 @@ public class BuyerServiceImpl implements IBuyerService {
         // 积分
         vo.setScore(buyer.getPoints());
         // 总消费金额
-        QueryVo queryVo = new QueryVo();
-        queryVo.setToken(token);
-        queryVo.setOpenId(token);
-        List<Integer> statuses = new ArrayList<>();
-        statuses.add(OrderStatus.TOWRITEOFF.getCode());
-        statuses.add(OrderStatus.TOEVALUATE.getCode());
-        statuses.add(OrderStatus.COMPLETED.getCode());
-        queryVo.setStatuses(statuses);
-        List<Order> orders = this.orderMapper.orderList(queryVo);
+        List<Byte> statuses = new ArrayList<>();
+        statuses.add(OrderStatus.TOWRITEOFF.getCode().byteValue());
+        statuses.add(OrderStatus.TOEVALUATE.getCode().byteValue());
+        statuses.add(OrderStatus.COMPLETED.getCode().byteValue());
+        FacOrderExample example = new FacOrderExample();
+        example.createCriteria().andIsDeletedEqualTo(false).andTokenEqualTo(token).andStatusIn(statuses);
+        List<FacOrder> orders = this.facOrderMapper.selectByExample(example);
         if (!CollectionUtils.isEmpty(orders)) {
             BigDecimal total = new BigDecimal("0.00");
-            for (Order item : orders) {
-                total = total.add(item.getPrice());
+            BigDecimal temp;
+            for (FacOrder item : orders) {
+                temp = DecimalUtils.mul(item.getPrice(), new BigDecimal(String.valueOf(item.getProdNumber())));
+                total = total.add(temp);
             }
             vo.setTotleConsumed(Double.valueOf(total.toString()));
         }
