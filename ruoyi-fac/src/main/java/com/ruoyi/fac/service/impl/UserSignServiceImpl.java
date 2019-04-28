@@ -106,6 +106,9 @@ public class UserSignServiceImpl implements IUserSignService {
             log = new UserSignLog();
             log.setContinuous(1);
             log.setDateAdd(TimeUtils.date2Str(item.getSignTime(), TimeUtils.DEFAULT_DATE_TIME_FORMAT_00_00_00));
+            if (item.getPoint() != null) {
+                log.setPoint(item.getPoint());
+            }
             result.add(log);
         }
         return result;
