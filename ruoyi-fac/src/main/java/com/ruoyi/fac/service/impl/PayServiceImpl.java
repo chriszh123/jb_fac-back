@@ -348,6 +348,7 @@ public class PayServiceImpl implements IPayService {
             productWriteoff.setProductId(item.getProdId());
             productWriteoff.setBuyerId(item.getUserId());
             productWriteoff.setCode(writeOffCode);
+            // 核销状态:1-已核销,2-待核销
             productWriteoff.setStatus(2);
             productWriteoff.setWriteoffTime(null);
             productWriteoff.setCreateTime(nowDate);

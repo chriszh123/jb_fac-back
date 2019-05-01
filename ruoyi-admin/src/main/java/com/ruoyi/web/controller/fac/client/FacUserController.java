@@ -19,6 +19,7 @@ import com.ruoyi.fac.vo.client.req.SignReq;
 import com.ruoyi.fac.vo.client.req.UserInfo;
 import com.ruoyi.fac.vo.client.req.UserReq;
 import com.ruoyi.fac.vo.client.res.LoginVo;
+import com.ruoyi.fac.vo.client.res.UserScoreLogs;
 import com.ruoyi.fac.vo.client.res.UserSignLogs;
 import com.ruoyi.framework.web.base.BaseController;
 import org.slf4j.Logger;
@@ -213,8 +214,8 @@ public class FacUserController extends BaseController {
     @ResponseBody
     public FacResult sign(@RequestBody SignReq req) {
         try {
-            this.userSignService.sign(req);
-            return FacResult.success("");
+            int signPoint = this.userSignService.sign(req);
+            return FacResult.success(signPoint);
         } catch (FacException fe) {
             return FacResult.error(fe.getMessage());
         } catch (Exception ex) {
@@ -228,6 +229,20 @@ public class FacUserController extends BaseController {
     public FacResult signLogs(@RequestBody SignReq req) {
         try {
             UserSignLogs logs = this.userSignService.queryUserSignLogs(req);
+            return FacResult.success(logs);
+        } catch (FacException fe) {
+            return FacResult.error(fe.getMessage());
+        } catch (Exception ex) {
+            LOGGER.error(ex.getMessage(), ex);
+            return FacResult.error();
+        }
+    }
+
+    @PostMapping("/score/logs")
+    @ResponseBody
+    public FacResult signScoreLogs(@RequestBody SignReq req) {
+        try {
+            UserScoreLogs logs = this.userSignService.queryUserScoreLogs(req);
             return FacResult.success(logs);
         } catch (FacException fe) {
             return FacResult.error(fe.getMessage());

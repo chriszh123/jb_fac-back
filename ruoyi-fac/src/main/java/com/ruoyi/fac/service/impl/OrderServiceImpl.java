@@ -620,8 +620,19 @@ public class OrderServiceImpl implements IOrderService {
         if (business == null) {
             return;
         }
-        // 更新核销时间、操作人
         Date nowDate = new Date();
+        // 更新当前订单状态
+        FacOrder facOrder = new FacOrder();
+        // 商品订单核销后状态更新为：已完成(以后添加评价功能后，这里状态需要更新为:待评价)
+        facOrder.setStatus(OrderStatus.COMPLETED.getCode().byteValue());
+        facOrder.setUpdateTime(nowDate);
+        facOrder.setOperatorId(Long.valueOf(business.getId()));
+        facOrder.setOperatorName(business.getName());
+        FacOrderExample orderExample = new FacOrderExample();
+        orderExample.createCriteria().andIdEqualTo(order.getId());
+        this.facOrderMapper.updateByExampleSelective(facOrder, orderExample);
+
+        // 更新核销时间、操作人
         FacProductWriteoff facProductWriteoff = new FacProductWriteoff();
         facProductWriteoff.setOrderNo(orderNo);
         facProductWriteoff.setProductId(product.getId());
@@ -636,6 +647,7 @@ public class OrderServiceImpl implements IOrderService {
                             , TimeUtils.DEFAULT_DATE_TIME_FORMAT_HH_MM_SS)));
         }
         facProductWriteoff.setWriteoffTime(nowDate);
+        // 核销状态:1-已核销,2-待核销
         facProductWriteoff.setStatus(1);
         facProductWriteoff.setUpdateTime(nowDate);
         facProductWriteoff.setOperatorId(Long.valueOf(business.getId()));

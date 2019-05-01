@@ -46,6 +46,19 @@ public class FacResult extends HashMap<String, Object> implements Serializable {
     }
 
     /**
+     * 返回成功消息
+     *
+     * @return 成功消息
+     */
+    public static FacResult success(Object data) {
+        FacResult json = new FacResult();
+        json.put("msg", FacCode.SUCCESS.getMsg());
+        json.put("code", FacCode.SUCCESS.getCode());
+        json.put("data", data);
+        return json;
+    }
+
+    /**
      * 返回错误消息
      *
      * @param code 错误码
@@ -56,19 +69,6 @@ public class FacResult extends HashMap<String, Object> implements Serializable {
         FacResult json = new FacResult();
         json.put("code", code);
         json.put("msg", msg);
-        return json;
-    }
-
-    /**
-     * 返回成功消息
-     *
-     * @return 成功消息
-     */
-    public static FacResult success(Object data) {
-        FacResult json = new FacResult();
-        json.put("msg", FacCode.SUCCESS.getMsg());
-        json.put("code", FacCode.SUCCESS.getCode());
-        json.put("data", data);
         return json;
     }
 

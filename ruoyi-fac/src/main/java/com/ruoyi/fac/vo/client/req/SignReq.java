@@ -13,5 +13,7 @@ import java.io.Serializable;
 public class SignReq implements Serializable {
     private static final long serialVersionUID = -8880148128976398253L;
 
+    private int page = 1;
+    private int pageSize = 50;
     private String token;
 }

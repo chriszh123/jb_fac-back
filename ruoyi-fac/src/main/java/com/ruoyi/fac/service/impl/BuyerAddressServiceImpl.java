@@ -7,9 +7,13 @@ import java.util.List;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.fac.domain.Buyer;
 import com.ruoyi.fac.mapper.BuyerMapper;
+import com.ruoyi.fac.mapper.FacBuyerMapper;
+import com.ruoyi.fac.model.FacBuyer;
+import com.ruoyi.fac.model.FacBuyerExample;
 import com.ruoyi.fac.util.TimeUtils;
 import com.ruoyi.fac.vo.client.ShippingAddress;
 import com.ruoyi.system.domain.SysUser;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.fac.mapper.BuyerAddressMapper;
@@ -24,12 +28,13 @@ import org.springframework.util.CollectionUtils;
  * @author ruoyi
  * @date 2019-01-28
  */
+@Slf4j
 @Service
 public class BuyerAddressServiceImpl implements IBuyerAddressService {
     @Autowired
     private BuyerAddressMapper buyerAddressMapper;
     @Autowired
-    private BuyerMapper buyerMapper;
+    private FacBuyerMapper facBuyerMapper;
 
     /**
      * 查询买者用户收货地址信息
@@ -218,13 +223,17 @@ public class BuyerAddressServiceImpl implements IBuyerAddressService {
 
     @Override
     public Long addAddress(ShippingAddress shippingAddress) {
-        Buyer buyer = this.buyerMapper.selectBuyerByOpenId(shippingAddress.getToken());
-        if (buyer == null) {
+        FacBuyerExample example = new FacBuyerExample();
+        example.createCriteria().andIsDeletedEqualTo(false).andTokenEqualTo(shippingAddress.getToken());
+        List<FacBuyer> facBuyers = this.facBuyerMapper.selectByExample(example);
+        if (CollectionUtils.isEmpty(facBuyers)) {
+            log.info(String.format("[addAddress] buyer is null, token:%s", shippingAddress.getToken()));
             return -1L;
         }
+        FacBuyer facBuyer = facBuyers.get(0);
         Date nowDate = new Date();
         BuyerAddress buyerAddress = new BuyerAddress();
-        buyerAddress.setBuyerId(buyer.getId());
+        buyerAddress.setBuyerId(facBuyer.getId());
         buyerAddress.setToken(shippingAddress.getToken());
         buyerAddress.setOpenId(shippingAddress.getToken());
 

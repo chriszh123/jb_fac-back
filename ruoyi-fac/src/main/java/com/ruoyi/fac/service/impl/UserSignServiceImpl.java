@@ -2,6 +2,7 @@ package com.ruoyi.fac.service.impl;
 
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.fac.constant.FacConstant;
+import com.ruoyi.fac.enums.ScoreTypeEnum;
 import com.ruoyi.fac.exception.FacException;
 import com.ruoyi.fac.mapper.FacBuyerMapper;
 import com.ruoyi.fac.mapper.FacBuyerSignMapper;
@@ -13,6 +14,8 @@ import com.ruoyi.fac.service.IUserSignService;
 import com.ruoyi.fac.util.FacCommonUtils;
 import com.ruoyi.fac.util.TimeUtils;
 import com.ruoyi.fac.vo.client.req.SignReq;
+import com.ruoyi.fac.vo.client.res.UserScoreLog;
+import com.ruoyi.fac.vo.client.res.UserScoreLogs;
 import com.ruoyi.fac.vo.client.res.UserSignLog;
 import com.ruoyi.fac.vo.client.res.UserSignLogs;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +41,7 @@ public class UserSignServiceImpl implements IUserSignService {
     private FacBuyerMapper facBuyerMapper;
 
     @Override
-    public void sign(SignReq req) throws FacException {
+    public int sign(SignReq req) throws FacException {
         if (req == null || StringUtils.isBlank(req.getToken())) {
             throw new FacException("参数token不能为空");
         }
@@ -60,6 +63,7 @@ public class UserSignServiceImpl implements IUserSignService {
         FacBuyerSign sign = new FacBuyerSign();
         sign.setToken(req.getToken());
         sign.setPoint(Short.valueOf(String.valueOf(point)));
+        sign.setType(ScoreTypeEnum.SIGN.getValue());
         sign.setSignTime(nowDate);
         sign.setCreateTime(now);
         sign.setUpdateTime(now);
@@ -78,6 +82,7 @@ public class UserSignServiceImpl implements IUserSignService {
                 this.facBuyerMapper.updateByExampleSelective(buyer, buyerExample);
             }
         }
+        return point;
     }
 
     @Override
@@ -87,7 +92,7 @@ public class UserSignServiceImpl implements IUserSignService {
         }
         UserSignLogs logs = new UserSignLogs();
         FacBuyerSignExample example = new FacBuyerSignExample();
-        example.createCriteria().andIsDeletedEqualTo(false).andTokenEqualTo(req.getToken());
+        example.createCriteria().andIsDeletedEqualTo(false).andTokenEqualTo(req.getToken()).andTypeEqualTo(ScoreTypeEnum.SIGN.getValue());
         List<FacBuyerSign> signs = this.facBuyerSignMapper.selectByExample(example);
         logs.setTotalRow(CollectionUtils.isNotEmpty(signs) ? signs.size() : 0);
         if (CollectionUtils.isEmpty(signs)) {
@@ -97,6 +102,44 @@ public class UserSignServiceImpl implements IUserSignService {
         logs.setResult(result);
 
         return logs;
+    }
+
+    /**
+     * 查询当前用户对应的签到积分明细
+     *
+     * @param req
+     * @return
+     * @throws FacException
+     */
+    @Override
+    public UserScoreLogs queryUserScoreLogs(SignReq req) throws FacException {
+        if (StringUtils.isBlank(req.getToken())) {
+            return null;
+        }
+        FacBuyerSignExample example = new FacBuyerSignExample();
+        example.createCriteria().andIsDeletedEqualTo(false).andTokenEqualTo(req.getToken());
+        example.setOrderByClause(" create_time desc ");
+        example.setStartRow((req.getPage() - 1) * req.getPageSize());
+        example.setPageSize(req.getPageSize());
+        List<FacBuyerSign> buyerSigns = this.facBuyerSignMapper.selectByExample(example);
+        if (CollectionUtils.isNotEmpty(buyerSigns)) {
+            UserScoreLogs logs = new UserScoreLogs();
+            List<UserScoreLog> result = new ArrayList<>();
+            UserScoreLog log;
+            for (FacBuyerSign sign : buyerSigns) {
+                log = new UserScoreLog();
+                result.add(log);
+                log.setTypeStr(ScoreTypeEnum.getNameByCode(sign.getType()));
+                log.setDateAdd(TimeUtils.date2Str(sign.getCreateTime(), TimeUtils.DEFAULT_DATE_TIME_FORMAT_HH_MM_SS));
+                log.setScore(sign.getPoint());
+                // 0为奖励积分，1为消费积分
+                log.setBehavior(ScoreTypeEnum.isReward(sign.getType()) ? 0 : 1);
+            }
+            logs.setResult(result);
+            return logs;
+        }
+
+        return null;
     }
 
     private List<UserSignLog> buildSignLogs(List<FacBuyerSign> signs) {
