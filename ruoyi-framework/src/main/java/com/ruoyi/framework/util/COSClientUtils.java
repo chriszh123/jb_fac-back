@@ -40,15 +40,15 @@ public class COSClientUtils {
     /**
      * 存储桶名称，替换成自己的
      */
-    private static final String bucketName = "trial-1258295468";
+    private static final String bucketName = "*******************";
     /**
      * secretId ，替换成自己的
      */
-    private static final String secretId = "AKIDvOuGRGuX0aHsf6udjmkaLfopuX2ODH0c";
+    private static final String secretId = "****************";
     /**
      * secretKey，替换成自己的
      */
-    private static final String secretKey = "BE7rnfMD0iInBOT0Pnz6d3WdqeP5f5JH";
+    private static final String secretKey = "*******************";
     /**
      * 1 初始化用户身份信息(secretId, secretKey)
      */
