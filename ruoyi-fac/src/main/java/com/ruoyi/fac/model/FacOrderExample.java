@@ -1106,6 +1106,66 @@ public class FacOrderExample {
             return (Criteria) this;
         }
 
+        public Criteria andUserScoreIsNull() {
+            addCriterion("user_score is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserScoreIsNotNull() {
+            addCriterion("user_score is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserScoreEqualTo(Short value) {
+            addCriterion("user_score =", value, "userScore");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserScoreNotEqualTo(Short value) {
+            addCriterion("user_score <>", value, "userScore");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserScoreGreaterThan(Short value) {
+            addCriterion("user_score >", value, "userScore");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserScoreGreaterThanOrEqualTo(Short value) {
+            addCriterion("user_score >=", value, "userScore");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserScoreLessThan(Short value) {
+            addCriterion("user_score <", value, "userScore");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserScoreLessThanOrEqualTo(Short value) {
+            addCriterion("user_score <=", value, "userScore");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserScoreIn(List<Short> values) {
+            addCriterion("user_score in", values, "userScore");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserScoreNotIn(List<Short> values) {
+            addCriterion("user_score not in", values, "userScore");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserScoreBetween(Short value1, Short value2) {
+            addCriterion("user_score between", value1, value2, "userScore");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserScoreNotBetween(Short value1, Short value2) {
+            addCriterion("user_score not between", value1, value2, "userScore");
+            return (Criteria) this;
+        }
+
         public Criteria andShipIdIsNull() {
             addCriterion("ship_id is null");
             return (Criteria) this;

@@ -139,11 +139,14 @@ public class FacUserController extends BaseController {
         if (shippingAddress == null || StringUtils.isEmpty(shippingAddress.getToken())) {
             return FacResult.error(FacCode.PARAMTER_NULL.getCode(), FacCode.PARAMTER_NULL.getMsg());
         }
-        Long id = this.buyerAddressService.addAddress(shippingAddress);
-        if (id == null || id < 0) {
-            return FacResult.error(FacCode.DATA_NOT_EXIST.getCode(), FacCode.DATA_NOT_EXIST.getMsg());
+        try {
+            Long id = this.buyerAddressService.addAddress(shippingAddress);
+            return FacResult.success(id);
+        } catch (FacException fe) {
+            return FacResult.error(fe.getMessage());
+        } catch (Exception fe) {
+            return FacResult.error("");
         }
-        return FacResult.success(id);
     }
 
     @PostMapping("/shipping-address/update")

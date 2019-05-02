@@ -356,11 +356,13 @@ public class OrderServiceImpl implements IOrderService {
             throw new FacException("以下商品已下架，不能创建订单:\n" + lowerProds.toString());
         }
         // 转换用户选择的商品信息
-        List<Order> orders = new ArrayList<>();
+        List<FacOrder> orders = new ArrayList<>();
         Date nowDate = new Date();
-        BigDecimal amountLogistics = new BigDecimal("0");
+        // 累积商品总价
+        BigDecimal amountConsume = new BigDecimal("0");
         // 当前订单单号
         String orderNo = DateFormatUtils.format(new Date(), "yyyyMMddHHmmssSSSS");
+        Byte notShip = new Byte("2");
         for (GoodsJsonStrVo good : goodsJsonStr) {
             Product product = productMap.get(good.getGoodsId());
             if (product == null || product.getIsDeleted() == 1) {
@@ -375,41 +377,49 @@ public class OrderServiceImpl implements IOrderService {
             if (product.getInventoryQuantity() == 0 || (product.getInventoryQuantity() < good.getNumber())) {
                 throw new FacException(String.format("商品【%s】库存数量已不足，请选择其它商品购买", product.getName()));
             }
-            Order order = new Order();
+            FacOrder order = new FacOrder();
             orders.add(order);
 
             order.setOrderNo(orderNo);
             order.setProdId(good.getGoodsId());
             order.setProdName(product.getName());
-            order.setProdNumber(good.getNumber());
+            order.setProdNumber(Short.valueOf(String.valueOf(good.getNumber())));
             order.setPrice(product.getPrice());
-            order.setStatus(OrderStatus.PAYING.getCode());
+            order.setStatus(OrderStatus.PAYING.getCode().byteValue());
             order.setToken(orderCreateVo.getToken());
             order.setOpenId(orderCreateVo.getToken());
             order.setUserId(buyer.getId());
             order.setUserName(buyer.getName());
             order.setNickName(buyer.getNickName());
             order.setRemark(orderCreateVo.getRemark());
-            order.setShip(2);
+            order.setShip(notShip);
             order.setCreateTime(nowDate);
             order.setUpdateTime(nowDate);
             order.setOperatorId(buyer.getId());
             order.setOperatorName(buyer.getName());
-            order.setIsDeleted(0);
+            order.setIsDeleted(false);
             // 分享人
             order.setInviterId(good.getInviter_id());
 
             // 累积商品总价:暂时不考虑积分
-            amountLogistics = DecimalUtils.add(amountLogistics,
+            amountConsume = DecimalUtils.add(amountConsume,
                     DecimalUtils.mul(product.getPrice(), new BigDecimal(String.valueOf(good.getNumber()))));
+        }
+        int userScore = 0;
+        if (orderCreateVo.getUserScore() == 1) {
+            // 如果用户选择了使用积分，根据当前用户积分数重新计算当前用户实际可以抵用的积分数
+            userScore = this.getUserScore(amountConsume, buyer.getPoints());
+        }
+        for (FacOrder item : orders) {
+            item.setUserScore(Short.valueOf(String.valueOf(userScore)));
         }
         // 批量保存用户选择的商品信息
         int goodsNumber = this.orderMapper.batchInsertOrders(orders);
 
         // 所有商品总价
-        amountLogistics = DecimalUtils.formatDecimal(amountLogistics);
+        amountConsume = DecimalUtils.formatDecimal(amountConsume);
         // 创建返回结果
-        res.setAmountLogistics(Double.valueOf(amountLogistics.toString()));
+        res.setAmountLogistics(Double.valueOf(amountConsume.toString()));
         res.setScore(0);
         res.setGoodsNumber(goodsNumber);
         res.setNeedLogistics(false);
@@ -686,6 +696,9 @@ public class OrderServiceImpl implements IOrderService {
             orderVo.setAmountReal(amountReal);
 
             good2Order.put(order.getProdId(), order);
+
+            // 用户使用的积分
+            orderVo.setScore(order.getUserScore());
             orderNos.add(order.getOrderNo());
         }
         List<FacProductWriteoff> productWriteoffs = this.facProductWriteoffMapper.selectFacProductWriteoffListByOrderNos(orderNos, null);
@@ -738,6 +751,20 @@ public class OrderServiceImpl implements IOrderService {
             goodSpecification.setPic(product.getPicture());
             goodSpecification.setUserId(good2Order.get(product.getId()).getUserId());
         }
+    }
+
+    private int getUserScore(BigDecimal amountConsume, int points) {
+        // 只有商品总消费金额大于积分总数时才可以使用积分:一个积分1分钱
+        if (points == 0) {
+            return 0;
+        }
+        float score2Yuan = (float) points / 100;
+        BigDecimal scoreBD = new BigDecimal(score2Yuan);
+        if (amountConsume.compareTo(scoreBD) > 0) {
+            return points;
+        }
+
+        return 0;
     }
 
     public static void main(String[] args) {

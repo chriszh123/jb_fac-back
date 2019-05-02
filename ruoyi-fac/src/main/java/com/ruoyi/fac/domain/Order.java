@@ -1,6 +1,7 @@
 package com.ruoyi.fac.domain;
 
 import com.ruoyi.common.annotation.Excel;
+import lombok.Data;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ruoyi.common.base.BaseEntity;
@@ -14,6 +15,7 @@ import java.util.Date;
  * @author ruoyi
  * @date 2019-01-06
  */
+@Data
 public class Order extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
@@ -87,7 +89,13 @@ public class Order extends BaseEntity {
      * 用户订单备注
      */
     @Excel(name = "用户订单备注")
-    private String orderRemark;
+    private String remark;
+
+    /**
+     * 当前订单用户使用的积分
+     */
+    @Excel(name = "用户使用积分数")
+    private short userScore;
     /**
      * 管理员备注
      */
@@ -130,214 +138,6 @@ public class Order extends BaseEntity {
      * 是否删除
      */
     private Integer isDeleted;
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setOrderNo(String orderNo) {
-        this.orderNo = orderNo;
-    }
-
-    public String getOrderNo() {
-        return orderNo;
-    }
-
-    public void setProdId(Long prodId) {
-        this.prodId = prodId;
-    }
-
-    public Long getProdId() {
-        return prodId;
-    }
-
-    public void setProdName(String prodName) {
-        this.prodName = prodName;
-    }
-
-    public String getProdName() {
-        return prodName;
-    }
-
-    public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
-
-    public BigDecimal getPrice() {
-        return price;
-    }
-
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
-
-    public Integer getStatus() {
-        return status;
-    }
-
-    public void setPayTime(Date payTime) {
-        this.payTime = payTime;
-    }
-
-    public Date getPayTime() {
-        return payTime;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setNickName(String nickName) {
-        this.nickName = nickName;
-    }
-
-    public String getNickName() {
-        return nickName;
-    }
-
-    public void setShipId(Long shipId) {
-        this.shipId = shipId;
-    }
-
-    public Long getShipId() {
-        return shipId;
-    }
-
-    public void setShipCode(String shipCode) {
-        this.shipCode = shipCode;
-    }
-
-    public String getShipCode() {
-        return shipCode;
-    }
-
-    public void setRemarkMngt(String remarkMngt) {
-        this.remarkMngt = remarkMngt;
-    }
-
-    public String getRemarkMngt() {
-        return remarkMngt;
-    }
-
-    public void setShip(Integer ship) {
-        this.ship = ship;
-    }
-
-    public Integer getShip() {
-        return ship;
-    }
-
-    public void setCacelId(Long cacelId) {
-        this.cacelId = cacelId;
-    }
-
-    public Long getCacelId() {
-        return cacelId;
-    }
-
-    public void setCacelName(String cacelName) {
-        this.cacelName = cacelName;
-    }
-
-    public String getCacelName() {
-        return cacelName;
-    }
-
-    public void setCacelTime(Date cacelTime) {
-        this.cacelTime = cacelTime;
-    }
-
-    public Date getCacelTime() {
-        return cacelTime;
-    }
-
-    public void setOperatorId(Long operatorId) {
-        this.operatorId = operatorId;
-    }
-
-    public Long getOperatorId() {
-        return operatorId;
-    }
-
-    public void setOperatorName(String operatorName) {
-        this.operatorName = operatorName;
-    }
-
-    public String getOperatorName() {
-        return operatorName;
-    }
-
-    public void setIsDeleted(Integer isDeleted) {
-        this.isDeleted = isDeleted;
-    }
-
-    public Integer getIsDeleted() {
-        return isDeleted;
-    }
-
-    public String getOrderRemark() {
-        return orderRemark;
-    }
-
-    public void setOrderRemark(String orderRemark) {
-        this.orderRemark = orderRemark;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public int getProdNumber() {
-        return prodNumber;
-    }
-
-    public void setProdNumber(int prodNumber) {
-        this.prodNumber = prodNumber;
-    }
-
-    public String getOpenId() {
-        return openId;
-    }
-
-    public void setOpenId(String openId) {
-        this.openId = openId;
-    }
-
-    public Long getPrepayId() {
-        return prepayId;
-    }
-
-    public void setPrepayId(Long prepayId) {
-        this.prepayId = prepayId;
-    }
-
-    public Long getInviterId() {
-        return inviterId;
-    }
-
-    public void setInviterId(Long inviterId) {
-        this.inviterId = inviterId;
-    }
 
     @Override
     public String toString() {

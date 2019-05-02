@@ -2,6 +2,7 @@ package com.ruoyi.fac.mapper;
 
 import com.ruoyi.fac.domain.Order;
 import com.ruoyi.fac.domain.Product;
+import com.ruoyi.fac.model.FacOrder;
 import com.ruoyi.fac.vo.QueryVo;
 import org.apache.ibatis.annotations.Param;
 
@@ -91,7 +92,7 @@ public interface OrderMapper {
      *
      * @param list
      */
-    int batchInsertOrders(@Param("list") List<Order> list);
+    int batchInsertOrders(@Param("list") List<FacOrder> list);
 
     List<Order> orderList(QueryVo queryVo);
 

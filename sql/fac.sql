@@ -91,6 +91,7 @@ CREATE TABLE `fac_order` (
   `user_name` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '用户真实名称',
   `nick_name` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '用户昵称',
   `remark` varchar(1024) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '' COMMENT '备注',
+  `user_score` smallint DEFAULT 0 COMMENT '当前订单使用的积分数，同一订单号下的不同商品这里记录的是重复一样的值',
   `ship_id` bigint(20) NOT NULL DEFAULT 0 COMMENT '快递单号ID',
   `ship_code` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '快递单号',
   `remark_mngt` varchar(1024) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '' COMMENT '管理员备注',

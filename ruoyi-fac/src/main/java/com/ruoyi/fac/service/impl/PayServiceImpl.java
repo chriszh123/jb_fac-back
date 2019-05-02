@@ -8,14 +8,14 @@ import com.ruoyi.fac.domain.FacProductWriteoff;
 import com.ruoyi.fac.domain.Order;
 import com.ruoyi.fac.domain.Product;
 import com.ruoyi.fac.enums.OrderStatus;
-import com.ruoyi.fac.mapper.BuyerMapper;
-import com.ruoyi.fac.mapper.FacProductWriteoffMapper;
-import com.ruoyi.fac.mapper.OrderMapper;
-import com.ruoyi.fac.mapper.ProductMapper;
+import com.ruoyi.fac.mapper.*;
+import com.ruoyi.fac.model.FacBuyer;
+import com.ruoyi.fac.model.FacBuyerExample;
 import com.ruoyi.fac.service.IPayService;
 import com.ruoyi.fac.util.*;
 import com.ruoyi.fac.vo.wxpay.WxPrePayReq;
 import com.ruoyi.fac.vo.wxpay.WxPrePayRes;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -54,6 +54,7 @@ import java.util.*;
  * <p>
  * https://www.cnblogs.com/yimiyan/p/5603657.html
  */
+@Slf4j
 @Service("payService")
 public class PayServiceImpl implements IPayService {
     private static final Logger logger = LoggerFactory.getLogger(PayServiceImpl.class);
@@ -68,6 +69,8 @@ public class PayServiceImpl implements IPayService {
     private ProductMapper productMapper;
     @Autowired
     private FacProductWriteoffMapper facProductWriteoffMapper;
+    @Autowired
+    private FacBuyerMapper facBuyerMapper;
 
     /**
      * 微信支付预支付接口
@@ -81,14 +84,6 @@ public class PayServiceImpl implements IPayService {
         //设置最终返回对象
         final WxPrePayRes res = new WxPrePayRes();
         String openid = req.getToken();
-        //接口调用总金额单位为分,需要换算一下(测试金额改成1,单位为分则是0.01,根据自己业务场景判断是转换成float类型还是int类型)
-        //String amountFen = Integer.valueOf((Integer.parseInt(amount)*100)).toString();
-//        String amountFen = Float.valueOf((Float.parseFloat(req.getMoney()) * 100)).toString();
-        String amountFen = "1";
-        // 创建hashmap(用户获得签名)
-        SortedMap<String, String> paraMap = new TreeMap<String, String>();
-        // 设置body变量 (支付成功显示在微信支付 商品详情中)：如果是中文，可能会遇到毫无头绪的签名错误，严重者开始怀疑人生
-        String body = "JB FAC";
         // id为订单号
         final List<Order> orders = this.orderMapper.selectOrderByOrderNo(req.getNextAction().getId());
         if (CollectionUtils.isEmpty(orders)) {
@@ -97,6 +92,30 @@ public class PayServiceImpl implements IPayService {
         if (!OrderStatus.PAYING.getCode().equals(orders.get(0).getStatus())) {
             throw new Exception("当前订单处于非待付款状态，请核对后再操作");
         }
+        // 当前订单总消费金额(后台计算出来的)
+        BigDecimal totalConsumeAmout = this.getTotalConsumAmout(orders);
+        if (totalConsumeAmout.compareTo(new BigDecimal(req.getMoney())) != 0) {
+            log.info(String.format("[getWxPrePayInfo] consumeAmout has error, money/paramter:%s, backStatic:%s", req.getMoney()
+                    , totalConsumeAmout.toString()));
+            throw new Exception("当前订单商品总额与实际消费不一致，请核实");
+        }
+        int userScore = orders.get(0).getUserScore();
+        if (userScore > 0) {
+            // 如果用户使用了积分，预支付金额需要扣除相应积分数
+            float userScore2Yuan = (float) userScore / 100;
+            totalConsumeAmout = DecimalUtils.subtract(totalConsumeAmout, new BigDecimal(userScore2Yuan));
+        }
+        totalConsumeAmout = DecimalUtils.formatDecimal(totalConsumeAmout);
+
+        //接口调用总金额单位为分,需要换算一下(测试金额改成1,单位为分则是0.01,根据自己业务场景判断是转换成float类型还是int类型)
+        //String amountFen = Integer.valueOf((Integer.parseInt(totalConsumeAmout.toString())*100)).toString();
+//        String amountFen = Float.valueOf((Float.parseFloat(totalConsumeAmout.toString()) * 100)).toString();
+        String amountFen = "1";
+        // 创建hashmap(用户获得签名)
+        SortedMap<String, String> paraMap = new TreeMap<String, String>();
+        // 设置body变量 (支付成功显示在微信支付 商品详情中)：如果是中文，可能会遇到毫无头绪的签名错误，严重者开始怀疑人生
+        String body = "JB FAC";
+
         // 校验当前商品是否还可以购买:库存数据
         Long[] ids = new Long[orders.size()];
         // <prodId, Order>
@@ -205,7 +224,12 @@ public class PayServiceImpl implements IPayService {
                         res.setSign(sign);
                         logger.info("微信 支付接口生成签名 设置返回值");
                     }
+                } else {
+                    log.info(String.format("[getWxPrePayInfo] map:%s", JSON.toJSONString(map)));
+                    throw new Exception("预支付接口异常");
                 }
+            } else {
+                throw new Exception("预支付接口未返回数据");
             }
             logger.info("微信 支付接口生成签名 方法结束");
         } catch (UnsupportedEncodingException e) {
@@ -359,6 +383,21 @@ public class PayServiceImpl implements IPayService {
             productWriteoffs.add(productWriteoff);
         }
         this.facProductWriteoffMapper.batchInsert(productWriteoffs);
+
+        // 如果当前订单使用了积分抵扣，需要扣除当前用户相应的消费积分数
+        int useScore = orders.get(0).getUserScore();
+        if (useScore > 0) {
+            Buyer buyer = this.buyerMapper.selectBuyerByOpenId(orders.get(0).getToken());
+            if (buyer != null) {
+                FacBuyer facBuyer = new FacBuyer();
+                int remainderPoints = buyer.getPoints() - useScore;
+                facBuyer.setPoints(Short.valueOf(String.valueOf(remainderPoints)));
+                facBuyer.setUpdateTime(nowDate);
+                FacBuyerExample buyerExample = new FacBuyerExample();
+                buyerExample.createCriteria().andIsDeletedEqualTo(false).andTokenEqualTo(orders.get(0).getToken());
+                this.facBuyerMapper.updateByExampleSelective(facBuyer, buyerExample);
+            }
+        }
     }
 
     /**
@@ -544,5 +583,25 @@ public class PayServiceImpl implements IPayService {
         }
         logger.info("港距查询抓取数据----抓取外网港距数据失败, 返回空字符串");
         return "";
+    }
+
+    private BigDecimal getTotalConsumAmout(List<Order> orders) {
+        BigDecimal total = DecimalUtils.getDefaultDecimal();
+        if (CollectionUtils.isEmpty(orders)) {
+            return total;
+        }
+
+        for (Order order : orders) {
+            total = DecimalUtils.add(total, DecimalUtils.mul(order.getPrice(), new BigDecimal(String.valueOf(order.getProdNumber()))));
+        }
+        return total;
+    }
+
+    public static void main(String[] args) {
+        BigDecimal total = new BigDecimal(38);
+        float ddd = (float) 4 / 100;
+        BigDecimal data = new BigDecimal(ddd);
+        total = total.subtract(data);
+        System.out.println(total);
     }
 }

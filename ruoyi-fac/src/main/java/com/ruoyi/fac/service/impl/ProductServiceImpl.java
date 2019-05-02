@@ -109,6 +109,23 @@ public class ProductServiceImpl implements IProductService {
         if (productdb == null || productdb.getIsDeleted().intValue() == 1) {
             throw new FacException("当前商品已被删除，请确认");
         }
+        try {
+            // 抢购日期时间、核销日期时间
+            if (StringUtils.isNotBlank(product.getRushStartStr())) {
+                product.setRushStart(TimeUtils.parseTime(product.getRushStartStr(), TimeUtils.DEFAULT_DATE_TIME_FORMAT_HH_MM));
+            }
+            if (StringUtils.isNotBlank(product.getRushEndStr())) {
+                product.setRushEnd(TimeUtils.parseTime(product.getRushEndStr(), TimeUtils.DEFAULT_DATE_TIME_FORMAT_HH_MM));
+            }
+            if (StringUtils.isNotBlank(product.getWriteoffStartStr())) {
+                product.setWriteoffStart(TimeUtils.parseTime(product.getWriteoffStartStr(), TimeUtils.DEFAULT_DATE_TIME_FORMAT_HH_MM));
+            }
+            if (StringUtils.isNotBlank(product.getWriteoffEndStr())) {
+                product.setWriteoffEnd(TimeUtils.parseTime(product.getWriteoffEndStr(), TimeUtils.DEFAULT_DATE_TIME_FORMAT_HH_MM));
+            }
+        } catch (Exception ex) {
+            throw new FacException("当前商品抢购日期时间、核销日期时间格式异常");
+        }
         // 商品被下架前需要校验当前商品是否存在于待付款的订单中
         if (productdb.getStatus().equals(ProductStatus.UPPER_SHELF.getValue())
                 && product.getStatus().equals(ProductStatus.LOWER_SHELF.getValue())) {
@@ -127,7 +144,6 @@ public class ProductServiceImpl implements IProductService {
                 throw new FacException(pendingPayment.toString());
             }
         }
-//        SysUser user = ShiroUtils.getSysUser();
         product.setPicture(this.filterBlankPictures(product.getPicture()));
         return productMapper.updateProduct(product);
     }

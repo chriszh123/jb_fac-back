@@ -1,6 +1,7 @@
 package com.ruoyi.fac.service;
 
 import com.ruoyi.fac.domain.BuyerAddress;
+import com.ruoyi.fac.exception.FacException;
 import com.ruoyi.fac.vo.client.ShippingAddress;
 import com.ruoyi.system.domain.SysUser;
 
@@ -69,5 +70,5 @@ public interface IBuyerAddressService {
 
     void deleteAddress(String token, String id);
 
-    Long addAddress(ShippingAddress shippingAddress);
+    Long addAddress(ShippingAddress shippingAddress) throws FacException;
 }

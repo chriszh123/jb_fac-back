@@ -18,6 +18,7 @@
         <result property="userName" column="user_name"/>
         <result property="nickName" column="nick_name"/>
         <result property="remark" column="remark"/>
+        <result property="userScore" column="user_score"/>
         <result property="shipId" column="ship_id"/>
         <result property="shipCode" column="ship_code"/>
         <result property="remarkMngt" column="remark_mngt"/>
@@ -30,14 +31,14 @@
         <result property="operatorId" column="operator_id"/>
         <result property="operatorName" column="operator_name"/>
         <result property="isDeleted" column="is_deleted"/>
-        <result property="orderRemark" column="remark"/>
+        <result property="remark" column="remark"/>
         <result property="prepayId" column="prepay_id"/>
         <result property="inviterId" column="inviter_id"/>
     </resultMap>
 
     <sql id="selectOrderVo">
         select id, order_no, prod_id, prod_name, prod_number, price, status, pay_time, token,open_id, user_id, user_name, nick_name, remark, ship_id
-        , ship_code, remark_mngt, ship, cacel_id, cacel_name, cacel_time, prepay_id,inviter_id,create_time, update_time, operator_id, operator_name, is_deleted from fac_order
+        ,user_score, ship_code, remark_mngt, ship, cacel_id, cacel_name, cacel_time, prepay_id,inviter_id,create_time, update_time, operator_id, operator_name, is_deleted from fac_order
     </sql>
 
     <select id="selectOrderList" parameterType="Order" resultMap="OrderResult">
@@ -215,7 +216,7 @@
         insert into
         fac_order
         (order_no, prod_id, prod_name, prod_number, price, status, user_id, user_name, nick_name, remark, ship,
-        create_time,update_time, operator_id, operator_name, is_deleted,token, open_id, inviter_id)
+        create_time,update_time, operator_id, operator_name, is_deleted,token, open_id, inviter_id,user_score)
         values
         <foreach collection="list" item="item" index="index" separator=",">
             (
@@ -227,7 +228,8 @@
             #{item.createTime,jdbcType=TIMESTAMP}, #{item.updateTime,jdbcType=TIMESTAMP},
             #{item.operatorId,jdbcType=BIGINT}, #{item.operatorName,jdbcType=VARCHAR},
             #{item.isDeleted,jdbcType=TINYINT},#{item.token,jdbcType=VARCHAR},
-            #{item.openId,jdbcType=VARCHAR},#{item.inviterId, jdbcType=BIGINT}
+            #{item.openId,jdbcType=VARCHAR},#{item.inviterId, jdbcType=BIGINT},
+            #{item.userScore, jdbcType=SMALLINT}
             )
         </foreach>
     </insert>
