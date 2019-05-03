@@ -431,7 +431,8 @@ public class ProductServiceImpl implements IProductService {
         goodVo.setNumberFav(0);
         goodVo.setNumberGoodReputation(0);
         goodVo.setNumberOrders(product.getOrderCount());
-        goodVo.setNumberSells(product.getSales());
+        // 已售分数 = 虚拟购买的数量 + 实际购买数量
+        goodVo.setNumberSells(product.getVmBuyerQuantity() + product.getSales());
         goodVo.setOriginalPrice(Double.valueOf(product.getOriginalPrice().toString()));
         goodVo.setPaixu(product.getSort());
         // 默认取第一张图片
