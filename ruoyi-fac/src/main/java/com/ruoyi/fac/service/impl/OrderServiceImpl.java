@@ -3,12 +3,12 @@ package com.ruoyi.fac.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.ruoyi.common.support.Convert;
 import com.ruoyi.fac.domain.*;
+import com.ruoyi.fac.enums.CashStatus;
 import com.ruoyi.fac.enums.OrderStatus;
 import com.ruoyi.fac.enums.ProductStatus;
 import com.ruoyi.fac.exception.FacException;
 import com.ruoyi.fac.mapper.*;
-import com.ruoyi.fac.model.FacOrder;
-import com.ruoyi.fac.model.FacOrderExample;
+import com.ruoyi.fac.model.*;
 import com.ruoyi.fac.service.IOrderService;
 import com.ruoyi.fac.util.DecimalUtils;
 import com.ruoyi.fac.util.FacCommonUtils;
@@ -21,6 +21,7 @@ import com.ruoyi.fac.vo.client.*;
 import com.ruoyi.fac.vo.condition.QueryGoodVo;
 import com.ruoyi.system.domain.SysUser;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.slf4j.Logger;
@@ -55,6 +56,10 @@ public class OrderServiceImpl implements IOrderService {
     private BuyerBusinessMapper buyerBusinessMapper;
     @Autowired
     private FacOrderMapper facOrderMapper;
+    @Autowired
+    private FacCashMapper facCashMapper;
+    @Autowired
+    private FacProductMapper facProductMapper;
 
     /**
      * 查询订单信息
@@ -363,6 +368,8 @@ public class OrderServiceImpl implements IOrderService {
         // 当前订单单号
         String orderNo = DateFormatUtils.format(new Date(), "yyyyMMddHHmmssSSSS");
         Byte notShip = new Byte("2");
+        // 记录通过分享人创建的订单，给分享人相应分享商品设置的分享奖金
+        Map<Long, Long> prodId2InviterId = new HashMap<>();
         for (GoodsJsonStrVo good : goodsJsonStr) {
             Product product = productMap.get(good.getGoodsId());
             if (product == null || product.getIsDeleted() == 1) {
@@ -400,7 +407,10 @@ public class OrderServiceImpl implements IOrderService {
             order.setIsDeleted(false);
             // 分享人
             order.setInviterId(good.getInviter_id());
-
+            if (good.getInviter_id() > 0) {
+                // 每种商品只记录最后一次分享人
+                prodId2InviterId.put(good.getGoodsId(), good.getInviter_id());
+            }
             // 累积商品总价:暂时不考虑积分
             amountConsume = DecimalUtils.add(amountConsume,
                     DecimalUtils.mul(product.getPrice(), new BigDecimal(String.valueOf(good.getNumber()))));
@@ -415,7 +425,8 @@ public class OrderServiceImpl implements IOrderService {
         }
         // 批量保存用户选择的商品信息
         int goodsNumber = this.orderMapper.batchInsertOrders(orders);
-
+        // 记录分享奖金
+        this.recordInviterCash(prodId2InviterId, buyer);
         // 所有商品总价
         amountConsume = DecimalUtils.formatDecimal(amountConsume);
         // 创建返回结果
@@ -765,6 +776,33 @@ public class OrderServiceImpl implements IOrderService {
         }
 
         return 0;
+    }
+
+    private void recordInviterCash(Map<Long, Long> prodId2InviterId, Buyer buyer) {
+        // 记录分享奖金
+        if (MapUtils.isEmpty(prodId2InviterId)) {
+            return;
+        }
+        Date nowDate = new Date();
+        for (Map.Entry<Long, Long> entry : prodId2InviterId.entrySet()) {
+            long prodId = entry.getKey();
+            final FacProductExample example = new FacProductExample();
+            example.createCriteria().andIsDeletedEqualTo(false).andIdEqualTo(prodId);
+            final List<FacProduct> products = this.facProductMapper.selectByExample(example);
+            if (CollectionUtils.isNotEmpty(products)) {
+                FacProduct product = products.get(0);
+                FacCash facCash = new FacCash();
+                facCash.setUserId(entry.getValue());
+                facCash.setCash(product.getDistribution());
+                facCash.setStatus(CashStatus.TODEAL.getValue());
+                facCash.setApplyTime(nowDate);
+                facCash.setCreateTime(nowDate);
+                facCash.setOperatorId(buyer.getId());
+                facCash.setOperatorName(buyer.getNickName());
+                facCash.setIsDeleted(false);
+                this.facCashMapper.insert(facCash);
+            }
+        }
     }
 
     public static void main(String[] args) {
