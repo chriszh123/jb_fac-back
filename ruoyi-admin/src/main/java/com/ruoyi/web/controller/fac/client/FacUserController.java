@@ -9,12 +9,18 @@ package com.ruoyi.web.controller.fac.client;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.fac.domain.Buyer;
 import com.ruoyi.fac.enums.FacCode;
+import com.ruoyi.fac.exception.FacException;
 import com.ruoyi.fac.service.IBuyerAddressService;
 import com.ruoyi.fac.service.IBuyerService;
+import com.ruoyi.fac.service.IUserSignService;
 import com.ruoyi.fac.service.WechatAdapterService;
 import com.ruoyi.fac.vo.client.*;
+import com.ruoyi.fac.vo.client.req.SignReq;
+import com.ruoyi.fac.vo.client.req.UserInfo;
 import com.ruoyi.fac.vo.client.req.UserReq;
 import com.ruoyi.fac.vo.client.res.LoginVo;
+import com.ruoyi.fac.vo.client.res.UserScoreLogs;
+import com.ruoyi.fac.vo.client.res.UserSignLogs;
 import com.ruoyi.framework.web.base.BaseController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +33,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
-import java.util.UUID;
 
 /**
  * 用户相关接口
@@ -35,6 +40,7 @@ import java.util.UUID;
  * @author zhangguifeng
  * @create 2019-01-25 13:49
  **/
+
 @Controller
 @RequestMapping("/fac/client/user")
 public class FacUserController extends BaseController {
@@ -46,6 +52,8 @@ public class FacUserController extends BaseController {
     private IBuyerAddressService buyerAddressService;
     @Autowired
     private WechatAdapterService wechatAdapterService;
+    @Autowired
+    private IUserSignService userSignService;
 
     /**
      * 校验当前用户token
@@ -131,11 +139,14 @@ public class FacUserController extends BaseController {
         if (shippingAddress == null || StringUtils.isEmpty(shippingAddress.getToken())) {
             return FacResult.error(FacCode.PARAMTER_NULL.getCode(), FacCode.PARAMTER_NULL.getMsg());
         }
-        Long id = this.buyerAddressService.addAddress(shippingAddress);
-        if (id == null || id < 0) {
-            return FacResult.error(FacCode.DATA_NOT_EXIST.getCode(), FacCode.DATA_NOT_EXIST.getMsg());
+        try {
+            Long id = this.buyerAddressService.addAddress(shippingAddress);
+            return FacResult.success(id);
+        } catch (FacException fe) {
+            return FacResult.error(fe.getMessage());
+        } catch (Exception fe) {
+            return FacResult.error("");
         }
-        return FacResult.success(id);
     }
 
     @PostMapping("/shipping-address/update")
@@ -189,5 +200,58 @@ public class FacUserController extends BaseController {
     @ResponseBody
     public FacResult wxappRegister(@RequestBody UserReq req) {
         return FacResult.success("");
+    }
+
+    @PostMapping("/updateUserInfo")
+    @ResponseBody
+    public FacResult updateUserInfo(@RequestBody UserInfo userInfo) {
+        String result = this.buyerService.updateUserInfo(userInfo);
+        if (StringUtils.isBlank(result)) {
+            return FacResult.success("");
+        } else {
+            return FacResult.error(result);
+        }
+    }
+
+    @PostMapping("/sign")
+    @ResponseBody
+    public FacResult sign(@RequestBody SignReq req) {
+        try {
+            int signPoint = this.userSignService.sign(req);
+            return FacResult.success(signPoint);
+        } catch (FacException fe) {
+            return FacResult.error(fe.getMessage());
+        } catch (Exception ex) {
+            LOGGER.error(ex.getMessage(), ex);
+            return FacResult.error();
+        }
+    }
+
+    @PostMapping("/sign/logs")
+    @ResponseBody
+    public FacResult signLogs(@RequestBody SignReq req) {
+        try {
+            UserSignLogs logs = this.userSignService.queryUserSignLogs(req);
+            return FacResult.success(logs);
+        } catch (FacException fe) {
+            return FacResult.error(fe.getMessage());
+        } catch (Exception ex) {
+            LOGGER.error(ex.getMessage(), ex);
+            return FacResult.error();
+        }
+    }
+
+    @PostMapping("/score/logs")
+    @ResponseBody
+    public FacResult signScoreLogs(@RequestBody SignReq req) {
+        try {
+            UserScoreLogs logs = this.userSignService.queryUserScoreLogs(req);
+            return FacResult.success(logs);
+        } catch (FacException fe) {
+            return FacResult.error(fe.getMessage());
+        } catch (Exception ex) {
+            LOGGER.error(ex.getMessage(), ex);
+            return FacResult.error();
+        }
     }
 }

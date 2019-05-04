@@ -41,4 +41,16 @@ public class FacConstant {
      * 分隔符：+
      */
     public static String SEPARATOR_SEMICOLON = ";";
+    /**
+     * 商品核销码数字位数
+     */
+    public static int PRODUCT_WRITEOFF_CODE_LENGTH = 8;
+    /**
+     * 用户签到领取的随机积分：最大值
+     */
+    public static  int USER_SIGN_POINT_MAX = 5;
+    /**
+     * 用户签到领取的随机积分：最小值
+     */
+    public static  int USER_SIGN_POINT_MIN= 1;
 }

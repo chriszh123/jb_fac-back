@@ -33,7 +33,7 @@ public class FacPayController extends BaseController {
     private IPayService payService;
 
     /**
-     * 微信支付与支付接口
+     * 微信支付与预支付接口
      *
      * @param req
      * @return

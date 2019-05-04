@@ -5,21 +5,24 @@ import com.ruoyi.fac.constant.FacConstant;
 import com.ruoyi.fac.domain.*;
 import com.ruoyi.fac.enums.OrderStatus;
 import com.ruoyi.fac.mapper.*;
+import com.ruoyi.fac.model.FacOrder;
+import com.ruoyi.fac.model.FacOrderExample;
 import com.ruoyi.fac.service.IBuyerService;
+import com.ruoyi.fac.util.DecimalUtils;
 import com.ruoyi.fac.util.TimeUtils;
 import com.ruoyi.fac.vo.QueryVo;
 import com.ruoyi.fac.vo.UserDiagramVo;
-import com.ruoyi.fac.vo.client.ShippingAddress;
 import com.ruoyi.fac.vo.client.UserAmountVo;
 import com.ruoyi.fac.vo.client.UserBaseVo;
 import com.ruoyi.fac.vo.client.UserDetailVo;
+import com.ruoyi.fac.vo.client.req.UserInfo;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
-import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
@@ -45,6 +48,8 @@ public class BuyerServiceImpl implements IBuyerService {
     private BuyerBusinessMapper buyerBusinessMapper;
     @Autowired
     private OrderMapper orderMapper;
+    @Autowired
+    private FacOrderMapper facOrderMapper;
 
     /**
      * 查询买者用户信息
@@ -54,7 +59,15 @@ public class BuyerServiceImpl implements IBuyerService {
      */
     @Override
     public Buyer selectBuyerById(Long id) {
-        return buyerMapper.selectBuyerById(id);
+        Buyer buyer = buyerMapper.selectBuyerById(id);
+        if (StringUtils.equals("1", buyer.getGender())) {
+            buyer.setGender("男");
+        } else if (StringUtils.equals("2", buyer.getGender())) {
+            buyer.setGender("女");
+        } else {
+            buyer.setGender("其它");
+        }
+        return buyer;
     }
 
     /**
@@ -89,6 +102,10 @@ public class BuyerServiceImpl implements IBuyerService {
     @Override
     public int updateBuyer(Buyer buyer) {
         // 删除用户与商家商品关联表
+        Buyer buyerDB = this.buyerMapper.selectBuyerById(buyer.getId());
+        if (buyerDB == null) {
+            return 0;
+        }
         BuyerBusiness buyerBusiness = new BuyerBusiness();
         buyerBusiness.setUserId(buyer.getId());
         this.buyerBusinessMapper.deleteBuyerBusinessByUserId(buyerBusiness);
@@ -108,6 +125,7 @@ public class BuyerServiceImpl implements IBuyerService {
                 }
                 buyerBusiness.setUserId(buyer.getId());
                 buyerBusiness.setBusinessId(Long.valueOf(prodRefArr[2]));
+                buyerBusiness.setToken(buyerDB.getToken());
                 prodId = prodRefArr[1].substring(prodRefArr[2].length());
                 buyerBusiness.setBusinessProdId(Long.valueOf(prodId));
                 buyerBusiness.setCreateTime(now);
@@ -143,6 +161,9 @@ public class BuyerServiceImpl implements IBuyerService {
      */
     @Override
     public List<Map<String, Object>> bizProdTreeData(Buyer buyer) {
+        if (buyer == null || buyer.getId() == null) {
+            return null;
+        }
         List<Map<String, Object>> data = new ArrayList<>();
         Business business = new Business();
         business.setIsDeleted(0);
@@ -313,15 +334,19 @@ public class BuyerServiceImpl implements IBuyerService {
         // 积分
         vo.setScore(buyer.getPoints());
         // 总消费金额
-        QueryVo queryVo = new QueryVo();
-        queryVo.setToken(token);
-        queryVo.setOpenId(token);
-        queryVo.setStatus(OrderStatus.PAYED.getCode());
-        List<Order> orders = this.orderMapper.orderList(queryVo);
+        List<Byte> statuses = new ArrayList<>();
+        statuses.add(OrderStatus.TOWRITEOFF.getCode().byteValue());
+        statuses.add(OrderStatus.TOEVALUATE.getCode().byteValue());
+        statuses.add(OrderStatus.COMPLETED.getCode().byteValue());
+        FacOrderExample example = new FacOrderExample();
+        example.createCriteria().andIsDeletedEqualTo(false).andTokenEqualTo(token).andStatusIn(statuses);
+        List<FacOrder> orders = this.facOrderMapper.selectByExample(example);
         if (!CollectionUtils.isEmpty(orders)) {
             BigDecimal total = new BigDecimal("0.00");
-            for (Order item : orders) {
-                total = total.add(item.getPrice());
+            BigDecimal temp;
+            for (FacOrder item : orders) {
+                temp = DecimalUtils.mul(item.getPrice(), new BigDecimal(String.valueOf(item.getProdNumber())));
+                total = total.add(temp);
             }
             vo.setTotleConsumed(Double.valueOf(total.toString()));
         }
@@ -361,6 +386,21 @@ public class BuyerServiceImpl implements IBuyerService {
         }
 
         return buyer.getId();
+    }
+
+    /**
+     * 更新用户信息:昵称、用户微信头像
+     *
+     * @param userInfo
+     * @return 错误信息
+     */
+    @Override
+    public String updateUserInfo(UserInfo userInfo) {
+        if (userInfo == null || userInfo.getUid() == null) {
+            return "用户uid为空";
+        }
+        this.buyerMapper.updateUserInfo(userInfo);
+        return "";
     }
 
     private boolean checkProdBuyed(String prodId, List<BuyerBusiness> buyerBusinesses) {

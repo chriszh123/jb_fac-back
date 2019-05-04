@@ -2,18 +2,16 @@ package com.ruoyi.fac.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.ruoyi.common.support.Convert;
-import com.ruoyi.fac.domain.Buyer;
-import com.ruoyi.fac.domain.Order;
-import com.ruoyi.fac.domain.Product;
+import com.ruoyi.fac.domain.*;
 import com.ruoyi.fac.enums.OrderStatus;
 import com.ruoyi.fac.enums.ProductStatus;
 import com.ruoyi.fac.exception.FacException;
-import com.ruoyi.fac.mapper.BusinessMapper;
-import com.ruoyi.fac.mapper.BuyerMapper;
-import com.ruoyi.fac.mapper.OrderMapper;
-import com.ruoyi.fac.mapper.ProductMapper;
+import com.ruoyi.fac.mapper.*;
+import com.ruoyi.fac.model.FacOrder;
+import com.ruoyi.fac.model.FacOrderExample;
 import com.ruoyi.fac.service.IOrderService;
 import com.ruoyi.fac.util.DecimalUtils;
+import com.ruoyi.fac.util.FacCommonUtils;
 import com.ruoyi.fac.util.TimeUtils;
 import com.ruoyi.fac.vo.FacStaticVo;
 import com.ruoyi.fac.vo.OrderDiagramVo;
@@ -21,6 +19,7 @@ import com.ruoyi.fac.vo.OrderItemVo;
 import com.ruoyi.fac.vo.QueryVo;
 import com.ruoyi.fac.vo.client.*;
 import com.ruoyi.fac.vo.condition.QueryGoodVo;
+import com.ruoyi.system.domain.SysUser;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
@@ -50,6 +49,12 @@ public class OrderServiceImpl implements IOrderService {
     private BusinessMapper businessMapper;
     @Autowired
     private ProductMapper productMapper;
+    @Autowired
+    private FacProductWriteoffMapper facProductWriteoffMapper;
+    @Autowired
+    private BuyerBusinessMapper buyerBusinessMapper;
+    @Autowired
+    private FacOrderMapper facOrderMapper;
 
     /**
      * 查询订单信息
@@ -120,8 +125,23 @@ public class OrderServiceImpl implements IOrderService {
      * @return 结果
      */
     @Override
-    public int cancelOrderByIds(String ids) {
-        return this.orderMapper.cancelOrderByIds(Convert.toStrArray(ids));
+    public int cancelOrderByIds(String ids, String remarkMngt, SysUser user) throws FacException {
+        if (StringUtils.isBlank(ids)) {
+            throw new FacException("订单id参数为空");
+        }
+        List<Long> idsList = FacCommonUtils.convertToLongList(Arrays.asList(ids.split(",")));
+
+        FacOrder facOrder = new FacOrder();
+        facOrder.setStatus(Byte.valueOf(OrderStatus.CACELED.getCode().toString()));
+        facOrder.setRemarkMngt(remarkMngt);
+        facOrder.setUpdateTime(new Date());
+        if (user != null) {
+            facOrder.setOperatorId(user.getUserId());
+            facOrder.setOperatorName(user.getUserName());
+        }
+        FacOrderExample example = new FacOrderExample();
+        example.createCriteria().andIsDeletedEqualTo(false).andIdIn(idsList);
+        return this.facOrderMapper.updateByExampleSelective(facOrder, example);
     }
 
     /**
@@ -295,9 +315,23 @@ public class OrderServiceImpl implements IOrderService {
         if (buyer == null) {
             return res;
         }
+        // <prodId, 当前订单购买次数>
+        Map<Long, Integer> prodCount = new HashMap<>(goodsJsonStr.size());
         List<Long> prodIds = new ArrayList<>();
+        int tempCount = 0;
         for (GoodsJsonStrVo good : goodsJsonStr) {
             prodIds.add(good.getGoodsId());
+            if (!prodCount.containsKey(good.getGoodsId())) {
+                prodCount.put(good.getGoodsId(), 0);
+            }
+            tempCount = prodCount.get(good.getGoodsId());
+            prodCount.put(good.getGoodsId(), ++tempCount);
+        }
+        // 每种商品在每个订单中只能出现一次
+        for (Map.Entry<Long, Integer> entry : prodCount.entrySet()) {
+            if (entry.getValue() > 1) {
+                throw new FacException("每种商品在每个订单中只能出现一次，请核实后再购买");
+            }
         }
         // 当前用户选择的商品
         QueryGoodVo vo = new QueryGoodVo();
@@ -322,49 +356,70 @@ public class OrderServiceImpl implements IOrderService {
             throw new FacException("以下商品已下架，不能创建订单:\n" + lowerProds.toString());
         }
         // 转换用户选择的商品信息
-        List<Order> orders = new ArrayList<>();
+        List<FacOrder> orders = new ArrayList<>();
         Date nowDate = new Date();
-        BigDecimal amountLogistics = new BigDecimal("0");
+        // 累积商品总价
+        BigDecimal amountConsume = new BigDecimal("0");
         // 当前订单单号
         String orderNo = DateFormatUtils.format(new Date(), "yyyyMMddHHmmssSSSS");
+        Byte notShip = new Byte("2");
         for (GoodsJsonStrVo good : goodsJsonStr) {
             Product product = productMap.get(good.getGoodsId());
-            if (product == null) {
-                continue;
+            if (product == null || product.getIsDeleted() == 1) {
+                throw new FacException(String.format("商品【%s】已被删除，请选择其它商品购买", product.getName()));
             }
-            Order order = new Order();
+            if (product.getStatus().intValue() == 2) {
+                throw new FacException(String.format("商品【%s】已下架，请选择其它商品购买", product.getName()));
+            }
+            if (nowDate.compareTo(product.getRushEnd()) > 0) {
+                throw new FacException(String.format("商品【%s】抢购时间已结束，请选择其它商品购买", product.getName()));
+            }
+            if (product.getInventoryQuantity() == 0 || (product.getInventoryQuantity() < good.getNumber())) {
+                throw new FacException(String.format("商品【%s】库存数量已不足，请选择其它商品购买", product.getName()));
+            }
+            FacOrder order = new FacOrder();
             orders.add(order);
 
             order.setOrderNo(orderNo);
             order.setProdId(good.getGoodsId());
             order.setProdName(product.getName());
-            order.setProdNumber(good.getNumber());
+            order.setProdNumber(Short.valueOf(String.valueOf(good.getNumber())));
             order.setPrice(product.getPrice());
-            order.setStatus(OrderStatus.PAYING.getCode());
+            order.setStatus(OrderStatus.PAYING.getCode().byteValue());
             order.setToken(orderCreateVo.getToken());
             order.setOpenId(orderCreateVo.getToken());
             order.setUserId(buyer.getId());
             order.setUserName(buyer.getName());
             order.setNickName(buyer.getNickName());
             order.setRemark(orderCreateVo.getRemark());
-            order.setShip(2);
+            order.setShip(notShip);
             order.setCreateTime(nowDate);
             order.setUpdateTime(nowDate);
             order.setOperatorId(buyer.getId());
             order.setOperatorName(buyer.getName());
-            order.setIsDeleted(0);
+            order.setIsDeleted(false);
+            // 分享人
+            order.setInviterId(good.getInviter_id());
 
             // 累积商品总价:暂时不考虑积分
-            amountLogistics = DecimalUtils.add(amountLogistics,
+            amountConsume = DecimalUtils.add(amountConsume,
                     DecimalUtils.mul(product.getPrice(), new BigDecimal(String.valueOf(good.getNumber()))));
+        }
+        int userScore = 0;
+        if (orderCreateVo.getUserScore() == 1) {
+            // 如果用户选择了使用积分，根据当前用户积分数重新计算当前用户实际可以抵用的积分数
+            userScore = this.getUserScore(amountConsume, buyer.getPoints());
+        }
+        for (FacOrder item : orders) {
+            item.setUserScore(Short.valueOf(String.valueOf(userScore)));
         }
         // 批量保存用户选择的商品信息
         int goodsNumber = this.orderMapper.batchInsertOrders(orders);
 
         // 所有商品总价
-        amountLogistics = DecimalUtils.formatDecimal(amountLogistics);
+        amountConsume = DecimalUtils.formatDecimal(amountConsume);
         // 创建返回结果
-        res.setAmountLogistics(Double.valueOf(amountLogistics.toString()));
+        res.setAmountLogistics(Double.valueOf(amountConsume.toString()));
         res.setScore(0);
         res.setGoodsNumber(goodsNumber);
         res.setNeedLogistics(false);
@@ -386,18 +441,48 @@ public class OrderServiceImpl implements IOrderService {
         if (CollectionUtils.isEmpty(orders)) {
             return vo;
         }
-        // 1.待付款
-        int count_id_no_pay = 0;
+        int paying = 0, toWriteoff = 0, toEvaluate = 0, complete = 0, cancel = 0;
         for (Order item : orders) {
             if (item.getStatus() == null) {
                 log.error("order status is null, orderId = " + item.getId());
                 continue;
             }
             if (OrderStatus.PAYING.getCode().intValue() == item.getStatus().intValue()) {
-                count_id_no_pay = count_id_no_pay + 1;
+                paying++;
+            } else if (OrderStatus.TOWRITEOFF.getCode().intValue() == item.getStatus().intValue()) {
+                toWriteoff++;
+            } else if (OrderStatus.TOEVALUATE.getCode().intValue() == item.getStatus().intValue()) {
+                toEvaluate++;
+            } else if (OrderStatus.COMPLETED.getCode().intValue() == item.getStatus().intValue()) {
+                complete++;
+            } else if (OrderStatus.CACELED.getCode().intValue() == item.getStatus().intValue()) {
+                cancel++;
             }
         }
-        vo.setCount_id_no_pay(count_id_no_pay);
+        vo.setPaying(paying);
+        vo.setToWriteoff(toWriteoff);
+        vo.setToEvaluate(toEvaluate);
+        vo.setComplete(complete);
+        vo.setCancel(cancel);
+        // 查询当前用户是不是商家，有没有自己的商品
+        BuyerBusiness buyerBusiness = new BuyerBusiness();
+        buyerBusiness.setToken(token);
+        buyerBusiness.setIsDeleted(0);
+        List<BuyerBusiness> buyerBusinesses = this.buyerBusinessMapper.selectBuyerBusinessList(buyerBusiness);
+        // 用户类型:0-普通购买用户,1-商家
+        vo.setUserType(CollectionUtils.isEmpty(buyerBusinesses) ? 0 : 1);
+        if (CollectionUtils.isNotEmpty(buyerBusinesses)) {
+            List<Long> prodIds = new ArrayList<>();
+            for (BuyerBusiness item : buyerBusinesses) {
+                prodIds.add(item.getBusinessProdId());
+            }
+            // 查询当前用户名下的商品是否存在处于待核销(买家已付款)的订单
+            List<Integer> status = new ArrayList<>();
+            status.add(OrderStatus.TOWRITEOFF.getCode());
+            List<Order> orderList = this.orderMapper.selectProductsByProdAndStatus(prodIds, status);
+            // 待核销：商家要核销的自己的商品
+            vo.setWriteoffing(CollectionUtils.isNotEmpty(orderList) ? orderList.size() : 0);
+        }
 
         return vo;
     }
@@ -415,16 +500,39 @@ public class OrderServiceImpl implements IOrderService {
         if (StringUtils.isEmpty(token)) {
             return vo;
         }
-        QueryVo queryVo = new QueryVo();
-        queryVo.setToken(token);
-        queryVo.setStatus(status);
-        // 当前条件下所有商品
-        List<Order> orders = this.orderMapper.orderList(queryVo);
+        List<Order> orders = null;
+        if (OrderStatus.TOWRITEOFF_BIZ.getCode().intValue() != status) {
+            // 正常买者用户对应的订单
+            QueryVo queryVo = new QueryVo();
+            queryVo.setToken(token);
+            queryVo.setStatus(status);
+            // 当前条件下所有商品
+            orders = this.orderMapper.orderList(queryVo);
+        } else if (OrderStatus.TOWRITEOFF_BIZ.getCode().intValue() == status) {
+            // 当前用户是商家，其对应的待核销的商品订单
+            // 查询当前用户是不是商家，有没有自己的商品
+            BuyerBusiness buyerBusiness = new BuyerBusiness();
+            buyerBusiness.setToken(token);
+            buyerBusiness.setIsDeleted(0);
+            List<BuyerBusiness> buyerBusinesses = this.buyerBusinessMapper.selectBuyerBusinessList(buyerBusiness);
+            if (CollectionUtils.isNotEmpty(buyerBusinesses)) {
+                List<Long> prodIds = new ArrayList<>();
+                for (BuyerBusiness item : buyerBusinesses) {
+                    prodIds.add(item.getBusinessProdId());
+                }
+                // 查询当前用户名下的商品是否存在处于待核销(买家已付款)的订单
+                List<Integer> statuses = new ArrayList<>();
+                statuses.add(OrderStatus.TOWRITEOFF.getCode());
+                // 待核销：商家要核销的自己的商品
+                orders = this.orderMapper.selectProductsByProdAndStatus(prodIds, statuses);
+            }
+        }
+
         if (CollectionUtils.isEmpty(orders)) {
             return vo;
         }
         // 商品信息
-        this.convertOrders(vo, orders);
+        this.convertOrders(vo, orders, status);
 
         return vo;
     }
@@ -433,16 +541,21 @@ public class OrderServiceImpl implements IOrderService {
      * 取消订单
      *
      * @param token
-     * @param orderIds
+     * @param orderNo
      */
     @Override
-    public void closeOrder(String token, String orderIds) {
+    public void closeOrder(String token, String orderNo) {
+        // 更改订单状态为取消状态
         QueryVo queryVo = new QueryVo();
         queryVo.setToken(token);
         queryVo.setOpenId(token);
-        queryVo.setOrderIds(Convert.toLongArray(orderIds));
         queryVo.setStatus(OrderStatus.CACELED.getCode());
+        queryVo.setOrderNo(orderNo);
         this.orderMapper.updateOrderStatus(queryVo);
+        // 删除订单对应的核销记录
+        List<String> orderNos = new ArrayList<>();
+        orderNos.add(orderNo);
+        this.facProductWriteoffMapper.deleteFacProductWriteoffByOrderNos(orderNos);
     }
 
     /**
@@ -488,12 +601,77 @@ public class OrderServiceImpl implements IOrderService {
         return orderDetailVo;
     }
 
-    private void convertOrders(OrderListVo vo, List<Order> orders) {
+    /**
+     * 核销商品订单
+     *
+     * @param token
+     * @param orderNo
+     */
+    @Override
+    public void writeOffOrder(String token, String orderNo, String prodId) throws Exception {
+        // 一次指定核销一个商品对应的订单
+        Order order = new Order();
+        order.setOrderNo(orderNo);
+        order.setProdId(Long.valueOf(prodId));
+        order.setIsDeleted(0);
+        List<Order> orders = this.orderMapper.selectOrderList(order);
+        if (CollectionUtils.isEmpty(orders)) {
+            throw new Exception("当前订单已不存在,请联系管理员");
+        }
+        order = orders.get(0);
+        if (!OrderStatus.TOWRITEOFF.getCode().equals(order.getStatus())) {
+            throw new Exception("当前商品订单处于非待核销状态，请联系管理员");
+        }
+        Product product = this.productMapper.selectProductById(order.getProdId());
+        if (product == null) {
+            throw new Exception(String.format("商品【%s】已不存在,请联系管理员", product.getName()));
+        }
+        Business business = this.businessMapper.selectBusinessById(product.getBusinessId());
+        if (business == null) {
+            return;
+        }
+        Date nowDate = new Date();
+        // 更新当前订单状态
+        FacOrder facOrder = new FacOrder();
+        // 商品订单核销后状态更新为：已完成(以后添加评价功能后，这里状态需要更新为:待评价)
+        facOrder.setStatus(OrderStatus.COMPLETED.getCode().byteValue());
+        facOrder.setUpdateTime(nowDate);
+        facOrder.setOperatorId(Long.valueOf(business.getId()));
+        facOrder.setOperatorName(business.getName());
+        FacOrderExample orderExample = new FacOrderExample();
+        orderExample.createCriteria().andIdEqualTo(order.getId());
+        this.facOrderMapper.updateByExampleSelective(facOrder, orderExample);
+
+        // 更新核销时间、操作人
+        FacProductWriteoff facProductWriteoff = new FacProductWriteoff();
+        facProductWriteoff.setOrderNo(orderNo);
+        facProductWriteoff.setProductId(product.getId());
+        List<FacProductWriteoff> records = this.facProductWriteoffMapper.selectFacProductWriteoffList(facProductWriteoff);
+        if (CollectionUtils.isEmpty(records)) {
+            return;
+        }
+        facProductWriteoff = records.get(0);
+        if (facProductWriteoff.getStatus().intValue() == 1) {
+            throw new Exception(String.format("当前订单已被【%s】于%s 核销过，请核实后再操作"
+                    , facProductWriteoff.getOperatorName(), TimeUtils.date2Str(facProductWriteoff.getUpdateTime()
+                            , TimeUtils.DEFAULT_DATE_TIME_FORMAT_HH_MM_SS)));
+        }
+        facProductWriteoff.setWriteoffTime(nowDate);
+        // 核销状态:1-已核销,2-待核销
+        facProductWriteoff.setStatus(1);
+        facProductWriteoff.setUpdateTime(nowDate);
+        facProductWriteoff.setOperatorId(Long.valueOf(business.getId()));
+        facProductWriteoff.setOperatorName(business.getName());
+        this.facProductWriteoffMapper.updateFacProductWriteoff(facProductWriteoff);
+    }
+
+    private void convertOrders(OrderListVo vo, List<Order> orders, int status) {
         List<OrderVo> orderVos = new ArrayList<>();
         // <goodId, Order>
         Map<Long, Order> good2Order = new HashMap<>(16);
         BigDecimal orderTotalPrice;
         double amountReal;
+        List<String> orderNos = new ArrayList<>();
         for (Order order : orders) {
             OrderVo orderVo = new OrderVo();
             orderVos.add(orderVo);
@@ -505,14 +683,34 @@ public class OrderServiceImpl implements IOrderService {
             orderVo.setRemark(order.getRemark());
             orderVo.setShopId(order.getShipId());
             orderVo.setStatus(order.getStatus());
+            if (OrderStatus.TOWRITEOFF_BIZ.getCode().intValue() == status) {
+                // 商家待核销的订单
+                orderVo.setStatus(status);
+            }
             orderVo.setStatusStr(OrderStatus.getNameByCode(order.getStatus()));
             orderVo.setUserId(order.getUserId());
+            orderVo.setProdId(order.getProdId());
             // 当前订单的实际总价
             orderTotalPrice = DecimalUtils.mul(order.getPrice(), new BigDecimal(String.valueOf(order.getProdNumber())));
             amountReal = Double.valueOf(orderTotalPrice.toString());
             orderVo.setAmountReal(amountReal);
 
             good2Order.put(order.getProdId(), order);
+
+            // 用户使用的积分
+            orderVo.setScore(order.getUserScore());
+            orderNos.add(order.getOrderNo());
+        }
+        List<FacProductWriteoff> productWriteoffs = this.facProductWriteoffMapper.selectFacProductWriteoffListByOrderNos(orderNos, null);
+        if (CollectionUtils.isNotEmpty(productWriteoffs)) {
+            // 设置核销码
+            Map<String, String> order2WriteCode = new HashMap<>(16);
+            for (FacProductWriteoff item : productWriteoffs) {
+                order2WriteCode.put(item.getOrderNo(), item.getCode());
+            }
+            for (OrderVo item : orderVos) {
+                item.setWriteOffCode(order2WriteCode.get(item.getOrderNumber()));
+            }
         }
         // 订单信息
         vo.setOrderList(orderVos);
@@ -555,6 +753,19 @@ public class OrderServiceImpl implements IOrderService {
         }
     }
 
+    private int getUserScore(BigDecimal amountConsume, int points) {
+        // 只有商品总消费金额大于积分总数时才可以使用积分:一个积分1分钱
+        if (points == 0) {
+            return 0;
+        }
+        float score2Yuan = (float) points / 100;
+        BigDecimal scoreBD = new BigDecimal(score2Yuan);
+        if (amountConsume.compareTo(scoreBD) > 0) {
+            return points;
+        }
+
+        return 0;
+    }
 
     public static void main(String[] args) {
         String orderNo = DateFormatUtils.format(new Date(), "yyyyMMddHHmmssSSSS");

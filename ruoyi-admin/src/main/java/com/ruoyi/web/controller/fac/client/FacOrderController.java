@@ -12,7 +12,9 @@ import com.ruoyi.fac.exception.FacException;
 import com.ruoyi.fac.service.IOrderService;
 import com.ruoyi.fac.vo.client.*;
 import com.ruoyi.fac.vo.client.req.OrderReq;
+import com.ruoyi.framework.util.ShiroUtils;
 import com.ruoyi.framework.web.base.BaseController;
+import com.ruoyi.system.domain.SysUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -63,10 +65,10 @@ public class FacOrderController extends BaseController {
     @PostMapping("/close")
     @ResponseBody
     public FacResult close(@RequestBody OrderReq req) {
-        if (StringUtils.isEmpty(req.getToken()) || StringUtils.isEmpty(req.getOrderId())) {
+        if (StringUtils.isEmpty(req.getToken()) || StringUtils.isEmpty(req.getOrderNo())) {
             return FacResult.error(FacCode.PARAMTER_NULL.getCode(), FacCode.PARAMTER_NULL.getMsg());
         }
-        this.orderService.closeOrder(req.getToken(), req.getOrderId());
+        this.orderService.closeOrder(req.getToken(), req.getOrderNo());
         return FacResult.success("");
     }
 
@@ -82,6 +84,22 @@ public class FacOrderController extends BaseController {
             return FacResult.success(orderDetailVo);
         } else {
             return FacResult.error("当前订单已不存在，请联系管理员");
+        }
+    }
+
+    @PostMapping("/writeOffOrder")
+    @ResponseBody
+    public FacResult writeOffOrder(@RequestBody OrderReq req) {
+        if (StringUtils.isEmpty(req.getToken()) || StringUtils.isEmpty(req.getOrderNo())
+                || StringUtils.isBlank(req.getProdId())) {
+            return FacResult.error(FacCode.PARAMTER_NULL.getCode(), FacCode.PARAMTER_NULL.getMsg());
+        }
+        try {
+            // 一次指定核销一个商品对应的订单
+            this.orderService.writeOffOrder(req.getToken(), req.getOrderNo(), req.getProdId());
+            return FacResult.success("");
+        } catch (Exception ex) {
+            return FacResult.error(ex.getMessage());
         }
     }
 }

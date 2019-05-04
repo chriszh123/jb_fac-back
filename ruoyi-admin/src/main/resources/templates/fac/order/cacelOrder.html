@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+	<form class="form-horizontal m" id="form-user-resetPwd">
+		<input name="id"  type="hidden"  th:value="${order.id}" />
+		<div class="form-group">
+			<label class="col-sm-3 control-label ">备注：</label>
+			<div class="col-sm-8">
+				<textarea name="remarkMngt" autocomplete="off" maxlength="500" class="form-control" rows="5"></textarea>
+			</div>
+		</div>
+
+	</form>
+</div>
+<div th:include="include :: footer"></div>
+<script type="text/javascript">
+    $("#form-user-resetPwd").validate({
+        rules:{
+            password:{
+                required:true,
+                minlength: 5,
+                maxlength: 20
+            },
+        },
+        focusCleanup: true
+    });
+
+    function submitHandler() {
+        if ($.validate.form()) {
+            $.operate.save(ctx + "fac/order/cancel", $('#form-user-resetPwd').serialize());
+        }
+    }
+</script>
+</body>
+
+</html>

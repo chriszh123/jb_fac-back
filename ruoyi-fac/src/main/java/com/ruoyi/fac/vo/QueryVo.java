@@ -1,6 +1,8 @@
 package com.ruoyi.fac.vo;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by zgf
@@ -14,6 +16,8 @@ public class QueryVo {
     private String openId;
     private Integer status;
     private Long[] orderIds;
+    private List<Integer> statuses = new ArrayList<>();
+    private String orderNo;
 
     public QueryVo() {
     }
@@ -69,5 +73,21 @@ public class QueryVo {
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public List<Integer> getStatuses() {
+        return statuses;
+    }
+
+    public void setStatuses(List<Integer> statuses) {
+        this.statuses = statuses;
+    }
+
+    public String getOrderNo() {
+        return orderNo;
+    }
+
+    public void setOrderNo(String orderNo) {
+        this.orderNo = orderNo;
     }
 }

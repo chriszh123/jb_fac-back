@@ -2,6 +2,7 @@ package com.ruoyi.fac.mapper;
 
 import com.ruoyi.fac.domain.Order;
 import com.ruoyi.fac.domain.Product;
+import com.ruoyi.fac.model.FacOrder;
 import com.ruoyi.fac.vo.QueryVo;
 import org.apache.ibatis.annotations.Param;
 
@@ -68,7 +69,7 @@ public interface OrderMapper {
      * @param ids
      * @return 结果
      */
-    int cancelOrderByIds(String[] ids);
+    int cancelOrderByIds(@Param("array") String[] ids, @Param("remarkMngt") String remarkMngt);
 
     /**
      * 查询指定日期内的订单信息
@@ -91,7 +92,7 @@ public interface OrderMapper {
      *
      * @param list
      */
-    int batchInsertOrders(@Param("list") List<Order> list);
+    int batchInsertOrders(@Param("list") List<FacOrder> list);
 
     List<Order> orderList(QueryVo queryVo);
 
@@ -121,7 +122,7 @@ public interface OrderMapper {
      * @param orderNo 订单号
      * @return
      */
-    Order selectOrderByOrderNo(@Param("orderNo") String orderNo);
+    List<Order> selectOrderByOrderNo(@Param("orderNo") String orderNo);
 
     /**
      * 支付完成后更新订单状态

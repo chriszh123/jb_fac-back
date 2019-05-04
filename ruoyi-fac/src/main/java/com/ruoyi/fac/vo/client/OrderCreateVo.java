@@ -6,6 +6,8 @@
  */
 package com.ruoyi.fac.vo.client;
 
+import lombok.Data;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +18,7 @@ import java.util.List;
  * @author zhangguifeng
  * @create 2019-01-25 16:45
  **/
+@Data
 public class OrderCreateVo implements Serializable {
     private static final long serialVersionUID = 2538253829809441783L;
 
@@ -24,44 +27,8 @@ public class OrderCreateVo implements Serializable {
     private List<GoodsJsonStrVo> goodsJson = new ArrayList<>();
     private String remark;
     private boolean calculate;
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public String getRemark() {
-        return remark;
-    }
-
-    public void setRemark(String remark) {
-        this.remark = remark;
-    }
-
-    public boolean isCalculate() {
-        return calculate;
-    }
-
-    public void setCalculate(boolean calculate) {
-        this.calculate = calculate;
-    }
-
-    public String getGoodsJsonStr() {
-        return goodsJsonStr;
-    }
-
-    public void setGoodsJsonStr(String goodsJsonStr) {
-        this.goodsJsonStr = goodsJsonStr;
-    }
-
-    public List<GoodsJsonStrVo> getGoodsJson() {
-        return goodsJson;
-    }
-
-    public void setGoodsJson(List<GoodsJsonStrVo> goodsJson) {
-        this.goodsJson = goodsJson;
-    }
+    /**
+     * 是否使用积分:0-不使用，1-使用
+     */
+    private int userScore = 0;
 }

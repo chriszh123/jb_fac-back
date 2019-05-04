@@ -22,6 +22,10 @@ public class BuyerBusiness extends BaseEntity {
      */
     private Long userId;
     /**
+     * token
+     */
+    private String token;
+    /**
      * 绑定商家
      */
     private Long businessId;
@@ -96,6 +100,14 @@ public class BuyerBusiness extends BaseEntity {
 
     public Integer getIsDeleted() {
         return isDeleted;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 
     @Override

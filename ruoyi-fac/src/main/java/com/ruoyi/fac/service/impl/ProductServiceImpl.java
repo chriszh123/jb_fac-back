@@ -91,6 +91,7 @@ public class ProductServiceImpl implements IProductService {
     @Override
     public int insertProduct(Product product) {
         product.setOrderCount(0);
+        product.setPicture(this.filterBlankPictures(product.getPicture()));
         return productMapper.insertProduct(product);
     }
 
@@ -107,6 +108,23 @@ public class ProductServiceImpl implements IProductService {
         Product productdb = this.productMapper.selectProductById(product.getId());
         if (productdb == null || productdb.getIsDeleted().intValue() == 1) {
             throw new FacException("当前商品已被删除，请确认");
+        }
+        try {
+            // 抢购日期时间、核销日期时间
+            if (StringUtils.isNotBlank(product.getRushStartStr())) {
+                product.setRushStart(TimeUtils.parseTime(product.getRushStartStr(), TimeUtils.DEFAULT_DATE_TIME_FORMAT_HH_MM));
+            }
+            if (StringUtils.isNotBlank(product.getRushEndStr())) {
+                product.setRushEnd(TimeUtils.parseTime(product.getRushEndStr(), TimeUtils.DEFAULT_DATE_TIME_FORMAT_HH_MM));
+            }
+            if (StringUtils.isNotBlank(product.getWriteoffStartStr())) {
+                product.setWriteoffStart(TimeUtils.parseTime(product.getWriteoffStartStr(), TimeUtils.DEFAULT_DATE_TIME_FORMAT_HH_MM));
+            }
+            if (StringUtils.isNotBlank(product.getWriteoffEndStr())) {
+                product.setWriteoffEnd(TimeUtils.parseTime(product.getWriteoffEndStr(), TimeUtils.DEFAULT_DATE_TIME_FORMAT_HH_MM));
+            }
+        } catch (Exception ex) {
+            throw new FacException("当前商品抢购日期时间、核销日期时间格式异常");
         }
         // 商品被下架前需要校验当前商品是否存在于待付款的订单中
         if (productdb.getStatus().equals(ProductStatus.UPPER_SHELF.getValue())
@@ -126,7 +144,7 @@ public class ProductServiceImpl implements IProductService {
                 throw new FacException(pendingPayment.toString());
             }
         }
-//        SysUser user = ShiroUtils.getSysUser();
+        product.setPicture(this.filterBlankPictures(product.getPicture()));
         return productMapper.updateProduct(product);
     }
 
@@ -137,7 +155,24 @@ public class ProductServiceImpl implements IProductService {
      * @return 结果
      */
     @Override
-    public int deleteProductByIds(String ids) {
+    public int deleteProductByIds(String ids) throws FacException {
+        List<Long> prodIds = new ArrayList<>();
+        String[] idsArr = ids.split(",");
+        for (int i = 0, size = idsArr.length; i < size; i++) {
+            prodIds.add(Long.valueOf(idsArr[i]));
+        }
+        List<Order> orders = this.orderMapper.selectProductsByProdAndStatus(prodIds, null);
+        if (CollectionUtils.isNotEmpty(orders)) {
+            prodIds = new ArrayList<>();
+            for (Order item : orders) {
+                if (!prodIds.contains(item.getProdId())) {
+                    prodIds.add(item.getProdId());
+                }
+            }
+            String prodIdsStr = StringUtils.join(prodIds, ",");
+            throw new FacException("以下商品ID对应的商品已存在订单信息，不能被删除:\n" + prodIdsStr);
+        }
+
         return productMapper.deleteProductByIds(Convert.toStrArray(ids));
     }
 
@@ -213,6 +248,10 @@ public class ProductServiceImpl implements IProductService {
             GoodVo goodVo = null;
             for (int i = 0, size = products.size(); i < size; i++) {
                 Product product = products.get(i);
+                // 处于下架状态的商品不展示
+                if (ProductStatus.LOWER_SHELF.getValue().equals(product.getStatus())) {
+                    continue;
+                }
                 goodVo = this.convertGoodVo(product);
                 goodVos.add(goodVo);
 
@@ -259,6 +298,9 @@ public class ProductServiceImpl implements IProductService {
             List<PicsVo> pics = new ArrayList<>();
             List<String> picList = Arrays.asList(product.getPicture().split(","));
             for (int i = 0, size = picList.size(); i < size; i++) {
+                if (StringUtils.isBlank(picList.get(i))) {
+                    continue;
+                }
                 PicsVo picsVo = new PicsVo();
                 pics.add(picsVo);
                 picsVo.setGoodsId(product.getId());
@@ -389,13 +431,14 @@ public class ProductServiceImpl implements IProductService {
         goodVo.setNumberFav(0);
         goodVo.setNumberGoodReputation(0);
         goodVo.setNumberOrders(product.getOrderCount());
-        goodVo.setNumberSells(product.getSales());
+        // 已售分数 = 虚拟购买的数量 + 实际购买数量
+        goodVo.setNumberSells(product.getVmBuyerQuantity() + product.getSales());
         goodVo.setOriginalPrice(Double.valueOf(product.getOriginalPrice().toString()));
         goodVo.setPaixu(product.getSort());
         // 默认取第一张图片
         if (StringUtils.isNotEmpty(product.getPicture())) {
             String pics = product.getPicture();
-            goodVo.setPic(pics.split(",")[0]);
+            goodVo.setPic(this.getFirstNotBlankPic(pics));
         }
         goodVo.setPingtuan(false);
         goodVo.setPingtuanPrice(0.00);
@@ -412,5 +455,38 @@ public class ProductServiceImpl implements IProductService {
         goodVo.setWeight(0.00);
 
         return goodVo;
+    }
+
+    private String getFirstNotBlankPic(String pics) {
+        if (StringUtils.isBlank(pics)) {
+            return "";
+        }
+        String[] picsArr = pics.split(",");
+        for (int i = 0, size = picsArr.length; i < size; i++) {
+            if (StringUtils.isNotBlank(picsArr[i])) {
+                return picsArr[i];
+            }
+        }
+        return "";
+    }
+
+    private String filterBlankPictures(String pictures) {
+        // 去掉空地址的记录
+        if (StringUtils.isBlank(pictures)) {
+            return "";
+        }
+        String[] picturesArr = pictures.split(",");
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0, size = picturesArr.length; i < size; i++) {
+            if (StringUtils.isBlank(picturesArr[i])) {
+                continue;
+            }
+            sb.append(picturesArr[i]).append(",");
+        }
+        if (StringUtils.isNotBlank(sb.toString())) {
+            sb = sb.deleteCharAt(sb.toString().length() - 1);
+            return sb.toString();
+        }
+        return "";
     }
 }

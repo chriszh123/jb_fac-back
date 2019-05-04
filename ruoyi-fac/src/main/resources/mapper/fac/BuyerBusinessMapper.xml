@@ -7,6 +7,7 @@
     <resultMap type="BuyerBusiness" id="BuyerBusinessResult">
         <result property="id" column="id"/>
         <result property="userId" column="user_id"/>
+        <result property="token" column="token"/>
         <result property="businessId" column="business_id"/>
         <result property="businessProdId" column="business_prod_id"/>
         <result property="createTime" column="create_time"/>
@@ -17,7 +18,7 @@
     </resultMap>
 
     <sql id="selectBuyerBusinessVo">
-        select id, user_id, business_id, business_prod_id, create_time, update_time, operator_id, operator_name, is_deleted from fac_buyer_business
+        select id, user_id, token, business_id, business_prod_id, create_time, update_time, operator_id, operator_name, is_deleted from fac_buyer_business
     </sql>
 
     <select id="selectBuyerBusinessList" parameterType="BuyerBusiness" resultMap="BuyerBusinessResult">
@@ -25,6 +26,7 @@
         <where>
             <if test="id != null ">and id = #{id}</if>
             <if test="userId != null ">and user_id = #{userId}</if>
+            <if test="token != null ">and token = #{token}</if>
             <if test="businessId != null ">and business_id = #{businessId}</if>
             <if test="businessProdId != null ">and business_prod_id = #{businessProdId}</if>
             <if test="createTime != null ">and create_time = #{createTime}</if>
@@ -100,12 +102,11 @@
     </update>
 
     <insert id="batchInsert">
-        insert into fac_buyer_business(user_id,
+        insert into fac_buyer_business(user_id,token,
         business_id,business_prod_id,create_time,update_time,operator_id,operator_name,is_deleted)
         values
         <foreach item="item" index="index" collection="list" separator=",">
-            (#{item.userId},#{item.businessId},#{item.businessProdId},#{item.createTime},#{item.updateTime},#{item.operatorId},#{item.operatorName},#{item.isDeleted})
+            (#{item.userId},#{item.token},#{item.businessId},#{item.businessProdId},#{item.createTime},#{item.updateTime},#{item.operatorId},#{item.operatorName},#{item.isDeleted})
         </foreach>
     </insert>
-
 </mapper>

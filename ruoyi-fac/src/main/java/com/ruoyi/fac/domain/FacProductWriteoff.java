@@ -1,7 +1,5 @@
 package com.ruoyi.fac.domain;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.ruoyi.common.annotation.Excel;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ruoyi.common.base.BaseEntity;
@@ -12,38 +10,32 @@ import java.util.Date;
  * 核销记录表 fac_product_writeoff
  *
  * @author ruoyi
- * @date 2019-01-06
+ * @date 2019-04-06
  */
-public class ProductWriteoff extends BaseEntity {
+public class FacProductWriteoff extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
     /**  */
-    @Excel(name = "核销ID")
     private Integer id;
     /**
-     * 商品ID
+     * 订单号,eg:201812231410342545
      */
-    @Excel(name = "商品ID")
-    private Long productId;
+    private String orderNo;
     /**
      * 买者ID
      */
-    @Excel(name = "买者ID")
     private Long buyerId;
     /**
      * 核销码
      */
-    @Excel(name = "核销码")
     private String code;
     /**
      * 核销时间
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date writeoffTime;
     /**
-     * 核销状态
+     * 核销状态:1-已核销,2-待核销
      */
-    @Excel(name = "核销状态", readConverterExp = "1=已核销,2=待核销")
     private Integer status;
     /**
      * 操作者ID
@@ -57,6 +49,10 @@ public class ProductWriteoff extends BaseEntity {
      * 是否删除
      */
     private Integer isDeleted;
+    /**
+     * 商品id
+     */
+    private Long productId;
 
     public void setId(Integer id) {
         this.id = id;
@@ -66,12 +62,12 @@ public class ProductWriteoff extends BaseEntity {
         return id;
     }
 
-    public void setProductId(Long productId) {
-        this.productId = productId;
+    public void setOrderNo(String orderNo) {
+        this.orderNo = orderNo;
     }
 
-    public Long getProductId() {
-        return productId;
+    public String getOrderNo() {
+        return orderNo;
     }
 
     public void setBuyerId(Long buyerId) {
@@ -130,17 +126,23 @@ public class ProductWriteoff extends BaseEntity {
         return isDeleted;
     }
 
+    public Long getProductId() {
+        return productId;
+    }
+
+    public void setProductId(Long productId) {
+        this.productId = productId;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
                 .append("id", getId())
-                .append("productId", getProductId())
+                .append("orderNo", getOrderNo())
                 .append("buyerId", getBuyerId())
                 .append("code", getCode())
                 .append("writeoffTime", getWriteoffTime())
                 .append("status", getStatus())
-                .append("createTime", getCreateTime())
-                .append("updateTime", getUpdateTime())
                 .append("operatorId", getOperatorId())
                 .append("operatorName", getOperatorName())
                 .append("isDeleted", getIsDeleted())

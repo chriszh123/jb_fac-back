@@ -4,16 +4,19 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.ruoyi.fac.domain.Product;
 import com.ruoyi.fac.enums.FocusStatus;
+import com.ruoyi.fac.enums.ProductStatus;
+import com.ruoyi.fac.mapper.ProductMapper;
 import com.ruoyi.fac.util.TimeUtils;
 import com.ruoyi.fac.vo.client.BannerVo;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.fac.mapper.FocusMapMapper;
 import com.ruoyi.fac.domain.FocusMap;
 import com.ruoyi.fac.service.IFocusMapService;
 import com.ruoyi.common.support.Convert;
-import org.springframework.util.CollectionUtils;
 
 /**
  * 焦点图 服务层实现
@@ -25,6 +28,8 @@ import org.springframework.util.CollectionUtils;
 public class FocusMapServiceImpl implements IFocusMapService {
     @Autowired
     private FocusMapMapper focusMapMapper;
+    @Autowired
+    private ProductMapper productMapper;
 
     /**
      * 查询焦点图信息
@@ -103,13 +108,15 @@ public class FocusMapServiceImpl implements IFocusMapService {
         if (CollectionUtils.isEmpty(focusMaps)) {
             return bannerVos;
         }
-        BannerVo bannerVo = null;
+        BannerVo bannerVo;
+        final List<Long> productIds = new ArrayList<>();
         for (int i = 0, size = focusMaps.size(); i < size; i++) {
             FocusMap focusMap1 = focusMaps.get(i);
             // 跳转类型:1-页面；2-商品；3-分类
             if (focusMap1.getJumpType() == null || focusMap1.getJumpType().intValue() != 2) {
                 continue;
             }
+            productIds.add(Long.valueOf(focusMap1.getJumpParams()));
             bannerVo = new BannerVo();
             bannerVos.add(bannerVo);
             bannerVo.setBusinessId(Long.valueOf(focusMap1.getJumpParams()));
@@ -127,6 +134,32 @@ public class FocusMapServiceImpl implements IFocusMapService {
             bannerVo.setTitle(focusMap1.getTitle());
             bannerVo.setType(focusMap1.getJumpType().toString());
             bannerVo.setUserId(focusMap1.getOperatorId());
+        }
+
+        // 如果跳转的是商品，需要看当前的商品是否处于上架状态
+        if (CollectionUtils.isNotEmpty(productIds)) {
+            final List<Long> upperIds = new ArrayList<>();
+            Long[] ids = new Long[productIds.size()];
+            productIds.toArray(ids);
+            final List<Product> products = this.productMapper.selectProductsByIds(ids);
+            if (CollectionUtils.isNotEmpty(products)) {
+                for (Product product : products) {
+                    if (ProductStatus.UPPER_SHELF.getValue().equals(product.getStatus())) {
+                        upperIds.add(product.getId());
+                    }
+                }
+            }
+            final List<BannerVo> result = new ArrayList<>();
+            for (BannerVo item : bannerVos) {
+                if (productIds.contains(item.getBusinessId())) {
+                    if (upperIds.contains(item.getBusinessId())) {
+                        result.add(item);
+                    }
+                } else {
+                    result.add(item);
+                }
+            }
+            return result;
         }
 
         return bannerVos;

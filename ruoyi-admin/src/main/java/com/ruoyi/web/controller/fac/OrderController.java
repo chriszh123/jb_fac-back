@@ -10,8 +10,12 @@ import com.ruoyi.fac.service.IOrderService;
 import com.ruoyi.fac.vo.FacStaticVo;
 import com.ruoyi.fac.vo.OrderDiagramVo;
 import com.ruoyi.fac.vo.OrderItemVo;
+import com.ruoyi.framework.util.ShiroUtils;
 import com.ruoyi.framework.web.base.BaseController;
+import com.ruoyi.system.domain.SysUser;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -28,6 +32,7 @@ import java.util.List;
 @Controller
 @RequestMapping("/fac/order")
 public class OrderController extends BaseController {
+    private static final Logger log = LoggerFactory.getLogger(OrderController.class);
     private String prefix = "fac/order";
     private String prefix_analysis = "fac/dataAnalysis";
 
@@ -95,6 +100,17 @@ public class OrderController extends BaseController {
     }
 
     /**
+     * 修改订单
+     */
+    @GetMapping("/cacelOrder/{id}")
+    public String cacelOrder(@PathVariable("id") Long id, ModelMap mmap) {
+        OrderItemVo orderItemVo = new OrderItemVo();
+        orderItemVo.setId(id.toString());
+        mmap.put("order", orderItemVo);
+        return prefix + "/cacelOrder";
+    }
+
+    /**
      * 修改保存订单
      */
     @RequiresPermissions("fac:order:edit")
@@ -123,8 +139,14 @@ public class OrderController extends BaseController {
     @Log(title = "订单", businessType = BusinessType.UPDATE)
     @PostMapping("/cancel")
     @ResponseBody
-    public AjaxResult cacel(String ids) {
-        return toAjax(orderService.cancelOrderByIds(ids));
+    public AjaxResult cacel(Order order) {
+        SysUser user = ShiroUtils.getSysUser();
+        try {
+            return toAjax(orderService.cancelOrderByIds(order.getId().toString(), order.getRemarkMngt(), user));
+        } catch (Exception ex) {
+            log.error(ex.getMessage(), ex);
+            return AjaxResult.error(ex.getMessage());
+        }
     }
 
     /**

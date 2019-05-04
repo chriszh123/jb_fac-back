@@ -1,11 +1,16 @@
 package com.ruoyi.fac.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.fac.domain.FacProductWriteoff;
+import com.ruoyi.fac.domain.Order;
+import com.ruoyi.fac.mapper.FacProductWriteoffMapper;
+import com.ruoyi.fac.mapper.OrderMapper;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.ruoyi.fac.mapper.ProductWriteoffMapper;
-import com.ruoyi.fac.domain.ProductWriteoff;
 import com.ruoyi.fac.service.IProductWriteoffService;
 import com.ruoyi.common.support.Convert;
 
@@ -18,7 +23,9 @@ import com.ruoyi.common.support.Convert;
 @Service
 public class ProductWriteoffServiceImpl implements IProductWriteoffService {
     @Autowired
-    private ProductWriteoffMapper productWriteoffMapper;
+    private FacProductWriteoffMapper productWriteoffMapper;
+    @Autowired
+    private OrderMapper orderMapper;
 
     /**
      * 查询核销记录信息
@@ -27,8 +34,8 @@ public class ProductWriteoffServiceImpl implements IProductWriteoffService {
      * @return 核销记录信息
      */
     @Override
-    public ProductWriteoff selectProductWriteoffById(Integer id) {
-        return productWriteoffMapper.selectProductWriteoffById(id);
+    public FacProductWriteoff selectProductWriteoffById(Integer id) {
+        return productWriteoffMapper.selectFacProductWriteoffById(id);
     }
 
     /**
@@ -38,9 +45,30 @@ public class ProductWriteoffServiceImpl implements IProductWriteoffService {
      * @return 核销记录集合
      */
     @Override
-    public List<ProductWriteoff> selectProductWriteoffList(ProductWriteoff productWriteoff) {
-        productWriteoff.setIsDeleted(0);
-        return productWriteoffMapper.selectProductWriteoffList(productWriteoff);
+    public List<FacProductWriteoff> selectProductWriteoffList(FacProductWriteoff productWriteoff) {
+        if (productWriteoff.getProductId() == null) {
+            return new ArrayList<>();
+        }
+        // 当前商品涉及到的订单
+        Order order = new Order();
+        order.setProdId(productWriteoff.getProductId());
+        order.setIsDeleted(0);
+        List<Order> orders = this.orderMapper.selectOrderList(order);
+        if (CollectionUtils.isEmpty(orders)) {
+            return new ArrayList<>();
+        }
+        List<String> orderNos = new ArrayList<>();
+        for (Order item : orders) {
+            orderNos.add(item.getOrderNo());
+        }
+        // 当前订单对应的核销记录
+        List<Integer> status = new ArrayList<>();
+        if (productWriteoff.getStatus() != null) {
+            status.add(productWriteoff.getStatus());
+        }
+        List<FacProductWriteoff> productWriteoffs = this.productWriteoffMapper.selectFacProductWriteoffListByOrderNos(orderNos, status);
+
+        return productWriteoffs;
     }
 
     /**
@@ -50,8 +78,8 @@ public class ProductWriteoffServiceImpl implements IProductWriteoffService {
      * @return 结果
      */
     @Override
-    public int insertProductWriteoff(ProductWriteoff productWriteoff) {
-        return productWriteoffMapper.insertProductWriteoff(productWriteoff);
+    public int insertProductWriteoff(FacProductWriteoff productWriteoff) {
+        return productWriteoffMapper.insertFacProductWriteoff(productWriteoff);
     }
 
     /**
@@ -61,8 +89,8 @@ public class ProductWriteoffServiceImpl implements IProductWriteoffService {
      * @return 结果
      */
     @Override
-    public int updateProductWriteoff(ProductWriteoff productWriteoff) {
-        return productWriteoffMapper.updateProductWriteoff(productWriteoff);
+    public int updateProductWriteoff(FacProductWriteoff productWriteoff) {
+        return productWriteoffMapper.updateFacProductWriteoff(productWriteoff);
     }
 
     /**
@@ -73,7 +101,7 @@ public class ProductWriteoffServiceImpl implements IProductWriteoffService {
      */
     @Override
     public int deleteProductWriteoffByIds(String ids) {
-        return productWriteoffMapper.deleteProductWriteoffByIds(Convert.toStrArray(ids));
+        return productWriteoffMapper.deleteFacProductWriteoffByIds(Convert.toStrArray(ids));
     }
 
 }

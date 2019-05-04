@@ -4,20 +4,20 @@
 drop table if exists `fac_product`;
 CREATE TABLE `fac_product` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `sort` tinyint(2) NOT NULL COMMENT '排序',
+  `sort` smallint NOT NULL COMMENT '排序',
   `name` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '商品名称',
   `price` decimal(8,2) NOT NULL DEFAULT '0.0' COMMENT '售价(抢购价)',
-  `sales` tinyint(4) NOT NULL DEFAULT '0' COMMENT '销量',
+  `sales` smallint NOT NULL DEFAULT '0' COMMENT '销量',
   `status` tinyint(2) NOT NULL DEFAULT '2' COMMENT '上架状态:1-上架,2-下架',
   `category_id` int(10) NOT NULL COMMENT '商品类目',
   `business_id` int(10) NOT NULL COMMENT '所属商家',
   `original_price` decimal(8,2) NOT NULL DEFAULT '0.0' COMMENT '原价',
-  `inventory_quantity` tinyint(4) NOT NULL DEFAULT '0' COMMENT '库存数量',
-  `order_count` tinyint(4) NOT NULL DEFAULT '0' COMMENT '订单数量',
-  `limit_quantity` tinyint(4) NOT NULL DEFAULT '0' COMMENT '每人限购数量',
-  `vm_buyer_quantity` tinyint(4) NOT NULL DEFAULT '0' COMMENT '虚拟购买人数',
+  `inventory_quantity` smallint NOT NULL DEFAULT '0' COMMENT '库存数量',
+  `order_count` smallint NOT NULL DEFAULT '0' COMMENT '订单数量',
+  `limit_quantity` smallint NOT NULL DEFAULT '0' COMMENT '每人限购数量',
+  `vm_buyer_quantity` smallint NOT NULL DEFAULT '0' COMMENT '虚拟购买人数',
   `distribution` decimal(8,2) NOT NULL DEFAULT '0.0' COMMENT '分销奖金',
-  `bonus_points` tinyint(4) NOT NULL DEFAULT '0' COMMENT '奖励积分',
+  `bonus_points` smallint NOT NULL DEFAULT '0' COMMENT '奖励积分',
   `rush_start` datetime NULL COMMENT '抢购开始时间',
   `rush_end` datetime NULL COMMENT '抢购结束时间',
   `writeoff_start` datetime NULL COMMENT '核销开始时间',
@@ -58,7 +58,8 @@ CREATE TABLE `fac_product_category` (
 drop table if exists `fac_product_writeoff`;
 CREATE TABLE `fac_product_writeoff` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
-  `product_id` bigint(20) NOT NULL COMMENT '商品ID',
+  `order_no` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '订单号,eg:201812231410342545',
+  `prod_id` bigint(20) DEFAULT NULL COMMENT '商品id',
   `buyer_id` bigint(20) NOT NULL COMMENT '买者ID',
   `code` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '核销码',
   `writeoff_time` datetime COMMENT '核销时间',
@@ -80,7 +81,7 @@ CREATE TABLE `fac_order` (
   `order_no` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '订单号,eg:201812231410342545',
   `prod_id` bigint(20) DEFAULT NULL COMMENT '商品id',
   `prod_name` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '商品名称',
-  `prod_number` tinyint(2) NOT NULL DEFAULT 0 COMMENT '购买商品数量',
+  `prod_number` smallint NOT NULL DEFAULT 0 COMMENT '购买商品数量',
   `price` decimal(8,2) NOT NULL COMMENT '金额',
   `status` tinyint(2) NOT NULL COMMENT '状态',
   `pay_time` datetime DEFAULT NULL COMMENT '付款时间',
@@ -90,6 +91,7 @@ CREATE TABLE `fac_order` (
   `user_name` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '用户真实名称',
   `nick_name` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '用户昵称',
   `remark` varchar(1024) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '' COMMENT '备注',
+  `user_score` smallint DEFAULT 0 COMMENT '当前订单使用的积分数，同一订单号下的不同商品这里记录的是重复一样的值',
   `ship_id` bigint(20) NOT NULL DEFAULT 0 COMMENT '快递单号ID',
   `ship_code` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '快递单号',
   `remark_mngt` varchar(1024) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '' COMMENT '管理员备注',
@@ -98,6 +100,7 @@ CREATE TABLE `fac_order` (
   `cacel_name` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '取消订单操作人名称',
   `cacel_time` datetime DEFAULT NULL COMMENT '取消订单操作时间',
   `prepay_id` bigint(20) DEFAULT NULL COMMENT '微信预支付id',
+  `inviter_id` bigint(20) DEFAULT NULL COMMENT '商品分享人id',
   `create_time` datetime NOT NULL COMMENT '创建时间',
   `update_time` datetime NOT NULL COMMENT '最近更新时间',
   `operator_id` bigint(20) DEFAULT NULL COMMENT '操作者ID',
@@ -161,8 +164,10 @@ CREATE TABLE `fac_buyer` (
   `name` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '真实姓名 ',
   `token` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'token ',
   `open_id` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '用户微信openid，唯一 ',
+  `gender` varchar(2)  COMMENT '性别',
+  `avatarUrl` varchar(1024)  COMMENT '微信头像地址',
   `balance` decimal(8,2) NOT NULL COMMENT '余额:分销的奖金',
-  `points` tinyint(4) NOT NULL COMMENT '积分',
+  `points` smallint NOT NULL COMMENT '积分',
   `registry_time` datetime NOT NULL COMMENT '注册日期,第一次使用本产品时间',
   `create_time` datetime NOT NULL COMMENT '创建时间',
   `update_time` datetime NOT NULL COMMENT '最近更新时间',
@@ -179,6 +184,7 @@ drop table if exists `fac_buyer_business`;
 CREATE TABLE `fac_buyer_business` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
   `user_id` bigint(20) DEFAULT NULL COMMENT '用户id',
+  `token` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'token ',
   `business_id` bigint(20) DEFAULT NULL COMMENT '绑定商家',
   `business_prod_id` bigint(20) DEFAULT NULL COMMENT '绑定商家的某一个商品',
   `create_time` datetime NOT NULL COMMENT '创建时间',
@@ -278,3 +284,19 @@ CREATE TABLE `fac_buyer_address` (
   `is_deleted` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否删除',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='买者用户收货地址表';
+
+-- --------------------------
+-- 13、用户签到等积分表
+-- --------------------------
+drop table if exists `fac_buyer_sign`;
+CREATE TABLE `fac_buyer_sign` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `token` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '用户token ',
+  `type` tinyint(4) NOT NULL DEFAULT '0' COMMENT '积分类型：0-签到;1-购物反赠积分,2-购物消费',
+  `point` smallint NOT NULL DEFAULT '0' COMMENT '当前签到获得的积分',
+  `sign_time` datetime NOT NULL COMMENT '签到时间',
+  `create_time` datetime NOT NULL COMMENT '创建时间',
+  `update_time` datetime NOT NULL COMMENT '最近更新时间',
+  `is_deleted` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否删除',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='用户签到等积分表';

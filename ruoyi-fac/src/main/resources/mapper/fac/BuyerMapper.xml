@@ -8,6 +8,8 @@
         <result property="id" column="id"/>
         <result property="nickName" column="nick_name"/>
         <result property="name" column="name"/>
+        <result property="gender" column="gender"/>
+        <result property="avatarUrl" column="avatarUrl"/>
         <result property="token" column="token"/>
         <result property="openId" column="open_id"/>
         <result property="balance" column="balance"/>
@@ -21,7 +23,7 @@
     </resultMap>
 
     <sql id="selectBuyerVo">
-        select id, nick_name, name, token,open_id, balance, points, registry_time,  create_time, update_time, operator_id, operator_name, is_deleted from fac_buyer
+        select id, nick_name, name, gender, avatarUrl,token,open_id, balance, points, registry_time,  create_time, update_time, operator_id, operator_name, is_deleted from fac_buyer
     </sql>
 
     <select id="selectBuyerList" parameterType="Buyer" resultMap="BuyerResult">
@@ -133,5 +135,19 @@
         <include refid="selectBuyerVo"/>
         where is_deleted = 0 AND token = #{token}
     </select>
+
+    <update id="updateUserInfo">
+        update fac_buyer
+        set nick_name = #{nickName}, gender = #{gender}, avatarUrl = #{avatarUrl},update_time = now()
+        where id = #{uid}
+    </update>
+
+    <update id="batchUpdatePoints">
+        <foreach collection="list" item="record" index="index" separator=";" open="" close="">
+            UPDATE fac_buyer
+            set points = points + #{record.points}, balance = balance + #{record.balance}
+            WHERE is_deleted = 0 and id = #{record.id}
+        </foreach>
+    </update>
 
 </mapper>

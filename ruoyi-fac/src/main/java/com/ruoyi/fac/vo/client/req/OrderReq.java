@@ -17,13 +17,11 @@ import java.io.Serializable;
 public class OrderReq implements Serializable {
     private static final long serialVersionUID = 4602052785700062519L;
 
-    /**
-     * 订单id，这里指的是订单no
-     */
     private String id;
     private String token;
     private int status;
-    private String orderId;
+    private String orderNo;
+    private String prodId;
 
     public String getToken() {
         return token;
@@ -49,11 +47,19 @@ public class OrderReq implements Serializable {
         this.id = id;
     }
 
-    public String getOrderId() {
-        return orderId;
+    public String getOrderNo() {
+        return orderNo;
     }
 
-    public void setOrderId(String orderId) {
-        this.orderId = orderId;
+    public void setOrderNo(String orderNo) {
+        this.orderNo = orderNo;
+    }
+
+    public String getProdId() {
+        return prodId;
+    }
+
+    public void setProdId(String prodId) {
+        this.prodId = prodId;
     }
 }

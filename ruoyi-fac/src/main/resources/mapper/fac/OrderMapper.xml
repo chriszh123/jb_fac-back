@@ -18,6 +18,7 @@
         <result property="userName" column="user_name"/>
         <result property="nickName" column="nick_name"/>
         <result property="remark" column="remark"/>
+        <result property="userScore" column="user_score"/>
         <result property="shipId" column="ship_id"/>
         <result property="shipCode" column="ship_code"/>
         <result property="remarkMngt" column="remark_mngt"/>
@@ -30,12 +31,14 @@
         <result property="operatorId" column="operator_id"/>
         <result property="operatorName" column="operator_name"/>
         <result property="isDeleted" column="is_deleted"/>
-        <result property="orderRemark" column="remark"/>
+        <result property="remark" column="remark"/>
         <result property="prepayId" column="prepay_id"/>
+        <result property="inviterId" column="inviter_id"/>
     </resultMap>
 
     <sql id="selectOrderVo">
-        select id, order_no, prod_id, prod_name, prod_number, price, status, pay_time, token,open_id, user_id, user_name, nick_name, remark, ship_id, ship_code, remark_mngt, ship, cacel_id, cacel_name, cacel_time, prepay_id,create_time, update_time, operator_id, operator_name, is_deleted from fac_order
+        select id, order_no, prod_id, prod_name, prod_number, price, status, pay_time, token,open_id, user_id, user_name, nick_name, remark, ship_id
+        ,user_score, ship_code, remark_mngt, ship, cacel_id, cacel_name, cacel_time, prepay_id,inviter_id,create_time, update_time, operator_id, operator_name, is_deleted from fac_order
     </sql>
 
     <select id="selectOrderList" parameterType="Order" resultMap="OrderResult">
@@ -103,6 +106,8 @@
             <if test="operatorId != null  ">operator_id,</if>
             <if test="operatorName != null  and operatorName != ''  ">operator_name,</if>
             <if test="isDeleted != null  ">is_deleted,</if>
+            <if test="prepayId != null  ">prepay_id,</if>
+            <if test="inviterId != null  ">inviter_id,</if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null  ">#{id},</if>
@@ -130,6 +135,8 @@
             <if test="operatorId != null  ">#{operatorId},</if>
             <if test="operatorName != null  and operatorName != ''  ">#{operatorName},</if>
             <if test="isDeleted != null  ">#{isDeleted},</if>
+            <if test="prepayId != null  ">#{prepayId},</if>
+            <if test="inviterId != null  ">#{inviterId},</if>
         </trim>
     </insert>
 
@@ -179,7 +186,7 @@
 
     <update id="cancelOrderByIds" parameterType="String">
         UPDATE fac_order
-        set status = 5
+        set status = 4, remark_mngt = #{remarkMngt}
         where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
@@ -209,8 +216,7 @@
         insert into
         fac_order
         (order_no, prod_id, prod_name, prod_number, price, status, user_id, user_name, nick_name, remark, ship,
-        create_time,
-        update_time, operator_id, operator_name, is_deleted,token, open_id)
+        create_time,update_time, operator_id, operator_name, is_deleted,token, open_id, inviter_id,user_score)
         values
         <foreach collection="list" item="item" index="index" separator=",">
             (
@@ -221,7 +227,9 @@
             #{item.remark,jdbcType=VARCHAR}, #{item.ship, jdbcType=TINYINT},
             #{item.createTime,jdbcType=TIMESTAMP}, #{item.updateTime,jdbcType=TIMESTAMP},
             #{item.operatorId,jdbcType=BIGINT}, #{item.operatorName,jdbcType=VARCHAR},
-            #{item.isDeleted,jdbcType=TINYINT},#{item.token,jdbcType=VARCHAR},#{item.openId,jdbcType=VARCHAR}
+            #{item.isDeleted,jdbcType=TINYINT},#{item.token,jdbcType=VARCHAR},
+            #{item.openId,jdbcType=VARCHAR},#{item.inviterId, jdbcType=BIGINT},
+            #{item.userScore, jdbcType=SMALLINT}
             )
         </foreach>
     </insert>
@@ -233,6 +241,12 @@
         <if test="status != null">
             and status = #{status}
         </if>
+        <if test="statuses != null and !statuses.isEmpty()">
+            AND status IN
+            <foreach item="item" index="index" collection="statuses" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
         order by create_time desc
     </select>
 
@@ -240,10 +254,15 @@
         UPDATE fac_order
         set status = #{status}
         where is_deleted = 0 and token = #{token}
-        and id in
-        <foreach item="id" collection="orderIds" open="(" separator="," close=")">
-            #{id}
-        </foreach>
+        <if test="orderNo != null and orderNo != ''.toString()">
+            and order_no = #{orderNo}
+        </if>
+        <if test="orderIds != null and !orderIds.isEmpty()">
+            and id in
+            <foreach item="id" collection="orderIds" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </if>
     </update>
 
     <select id="selectOrderByIdAndToken" resultMap="OrderResult">

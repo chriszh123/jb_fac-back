@@ -55,7 +55,7 @@ public interface IProductService {
      * @param ids 需要删除的数据ID
      * @return 结果
      */
-    int deleteProductByIds(String ids);
+    int deleteProductByIds(String ids) throws FacException;
 
     /**
      * 获取当前商品对应图片信息

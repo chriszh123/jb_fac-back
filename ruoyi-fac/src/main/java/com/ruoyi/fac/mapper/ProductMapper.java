@@ -3,6 +3,7 @@ package com.ruoyi.fac.mapper;
 import com.ruoyi.fac.domain.Product;
 import com.ruoyi.fac.vo.QueryVo;
 import com.ruoyi.fac.vo.condition.QueryGoodVo;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -73,5 +74,9 @@ public interface ProductMapper {
 
     List<Product> goodsList(QueryGoodVo vo);
 
-    List<Product> selectProductsByIds(Long[] ids);
+    List<Product> selectProductsByIds(@Param("ids") Long[] ids);
+
+    int updateProductSaleNumber(@Param("id") long id, @Param("number") int number);
+
+    void batchUpdateProductSales(@Param("list") List<Product> updateObjs);
 }

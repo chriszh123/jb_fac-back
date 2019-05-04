@@ -7,12 +7,12 @@ import java.io.Serializable;
  * Date 2019/2/18 17:11
  * Description
  */
-public class NextAction implements Serializable{
+public class NextAction implements Serializable {
     private static final long serialVersionUID = 3069661955057660933L;
 
     private Integer type;
     /**
-     * 订单id
+     * 订单号
      */
     private String id;
 

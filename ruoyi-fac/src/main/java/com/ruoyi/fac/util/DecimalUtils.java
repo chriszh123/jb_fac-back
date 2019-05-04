@@ -1,6 +1,7 @@
 package com.ruoyi.fac.util;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 
 /**
  * Created by zgf
@@ -31,8 +32,20 @@ public class DecimalUtils {
      * @return
      */
     public static BigDecimal add(BigDecimal src, BigDecimal dst) {
-        BigDecimal totalAmount = src.add(new BigDecimal("" + dst.toString()));
-        return totalAmount;
+        BigDecimal result = src.add(dst);
+        return result;
+    }
+
+    /**
+     * 两者之和
+     *
+     * @param src
+     * @param dst
+     * @return
+     */
+    public static BigDecimal subtract(BigDecimal src, BigDecimal dst) {
+        BigDecimal result = src.subtract(dst);
+        return result;
     }
 
     /**
@@ -48,15 +61,25 @@ public class DecimalUtils {
     }
 
     /**
-     * 格式化指定BigDecimal值:保留一位小数
+     * 格式化指定BigDecimal值:保留两位小数
      *
      * @param data
      * @return
      */
     public static BigDecimal formatDecimal(BigDecimal data) {
-        String priceVal = new java.text.DecimalFormat("######0.0")
-                .format(data.setScale(1, BigDecimal.ROUND_UP).doubleValue());
-        return new BigDecimal(priceVal);
+        DecimalFormat format = new DecimalFormat("0.00");
+        String dataStr = format.format(data);
+        return new BigDecimal(dataStr);
+    }
+
+    /**
+     * 返回一个默认值
+     *
+     * @return BigDecimal
+     */
+    public static BigDecimal getDefaultDecimal() {
+        BigDecimal init = new BigDecimal("0.00");
+        return init;
     }
 
 }

@@ -18,13 +18,13 @@ public enum FocusStatus {
         this.value = value;
     }
 
-    public static String getCodeByName(String name) {
+    public static Integer getCodeByName(String name) {
         for (FocusStatus s : FocusStatus.values()) {
             if (s.getName().equals(name)) {
-                return s.getName();
+                return s.getValue();
             }
         }
-        return "0";
+        return 1;
     }
 
     public static String getNameByCode(String value) {

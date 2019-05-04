@@ -9,11 +9,10 @@
         <!--查询区域-->
         <div class="col-sm-12 search-collapse">
             <form id="form-product-writeOff" th:object="${product}">
-                <input type="hidden" id="productId" name="productId" th:field="*{id}"/>
                 <div class="select-list">
                     <ul>
                         <li>
-                            核销ID：<input type="text" id="id" name="id"/>
+                            商品ID：<input type="text" id="productId" name="productId"/>
                         </li>
                         <li>
                             状态：
@@ -76,8 +75,13 @@
                 },
                 {
                     field: 'code',
+                    title: '核销码',
+                    sortable: false
+                },
+                {
+                    field: 'code',
                     title: '核销二维码',
-                    sortable: true,
+                    sortable: false,
                     formatter: function (value, row, index) {
                         var actions = [];
                         actions.push('<a class="btn btn-primary btn-xs" href="#" onclick="writeOffQrCode(\'' + value + '\')">点击查看</a> ');
@@ -87,7 +91,7 @@
                 {
                     field: 'status',
                     title: '核销状态',
-                    sortable: true,
+                    sortable: false,
                     formatter: function (value, row, index) {
                         if (1 == value) {
                             return WRITE_OFF_STATUS[value];
@@ -99,12 +103,12 @@
                 {
                     field: 'writeoffTime',
                     title: '核销时间',
-                    sortable: true
+                    sortable: false
                 },
                 {
                     field: 'buyerId',
-                    title: '买者ID',
-                    sortable: true,
+                    title: '用户ID',
+                    sortable: false,
                     formatter: function (value, row, index) {
                         return value;
                     }
