@@ -114,7 +114,7 @@ public class PayServiceImpl implements IPayService {
         // 创建hashmap(用户获得签名)
         SortedMap<String, String> paraMap = new TreeMap<String, String>();
         // 设置body变量 (支付成功显示在微信支付 商品详情中)：如果是中文，可能会遇到毫无头绪的签名错误，严重者开始怀疑人生
-        String body = "JB FAC";
+        String body = "JBFAC";
 
         // 校验当前商品是否还可以购买:库存数据
         Long[] ids = new Long[orders.size()];
@@ -234,8 +234,10 @@ public class PayServiceImpl implements IPayService {
             logger.info("微信 支付接口生成签名 方法结束");
         } catch (UnsupportedEncodingException e) {
             logger.info("微信 统一下单 异常：" + e.getMessage(), e);
+            throw new Exception(e.getMessage());
         } catch (Exception e) {
             logger.info("微信 统一下单 异常：" + e.getMessage(), e);
+            throw new Exception(e.getMessage());
         }
 
         return res;
