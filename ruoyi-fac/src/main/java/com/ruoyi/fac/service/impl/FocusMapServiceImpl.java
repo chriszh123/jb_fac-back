@@ -112,6 +112,10 @@ public class FocusMapServiceImpl implements IFocusMapService {
         final List<Long> productIds = new ArrayList<>();
         for (int i = 0, size = focusMaps.size(); i < size; i++) {
             FocusMap focusMap1 = focusMaps.get(i);
+            if (focusMap1.getStatus().intValue() == 2) {
+                // 隐藏的焦点图不展示
+                continue;
+            }
             // 跳转类型:1-页面；2-商品；3-分类
             if (focusMap1.getJumpType() == null || focusMap1.getJumpType().intValue() != 2) {
                 continue;
