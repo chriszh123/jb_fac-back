@@ -45,9 +45,9 @@
     </div>
 </div>
 <div th:include="include :: footer"></div>
+<script th:src="@{/fac/fac_common.js}"></script>
 <script th:inline="javascript">
     var editFlag = [[${@permission.hasPermi('fac:buyer:edit')}]];
-    var removeFlag = [[${@permission.hasPermi('fac:buyer:remove')}]];
     var prefix = ctx + "fac/buyer";
 
     $(function () {
@@ -77,6 +77,14 @@
                     field: 'name',
                     title: '真实姓名 ',
                     sortable: true
+                },
+                {
+                    field: 'gender',
+                    title: '性别 ',
+                    sortable: false,
+                    formatter: function (value, row, index) {
+                        return GENDER[value];
+                    }
                 },
                 {
                     field: 'phoneNumber',

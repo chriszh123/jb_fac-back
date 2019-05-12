@@ -5,6 +5,12 @@ var DATA_ID = {
 };
 
 // 各对象预置数量
+var GENDER = {
+    "1": "男",
+    "2": "女"
+};
+
+// 各对象预置数量
 var OBJECT_COUNT = {
     "PRODUCT_IMG": 5,
     "PRODUCT_IMG_CATEGORY": 1
