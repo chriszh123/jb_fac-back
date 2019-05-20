@@ -51,7 +51,7 @@ var STATUS_VISIBLE = {
 }
 
 // fileInput上传文件支持扩展名
-var FILEINPUTEXTENDTION = ["jpg", "jpeg", "gif", "bmp"];
+var FILEINPUTEXTENDTION = ["jpg", "jpeg", "gif", "bmp", "png"];
 
 // option：首页相关统计图
 var homepageOption = {
@@ -389,8 +389,24 @@ var initFileInputWithImgData = function (id, uploadUrl, maxFilesNum, imgPaths, c
         console.log('Key = ' + key);
         console.log(jqXHR);
         console.log(data);
-        if (!confirm("确定删除这个图片？删除后不可恢复")) {
+        var selected = confirm("确定删除这个图片？删除后不可恢复");
+        console.log("selected = " + selected);
+        if (!selected) {
             return false;
+        } else {
+            var picture = $("#picture").val();
+            var delPicture = key.split(";")[1];
+            var pictureArr = picture.split(",");
+            var result = "";
+            for (var i = 0; i < pictureArr.length; i++) {
+                if (delPicture != pictureArr[i]) {
+                    result = result + pictureArr[i] + ",";
+                }
+            }
+            if (result != "") {
+                result = result.substr(0, result.length - 1);
+            }
+            $("#picture").val(result);
         }
     });
 }
