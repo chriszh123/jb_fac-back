@@ -8,6 +8,7 @@ import com.ruoyi.fac.domain.FacProductWriteoff;
 import com.ruoyi.fac.domain.Order;
 import com.ruoyi.fac.domain.Product;
 import com.ruoyi.fac.enums.OrderStatus;
+import com.ruoyi.fac.exception.FacException;
 import com.ruoyi.fac.mapper.*;
 import com.ruoyi.fac.model.FacBuyer;
 import com.ruoyi.fac.model.FacBuyerExample;
@@ -134,6 +135,9 @@ public class PayServiceImpl implements IPayService {
             }
             if (item.getStatus().intValue() == 2) {
                 throw new Exception(String.format("商品【%s】已下架，请选择其它商品购买", item.getName()));
+            }
+            if (prod2Order.get(item.getId()).getProdNumber() > item.getLimitQuantity()) {
+                throw new FacException(String.format("商品【%s】每人限购%s份", item.getName(), item.getLimitQuantity()));
             }
             Date nowDate = new Date();
             if (nowDate.compareTo(item.getRushEnd()) > 0) {

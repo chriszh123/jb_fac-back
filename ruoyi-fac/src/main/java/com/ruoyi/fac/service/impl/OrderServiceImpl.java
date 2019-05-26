@@ -384,6 +384,9 @@ public class OrderServiceImpl implements IOrderService {
             if (product.getInventoryQuantity() == 0 || (product.getInventoryQuantity() < good.getNumber())) {
                 throw new FacException(String.format("商品【%s】库存数量已不足，请选择其它商品购买", product.getName()));
             }
+            if (good.getNumber() > product.getLimitQuantity()) {
+                throw new FacException(String.format("商品【%s】每人限购%s份", product.getName(), product.getLimitQuantity()));
+            }
             FacOrder order = new FacOrder();
             orders.add(order);
 
