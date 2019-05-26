@@ -15,6 +15,7 @@ import com.ruoyi.fac.vo.client.UserAmountVo;
 import com.ruoyi.fac.vo.client.UserBaseVo;
 import com.ruoyi.fac.vo.client.UserDetailVo;
 import com.ruoyi.fac.vo.client.req.UserInfo;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,15 +92,18 @@ public class BuyerServiceImpl implements IBuyerService {
             example.createCriteria().andIsDeletedEqualTo(false).andTokenIn(tokens);
             List<FacBuyerAddress> addresses = this.facBuyerAddressMapper.selectByExample(example);
             if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(addresses)) {
-                Map<String, String> token2Phone = new HashMap<>(addresses.size());
+                Map<String, FacBuyerAddress> token2Phone = new HashMap<>(addresses.size());
                 for (FacBuyerAddress item : addresses) {
                     if (item.getIsDefault()) {
-                        token2Phone.put(item.getToken(), item.getPhoneNumber());
+                        token2Phone.put(item.getToken(), item);
                     }
                 }
 
                 for (Buyer item : buyers) {
-                    item.setPhoneNumber(token2Phone.get(item.getToken()));
+                    if (MapUtils.isNotEmpty(token2Phone) && token2Phone.containsKey(item.getToken())) {
+                        item.setPhoneNumber(token2Phone.get(item.getToken()).getPhoneNumber());
+                        item.setName(token2Phone.get(item.getToken()).getLinkman());
+                    }
                 }
             }
         }
