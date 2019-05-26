@@ -5,8 +5,7 @@ import com.ruoyi.fac.constant.FacConstant;
 import com.ruoyi.fac.domain.*;
 import com.ruoyi.fac.enums.OrderStatus;
 import com.ruoyi.fac.mapper.*;
-import com.ruoyi.fac.model.FacOrder;
-import com.ruoyi.fac.model.FacOrderExample;
+import com.ruoyi.fac.model.*;
 import com.ruoyi.fac.service.IBuyerService;
 import com.ruoyi.fac.util.DecimalUtils;
 import com.ruoyi.fac.util.TimeUtils;
@@ -47,9 +46,9 @@ public class BuyerServiceImpl implements IBuyerService {
     @Autowired
     private BuyerBusinessMapper buyerBusinessMapper;
     @Autowired
-    private OrderMapper orderMapper;
-    @Autowired
     private FacOrderMapper facOrderMapper;
+    @Autowired
+    private FacBuyerAddressMapper facBuyerAddressMapper;
 
     /**
      * 查询买者用户信息
@@ -79,7 +78,33 @@ public class BuyerServiceImpl implements IBuyerService {
     @Override
     public List<Buyer> selectBuyerList(Buyer buyer) {
         buyer.setIsDeleted(0);
-        return buyerMapper.selectBuyerList(buyer);
+        List<Buyer> buyers = buyerMapper.selectBuyerList(buyer);
+        if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(buyers)) {
+            List<String> tokens = new ArrayList<>();
+            for (Buyer item : buyers) {
+                if (StringUtils.isBlank(item.getToken())) {
+                    continue;
+                }
+                tokens.add(item.getToken());
+            }
+            FacBuyerAddressExample example = new FacBuyerAddressExample();
+            example.createCriteria().andIsDeletedEqualTo(false).andTokenIn(tokens);
+            List<FacBuyerAddress> addresses = this.facBuyerAddressMapper.selectByExample(example);
+            if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(addresses)) {
+                Map<String, String> token2Phone = new HashMap<>(addresses.size());
+                for (FacBuyerAddress item : addresses) {
+                    if (item.getIsDefault()) {
+                        token2Phone.put(item.getToken(), item.getPhoneNumber());
+                    }
+                }
+
+                for (Buyer item : buyers) {
+                    item.setPhoneNumber(token2Phone.get(item.getToken()));
+                }
+            }
+        }
+
+        return buyers;
     }
 
     /**

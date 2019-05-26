@@ -43,6 +43,7 @@
             <if test="operatorName != null  and operatorName != '' ">and operator_name = #{operatorName}</if>
             <if test="isDeleted != null ">and is_deleted = #{isDeleted}</if>
         </where>
+        ORDER by create_time DESC
     </select>
 
     <select id="selectBuyerById" parameterType="Long" resultMap="BuyerResult">

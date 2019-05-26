@@ -39,7 +39,7 @@ public class FacBuyerSignServiceImpl implements IFacBuyerSignService {
         if (facBuyerSign.getType() != null) {
             criteria.andTypeEqualTo(facBuyerSign.getType());
         }
-
+        example.setOrderByClause(" create_time desc ");
         List<FacBuyerSign> signs = this.facBuyerSignMapper.selectByExample(example);
 
         return signs;

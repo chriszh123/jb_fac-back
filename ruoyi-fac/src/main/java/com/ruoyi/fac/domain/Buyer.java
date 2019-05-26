@@ -30,10 +30,14 @@ public class Buyer extends BaseEntity {
      */
     @Excel(name = "真实姓名")
     private String name;
-    /** 性别 */
-    @Excel(name = "性别",readConverterExp="1=男,2=女,3=未知")
+    /**
+     * 性别
+     */
+    @Excel(name = "性别", readConverterExp = "1=男,2=女,3=未知")
     private String gender;
-    /** 微信头像地址 */
+    /**
+     * 微信头像地址
+     */
     private String avatarUrl;
     /**
      * token
@@ -70,6 +74,8 @@ public class Buyer extends BaseEntity {
      * 是否删除
      */
     private Integer isDeleted;
+
+    private String phoneNumber;
 
     /**
      * 当前用户绑定的商家商品:[nodeType-id-pId,...]
@@ -186,6 +192,14 @@ public class Buyer extends BaseEntity {
 
     public void setAvatarUrl(String avatarUrl) {
         this.avatarUrl = avatarUrl;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 
     @Override
