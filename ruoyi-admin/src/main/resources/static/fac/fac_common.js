@@ -50,6 +50,12 @@ var STATUS_VISIBLE = {
     "2": "隐藏"
 }
 
+// 积分类型
+var POINT_TYPE = {
+    0: "签到",
+    2: "购买商品返回"
+};
+
 // fileInput上传文件支持扩展名
 var FILEINPUTEXTENDTION = ["jpg", "jpeg", "gif", "bmp", "png"];
 

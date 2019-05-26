@@ -8,9 +8,12 @@ import com.ruoyi.fac.domain.ProductCategory;
 import com.ruoyi.fac.enums.FocusStatus;
 import com.ruoyi.fac.enums.ProductStatus;
 import com.ruoyi.fac.exception.FacException;
+import com.ruoyi.fac.mapper.FacBusinessMapper;
 import com.ruoyi.fac.mapper.OrderMapper;
 import com.ruoyi.fac.mapper.ProductCategoryMapper;
 import com.ruoyi.fac.mapper.ProductMapper;
+import com.ruoyi.fac.model.FacBusiness;
+import com.ruoyi.fac.model.FacBusinessExample;
 import com.ruoyi.fac.service.IProductService;
 import com.ruoyi.fac.util.DecimalUtils;
 import com.ruoyi.fac.util.FacFileUtils;
@@ -44,6 +47,8 @@ public class ProductServiceImpl implements IProductService {
     private ProductCategoryMapper productCategoryMapper;
     @Autowired
     private OrderMapper orderMapper;
+    @Autowired
+    private FacBusinessMapper facBusinessMapper;
 
     /**
      * 查询商品信息
@@ -315,6 +320,21 @@ public class ProductServiceImpl implements IProductService {
         // 商品基本信息
         GoodVo basicInfo = this.convertGoodVo(product);
         vo.setBasicInfo(basicInfo);
+        // 商家信息
+        Integer businessId = product.getBusinessId();
+        if (businessId != null) {
+            FacBusinessExample example = new FacBusinessExample();
+            example.createCriteria().andIsDeletedEqualTo(false).andIdEqualTo(businessId);
+            List<FacBusiness> businesses = this.facBusinessMapper.selectByExample(example);
+            if (CollectionUtils.isNotEmpty(businesses)) {
+                FacBusiness business = businesses.get(0);
+                BusinessVo businessVo = new BusinessVo();
+                businessVo.setWid(businessId);
+                businessVo.setPhone(business.getPhoneNumber1());
+                businessVo.setAddress(business.getAddress());
+                vo.setBusiness(businessVo);
+            }
+        }
 
         return vo;
     }

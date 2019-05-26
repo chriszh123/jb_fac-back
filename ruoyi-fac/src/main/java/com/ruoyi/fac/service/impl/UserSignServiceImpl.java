@@ -58,10 +58,18 @@ public class UserSignServiceImpl implements IUserSignService {
         if (CollectionUtils.isNotEmpty(signs)) {
             throw new FacException("今天您已签到，请明天再来");
         }
+        FacBuyerExample buyerExample = new FacBuyerExample();
+        buyerExample.createCriteria().andIsDeletedEqualTo(false).andTokenEqualTo(req.getToken());
+        List<FacBuyer> buyers = this.facBuyerMapper.selectByExample(buyerExample);
+        if (CollectionUtils.isEmpty(buyers)) {
+            throw new FacException("请重新授权登录后再签到");
+        }
+        FacBuyer buyer = buyers.get(0);
         int point = FacCommonUtils.getRandomInt(FacConstant.USER_SIGN_POINT_MAX, FacConstant.USER_SIGN_POINT_MIN);
         Date now = new Date();
         FacBuyerSign sign = new FacBuyerSign();
         sign.setToken(req.getToken());
+        sign.setNickName(buyer.getNickName());
         sign.setPoint(Short.valueOf(String.valueOf(point)));
         sign.setType(ScoreTypeEnum.SIGN.getValue());
         sign.setSignTime(nowDate);
@@ -71,16 +79,10 @@ public class UserSignServiceImpl implements IUserSignService {
         int rows = this.facBuyerSignMapper.insertSelective(sign);
         if (rows > 0) {
             // 更新用户表里当前用户相应的积分
-            FacBuyerExample buyerExample = new FacBuyerExample();
-            buyerExample.createCriteria().andIsDeletedEqualTo(false).andTokenEqualTo(req.getToken());
-            List<FacBuyer> facBuyers = this.facBuyerMapper.selectByExample(buyerExample);
-            if (CollectionUtils.isNotEmpty(facBuyers)) {
-                FacBuyer buyer = facBuyers.get(0);
-                int newPoints = buyer.getPoints() + point;
-                buyer.setPoints(Short.valueOf(String.valueOf(newPoints)));
-                buyer.setUpdateTime(new Date());
-                this.facBuyerMapper.updateByExampleSelective(buyer, buyerExample);
-            }
+            int newPoints = buyer.getPoints() + point;
+            buyer.setPoints(Short.valueOf(String.valueOf(newPoints)));
+            buyer.setUpdateTime(new Date());
+            this.facBuyerMapper.updateByExampleSelective(buyer, buyerExample);
         }
         return point;
     }
