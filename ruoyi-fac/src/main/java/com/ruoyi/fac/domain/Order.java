@@ -1,5 +1,6 @@
 package com.ruoyi.fac.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.common.annotation.Excel;
 import lombok.Data;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -27,6 +28,16 @@ public class Order extends BaseEntity {
     @Excel(name = "订单号")
     private String orderNo;
     /**
+     * 用户token
+     */
+    @Excel(name = "用户token")
+    private String token;
+    /**
+     * 用户昵称
+     */
+    @Excel(name = "用户昵称")
+    private String nickName;
+    /**
      * 商品id
      */
     private Long prodId;
@@ -46,9 +57,14 @@ public class Order extends BaseEntity {
     @Excel(name = "金额")
     private BigDecimal price;
     /**
+     * 当前订单用户使用的积分
+     */
+    @Excel(name = "用户使用积分数")
+    private short userScore;
+    /**
      * 状态:1-已付款;2-待付款；3-已取消;4-未取消
      */
-    @Excel(name = "状态", readConverterExp = "1=已付款,2=待付款,3=已取消,4=未取消")
+    @Excel(name = "状态", readConverterExp = "0=待付款,1=待核销,2=待评价,3=已完成,4=已取消,5=商家待核销")
     private Integer status;
     /**
      * 付款时间
@@ -56,9 +72,10 @@ public class Order extends BaseEntity {
     @Excel(name = "付款时间", dateFormat = "yyyy-MM-dd HH:mm:ss")
     private Date payTime;
     /**
-     * 用户token
+     * 商品分享人
      */
-    private String token;
+    @Excel(name = "商品分享人")
+    private Long inviterId;
     /**
      * 用户微信openid，唯一
      */
@@ -72,30 +89,18 @@ public class Order extends BaseEntity {
      */
     private String userName;
     /**
-     * 用户昵称
-     */
-    @Excel(name = "用户昵称")
-    private String nickName;
-    /**
      * 快递单号ID
      */
     private Long shipId;
     /**
      * 快递单号
      */
-    @Excel(name = "快递单号")
     private String shipCode;
     /**
      * 用户订单备注
      */
     @Excel(name = "用户订单备注")
     private String remark;
-
-    /**
-     * 当前订单用户使用的积分
-     */
-    @Excel(name = "用户使用积分数")
-    private short userScore;
     /**
      * 管理员备注
      */
@@ -117,15 +122,12 @@ public class Order extends BaseEntity {
     /**
      * 取消订单操作时间
      */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date cacelTime;
     /**
      * 微信预支付id
      */
     private Long prepayId;
-    /**
-     * 商品分享人
-     */
-    private Long inviterId;
     /**
      * 操作者ID
      */

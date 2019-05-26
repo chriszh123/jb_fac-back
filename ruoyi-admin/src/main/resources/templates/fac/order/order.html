@@ -77,13 +77,19 @@
                     sortable: true
                 },
                 {
+                    field: 'nickName',
+                    title: '用户',
+                    sortable: true
+                },
+                {
                     field: 'prodName',
                     title: '商品名称',
+                    width: 180,
                     sortable: true
                 },
                 {
                     field: 'prodNumber',
-                    title: '商品数量',
+                    title: '数量',
                     sortable: true
                 },
                 {
@@ -93,7 +99,7 @@
                 },
                 {
                     field: 'userScore',
-                    title: '使用积分',
+                    title: '积分',
                     sortable: true
                 },
                 {
@@ -110,15 +116,21 @@
                     sortable: true
                 },
                 {
+                    field: 'inviterId',
+                    title: '分享人',
+                    sortable: false,
+                    formatter: function (value, row, index) {
+                        if (value == 0) {
+                            return "-";
+                        }
+                        return value;
+                    }
+                },
+                {
                     field: 'userId',
                     title: '买者用户id',
                     sortable: true,
                     visible: false
-                },
-                {
-                    field: 'nickName',
-                    title: '用户',
-                    sortable: true
                 },
                 {
                     field: 'createTime',
