@@ -12,6 +12,7 @@ import java.io.Serializable;
 @Data
 public class BusinessVo implements Serializable {
     private Integer wid;
+    private String name;
     private String phone;
     private String address;
 }

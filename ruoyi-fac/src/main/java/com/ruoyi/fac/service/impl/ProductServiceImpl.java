@@ -330,6 +330,7 @@ public class ProductServiceImpl implements IProductService {
                 FacBusiness business = businesses.get(0);
                 BusinessVo businessVo = new BusinessVo();
                 businessVo.setWid(businessId);
+                businessVo.setName(business.getName());
                 businessVo.setPhone(business.getPhoneNumber1());
                 businessVo.setAddress(business.getAddress());
                 vo.setBusiness(businessVo);
