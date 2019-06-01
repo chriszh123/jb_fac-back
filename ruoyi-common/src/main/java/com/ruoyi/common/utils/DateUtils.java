@@ -91,7 +91,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils
     public static final String datePath()
     {
         Date now = new Date();
-        return DateFormatUtils.format(now, "yyyy/MM/dd");
+        return DateFormatUtils.format(now, "yyyyMM");
     }
 
     /**

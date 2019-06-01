@@ -12,6 +12,7 @@ import com.ruoyi.framework.util.CkImageUploadUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -36,6 +37,12 @@ import java.util.List;
 @Controller
 public class CommonController {
     private static final Logger log = LoggerFactory.getLogger(CommonController.class);
+
+    @Value("${file.imagesUploadPath}")
+    private String imagesUploadPath;
+
+    @Value("${file.imageReturnPrePath}")
+    private String imageReturnPrePath;
 
     @RequestMapping("common/download")
     public void fileDownload(String fileName, Boolean delete, HttpServletResponse response, HttpServletRequest request) {
@@ -105,6 +112,47 @@ public class CommonController {
                         String fileName = COSClientUtils.getInstance().uploadFile2Cos(file[i]);
                         String imgUrl = COSClientUtils.getInstance().getImgUrl(fileName);
 
+                        fileNames.add(fileName);
+                        imgPaths.add(imgUrl);
+                    }
+                }
+                //上传成功
+                if (!CollectionUtils.isEmpty(fileNames)) {
+                    System.out.println("上传成功！");
+                    vo.setCode(FacConstant.AJAX_CODE_SUCCESS);
+                    vo.setFileName(StringUtils.join(fileNames, ","));
+                    vo.setImgPath(StringUtils.join(imgPaths, ","));
+                } else {
+                    log.error("[batchUploadProductImg] 上传失败！文件格式错误！");
+                    vo.setMsg("上传失败！文件格式错误！");
+                }
+            } catch (Exception e) {
+                log.error("[batchUploadProductImg] 上传出现异常！异常出现在：class.CommonController.batchUploadProductImg()！", e);
+                vo.setMsg("上传出现异常！");
+            }
+        } else {
+            vo.setMsg("没有检测到文件！");
+        }
+
+        return vo;
+    }
+
+    @RequestMapping("/product/picture/batchUploadFocusMap")
+    @ResponseBody
+    public ProductImgVo batchUploadFocusMap(HttpServletRequest request, HttpServletResponse response, @RequestParam("file") MultipartFile[] file) throws Exception {
+        ProductImgVo vo = new ProductImgVo();
+        vo.setCode(FacConstant.AJAX_CODE_FAIL);
+        System.out.println("batchUploadFocusMap........");
+        if (file != null && file.length > 0) {
+            List<String> fileNames = new ArrayList<>();
+            List<String> imgPaths = new ArrayList<>();
+            try {
+                System.out.println("batchUploadFocusMap,file.length = " + file.length);
+                for (int i = 0; i < file.length; i++) {
+                    if (!file[i].isEmpty()) {
+
+                        String fileName = FileUploadUtils.upload(file[i], imagesUploadPath);
+                        String imgUrl = imageReturnPrePath + fileName;
                         fileNames.add(fileName);
                         imgPaths.add(imgUrl);
                     }

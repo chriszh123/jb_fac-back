@@ -294,7 +294,7 @@ CREATE TABLE `fac_buyer_sign` (
   `token` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '用户token ',
   `nick_name` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT '' COMMENT '用户昵称',
   `type` tinyint(4) NOT NULL DEFAULT '0' COMMENT '积分类型：0-签到;1-购物反赠积分,2-购物消费',
-  `point` smallint NOT NULL DEFAULT '0' COMMENT '当前签到获得的积分',
+  `point` smallint NOT NULL DEFAULT '0' COMMENT '积分数',
   `sign_time` datetime NOT NULL COMMENT '签到时间',
   `create_time` datetime NOT NULL COMMENT '创建时间',
   `update_time` datetime NOT NULL COMMENT '最近更新时间',

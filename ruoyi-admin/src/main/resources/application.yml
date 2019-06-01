@@ -135,6 +135,13 @@ gen:
   # 表前缀(类名不会包含表前缀)
   tablePrefix: sys_
 
+file:
+#  imagesUploadPath: /opt/fac/picture/
+  imagesUploadPath: D:/data/facPic/
+#  imagesPath: file:/opt/fac/picture/
+  imagesPath: file:D:/data/facPic/
+  imageReturnPath: /images/**
+  imageReturnPrePath: /images/
 #小程序信息
 wxapp:
   #FAC相关信息
