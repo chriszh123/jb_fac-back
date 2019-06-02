@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.fac.domain.Product;
 import com.ruoyi.fac.enums.FocusStatus;
 import com.ruoyi.fac.enums.ProductStatus;
@@ -12,6 +13,7 @@ import com.ruoyi.fac.util.TimeUtils;
 import com.ruoyi.fac.vo.client.BannerVo;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import com.ruoyi.fac.mapper.FocusMapMapper;
 import com.ruoyi.fac.domain.FocusMap;
@@ -26,6 +28,10 @@ import com.ruoyi.common.support.Convert;
  */
 @Service
 public class FocusMapServiceImpl implements IFocusMapService {
+
+    @Value("${ruoyi.domain}")
+    private String domain;
+
     @Autowired
     private FocusMapMapper focusMapMapper;
     @Autowired
@@ -131,7 +137,10 @@ public class FocusMapServiceImpl implements IFocusMapService {
             bannerVo.setId(focusMap1.getId());
             bannerVo.setLinkUrl("");
             bannerVo.setPaixu(focusMap1.getSort());
-            bannerVo.setPicUrl(focusMap1.getPicture());
+            if (StringUtils.isNotEmpty(focusMap1.getPicture())) {
+                String pictureUrl = domain + focusMap1.getPicture();
+                bannerVo.setPicUrl(pictureUrl);
+            }
             bannerVo.setRemark("");
             bannerVo.setStatus(focusMap1.getStatus());
             bannerVo.setStatusStr(FocusStatus.getNameByCode(focusMap1.getStatus().toString()));
