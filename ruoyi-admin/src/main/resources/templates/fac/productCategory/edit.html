@@ -71,7 +71,8 @@
         var formdata = new FormData();
         formdata.append("action", "UploadVMKImagePath");
         formdata.append("file", fileObj); //加入文件对象
-        var uploadUrl = ctx + "product/picture/batchUpload";
+        // var uploadUrl = ctx + "product/picture/batchUpload";
+        var uploadUrl = ctx + "product/picture/batchUploadFocusMap";
         $.ajax({
             url: uploadUrl,
             data: formdata,
