@@ -136,10 +136,10 @@ gen:
   tablePrefix: sys_
 
 file:
-#  imagesUploadPath: /opt/fac/picture/
-  imagesUploadPath: D:/data/facPic/
-#  imagesPath: file:/opt/fac/picture/
-  imagesPath: file:D:/data/facPic/
+  imagesUploadPath: /opt/fac/picture/
+#  imagesUploadPath: D:/data/facPic/
+  imagesPath: file:/opt/fac/picture/
+#  imagesPath: file:D:/data/facPic/
   imageReturnPath: /images/**
   imageReturnPrePath: /images/
 #小程序信息
