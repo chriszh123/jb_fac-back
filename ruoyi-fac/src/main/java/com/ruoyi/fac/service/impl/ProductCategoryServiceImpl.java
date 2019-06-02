@@ -1,18 +1,22 @@
 package com.ruoyi.fac.service.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.ruoyi.common.support.Convert;
+import com.ruoyi.fac.domain.ProductCategory;
 import com.ruoyi.fac.enums.FocusStatus;
+import com.ruoyi.fac.exception.FacException;
+import com.ruoyi.fac.mapper.FacProductMapper;
+import com.ruoyi.fac.mapper.ProductCategoryMapper;
+import com.ruoyi.fac.model.FacProductExample;
+import com.ruoyi.fac.service.IProductCategoryService;
 import com.ruoyi.fac.util.TimeUtils;
 import com.ruoyi.fac.vo.client.CategoryVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.ruoyi.fac.mapper.ProductCategoryMapper;
-import com.ruoyi.fac.domain.ProductCategory;
-import com.ruoyi.fac.service.IProductCategoryService;
-import com.ruoyi.common.support.Convert;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 商品类目 服务层实现
@@ -24,6 +28,8 @@ import org.springframework.util.CollectionUtils;
 public class ProductCategoryServiceImpl implements IProductCategoryService {
     @Autowired
     private ProductCategoryMapper productCategoryMapper;
+    @Autowired
+    private FacProductMapper facProductMapper;
 
     /**
      * 查询商品类目信息
@@ -80,7 +86,22 @@ public class ProductCategoryServiceImpl implements IProductCategoryService {
      * @return 结果
      */
     @Override
-    public int deleteProductCategoryByIds(String ids) {
+    public int deleteProductCategoryByIds(String ids) throws FacException {
+        if (StringUtils.isEmpty(ids)) {
+            return 0;
+        }
+        List<Integer> categoryIds = new ArrayList<>();
+        String[] idsArr = ids.split(",");
+        for (int i = 0, size = idsArr.length; i < size; i++) {
+            categoryIds.add(Integer.valueOf(idsArr[i]));
+        }
+        FacProductExample example = new FacProductExample();
+        example.createCriteria().andIsDeletedEqualTo(false).andCategoryIdIn(categoryIds);
+        int usedCount = this.facProductMapper.countByExample(example);
+        if (usedCount > 0) {
+            throw new FacException("您当前选择的商品类目已存在于部分商品中，不能删除");
+        }
+
         return productCategoryMapper.deleteProductCategoryByIds(Convert.toStrArray(ids));
     }
 
