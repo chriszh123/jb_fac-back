@@ -311,7 +311,8 @@
                     $("#prodImgInput").fileinput('destroy');
 
                     var imgPaths = res.imgPaths, cfg = res.cfg;
-                    var uploadUrl = ctx + "product/picture/batchUpload";
+                    // var uploadUrl = ctx + "product/picture/batchUpload";
+                    var uploadUrl = ctx + "product/picture/batchUploadFocusMap";
                     initFileInputWithImgData("prodImgInput", uploadUrl, OBJECT_COUNT.PRODUCT_IMG, imgPaths, cfg);
                 }
             }

@@ -29,9 +29,6 @@ import com.ruoyi.common.support.Convert;
 @Service
 public class FocusMapServiceImpl implements IFocusMapService {
 
-    @Value("${ruoyi.domain}")
-    private String domain;
-
     @Autowired
     private FocusMapMapper focusMapMapper;
     @Autowired
@@ -137,10 +134,7 @@ public class FocusMapServiceImpl implements IFocusMapService {
             bannerVo.setId(focusMap1.getId());
             bannerVo.setLinkUrl("");
             bannerVo.setPaixu(focusMap1.getSort());
-            if (StringUtils.isNotEmpty(focusMap1.getPicture())) {
-                String pictureUrl = domain + focusMap1.getPicture();
-                bannerVo.setPicUrl(pictureUrl);
-            }
+            bannerVo.setPicUrl(focusMap1.getPicture());
             bannerVo.setRemark("");
             bannerVo.setStatus(focusMap1.getStatus());
             bannerVo.setStatusStr(FocusStatus.getNameByCode(focusMap1.getStatus().toString()));

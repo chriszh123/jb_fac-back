@@ -44,6 +44,9 @@ public class CommonController {
     @Value("${file.imageReturnPrePath}")
     private String imageReturnPrePath;
 
+    @Value("${ruoyi.domain}")
+    private String domain;
+
     @RequestMapping("common/download")
     public void fileDownload(String fileName, Boolean delete, HttpServletResponse response, HttpServletRequest request) {
         try {
@@ -77,12 +80,12 @@ public class CommonController {
             log.info("[uplodaImg] fileSize: " + file.getSize());
             // 图片大小不超过500K
             if (file.getSize() > FacConstant.FILE_SIZE_FAC) {
-                String error = fileVo.error(0, "图片大小超过500K");
+                String error = fileVo.error(0, "图片大小不能超过500K");
                 out.println(error);
                 return;
             }
 
-            String success = CkImageUploadUtil.getInstance().uploadFile(file);
+            String success = CkImageUploadUtil.getInstance().uploadFile(file, imagesUploadPath, imageReturnPrePath, domain);
             out.println(success);
         } catch (Exception e) {
             log.error("[uplodaImg] error", e);
@@ -142,33 +145,32 @@ public class CommonController {
     public ProductImgVo batchUploadFocusMap(HttpServletRequest request, HttpServletResponse response, @RequestParam("file") MultipartFile[] file) throws Exception {
         ProductImgVo vo = new ProductImgVo();
         vo.setCode(FacConstant.AJAX_CODE_FAIL);
-        System.out.println("batchUploadFocusMap........");
         if (file != null && file.length > 0) {
             List<String> fileNames = new ArrayList<>();
             List<String> imgPaths = new ArrayList<>();
             try {
-                System.out.println("batchUploadFocusMap,file.length = " + file.length);
                 for (int i = 0; i < file.length; i++) {
                     if (!file[i].isEmpty()) {
-
+                        // 图片大小不超过500K
+                        if (file[i].getSize() > FacConstant.FILE_SIZE_FAC) {
+                            vo.setMsg("图片大小不能超过500K");
+                            break;
+                        }
                         String fileName = FileUploadUtils.upload(file[i], imagesUploadPath);
-                        String imgUrl = imageReturnPrePath + fileName;
+                        // 存储在数据库中的图片完整路径
+                        String imgUrl = domain + imageReturnPrePath + fileName;
                         fileNames.add(fileName);
                         imgPaths.add(imgUrl);
                     }
                 }
                 //上传成功
                 if (!CollectionUtils.isEmpty(fileNames)) {
-                    System.out.println("上传成功！");
                     vo.setCode(FacConstant.AJAX_CODE_SUCCESS);
                     vo.setFileName(StringUtils.join(fileNames, ","));
                     vo.setImgPath(StringUtils.join(imgPaths, ","));
-                } else {
-                    log.error("[batchUploadProductImg] 上传失败！文件格式错误！");
-                    vo.setMsg("上传失败！文件格式错误！");
                 }
             } catch (Exception e) {
-                log.error("[batchUploadProductImg] 上传出现异常！异常出现在：class.CommonController.batchUploadProductImg()！", e);
+                log.error("[batchUploadFocusMap] 上传出现异常！异常出现在：class.CommonController.batchUploadFocusMap()！", e);
                 vo.setMsg("上传出现异常！");
             }
         } else {
