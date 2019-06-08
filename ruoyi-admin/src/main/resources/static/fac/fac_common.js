@@ -53,7 +53,8 @@ var STATUS_VISIBLE = {
 // 积分类型
 var POINT_TYPE = {
     0: "签到",
-    2: "购买商品返回"
+    1: "购物反赠",
+    2: "购物消费"
 };
 
 // fileInput上传文件支持扩展名

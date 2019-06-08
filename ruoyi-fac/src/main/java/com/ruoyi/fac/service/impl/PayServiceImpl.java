@@ -8,10 +8,12 @@ import com.ruoyi.fac.domain.FacProductWriteoff;
 import com.ruoyi.fac.domain.Order;
 import com.ruoyi.fac.domain.Product;
 import com.ruoyi.fac.enums.OrderStatus;
+import com.ruoyi.fac.enums.ScoreTypeEnum;
 import com.ruoyi.fac.exception.FacException;
 import com.ruoyi.fac.mapper.*;
 import com.ruoyi.fac.model.FacBuyer;
 import com.ruoyi.fac.model.FacBuyerExample;
+import com.ruoyi.fac.model.FacBuyerSign;
 import com.ruoyi.fac.service.IPayService;
 import com.ruoyi.fac.util.*;
 import com.ruoyi.fac.vo.wxpay.WxPrePayReq;
@@ -72,6 +74,8 @@ public class PayServiceImpl implements IPayService {
     private FacProductWriteoffMapper facProductWriteoffMapper;
     @Autowired
     private FacBuyerMapper facBuyerMapper;
+    @Autowired
+    private FacBuyerSignMapper facBuyerSignMapper;
 
     /**
      * 微信支付预支付接口
@@ -82,6 +86,7 @@ public class PayServiceImpl implements IPayService {
      */
     @Override
     public WxPrePayRes getWxPrePayInfo(WxPrePayReq req, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        logger.info(String.format("====================[getWxPrePayInfo] req:%s", JSON.toJSONString(req)));
         //设置最终返回对象
         final WxPrePayRes res = new WxPrePayRes();
         String openid = req.getToken();
@@ -193,7 +198,7 @@ public class PayServiceImpl implements IPayService {
         try {
             // 发送请求(POST)(获得数据包ID)(这有个注意的地方 如果不转码成ISO8859-1则会告诉你body不是UTF8编码 就算你改成UTF8编码也一样不好使 所以修改成ISO8859-1)
             Map<String, String> map = doXMLParse(getRemotePortData(prepayUrl, new String(paramBuffer.toString().getBytes(), "ISO8859-1")));
-            logger.info(MapUtils.isNotEmpty(map) ? JSON.toJSONString(map) : "调用微信获取预支付信息接口没有响应数据");
+            logger.info("==========================wx prepayi info =======:" + (MapUtils.isNotEmpty(map) ? JSON.toJSONString(map) : "调用微信获取预支付信息接口没有响应数据"));
             // 应该创建支付表数据
             if (map != null) {
                 if (map.containsKey("prepay_id")) {
@@ -244,6 +249,7 @@ public class PayServiceImpl implements IPayService {
             throw new Exception(e.getMessage());
         }
 
+        logger.info(String.format("=========================[getWxPrePayInfo] success, result:%s============================", JSON.toJSONString(res)));
         return res;
     }
 
@@ -267,8 +273,9 @@ public class PayServiceImpl implements IPayService {
             logger.info("微信回调内容信息：" + notityXml);
             //解析成Map
             Map<String, String> map = doXMLParse(notityXml);
+            logger.info(String.format("======wx paycallback resutl:%s", JSON.toJSONString(map)));
             //判断 支付是否成功
-            if ("SUCCESS".equals(map.get("result_code"))) {
+            if (map.containsKey("result_code") && "SUCCESS".equals(map.get("result_code"))) {
                 logger.info("微信回调返回是否支付成功：是, " + JSON.toJSONString(map));
                 //获得 返回的商户订单号
                 String outTradeNo = map.get("out_trade_no");
@@ -309,6 +316,8 @@ public class PayServiceImpl implements IPayService {
 
     @Transactional(rollbackFor = Exception.class)
     public void dealOrderAndProdDataAfterPayed(List<Order> orders) {
+        logger.info(String.format("[dealOrderAndProdDataAfterPayed] orders:%s"
+                , CollectionUtils.isNotEmpty(orders) ? JSON.toJSONString(orders) : "has no order."));
         // 支付成功后，处理当前订单、商品、用户相关信息
         if (CollectionUtils.isNotEmpty(orders)) {
             return;
@@ -333,6 +342,7 @@ public class PayServiceImpl implements IPayService {
             }
         }
         this.productMapper.batchUpdateProductSales(products);
+        logger.info("---------------------[dealOrderAndProdDataAfterPayed] batchUpdateProductSales success.----------------");
         // 给分享人加积分/佣金啥的
         if (MapUtils.isNotEmpty(inviterId2ProdId)) {
             Long[] idsArr = new Long[ids.size()];
@@ -362,6 +372,8 @@ public class PayServiceImpl implements IPayService {
                     updateObjs.add(buyer);
                 }
                 this.buyerMapper.batchUpdatePoints(updateObjs);
+                logger.info(String.format("---------------------[dealOrderAndProdDataAfterPayed] batchUpdatePoints success.---------%s"
+                        , JSON.toJSONString(updateObjs)));
             }
         }
 
@@ -389,8 +401,10 @@ public class PayServiceImpl implements IPayService {
             productWriteoffs.add(productWriteoff);
         }
         this.facProductWriteoffMapper.batchInsert(productWriteoffs);
+        logger.info(String.format("---------------------[dealOrderAndProdDataAfterPayed] batchInsert success.---------%s"
+                , JSON.toJSONString(productWriteoffs)));
 
-        // 如果当前订单使用了积分抵扣，需要扣除当前用户相应的消费积分数
+        // 如果当前订单使用了积分抵扣，需要扣除当前用户相应的消费积分数,并且记录消费记录
         int useScore = orders.get(0).getUserScore();
         if (useScore > 0) {
             Buyer buyer = this.buyerMapper.selectBuyerByOpenId(orders.get(0).getToken());
@@ -402,6 +416,22 @@ public class PayServiceImpl implements IPayService {
                 FacBuyerExample buyerExample = new FacBuyerExample();
                 buyerExample.createCriteria().andIsDeletedEqualTo(false).andTokenEqualTo(orders.get(0).getToken());
                 this.facBuyerMapper.updateByExampleSelective(facBuyer, buyerExample);
+                logger.info(String.format("==========update buyer point after consume:buyer:%s,data:%s==========", JSON.toJSON(buyer), JSON.toJSON(facBuyer)));
+                // 增加消费记录
+                FacBuyerSign record = new FacBuyerSign();
+                record.setToken(facBuyer.getToken());
+                record.setNickName(buyer.getNickName());
+                // 积分类型：0-签到;1-购物反赠积分,2-购物消费
+                record.setType(ScoreTypeEnum.COUNSUMER.getValue());
+                record.setPoint(Short.valueOf(String.valueOf(useScore)));
+                record.setSignTime(nowDate);
+                record.setCreateTime(nowDate);
+                record.setUpdateTime(nowDate);
+                record.setIsDeleted(false);
+                this.facBuyerSignMapper.insertSelective(record);
+                logger.info(String.format("============add consume record:%s===============", JSON.toJSONString(record)));
+            } else {
+                logger.info(String.format("==================current user is not exist, token:%s================", orders.get(0).getToken()));
             }
         }
     }
@@ -466,7 +496,7 @@ public class PayServiceImpl implements IPayService {
     @SuppressWarnings("rawtypes")
     private Map<String, String> doXMLParse(String strxml) throws Exception {
         if (null == strxml || "".equals(strxml)) {
-            return null;
+            return new HashMap<>();
         }
 
         Map<String, String> m = new HashMap<String, String>();
@@ -533,13 +563,11 @@ public class PayServiceImpl implements IPayService {
      * 描述: 发送远程请求 获得代码示例
      * 参数：  @param urls 访问路径
      * 参数：  @param param 访问参数-字符串拼接格式, 例：port_d=10002&port_g=10007&country_a=
-     * 创建人: Xia ZhengWei
-     * 创建时间: 2017年3月6日 下午3:20:32
      * 版本号: v1.0
      * 返回类型: String
      */
     private String getRemotePortData(String urls, String param) {
-        logger.info("港距查询抓取数据----开始抓取外网港距数据");
+        logger.info(String.format("==============getRemotePortData====usrls:%s, param:%s", urls, param));
         try {
             URL url = new URL(urls);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -579,13 +607,12 @@ public class PayServiceImpl implements IPayService {
             while ((resLen = input.read(res)) != -1) {
                 sb.append(new String(res, 0, resLen));
             }
+            logger.info(String.format("==============getRemotePortData====result:%s", sb.toString()));
             return sb.toString();
         } catch (MalformedURLException e) {
-            e.printStackTrace();
-            logger.info("港距查询抓取数据----抓取外网港距数据发生异常：" + e.getMessage());
+            logger.error("港距查询抓取数据----抓取外网港距数据发生异常：" + e.getMessage(), e);
         } catch (IOException e) {
-            e.printStackTrace();
-            logger.info("港距查询抓取数据----抓取外网港距数据发生异常：" + e.getMessage());
+            logger.error("港距查询抓取数据----抓取外网港距数据发生异常：" + e.getMessage(), e);
         }
         logger.info("港距查询抓取数据----抓取外网港距数据失败, 返回空字符串");
         return "";
