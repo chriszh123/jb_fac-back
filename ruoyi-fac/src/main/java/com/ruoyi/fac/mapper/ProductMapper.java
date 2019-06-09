@@ -31,6 +31,14 @@ public interface ProductMapper {
     List<Product> selectProductList(Product product);
 
     /**
+     * 查询商品列表
+     *
+     * @param product 商品信息
+     * @return 商品集合
+     */
+    List<Product> selectProducts(Product product);
+
+    /**
      * 新增商品
      *
      * @param product 商品信息

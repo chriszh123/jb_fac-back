@@ -77,6 +77,27 @@
         </where>
     </select>
 
+    <select id="selectProducts" parameterType="Product" resultMap="ProductResult">
+       SELECT temp.*
+       FROM (
+        select id, sort, name, price, sales, status, category_id, business_id, original_price,
+            inventory_quantity,order_count,limit_quantity,vm_buyer_quantity, distribution, bonus_points,
+            rush_start, rush_end, writeoff_start, writeoff_end, picture, introduction,
+            ship_mode, ship_cost, create_time, update_time, operator_id, operator_name, is_deleted,
+            TIMESTAMPDIFF(MINUTE, now(), writeoff_end) AS total_left_minutes
+        from fac_product
+        where is_deleted = 0
+            <if test="name != null  and name != '' ">and name like "%"#{name}"%"</if>
+            <if test="categoryId != null ">and category_id = #{categoryId}</if>
+            <if test="status != null ">and status = #{status}</if>
+        ) temp
+        WHERE 1=1
+        <if test="expireTime != null">
+            and temp.total_left_minutes &gt;=0 and temp.total_left_minutes &lt;= #{expireTime}
+        </if>
+        ORDER BY temp.writeoff_end desc,temp.create_time ASC
+    </select>
+
     <select id="selectProductById" parameterType="Long" resultMap="ProductResult">
         <include refid="selectProductVo"/>
         where id = #{id}

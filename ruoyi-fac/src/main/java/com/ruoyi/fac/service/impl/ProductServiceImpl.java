@@ -84,7 +84,11 @@ public class ProductServiceImpl implements IProductService {
     @Override
     public List<Product> selectProductList(Product product) {
         product.setIsDeleted(0);
-        return productMapper.selectProductList(product);
+        if (product.getExpireTime() != null) {
+            // 页面上的天数精确折算成分钟
+            product.setExpireTime(product.getExpireTime() * 24 * 60);
+        }
+        return productMapper.selectProducts(product);
     }
 
     /**
