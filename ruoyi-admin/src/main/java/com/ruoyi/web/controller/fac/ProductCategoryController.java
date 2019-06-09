@@ -95,6 +95,8 @@ public class ProductCategoryController extends BaseController {
         productCategory.setCreateTime(nowDate);
         productCategory.setUpdateTime(nowDate);
         productCategory.setIsDeleted(0);
+        // TODO
+        productCategory.setImgPath("http://trial-1258295468.cos.ap-shanghai.myqcloud.com/fac/test/5d6ed2f7ababbbbc4764113cff2f685b.jpeg");
         return toAjax(productCategoryService.insertProductCategory(productCategory));
     }
 

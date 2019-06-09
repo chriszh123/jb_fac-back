@@ -63,7 +63,10 @@ public class ProductCategoryServiceImpl implements IProductCategoryService {
     @Override
     public int insertProductCategory(ProductCategory productCategory) {
         productCategory.setPicture(productCategory.getImgPath());
-        productCategory.setStatus(FocusStatus.VISIBLE.getValue());
+        if (productCategory.getStatus() == null) {
+            productCategory.setStatus(FocusStatus.VISIBLE.getValue());
+        }
+
         return productCategoryMapper.insertProductCategory(productCategory);
     }
 
@@ -112,8 +115,10 @@ public class ProductCategoryServiceImpl implements IProductCategoryService {
      */
     @Override
     public List<CategoryVo> categoryList() {
+        // 客户端展示处于显示状态的商品类目
         List<CategoryVo> categoryVos = new ArrayList<>();
         ProductCategory productCategory = new ProductCategory();
+        productCategory.setStatus(FocusStatus.VISIBLE.getValue());
         productCategory.setIsDeleted(0);
         List<ProductCategory> categories = productCategoryMapper.selectProductCategoryList(productCategory);
         if (!CollectionUtils.isEmpty(categories)) {

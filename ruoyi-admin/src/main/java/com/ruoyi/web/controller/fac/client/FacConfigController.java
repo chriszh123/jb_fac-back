@@ -41,7 +41,7 @@ public class FacConfigController extends BaseController {
         if (StringUtils.equals("mallName", req.getKey())) {
             HashMap<String, Object> data = new HashMap<>();
             data.put("remark", "商城的名称");
-            data.put("value", "江北便利站");
+            data.put("value", "江北福利抢购");
             return FacResult.success(data);
         } else {
             return FacResult.error(FacCode.HAS_NO_DATA.getCode(), FacCode.HAS_NO_DATA.getMsg());

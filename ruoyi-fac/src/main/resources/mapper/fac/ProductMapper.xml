@@ -36,10 +36,11 @@
     </resultMap>
 
     <sql id="selectProductVo">
-        select id, sort, name, price, sales, status, category_id, business_id, original_price, inventory_quantity,
-         order_count,limit_quantity,
-         vm_buyer_quantity, distribution, bonus_points, rush_start, rush_end, writeoff_start, writeoff_end, picture, introduction,
-         ship_mode, ship_cost, create_time, update_time, operator_id, operator_name, is_deleted from fac_product
+        select main.id, main.sort, main.name, main.price, main.sales, main.status, main.category_id, main.business_id, main.original_price,
+             main.inventory_quantity,main.order_count,main.limit_quantity,main.vm_buyer_quantity, main.distribution, main.bonus_points,
+             main.rush_start, main.rush_end, main.writeoff_start, main.writeoff_end, main.picture, main.introduction,
+             main.ship_mode, main.ship_cost, main.create_time, main.update_time, main.operator_id, main.operator_name, main.is_deleted
+         from fac_product main
     </sql>
 
     <select id="selectProductList" parameterType="Product" resultMap="ProductResult">
@@ -215,17 +216,17 @@
 
     <select id="goodsList" resultMap="ProductResult">
         <include refid="selectProductVo"/>
-        <where>
-            <if test="categoryId != null ">and category_id = #{categoryId}</if>
-            <if test="name != null  and name != '' ">and name like "%"#{name}"%"</if>
-            <if test="goodIds != null and !goodIds.isEmpty()">
-                AND id IN
-                <foreach item="item" index="index" collection="goodIds" open="(" separator="," close=")">
-                    #{item}
-                </foreach>
-            </if>
-        </where>
-        order by sort desc, create_time desc
+        LEFT JOIN fac_product_category category on category.id = main.category_id
+        where category.status = 1
+        <if test="categoryId != null ">and main.category_id = #{categoryId}</if>
+        <if test="name != null  and name != '' ">and main.name like "%"#{name}"%"</if>
+        <if test="goodIds != null and !goodIds.isEmpty()">
+            AND main.id IN
+            <foreach item="item" index="index" collection="goodIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        order by main.sort desc, main.create_time desc
         <if test="page != null and pageSize != null">
             limit #{page}, #{pageSize}
         </if>
