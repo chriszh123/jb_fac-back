@@ -154,9 +154,9 @@ public class PayServiceImpl implements IPayService {
         // 设置商户订单号
         String outTradeNo = orders.get(0).getOrderNo();
         // 设置请求参数
-        // 公众账号ID：微信支付分配的公众账号ID（企业号corpid即为此appId）：应用ID==登陆微信公众号后台-开发-基本配置
+        // 公众账号ID：微信支付分配的公众账号ID（企业号corpid即为此appId）：应用ID==登陆微信公众号后台-开发-基本配置(appid必须为最后拉起收银台的小程序appid)
         paraMap.put("appid", Global.getFacAppId().toLowerCase());
-        // 设置请求参数(商户号)：微信支付分配的商户号
+        // 设置请求参数(商户号)：微信支付分配的商户号(mch_id为和appid成对绑定的支付商户号，收款资金会进入该商户号)
         paraMap.put("mch_id", Global.getFacMchId().toUpperCase());
         // 设置请求参数(随机字符串)：随机字符串，长度要求在32位以内
         paraMap.put("nonce_str", FacCommonUtils.substringStr(nonceStr, 32));
@@ -172,7 +172,7 @@ public class PayServiceImpl implements IPayService {
         paraMap.put("notify_url", Global.getDomain() + "/fac/client/pay/wx/payCallback");
         // 设置请求参数(交易类型)
         paraMap.put("trade_type", "JSAPI");
-        // 设置请求参数(openid)：trade_type=JSAPI时（即JSAPI支付），此参数必传，此参数为微信用户在商户对应appid下的唯一标识
+        // 设置请求参数(openid)：trade_type=JSAPI时（即JSAPI支付），此参数必传，此参数为微信用户在商户对应appid下的唯一标识(openid为appid对应的用户标识，即使用wx.login接口获得的openid)
         paraMap.put("openid", openid);
         // 调用逻辑传入参数按照字段名的 ASCII 码从小到大排序（字典序）
         String stringA = formatUrlMap(paraMap, false, false);
