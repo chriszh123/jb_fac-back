@@ -1,5 +1,6 @@
 package com.ruoyi.web.controller.fac.client;
 
+import com.alibaba.fastjson.JSON;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.fac.enums.FacCode;
 import com.ruoyi.fac.service.IPayService;
@@ -48,8 +49,10 @@ public class FacPayController extends BaseController {
                 return FacResult.error(FacCode.PARAMTER_NULL.getCode(), FacCode.PARAMTER_NULL.getMsg());
             }
             WxPrePayRes res = this.payService.getWxPrePayInfo(req, request, response);
+            logger.info(String.format("wxPay success：%s", JSON.toJSONString(res)));
             return FacResult.success(res);
         } catch (Exception ex) {
+            logger.error("wxPay error", ex);
             return FacResult.error(ex.getMessage());
         }
     }

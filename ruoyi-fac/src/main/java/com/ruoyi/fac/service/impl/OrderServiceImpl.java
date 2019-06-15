@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -309,6 +310,7 @@ public class OrderServiceImpl implements IOrderService {
      * @param orderCreateVo
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public OrderCreateRes createOrderFromClient(OrderCreateVo orderCreateVo) throws FacException {
         OrderCreateRes res = new OrderCreateRes();
         if (StringUtils.isBlank(orderCreateVo.getGoodsJsonStr()) || StringUtils.isEmpty(orderCreateVo.getToken())) {
@@ -428,8 +430,8 @@ public class OrderServiceImpl implements IOrderService {
         }
         // 批量保存用户选择的商品信息
         int goodsNumber = this.orderMapper.batchInsertOrders(orders);
-        // 记录分享奖金
-        this.recordInviterCash(prodId2InviterId, buyer);
+        // 记录分享奖金：这里不能加这个记录 20190615
+//        this.recordInviterCash(prodId2InviterId, buyer);
         // 所有商品总价
         amountConsume = DecimalUtils.formatDecimal(amountConsume);
         // 创建返回结果
