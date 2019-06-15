@@ -48,11 +48,12 @@ public class FacPayController extends BaseController {
                     || req.getNextAction() == null || StringUtils.isBlank(req.getNextAction().getId())) {
                 return FacResult.error(FacCode.PARAMTER_NULL.getCode(), FacCode.PARAMTER_NULL.getMsg());
             }
+            logger.info(String.format("============================wxPay start：%s", JSON.toJSONString(req)));
             WxPrePayRes res = this.payService.getWxPrePayInfo(req, request, response);
-            logger.info(String.format("wxPay success：%s", JSON.toJSONString(res)));
+            logger.info(String.format("==================================wxPay success：%s", JSON.toJSONString(res)));
             return FacResult.success(res);
         } catch (Exception ex) {
-            logger.error("wxPay error", ex);
+            logger.error("================wxPay error", ex);
             return FacResult.error(ex.getMessage());
         }
     }
@@ -62,7 +63,9 @@ public class FacPayController extends BaseController {
     public void payCallback(HttpServletRequest request, HttpServletResponse response) {
         // 通知地址 回调服务器 支付结果(这个回调 如果不返回给微信服务器 是否成功回调标示 则会一直回调8次 一直到返回成功标示位置)
         try {
+            logger.info("=================================payCallback start.=====================");
             this.payService.payCallback(request, response);
+            logger.info("========================payCallback success.==============================");
         } catch (Exception ex) {
             logger.error("[payCallback] error", ex);
         }
