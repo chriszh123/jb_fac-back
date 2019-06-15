@@ -51,6 +51,7 @@ public class FacOrderController extends BaseController {
     @ResponseBody
     public FacResult create(@RequestBody OrderCreateVo order) {
         try {
+            log.info(String.format("================create order start=======, order : %s", JSON.toJSONString(order)));
             OrderCreateRes res = this.orderService.createOrderFromClient(order);
             log.info(String.format("================create order success=======, res : %s", JSON.toJSONString(res)));
             return FacResult.success(res);
@@ -76,6 +77,7 @@ public class FacOrderController extends BaseController {
         if (StringUtils.isEmpty(req.getToken()) || StringUtils.isEmpty(req.getOrderNo())) {
             return FacResult.error(FacCode.PARAMTER_NULL.getCode(), FacCode.PARAMTER_NULL.getMsg());
         }
+        log.info(String.format("================close start=======, req : %s", JSON.toJSONString(req)));
         this.orderService.closeOrder(req.getToken(), req.getOrderNo());
         log.info(String.format("==============close success:%s", JSON.toJSONString(req)));
         return FacResult.success("");
@@ -105,6 +107,7 @@ public class FacOrderController extends BaseController {
         }
         try {
             // 一次指定核销一个商品对应的订单
+            log.info(String.format("==============writeOffOrder start:%s", JSON.toJSONString(req)));
             this.orderService.writeOffOrder(req.getToken(), req.getOrderNo(), req.getProdId());
             log.info(String.format("==============writeOffOrder success:%s", JSON.toJSONString(req)));
             return FacResult.success("");
