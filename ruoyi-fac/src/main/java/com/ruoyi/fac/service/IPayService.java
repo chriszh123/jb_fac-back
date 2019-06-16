@@ -27,5 +27,5 @@ public interface IPayService {
      * @param request
      * @param response
      */
-    void payCallback(HttpServletRequest request, HttpServletResponse response);
+    String payCallback(HttpServletRequest request, HttpServletResponse response);
 }

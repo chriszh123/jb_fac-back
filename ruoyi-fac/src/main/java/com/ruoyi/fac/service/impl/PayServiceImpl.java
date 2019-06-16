@@ -15,16 +15,17 @@ import com.ruoyi.fac.model.FacBuyer;
 import com.ruoyi.fac.model.FacBuyerExample;
 import com.ruoyi.fac.model.FacBuyerSign;
 import com.ruoyi.fac.service.IPayService;
-import com.ruoyi.fac.util.*;
+import com.ruoyi.fac.util.DecimalUtils;
+import com.ruoyi.fac.util.FacCommonUtils;
+import com.ruoyi.fac.util.TimeUtils;
+import com.ruoyi.fac.vo.AppMchVo;
 import com.ruoyi.fac.vo.wxpay.WxPrePayReq;
 import com.ruoyi.fac.vo.wxpay.WxPrePayRes;
+import com.ruoyi.fac.wxpay.PayCommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.jdom2.Document;
-import org.jdom2.Element;
-import org.jdom2.input.SAXBuilder;
+import org.jdom.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,12 +34,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.math.BigDecimal;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLEncoder;
 import java.util.*;
 
 /**
@@ -119,9 +117,6 @@ public class PayServiceImpl implements IPayService {
         String amountFen = "1";
         // 创建hashmap(用户获得签名)
         SortedMap<String, String> paraMap = new TreeMap<String, String>();
-        // 设置body变量 (支付成功显示在微信支付 商品详情中)：如果是中文，可能会遇到毫无头绪的签名错误，严重者开始怀疑人生
-        String body = "JBFAC";
-
         // 校验当前商品是否还可以购买:库存数据
         Long[] ids = new Long[orders.size()];
         // <prodId, Order>
@@ -149,108 +144,33 @@ public class PayServiceImpl implements IPayService {
                 throw new Exception(String.format("商品【%s】抢购时间已结束，请选择其它商品购买", item.getName()));
             }
         }
-        // 设置随机字符串
-        final String nonceStr = UUID.randomUUID().toString().replaceAll("-", "");
         // 设置商户订单号
         String outTradeNo = orders.get(0).getOrderNo();
-        // 设置请求参数
-        // 公众账号ID：微信支付分配的公众账号ID（企业号corpid即为此appId）：应用ID==登陆微信公众号后台-开发-基本配置(appid必须为最后拉起收银台的小程序appid)
-        paraMap.put("appid", Global.getFacAppId().toLowerCase());
-        // 设置请求参数(商户号)：微信支付分配的商户号(mch_id为和appid成对绑定的支付商户号，收款资金会进入该商户号)
-        paraMap.put("mch_id", Global.getFacMchId().toUpperCase());
-        // 设置请求参数(随机字符串)：随机字符串，长度要求在32位以内
-        paraMap.put("nonce_str", FacCommonUtils.substringStr(nonceStr, 32));
-        // 设置请求参数(商品描述)
-        paraMap.put("body", body);
-        // 设置请求参数(商户订单号)：商户系统内部订单号，要求32个字符内，只能是数字、大小写字母_-|* 且在同一个商户号下唯一
-        paraMap.put("out_trade_no", outTradeNo);
-        // 设置请求参数(总金额)：订单总金额，单位为分
-        paraMap.put("total_fee", amountFen);
-        // 设置请求参数(终端IP)：支持IPV4和IPV6两种格式的IP地址。调用微信支付API的机器IP
-        paraMap.put("spbill_create_ip", WebUtils.getIpAddress(request));
-        // 设置请求参数(通知地址)：异步接收微信支付结果通知的回调地址，通知url必须为外网可访问的url，不能携带参数
-        paraMap.put("notify_url", Global.getDomain() + "/fac/client/pay/wx/payCallback");
-        // 设置请求参数(交易类型)
-        paraMap.put("trade_type", "JSAPI");
-        // 设置请求参数(openid)：trade_type=JSAPI时（即JSAPI支付），此参数必传，此参数为微信用户在商户对应appid下的唯一标识(openid为appid对应的用户标识，即使用wx.login接口获得的openid)
-        paraMap.put("openid", openid);
-        // 调用逻辑传入参数按照字段名的 ASCII 码从小到大排序（字典序）
-        String stringA = formatUrlMap(paraMap, false, false);
-        // 第二步，在stringA最后拼接上key得到stringSignTemp字符串，并对stringSignTemp进行MD5运算，再将得到的字符串所有字符转换为大写，得到sign值signValue(签名)
-        String sign = MD5.MD5Encode(stringA + "&key=" + Global.getFacMchSecret()).toUpperCase();
-        // 将参数 编写XML格式
-        StringBuffer paramBuffer = new StringBuffer();
-        paramBuffer.append("<xml>");
-        paramBuffer.append("<appid>" + Global.getFacAppId().toUpperCase() + "</appid>");
-        paramBuffer.append("<attach>支付测试</attach>");
-        paramBuffer.append("<mch_id>" + Global.getFacMchId().toUpperCase() + "</mch_id>");
-        paramBuffer.append("<nonce_str>" + paraMap.get("nonce_str") + "</nonce_str>");
-        paramBuffer.append("<sign>" + sign + "</sign>");
-        paramBuffer.append("<body>" + body + "</body>");
-        paramBuffer.append("<out_trade_no>" + paraMap.get("out_trade_no") + "</out_trade_no>");
-        paramBuffer.append("<total_fee>" + paraMap.get("total_fee") + "</total_fee>");
-        paramBuffer.append("<spbill_create_ip>" + paraMap.get("spbill_create_ip") + "</spbill_create_ip>");
-        paramBuffer.append("<notify_url>" + paraMap.get("notify_url") + "</notify_url>");
-        paramBuffer.append("<trade_type>" + paraMap.get("trade_type") + "</trade_type>");
-        paramBuffer.append("<openid>" + paraMap.get("openid") + "</openid>");
-        paramBuffer.append("</xml>");
-
         try {
-            // 发送请求(POST)(获得数据包ID)(这有个注意的地方 如果不转码成ISO8859-1则会告诉你body不是UTF8编码 就算你改成UTF8编码也一样不好使 所以修改成ISO8859-1)
-            Map<String, String> map = doXMLParse(getRemotePortData(prepayUrl, new String(paramBuffer.toString().getBytes(), "ISO8859-1")));
-            logger.info("==========================wx prepayi info =======:" + (MapUtils.isNotEmpty(map) ? JSON.toJSONString(map) : "调用微信获取预支付信息接口没有响应数据"));
-            // 应该创建支付表数据
-            if (map != null) {
-                if (map.containsKey("prepay_id")) {
-                    // 更新当前订单对应的微信预支付id
-                    Long prepayId = Long.valueOf(map.get("prepay_id"));
-                    for (Order order : orders) {
-                        this.orderMapper.updateOrderPrePayId(order.getId(), prepayId);
-                    }
-                    //创建 时间戳
-                    String timeStamp = Long.valueOf(System.currentTimeMillis()).toString();
-                    // 签名
-                    //创建hashmap(用户获得签名)
-                    paraMap = new TreeMap<>();
-                    //设置(小程序ID)(这块一定要是大写)
-                    paraMap.put("appId", Global.getFacAppId().toUpperCase());
-                    //设置(时间戳)
-                    paraMap.put("timeStamp", timeStamp);
-                    //设置(随机串)
-                    paraMap.put("nonceStr", nonceStr);
-                    //设置(数据包)
-                    paraMap.put("package", "prepay_id=" + prepayId);
-                    //设置(签名方式)
-                    paraMap.put("signType", "MD5");
-                    //调用逻辑传入参数按照字段名的 ASCII 码从小到大排序（字典序）
-                    stringA = formatUrlMap(paraMap, false, false);
-                    //第二步，在stringA最后拼接上key得到stringSignTemp字符串，并对stringSignTemp进行MD5运算，再将得到的字符串所有字符转换为大写，得到sign值signValue。(签名)
-                    sign = MD5.MD5Encode(stringA + "&key=" + Global.getFacMchSecret()).toUpperCase();
-                    if (StringUtils.isNotBlank(sign)) {
-                        res.setTimeStamp(timeStamp);
-                        res.setNonceStr(paraMap.get("nonce_str"));
-                        res.setPrepayId(prepayId.toString());
-                        res.setSign(sign);
-                        logger.info("微信 支付接口生成签名 设置返回值");
-                    }
-                } else {
-                    log.info(String.format("[getWxPrePayInfo] map:%s", JSON.toJSONString(map)));
-                    throw new Exception("预支付接口异常");
-                }
+            // 测试金额:1分钱
+            BigDecimal totalAmount = new BigDecimal("0.01");
+            AppMchVo appMchVo = new AppMchVo();
+            appMchVo.setAppId(Global.getFacAppId());
+            appMchVo.setMchId(Global.getFacMchId());
+            appMchVo.setApiKey(Global.getFacMchSecret());
+            String body = "JB FAC";
+            String notifyUrl = Global.getDomain() + "/fac/client/pay/wx/payCallback";
+            SortedMap<String, Object> preResult = PayCommonUtil.WxPublicPay(outTradeNo, totalAmount, body, "prepayfac", openid, notifyUrl, appMchVo, request);
+            if (MapUtils.isNotEmpty(preResult)) {
+                logger.info(String.format("[getWxPrePayInfo] preResult:%s", JSON.toJSONString(preResult)));
+                res.setTimeStamp(String.valueOf(preResult.get("timeStamp")));
+                res.setNonceStr(String.valueOf(preResult.get("nonceStr")));
+                res.setPrepayId(String.valueOf(preResult.get("package")));
+                res.setSign(String.valueOf(preResult.get("paySign")));
+                logger.info(String.format("=========================[getWxPrePayInfo] success, result:%s============================", JSON.toJSONString(res)));
+                return res;
             } else {
-                throw new Exception("预支付接口未返回数据");
+                throw new Exception("预支付接口响应数据为空");
             }
-            logger.info("微信 支付接口生成签名 方法结束");
-        } catch (UnsupportedEncodingException e) {
-            logger.info("微信 统一下单 异常：" + e.getMessage(), e);
-            throw new Exception(e.getMessage());
-        } catch (Exception e) {
-            logger.info("微信 统一下单 异常：" + e.getMessage(), e);
-            throw new Exception(e.getMessage());
+        } catch (Exception ex) {
+            logger.error(ex.getMessage(), ex);
+            throw new Exception(ex.getMessage(), ex);
         }
-
-        logger.info(String.format("=========================[getWxPrePayInfo] success, result:%s============================", JSON.toJSONString(res)));
-        return res;
     }
 
     /**
@@ -260,25 +180,37 @@ public class PayServiceImpl implements IPayService {
      * @param response
      */
     @Override
-    public void payCallback(HttpServletRequest request, HttpServletResponse response) {
+    public String payCallback(HttpServletRequest request, HttpServletResponse response) {
         logger.info("微信回调接口 操作逻辑 start");
-        String inputLine = "";
-        String notityXml = "";
         try {
-            while ((inputLine = request.getReader().readLine()) != null) {
-                notityXml += inputLine;
+            InputStream inStream = request.getInputStream();
+            ByteArrayOutputStream outSteam = new ByteArrayOutputStream();
+            byte[] buffer = new byte[1024];
+            int len = 0;
+            while ((len = inStream.read(buffer)) != -1) {
+                outSteam.write(buffer, 0, len);
             }
-            //关闭流
-            request.getReader().close();
-            logger.info("微信回调内容信息：" + notityXml);
-            //解析成Map
-            Map<String, String> map = doXMLParse(notityXml);
-            logger.info(String.format("======wx paycallback resutl:%s", JSON.toJSONString(map)));
-            //判断 支付是否成功
-            if (map.containsKey("result_code") && "SUCCESS".equals(map.get("result_code"))) {
-                logger.info("微信回调返回是否支付成功：是, " + JSON.toJSONString(map));
+            String resultxml = new String(outSteam.toByteArray(), "utf-8");
+            logger.info(String.format("[payCallback] resultxml:%s", resultxml));
+            Map<String, String> params = null;
+            try {
+                params = PayCommonUtil.doXMLParse(resultxml);
+            } catch (JDOMException e) {
+                e.printStackTrace();
+            }
+            outSteam.close();
+            inStream.close();
+            if (!PayCommonUtil.isTenpaySign(params)) {
+                logger.info("===========payCallback====付款失败==============");
+                // 支付失败
+                return "fail";
+            } else {
+                logger.info("==========payCallback=====付款成功==============");
+                // ------------------------------
+                // 处理业务开始
+                logger.info("微信回调返回是否支付成功：是, " + JSON.toJSONString(params));
                 //获得 返回的商户订单号
-                String outTradeNo = map.get("out_trade_no");
+                String outTradeNo = params.get("out_trade_no");
                 logger.info("微信回调返回商户订单号：" + outTradeNo);
                 //访问DB
                 List<Order> orders = this.orderMapper.selectOrderByOrderNo(outTradeNo);
@@ -290,28 +222,21 @@ public class PayServiceImpl implements IPayService {
                         if (sqlRow >= 1) {
                             // 支付成功后，处理当前订单、商品、用户相关信息
                             this.dealOrderAndProdDataAfterPayed(orders);
-
                             logger.info("微信回调  订单号：" + outTradeNo + ",修改状态成功");
-                            //封装 返回值
-                            StringBuffer buffer = new StringBuffer();
-                            buffer.append("<xml>");
-                            buffer.append("<return_code>SUCCESS</return_code>");
-                            buffer.append("<return_msg>OK</return_msg>");
-                            buffer.append("</xml>");
-                            //给微信服务器返回 成功标示 否则会一直询问 咱们服务器 是否回调成功
-                            PrintWriter writer = response.getWriter();
-                            //返回
-                            writer.print(buffer.toString());
                         }
                     }
                 }
                 logger.info("微信回调接口 操作逻辑 end, at:" + TimeUtils.getCurrentTimeSSS());
+                // 处理业务完毕
+
+                return "success";
             }
-        } catch (IOException e) {
-            logger.error("[payCallback IOException] error: " + e.getMessage(), e);
-        } catch (Exception e) {
-            logger.error("[payCallback Exception] error: " + e.getMessage(), e);
+        } catch (Exception ex) {
+            logger.info("=========payCallback======付款异常==============");
+            ex.printStackTrace();
         }
+
+        return "fail";
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -434,188 +359,6 @@ public class PayServiceImpl implements IPayService {
                 logger.info(String.format("==================current user is not exist, token:%s================", orders.get(0).getToken()));
             }
         }
-    }
-
-    /**
-     * 方法用途: 对所有传入参数按照字段名的 ASCII 码从小到大排序（字典序），并且生成url参数串<br>
-     * 实现步骤: <br>
-     *
-     * @param paraMap    要排序的Map对象
-     * @param urlEncode  是否需要URLENCODE
-     * @param keyToLower 是否需要将Key转换为全小写
-     *                   true:key转化成小写，false:不转化
-     * @return
-     */
-    private static String formatUrlMap(Map<String, String> paraMap, boolean urlEncode, boolean keyToLower) {
-        String buff = "";
-        Map<String, String> tmpMap = paraMap;
-        try {
-            List<Map.Entry<String, String>> infoIds = new ArrayList<Map.Entry<String, String>>(tmpMap.entrySet());
-            // 对所有传入参数按照字段名的 ASCII 码从小到大排序（字典序）
-            Collections.sort(infoIds, new Comparator<Map.Entry<String, String>>() {
-                @Override
-                public int compare(Map.Entry<String, String> o1, Map.Entry<String, String> o2) {
-                    return (o1.getKey()).compareTo(o2.getKey());
-                }
-            });
-            // 构造URL 键值对的格式
-            StringBuilder buf = new StringBuilder();
-            for (Map.Entry<String, String> item : infoIds) {
-                if (StringUtils.isNotBlank(item.getKey())) {
-                    String key = item.getKey();
-                    String val = item.getValue();
-                    if (urlEncode) {
-                        val = URLEncoder.encode(val, "utf-8");
-                    }
-                    if (keyToLower) {
-                        buf.append(key.toLowerCase() + "=" + val);
-                    } else {
-                        buf.append(key + "=" + val);
-                    }
-                    buf.append("&");
-                }
-
-            }
-            buff = buf.toString();
-            if (buff.isEmpty() == false) {
-                buff = buff.substring(0, buff.length() - 1);
-            }
-        } catch (Exception e) {
-            return null;
-        }
-        return buff;
-    }
-
-    /**
-     * 解析xml,返回第一级元素键值对。如果第一级元素有子节点，则此节点的值是子节点的xml数据。
-     *
-     * @param strxml
-     * @return
-     * @throws Exception
-     */
-    @SuppressWarnings("rawtypes")
-    private Map<String, String> doXMLParse(String strxml) throws Exception {
-        if (null == strxml || "".equals(strxml)) {
-            return new HashMap<>();
-        }
-
-        Map<String, String> m = new HashMap<String, String>();
-        InputStream in = String2Inputstream(strxml);
-        SAXBuilder builder = new SAXBuilder();
-        Document doc = builder.build(in);
-        Element root = doc.getRootElement();
-        List list = root.getChildren();
-        Iterator it = list.iterator();
-        while (it.hasNext()) {
-            Element e = (Element) it.next();
-            String k = e.getName();
-            String v = "";
-            List children = e.getChildren();
-            if (children.isEmpty()) {
-                v = e.getTextNormalize();
-            } else {
-                v = getChildrenText(children);
-            }
-
-            m.put(k, v);
-        }
-
-        //关闭流
-        in.close();
-
-        return m;
-    }
-
-    private InputStream String2Inputstream(String str) {
-        return new ByteArrayInputStream(str.getBytes());
-    }
-
-    /**
-     * 获取子结点的xml
-     *
-     * @param children
-     * @return String
-     */
-    @SuppressWarnings("rawtypes")
-    private static String getChildrenText(List children) {
-        StringBuffer sb = new StringBuffer();
-        if (!children.isEmpty()) {
-            Iterator it = children.iterator();
-            while (it.hasNext()) {
-                Element e = (Element) it.next();
-                String name = e.getName();
-                String value = e.getTextNormalize();
-                List list = e.getChildren();
-                sb.append("<" + name + ">");
-                if (!list.isEmpty()) {
-                    sb.append(getChildrenText(list));
-                }
-                sb.append(value);
-                sb.append("</" + name + ">");
-            }
-        }
-
-        return sb.toString();
-    }
-
-    /**
-     * 方法名: getRemotePortData
-     * 描述: 发送远程请求 获得代码示例
-     * 参数：  @param urls 访问路径
-     * 参数：  @param param 访问参数-字符串拼接格式, 例：port_d=10002&port_g=10007&country_a=
-     * 版本号: v1.0
-     * 返回类型: String
-     */
-    private String getRemotePortData(String urls, String param) {
-        logger.info(String.format("==============getRemotePortData====usrls:%s, param:%s", urls, param));
-        try {
-            URL url = new URL(urls);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            // 设置连接超时时间
-            conn.setConnectTimeout(30000);
-            // 设置读取超时时间
-            conn.setReadTimeout(30000);
-            conn.setRequestMethod("POST");
-            if (StringUtils.isNotBlank(param)) {
-                conn.setRequestProperty("Origin", "https://sirius.searates.com");// 主要参数
-                conn.setRequestProperty("Referer", "https://sirius.searates.com/cn/port?A=ChIJP1j2OhRahjURNsllbOuKc3Y&D=567&G=16959&shipment=1&container=20st&weight=1&product=0&request=&weightcargo=1&");
-                conn.setRequestProperty("X-Requested-With", "XMLHttpRequest");// 主要参数
-            }
-            // 需要输出
-            conn.setDoInput(true);
-            // 需要输入
-            conn.setDoOutput(true);
-            // 设置是否使用缓存
-            conn.setUseCaches(false);
-            // 设置请求属性
-            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-            conn.setRequestProperty("Connection", "Keep-Alive");// 维持长连接
-            conn.setRequestProperty("Charset", "UTF-8");
-
-            if (StringUtils.isNotBlank(param)) {
-                // 建立输入流，向指向的URL传入参数
-                DataOutputStream dos = new DataOutputStream(conn.getOutputStream());
-                dos.writeBytes(param);
-                dos.flush();
-                dos.close();
-            }
-            // 输出返回结果
-            InputStream input = conn.getInputStream();
-            int resLen = 0;
-            byte[] res = new byte[1024];
-            StringBuilder sb = new StringBuilder();
-            while ((resLen = input.read(res)) != -1) {
-                sb.append(new String(res, 0, resLen));
-            }
-            logger.info(String.format("==============getRemotePortData====result:%s", sb.toString()));
-            return sb.toString();
-        } catch (MalformedURLException e) {
-            logger.error("港距查询抓取数据----抓取外网港距数据发生异常：" + e.getMessage(), e);
-        } catch (IOException e) {
-            logger.error("港距查询抓取数据----抓取外网港距数据发生异常：" + e.getMessage(), e);
-        }
-        logger.info("港距查询抓取数据----抓取外网港距数据失败, 返回空字符串");
-        return "";
     }
 
     private BigDecimal getTotalConsumAmout(List<Order> orders) {
