@@ -208,14 +208,14 @@ public class PayServiceImpl implements IPayService {
                 logger.info("==========payCallback=====付款成功==============");
                 // ------------------------------
                 // 处理业务开始
-                logger.info("微信回调返回是否支付成功：是, " + JSON.toJSONString(params));
+                logger.info("=================微信回调返回是否支付成功：是, " + JSON.toJSONString(params));
                 //获得 返回的商户订单号
                 String outTradeNo = params.get("out_trade_no");
-                logger.info("微信回调返回商户订单号：" + outTradeNo);
+                logger.info("===========微信回调返回商户订单号：" + outTradeNo);
                 //访问DB
                 List<Order> orders = this.orderMapper.selectOrderByOrderNo(outTradeNo);
                 if (CollectionUtils.isNotEmpty(orders)) {
-                    logger.info("微信回调 根据订单号查询订单状态：" + orders.get(0).getStatus());
+                    logger.info("===========微信回调 根据订单号查询订单状态：" + orders.get(0).getStatus());
                     if (OrderStatus.PAYING.getCode().equals(orders.get(0).getStatus())) {
                         //修改支付状态:订单支付成功后状态变为待核销状态
                         int sqlRow = this.orderMapper.updateOrderStatusAfterPayed(outTradeNo, OrderStatus.TOWRITEOFF.getCode().intValue());
@@ -226,7 +226,7 @@ public class PayServiceImpl implements IPayService {
                         }
                     }
                 }
-                logger.info("微信回调接口 操作逻辑 end, at:" + TimeUtils.getCurrentTimeSSS());
+                logger.info("==============微信回调接口 操作逻辑 success, at:" + TimeUtils.getCurrentTimeSSS());
                 // 处理业务完毕
 
                 return "success";
