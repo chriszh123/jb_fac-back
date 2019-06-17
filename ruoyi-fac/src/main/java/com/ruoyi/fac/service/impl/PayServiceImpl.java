@@ -244,7 +244,7 @@ public class PayServiceImpl implements IPayService {
         logger.info(String.format("[dealOrderAndProdDataAfterPayed] orders:%s"
                 , CollectionUtils.isNotEmpty(orders) ? JSON.toJSONString(orders) : "has no order."));
         // 支付成功后，处理当前订单、商品、用户相关信息
-        if (CollectionUtils.isNotEmpty(orders)) {
+        if (CollectionUtils.isEmpty(orders)) {
             return;
         }
         // 批量更新当前商品对应的销售数量
