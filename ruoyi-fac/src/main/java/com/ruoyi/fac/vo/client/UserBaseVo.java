@@ -56,6 +56,8 @@ public class UserBaseVo implements Serializable {
      * "默认"
      */
     private String statusStr = "默认";
+    // 用户类型：0-普通购买用户,1-商家
+    private int userType = 0;
 
     public String getAvatarUrl() {
         return avatarUrl;
@@ -175,5 +177,13 @@ public class UserBaseVo implements Serializable {
 
     public void setStatusStr(String statusStr) {
         this.statusStr = statusStr;
+    }
+
+    public int getUserType() {
+        return userType;
+    }
+
+    public void setUserType(int userType) {
+        this.userType = userType;
     }
 }

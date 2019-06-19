@@ -4,6 +4,7 @@ import com.ruoyi.fac.domain.Buyer;
 import com.ruoyi.fac.vo.UserDiagramVo;
 import com.ruoyi.fac.vo.client.ShippingAddress;
 import com.ruoyi.fac.vo.client.UserAmountVo;
+import com.ruoyi.fac.vo.client.UserBaseVo;
 import com.ruoyi.fac.vo.client.UserDetailVo;
 import com.ruoyi.fac.vo.client.req.UserInfo;
 
@@ -101,4 +102,12 @@ public interface IBuyerService {
      * @param userInfo
      */
     String updateUserInfo(UserInfo userInfo);
+
+    /**
+     * 指定用户信息
+     *
+     * @param token
+     * @return
+     */
+    UserBaseVo getUserInfo(String token);
 }

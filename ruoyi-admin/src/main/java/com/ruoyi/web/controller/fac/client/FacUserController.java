@@ -15,6 +15,7 @@ import com.ruoyi.fac.service.IBuyerService;
 import com.ruoyi.fac.service.IUserSignService;
 import com.ruoyi.fac.service.WechatAdapterService;
 import com.ruoyi.fac.vo.client.*;
+import com.ruoyi.fac.vo.client.req.OrderReq;
 import com.ruoyi.fac.vo.client.req.SignReq;
 import com.ruoyi.fac.vo.client.req.UserInfo;
 import com.ruoyi.fac.vo.client.req.UserReq;
@@ -253,5 +254,15 @@ public class FacUserController extends BaseController {
             LOGGER.error(ex.getMessage(), ex);
             return FacResult.error();
         }
+    }
+
+    @PostMapping("/userInfo")
+    @ResponseBody
+    public FacResult userInfo(@RequestBody OrderReq req) {
+        if (req == null || StringUtils.isBlank(req.getToken())) {
+            return FacResult.error("用户token不能为空");
+        }
+        UserBaseVo vo = this.buyerService.getUserInfo(req.getToken());
+        return FacResult.success(vo);
     }
 }

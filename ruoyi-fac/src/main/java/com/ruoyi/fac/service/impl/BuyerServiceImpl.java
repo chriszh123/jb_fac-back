@@ -432,6 +432,26 @@ public class BuyerServiceImpl implements IBuyerService {
         return "";
     }
 
+    /**
+     * 指定用户信息
+     *
+     * @param token
+     * @return
+     */
+    @Override
+    public UserBaseVo getUserInfo(String token) {
+        UserBaseVo vo = new UserBaseVo();
+        // 查询当前用户是不是商家，有没有自己的商品
+        BuyerBusiness buyerBusiness = new BuyerBusiness();
+        buyerBusiness.setToken(token);
+        buyerBusiness.setIsDeleted(0);
+        List<BuyerBusiness> buyerBusinesses = this.buyerBusinessMapper.selectBuyerBusinessList(buyerBusiness);
+        // 用户类型:0-普通购买用户,1-商家
+        vo.setUserType(CollectionUtils.isEmpty(buyerBusinesses) ? 0 : 1);
+
+        return vo;
+    }
+
     private boolean checkProdBuyed(String prodId, List<BuyerBusiness> buyerBusinesses) {
         if (StringUtils.isEmpty(prodId) || CollectionUtils.isEmpty(buyerBusinesses)) {
             return false;
