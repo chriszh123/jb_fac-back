@@ -112,7 +112,7 @@ public class FacOrderController extends BaseController {
             log.info(String.format("==============writeOffOrder success:%s", JSON.toJSONString(req)));
             return FacResult.success("");
         } catch (Exception ex) {
-            log.info(String.format("==============writeOffOrder error:%s", JSON.toJSONString(req)));
+            log.error(String.format("==============writeOffOrder error:%s", JSON.toJSONString(req)), ex);
             return FacResult.error(ex.getMessage());
         }
     }

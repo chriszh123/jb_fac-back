@@ -391,7 +391,6 @@ public class OrderServiceImpl implements IOrderService {
             }
             FacOrder order = new FacOrder();
             orders.add(order);
-
             order.setOrderNo(orderNo);
             order.setProdId(good.getGoodsId());
             order.setProdName(product.getName());
@@ -644,7 +643,7 @@ public class OrderServiceImpl implements IOrderService {
         }
         Business business = this.businessMapper.selectBusinessById(product.getBusinessId());
         if (business == null) {
-            return;
+            throw new Exception(String.format("您的商家信息已不存在,请联系管理员"));
         }
         Date nowDate = new Date();
         // 更新当前订单状态
@@ -663,22 +662,21 @@ public class OrderServiceImpl implements IOrderService {
         facProductWriteoff.setOrderNo(orderNo);
         facProductWriteoff.setProductId(product.getId());
         List<FacProductWriteoff> records = this.facProductWriteoffMapper.selectFacProductWriteoffList(facProductWriteoff);
-        if (CollectionUtils.isEmpty(records)) {
-            return;
+        if (CollectionUtils.isNotEmpty(records)) {
+            facProductWriteoff = records.get(0);
+            if (facProductWriteoff.getStatus().intValue() == 1) {
+                throw new Exception(String.format("当前订单已被【%s】于%s 核销过，请核实后再操作"
+                        , facProductWriteoff.getOperatorName(), TimeUtils.date2Str(facProductWriteoff.getUpdateTime()
+                                , TimeUtils.DEFAULT_DATE_TIME_FORMAT_HH_MM_SS)));
+            }
+            facProductWriteoff.setWriteoffTime(nowDate);
+            // 核销状态:1-已核销,2-待核销
+            facProductWriteoff.setStatus(1);
+            facProductWriteoff.setUpdateTime(nowDate);
+            facProductWriteoff.setOperatorId(Long.valueOf(business.getId()));
+            facProductWriteoff.setOperatorName(business.getName());
+            this.facProductWriteoffMapper.updateFacProductWriteoff(facProductWriteoff);
         }
-        facProductWriteoff = records.get(0);
-        if (facProductWriteoff.getStatus().intValue() == 1) {
-            throw new Exception(String.format("当前订单已被【%s】于%s 核销过，请核实后再操作"
-                    , facProductWriteoff.getOperatorName(), TimeUtils.date2Str(facProductWriteoff.getUpdateTime()
-                            , TimeUtils.DEFAULT_DATE_TIME_FORMAT_HH_MM_SS)));
-        }
-        facProductWriteoff.setWriteoffTime(nowDate);
-        // 核销状态:1-已核销,2-待核销
-        facProductWriteoff.setStatus(1);
-        facProductWriteoff.setUpdateTime(nowDate);
-        facProductWriteoff.setOperatorId(Long.valueOf(business.getId()));
-        facProductWriteoff.setOperatorName(business.getName());
-        this.facProductWriteoffMapper.updateFacProductWriteoff(facProductWriteoff);
     }
 
     private void convertOrders(OrderListVo vo, List<Order> orders, int status) {

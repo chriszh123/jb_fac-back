@@ -83,8 +83,10 @@
                     title: '核销二维码',
                     sortable: false,
                     formatter: function (value, row, index) {
+                        // 二维码对应的内容
+                        var qrcodeValue = "jbfac" + "," + row.orderNo + "," + row.productId;
                         var actions = [];
-                        actions.push('<a class="btn btn-primary btn-xs" href="#" onclick="writeOffQrCode(\'' + value + '\')">点击查看</a> ');
+                        actions.push('<a class="btn btn-primary btn-xs" href="#" onclick="writeOffQrCode(\'' + qrcodeValue + '\')">点击查看</a> ');
                         return actions.join('');
                     }
                 },
@@ -117,15 +119,15 @@
         $.table.init(options);
     });
 
-    function writeOffQrCode(code) {
+    function writeOffQrCode(qrcode) {
         // 核销码为一个UUID随机值
-        if (code == undefined || code == "") {
+        if (qrcode == undefined || qrcode == "") {
             $.modal.alertError("当前核销码值为空，请核对！");
             return;
         }
         $('#qrcodeCanvas').html("");
         $('#qrcodeCanvas').qrcode({
-            text: code
+            text: qrcode
         });
         $("#qrcodeDialog").dialog({
             width: 290,

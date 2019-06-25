@@ -37,7 +37,7 @@ public class DecimalUtils {
     }
 
     /**
-     * 两者之和
+     * 两者之差
      *
      * @param src
      * @param dst
