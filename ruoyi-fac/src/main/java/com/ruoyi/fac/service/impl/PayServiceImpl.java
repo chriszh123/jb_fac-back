@@ -5,15 +5,12 @@ import com.ruoyi.common.config.Global;
 import com.ruoyi.fac.constant.FacConstant;
 import com.ruoyi.fac.domain.Buyer;
 import com.ruoyi.fac.domain.FacProductWriteoff;
-import com.ruoyi.fac.domain.Order;
 import com.ruoyi.fac.domain.Product;
 import com.ruoyi.fac.enums.OrderStatus;
 import com.ruoyi.fac.enums.ScoreTypeEnum;
 import com.ruoyi.fac.exception.FacException;
 import com.ruoyi.fac.mapper.*;
-import com.ruoyi.fac.model.FacBuyer;
-import com.ruoyi.fac.model.FacBuyerExample;
-import com.ruoyi.fac.model.FacBuyerSign;
+import com.ruoyi.fac.model.*;
 import com.ruoyi.fac.service.IPayService;
 import com.ruoyi.fac.util.DecimalUtils;
 import com.ruoyi.fac.util.FacCommonUtils;
@@ -74,6 +71,10 @@ public class PayServiceImpl implements IPayService {
     private FacBuyerMapper facBuyerMapper;
     @Autowired
     private FacBuyerSignMapper facBuyerSignMapper;
+    @Autowired
+    private FacOrderMapper facOrderMapper;
+    @Autowired
+    private FacOrderProductMapper facOrderProductMapper;
 
     /**
      * 微信支付预支付接口
@@ -84,28 +85,34 @@ public class PayServiceImpl implements IPayService {
      */
     @Override
     public WxPrePayRes getWxPrePayInfo(WxPrePayReq req, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        logger.info(String.format("====================[getWxPrePayInfo] req:%s", JSON.toJSONString(req)));
+        logger.info(String.format("====================[getWxPrePayInfo] start req:%s", JSON.toJSONString(req)));
         //设置最终返回对象
         final WxPrePayRes res = new WxPrePayRes();
         String openid = req.getToken();
         // id为订单号
-        final List<Order> orders = this.orderMapper.selectOrderByOrderNo(req.getNextAction().getId());
+        String orderNo = req.getNextAction().getId().trim();
+        FacOrderExample orderExample = new FacOrderExample();
+        orderExample.createCriteria().andIsDeletedEqualTo(false).andOrderNoEqualTo(orderNo);
+        List<FacOrder> orders = this.facOrderMapper.selectByExample(orderExample);
         if (CollectionUtils.isEmpty(orders)) {
-            throw new Exception("当前订单已不存在，请确认");
+            throw new Exception("当前订单已不存在，请联系管理员");
         }
-        if (!OrderStatus.PAYING.getCode().equals(orders.get(0).getStatus())) {
+        if (!OrderStatus.PAYING.getCode().equals(Integer.valueOf(orders.get(0).getStatus()))) {
             throw new Exception("当前订单处于非待付款状态，请核对后再操作");
         }
+        FacOrderProductExample orderProductExample = new FacOrderProductExample();
+        orderProductExample.createCriteria().andIsDeletedEqualTo(false).andOrderNoEqualTo(orderNo);
+        List<FacOrderProduct> orderProducts = this.facOrderProductMapper.selectByExample(orderProductExample);
         // 当前订单总消费金额(后台计算出来的)
-        BigDecimal totalConsumeAmout = this.getTotalConsumAmout(orders);
+        BigDecimal totalConsumeAmout = this.getTotalConsumAmout(orderProducts);
         if (totalConsumeAmout.compareTo(new BigDecimal(req.getMoney())) != 0) {
-            log.info(String.format("[getWxPrePayInfo] consumeAmout has error, money/paramter:%s, backStatic:%s", req.getMoney()
+            log.info(String.format("-----------------[getWxPrePayInfo] consumeAmout has error, money/paramter:%s, backStatic:%s", req.getMoney()
                     , totalConsumeAmout.toString()));
             throw new Exception("当前订单商品总额与实际消费不一致，请核实");
         }
         int userScore = orders.get(0).getUserScore();
         if (userScore > 0) {
-            // 如果用户使用了积分，预支付金额需要扣除相应积分数
+            // 如果用户使用了积分，预支付金额需要扣除相应积分数对应的金额：一个积分一分钱
             float userScore2Yuan = (float) userScore / 100;
             totalConsumeAmout = DecimalUtils.subtract(totalConsumeAmout, new BigDecimal(userScore2Yuan));
         }
@@ -120,10 +127,10 @@ public class PayServiceImpl implements IPayService {
         // 校验当前商品是否还可以购买:库存数据
         Long[] ids = new Long[orders.size()];
         // <prodId, Order>
-        Map<Long, Order> prod2Order = new HashMap<>(orders.size());
-        for (int i = 0, size = orders.size(); i < size; i++) {
-            ids[i] = orders.get(i).getProdId();
-            prod2Order.put(orders.get(i).getProdId(), orders.get(i));
+        Map<Long, FacOrderProduct> prod2Order = new HashMap<>(orders.size());
+        for (int i = 0, size = orderProducts.size(); i < size; i++) {
+            ids[i] = orderProducts.get(i).getProdId();
+            prod2Order.put(orderProducts.get(i).getProdId(), orderProducts.get(i));
         }
         List<Product> products = this.productMapper.selectProductsByIds(ids);
         for (Product item : products) {
@@ -145,7 +152,7 @@ public class PayServiceImpl implements IPayService {
             }
         }
         // 设置商户订单号
-        String outTradeNo = orders.get(0).getOrderNo();
+        String outTradeNo = orderNo;
         try {
             // 测试金额:1分钱
             BigDecimal totalAmount = new BigDecimal("0.01");
@@ -181,7 +188,7 @@ public class PayServiceImpl implements IPayService {
      */
     @Override
     public String payCallback(HttpServletRequest request, HttpServletResponse response) {
-        logger.info("微信回调接口 操作逻辑 start");
+        logger.info("----------------------------payCallback:微信回调接口 操作逻辑 start");
         try {
             InputStream inStream = request.getInputStream();
             ByteArrayOutputStream outSteam = new ByteArrayOutputStream();
@@ -191,12 +198,12 @@ public class PayServiceImpl implements IPayService {
                 outSteam.write(buffer, 0, len);
             }
             String resultxml = new String(outSteam.toByteArray(), "utf-8");
-            logger.info(String.format("[payCallback] resultxml:%s", resultxml));
+            logger.info(String.format("------------------------------------[payCallback] resultxml:%s", resultxml));
             Map<String, String> params = null;
             try {
                 params = PayCommonUtil.doXMLParse(resultxml);
             } catch (JDOMException e) {
-                e.printStackTrace();
+                logger.error("-----------------------[payCallback] JDOMException:" + e.getMessage(), e);
             }
             outSteam.close();
             inStream.close();
@@ -213,7 +220,9 @@ public class PayServiceImpl implements IPayService {
                 String outTradeNo = params.get("out_trade_no");
                 logger.info("===========微信回调返回商户订单号：" + outTradeNo);
                 //访问DB
-                List<Order> orders = this.orderMapper.selectOrderByOrderNo(outTradeNo);
+                FacOrderExample orderExample = new FacOrderExample();
+                orderExample.createCriteria().andIsDeletedEqualTo(false).andOrderNoEqualTo(outTradeNo);
+                List<FacOrder> orders = this.facOrderMapper.selectByExample(orderExample);
                 if (CollectionUtils.isNotEmpty(orders)) {
                     logger.info("===========微信回调 根据订单号查询订单状态：" + orders.get(0).getStatus());
                     if (OrderStatus.PAYING.getCode().equals(orders.get(0).getStatus())) {
@@ -232,19 +241,25 @@ public class PayServiceImpl implements IPayService {
                 return "success";
             }
         } catch (Exception ex) {
-            logger.info("=========payCallback======付款异常==============");
-            ex.printStackTrace();
+            logger.error("=========payCallback======付款异常==============" + ex.getMessage(), ex);
         }
 
         return "fail";
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void dealOrderAndProdDataAfterPayed(List<Order> orders) {
+    public void dealOrderAndProdDataAfterPayed(List<FacOrder> orders) {
         logger.info(String.format("[dealOrderAndProdDataAfterPayed] orders:%s"
                 , CollectionUtils.isNotEmpty(orders) ? JSON.toJSONString(orders) : "has no order."));
         // 支付成功后，处理当前订单、商品、用户相关信息
         if (CollectionUtils.isEmpty(orders)) {
+            return;
+        }
+        String orderNo = orders.get(0).getOrderNo();
+        FacOrderProductExample orderProductExample = new FacOrderProductExample();
+        orderProductExample.createCriteria().andIsDeletedEqualTo(false).andOrderNoEqualTo(orderNo);
+        List<FacOrderProduct> orderProducts = this.facOrderProductMapper.selectByExample(orderProductExample);
+        if (CollectionUtils.isEmpty(orderProducts)) {
             return;
         }
         // 批量更新当前商品对应的销售数量
@@ -252,18 +267,18 @@ public class PayServiceImpl implements IPayService {
         Map<Long, List<Long>> inviterId2ProdId = new HashMap<>();
         List<Product> products = new ArrayList<>();
         List<Long> ids = new ArrayList<>();
-        for (Order order : orders) {
+        for (FacOrderProduct orderProduct : orderProducts) {
             Product product = new Product();
-            product.setId(order.getProdId());
-            product.setSales(order.getProdNumber());
+            product.setId(orderProduct.getProdId());
+            product.setSales(Integer.valueOf(orderProduct.getProdNumber()));
             products.add(product);
             // 商品是通过别人分享购买的
-            if (order.getInviterId() != null) {
-                if (!inviterId2ProdId.containsKey(order.getInviterId())) {
-                    inviterId2ProdId.put(order.getInviterId(), new ArrayList<>());
+            if (orderProduct.getInviterId() != null) {
+                if (!inviterId2ProdId.containsKey(orderProduct.getInviterId())) {
+                    inviterId2ProdId.put(orderProduct.getInviterId(), new ArrayList<>());
                 }
-                inviterId2ProdId.get(order.getInviterId()).add(order.getProdId());
-                ids.add(order.getProdId());
+                inviterId2ProdId.get(orderProduct.getInviterId()).add(orderProduct.getProdId());
+                ids.add(orderProduct.getProdId());
             }
         }
         this.productMapper.batchUpdateProductSales(products);
@@ -307,7 +322,7 @@ public class PayServiceImpl implements IPayService {
         FacProductWriteoff productWriteoff;
         List<FacProductWriteoff> productWriteoffs = new ArrayList<>();
         String writeOffCode;
-        for (Order item : orders) {
+        for (FacOrderProduct item : orderProducts) {
             // 核销码动态随机生成:8位整数随机码
             writeOffCode = FacCommonUtils.randomInt(FacConstant.PRODUCT_WRITEOFF_CODE_LENGTH);
             productWriteoff = new FacProductWriteoff();
@@ -361,14 +376,14 @@ public class PayServiceImpl implements IPayService {
         }
     }
 
-    private BigDecimal getTotalConsumAmout(List<Order> orders) {
-        BigDecimal total = DecimalUtils.getDefaultDecimal();
-        if (CollectionUtils.isEmpty(orders)) {
-            return total;
+    private BigDecimal getTotalConsumAmout(List<FacOrderProduct> orderProducts) throws Exception {
+        if (CollectionUtils.isEmpty(orderProducts)) {
+            throw new Exception("当前订单下没有商品信息，请联系管理员");
         }
 
-        for (Order order : orders) {
-            total = DecimalUtils.add(total, DecimalUtils.mul(order.getPrice(), new BigDecimal(String.valueOf(order.getProdNumber()))));
+        BigDecimal total = DecimalUtils.getDefaultDecimal();
+        for (FacOrderProduct orderProduct : orderProducts) {
+            total = DecimalUtils.add(total, DecimalUtils.mul(orderProduct.getPrice(), new BigDecimal(String.valueOf(orderProduct.getProdNumber()))));
         }
         return total;
     }

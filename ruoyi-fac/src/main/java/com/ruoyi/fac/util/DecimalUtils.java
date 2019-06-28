@@ -82,4 +82,9 @@ public class DecimalUtils {
         return init;
     }
 
+    public static BigDecimal convert(Object object) {
+        BigDecimal data = new BigDecimal(String.valueOf(object));
+        return data;
+    }
+
 }

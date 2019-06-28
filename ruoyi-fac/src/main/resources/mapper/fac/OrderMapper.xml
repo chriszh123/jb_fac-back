@@ -3,75 +3,81 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.fac.mapper.OrderMapper">
+    <resultMap type="com.ruoyi.fac.model.FacOrder" id="OrderResult">
+        <result column="id" jdbcType="BIGINT" property="id" />
+        <result column="order_no" jdbcType="VARCHAR" property="orderNo" />
+        <result column="prod_ids" jdbcType="VARCHAR" property="prodIds" />
+        <result column="status" jdbcType="TINYINT" property="status" />
+        <result column="pay_time" jdbcType="TIMESTAMP" property="payTime" />
+        <result column="token" jdbcType="VARCHAR" property="token" />
+        <result column="open_id" jdbcType="VARCHAR" property="openId" />
+        <result column="user_id" jdbcType="BIGINT" property="userId" />
+        <result column="user_name" jdbcType="VARCHAR" property="userName" />
+        <result column="nick_name" jdbcType="VARCHAR" property="nickName" />
+        <result column="user_score" jdbcType="SMALLINT" property="userScore" />
+        <result column="remark" jdbcType="VARCHAR" property="remark" />
+        <result column="remark_mngt" jdbcType="VARCHAR" property="remarkMngt" />
+        <result column="ship" jdbcType="TINYINT" property="ship" />
+        <result column="ship_id" jdbcType="BIGINT" property="shipId" />
+        <result column="ship_code" jdbcType="VARCHAR" property="shipCode" />
+        <result column="cacel_id" jdbcType="BIGINT" property="cacelId" />
+        <result column="cacel_name" jdbcType="VARCHAR" property="cacelName" />
+        <result column="cacel_time" jdbcType="TIMESTAMP" property="cacelTime" />
+        <result column="prepay_id" jdbcType="BIGINT" property="prepayId" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+        <result column="operator_id" jdbcType="BIGINT" property="operatorId" />
+        <result column="operator_name" jdbcType="VARCHAR" property="operatorName" />
+        <result column="is_deleted" jdbcType="BIT" property="isDeleted" />
+    </resultMap>
 
-    <resultMap type="Order" id="OrderResult">
-        <result property="id" column="id"/>
-        <result property="orderNo" column="order_no"/>
-        <result property="prodId" column="prod_id"/>
-        <result property="prodName" column="prod_name"/>
-        <result property="prodNumber" column="prod_number"/>
-        <result property="price" column="price"/>
-        <result property="status" column="status"/>
-        <result property="payTime" column="pay_time"/>
-        <result property="token" column="token"/>
-        <result property="userId" column="user_id"/>
-        <result property="userName" column="user_name"/>
-        <result property="nickName" column="nick_name"/>
-        <result property="remark" column="remark"/>
-        <result property="userScore" column="user_score"/>
-        <result property="shipId" column="ship_id"/>
-        <result property="shipCode" column="ship_code"/>
-        <result property="remarkMngt" column="remark_mngt"/>
-        <result property="ship" column="ship"/>
-        <result property="cacelId" column="cacel_id"/>
-        <result property="cacelName" column="cacel_name"/>
-        <result property="cacelTime" column="cacel_time"/>
-        <result property="createTime" column="create_time"/>
-        <result property="updateTime" column="update_time"/>
-        <result property="operatorId" column="operator_id"/>
-        <result property="operatorName" column="operator_name"/>
-        <result property="isDeleted" column="is_deleted"/>
-        <result property="remark" column="remark"/>
-        <result property="prepayId" column="prepay_id"/>
-        <result property="inviterId" column="inviter_id"/>
+    <resultMap id="orderProductResult" type="com.ruoyi.fac.model.FacOrderProduct">
+        <result column="id" jdbcType="BIGINT" property="id" />
+        <result column="order_no" jdbcType="VARCHAR" property="orderNo" />
+        <result column="prod_id" jdbcType="BIGINT" property="prodId" />
+        <result column="prod_name" jdbcType="VARCHAR" property="prodName" />
+        <result column="prod_number" jdbcType="SMALLINT" property="prodNumber" />
+        <result column="inviter_id" jdbcType="BIGINT" property="inviterId" />
+        <result column="price" jdbcType="DECIMAL" property="price" />
+        <result column="token" jdbcType="VARCHAR" property="token" />
+        <result column="open_id" jdbcType="VARCHAR" property="openId" />
+        <result column="user_id" jdbcType="BIGINT" property="userId" />
+        <result column="user_name" jdbcType="VARCHAR" property="userName" />
+        <result column="nick_name" jdbcType="VARCHAR" property="nickName" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+        <result column="operator_id" jdbcType="BIGINT" property="operatorId" />
+        <result column="operator_name" jdbcType="VARCHAR" property="operatorName" />
+        <result column="is_deleted" jdbcType="BIT" property="isDeleted" />
     </resultMap>
 
     <sql id="selectOrderVo">
-        select id, order_no, prod_id, prod_name, prod_number, price, status, pay_time, token,open_id, user_id, user_name, nick_name, remark, ship_id
-        ,user_score, ship_code, remark_mngt, ship, cacel_id, cacel_name, cacel_time, prepay_id,inviter_id,create_time, update_time, operator_id, operator_name, is_deleted from fac_order
+        select main.id, main.order_no, main.status, main.pay_time, main.token,main.open_id, main.user_id, main.user_name, main.nick_name,
+            main.remark, main.ship_id,main.user_score, main.ship_code, main.remark_mngt, main.ship, main.cacel_id, main.cacel_name,
+            main.cacel_time, main.prepay_id,main.create_time, main.update_time, main.operator_id, main.operator_name, main.is_deleted
+        from fac_order main
     </sql>
 
-    <select id="selectOrderList" parameterType="Order" resultMap="OrderResult">
-        <include refid="selectOrderVo"/>
-        <where>
-            <if test="id != null ">and id = #{id}</if>
-            <if test="orderNo != null  and orderNo != '' ">and order_no like concat('%', #{orderNo}, '%')</if>
-            <if test="prodId != null ">and prod_id = #{prodId}</if>
-            <if test="prodName != null  and prodName != '' ">and prod_name like concat('%', #{prodName}, '%')</if>
-            <if test="prodNumber != null and prodNumber != 0">and prod_number = #{prodNumber}</if>
-            <if test="price != null ">and price = #{price}</if>
-            <if test="status != null ">and status = #{status}</if>
-            <if test="payTime != null ">and pay_time = #{payTime}</if>
-            <if test="token != null ">and token = #{token}</if>
-            <if test="openId != null ">and open_id = #{openId}</if>
-            <if test="userId != null ">and user_id = #{userId}</if>
-            <if test="userName != null  and userName != '' ">and user_name = #{userName}</if>
-            <if test="nickName != null  and nickName != '' ">and nick_name = #{nickName}</if>
-            <if test="remark != null  and remark != '' ">and remark = #{remark}</if>
-            <if test="shipId != null ">and ship_id = #{shipId}</if>
-            <if test="shipCode != null  and shipCode != '' ">and ship_code = #{shipCode}</if>
-            <if test="remarkMngt != null  and remarkMngt != '' ">and remark_mngt = #{remarkMngt}</if>
-            <if test="ship != null ">and ship = #{ship}</if>
-            <if test="cacelId != null ">and cacel_id = #{cacelId}</if>
-            <if test="cacelName != null  and cacelName != '' ">and cacel_name = #{cacelName}</if>
-            <if test="cacelTime != null ">and cacel_time = #{cacelTime}</if>
-            <if test="createTime != null ">and create_time = #{createTime}</if>
-            <if test="updateTime != null ">and update_time = #{updateTime}</if>
-            <if test="operatorId != null ">and operator_id = #{operatorId}</if>
-            <if test="operatorName != null  and operatorName != '' ">and operator_name = #{operatorName}</if>
-            <if test="isDeleted != null ">and is_deleted = #{isDeleted}</if>
-        </where>
-        ORDER BY create_time DESC
+    <sql id="selectOrderProductVo">
+        select id, order_no, prod_id, prod_name, prod_number, inviter_id,price,token,open_id,user_id,user_name,nick_name,create_time
+        from fac_order_product orderProduct
+    </sql>
+
+    <select id="selectFacOrderProductList" parameterType="com.ruoyi.fac.domain.Order" resultMap="orderProductResult">
+        select orderProduct.id, orderProduct.order_no, orderProduct.prod_id, orderProduct.prod_name, orderProduct.prod_number, orderProduct.inviter_id
+            ,orderProduct.price,orderProduct.token,orderProduct.open_id,orderProduct.user_id,orderProduct.user_name,orderProduct.nick_name,orderProduct.create_time
+        from fac_order_product orderProduct
+        left JOIN fac_order main on main.order_no = orderProduct.order_no
+        where orderProduct.is_deleted = 0 and main.is_deleted = 0
+        <if test="orderNo != null and orderNo != ''">
+            and orderProduct.order_no = #{orderNo}
+        </if>
+        <if test="prodName != null and prodName != ''">
+            and orderProduct.prod_name like concat('%', #{prodName}, '%')
+        </if>
+        <if test="status != null  ">
+            and main.status = #{status}
+        </if>
     </select>
 
     <select id="selectOrderById" parameterType="Long" resultMap="OrderResult">
@@ -172,10 +178,6 @@
         where id = #{id}
     </update>
 
-    <delete id="deleteOrderById" parameterType="Long">
-        delete from fac_order where id = #{id}
-    </delete>
-
     <delete id="deleteOrderByIds" parameterType="String">
         UPDATE fac_order
         set is_deleted = 0
@@ -185,16 +187,7 @@
         </foreach>
     </delete>
 
-    <update id="cancelOrderByIds" parameterType="String">
-        UPDATE fac_order
-        set status = 4, remark_mngt = #{remarkMngt}
-        where id in
-        <foreach item="id" collection="array" open="(" separator="," close=")">
-            #{id}
-        </foreach>
-    </update>
-
-    <select id="queryRecentOrderInfo" parameterType="QueryVo" resultMap="OrderResult">
+    <select id="queryRecentOrderInfo" parameterType="com.ruoyi.fac.vo.QueryVo" resultMap="OrderResult">
         <include refid="selectOrderVo"/>
         where is_deleted = 0
         and DATE_FORMAT(create_time,'%Y-%m-%d') &lt;= DATE_FORMAT(#{endDate},'%Y-%m-%d')
@@ -213,29 +206,7 @@
         </if>
     </select>
 
-    <insert id="batchInsertOrders">
-        insert into
-        fac_order
-        (order_no, prod_id, prod_name, prod_number, price, status, user_id, user_name, nick_name, remark, ship,
-        create_time,update_time, operator_id, operator_name, is_deleted,token, open_id, inviter_id,user_score)
-        values
-        <foreach collection="list" item="item" index="index" separator=",">
-            (
-            #{item.orderNo,jdbcType=VARCHAR}, #{item.prodId,jdbcType=BIGINT},
-            #{item.prodName,jdbcType=VARCHAR}, #{item.prodNumber, jdbcType=TINYINT}, #{item.price, jdbcType=DECIMAL},
-            #{item.status,jdbcType=TINYINT}, #{item.userId, jdbcType=BIGINT},
-            #{item.userName,jdbcType=VARCHAR}, #{item.nickName, jdbcType=VARCHAR},
-            #{item.remark,jdbcType=VARCHAR}, #{item.ship, jdbcType=TINYINT},
-            #{item.createTime,jdbcType=TIMESTAMP}, #{item.updateTime,jdbcType=TIMESTAMP},
-            #{item.operatorId,jdbcType=BIGINT}, #{item.operatorName,jdbcType=VARCHAR},
-            #{item.isDeleted,jdbcType=TINYINT},#{item.token,jdbcType=VARCHAR},
-            #{item.openId,jdbcType=VARCHAR},#{item.inviterId, jdbcType=BIGINT},
-            #{item.userScore, jdbcType=SMALLINT}
-            )
-        </foreach>
-    </insert>
-
-    <select id="orderList" parameterType="QueryVo" resultMap="OrderResult">
+    <select id="orderList" parameterType="com.ruoyi.fac.vo.QueryVo" resultMap="OrderResult">
         <include refid="selectOrderVo"/>
         where is_deleted = 0
         and token = #{token}
@@ -251,7 +222,7 @@
         order by create_time desc
     </select>
 
-    <update id="updateOrderStatus" parameterType="QueryVo">
+    <update id="updateOrderStatus" parameterType="com.ruoyi.fac.vo.QueryVo">
         UPDATE fac_order
         set status = #{status}
         where is_deleted = 0 and token = #{token}
@@ -271,17 +242,6 @@
         where id = #{id} and is_deleted = 0 and token = #{token}
     </select>
 
-    <update id="updateOrderPrePayId" parameterType="QueryVo">
-        UPDATE fac_order
-        set prepay_id = #{prepayId}
-        where id = #{id}
-    </update>
-
-    <select id="selectOrderByOrderNo" parameterType="String" resultMap="OrderResult">
-        <include refid="selectOrderVo"/>
-        where order_no = #{orderNo}
-    </select>
-
     <update id="updateOrderStatusAfterPayed">
         UPDATE fac_order
         set status = #{status}
@@ -290,15 +250,16 @@
 
     <select id="selectProductsByProdAndStatus" resultMap="OrderResult">
         <include refid="selectOrderVo"/>
-        where is_deleted = 0
+        left join fac_order_product orderProd on orderProd.order_no = main.order_no
+        where main.is_deleted = 0
         <if test="prodIds != null and !prodIds.isEmpty()">
-            AND prod_id IN
+            AND orderProd.prod_id IN
             <foreach item="item" index="index" collection="prodIds" open="(" separator="," close=")">
                 #{item}
             </foreach>
         </if>
         <if test="status != null and !status.isEmpty()">
-            AND status IN
+            AND main.status IN
             <foreach item="item" index="index" collection="status" open="(" separator="," close=")">
                 #{item}
             </foreach>

@@ -6,6 +6,7 @@ import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.page.TableDataInfo;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.fac.domain.Order;
+import com.ruoyi.fac.model.FacOrderProduct;
 import com.ruoyi.fac.service.IOrderService;
 import com.ruoyi.fac.vo.FacStaticVo;
 import com.ruoyi.fac.vo.OrderDiagramVo;
@@ -53,7 +54,7 @@ public class OrderController extends BaseController {
     @ResponseBody
     public TableDataInfo list(Order order) {
         startPage();
-        List<Order> list = orderService.selectOrderList(order);
+        List<Order> list = orderService.selectFacOrderProductList(order);
         return getDataTable(list);
     }
 
@@ -65,7 +66,7 @@ public class OrderController extends BaseController {
     @PostMapping("/export")
     @ResponseBody
     public AjaxResult export(Order order) {
-        List<Order> list = orderService.selectOrderList(order);
+        List<Order> list = orderService.selectFacOrderProductList(order);
         ExcelUtil<Order> util = new ExcelUtil<Order>(Order.class);
         return util.exportExcel(list, "订单");
     }
@@ -92,9 +93,9 @@ public class OrderController extends BaseController {
     /**
      * 修改订单
      */
-    @GetMapping("/edit/{id}")
-    public String edit(@PathVariable("id") Long id, ModelMap mmap) {
-        OrderItemVo orderItemVo = orderService.detailOrderById(id);
+    @GetMapping("/edit/{orderNo}")
+    public String edit(@PathVariable("orderNo") String orderNo, ModelMap mmap) {
+        OrderItemVo orderItemVo = orderService.detailOrderByOrderNo(orderNo);
         mmap.put("order", orderItemVo);
         return prefix + "/edit";
     }
@@ -102,10 +103,10 @@ public class OrderController extends BaseController {
     /**
      * 修改订单
      */
-    @GetMapping("/cacelOrder/{id}")
-    public String cacelOrder(@PathVariable("id") Long id, ModelMap mmap) {
+    @GetMapping("/cacelOrder/{orderNo}")
+    public String cacelOrder(@PathVariable("orderNo") String orderNo, ModelMap mmap) {
         OrderItemVo orderItemVo = new OrderItemVo();
-        orderItemVo.setId(id.toString());
+        orderItemVo.setOrderNo(orderNo);
         mmap.put("order", orderItemVo);
         return prefix + "/cacelOrder";
     }
@@ -142,7 +143,7 @@ public class OrderController extends BaseController {
     public AjaxResult cacel(Order order) {
         SysUser user = ShiroUtils.getSysUser();
         try {
-            return toAjax(orderService.cancelOrderByIds(order.getId().toString(), order.getRemarkMngt(), user));
+            return toAjax(orderService.cancelOrderByOrderNo(order.getOrderNo(), order.getRemarkMngt(), user));
         } catch (Exception ex) {
             log.error(ex.getMessage(), ex);
             return AjaxResult.error(ex.getMessage());

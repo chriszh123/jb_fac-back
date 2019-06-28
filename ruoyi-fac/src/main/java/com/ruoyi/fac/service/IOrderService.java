@@ -2,6 +2,7 @@ package com.ruoyi.fac.service;
 
 import com.ruoyi.fac.domain.Order;
 import com.ruoyi.fac.exception.FacException;
+import com.ruoyi.fac.model.FacOrderProduct;
 import com.ruoyi.fac.vo.FacStaticVo;
 import com.ruoyi.fac.vo.OrderDiagramVo;
 import com.ruoyi.fac.vo.OrderItemVo;
@@ -17,21 +18,7 @@ import java.util.List;
  * @date 2018-12-24
  */
 public interface IOrderService {
-    /**
-     * 查询订单信息
-     *
-     * @param id 订单ID
-     * @return 订单信息
-     */
-    Order selectOrderById(Long id);
-
-    /**
-     * 查询订单列表
-     *
-     * @param order 订单信息
-     * @return 订单集合
-     */
-    List<Order> selectOrderList(Order order);
+    List<Order> selectFacOrderProductList(Order order);
 
     /**
      * 新增订单
@@ -60,18 +47,18 @@ public interface IOrderService {
     /**
      * 取消订单
      *
-     * @param ids
+     * @param orderNo
      * @return 结果
      */
-    int cancelOrderByIds(String ids, String remarkMngt, SysUser user) throws FacException;
+    int cancelOrderByOrderNo(String orderNo, String remarkMngt, SysUser user) throws FacException;
 
     /**
      * 订单详情
      *
-     * @param id
+     * @param orderNo
      * @return
      */
-    OrderItemVo detailOrderById(Long id);
+    OrderItemVo detailOrderByOrderNo(String orderNo);
 
     /**
      * 查询指定日期内的订单信息
@@ -132,5 +119,5 @@ public interface IOrderService {
      * @param token
      * @param orderNo
      */
-    void writeOffOrder(String token, String orderNo, String prodId) throws Exception;
+    void writeOffOrder(String token, String orderNo) throws Exception;
 }

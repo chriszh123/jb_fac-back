@@ -7,6 +7,8 @@
 package com.ruoyi.fac.vo.client;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * OrderItemVo
@@ -42,6 +44,8 @@ public class OrderVo implements Serializable {
     private long prodId;
     // 核销码
     private String writeOffCode;
+    // 当前订单包含的商品信息
+    private List<OrderProductVo> orderProducts = new ArrayList<>();
 
     public double getAmount() {
         return amount;
@@ -225,5 +229,13 @@ public class OrderVo implements Serializable {
 
     public void setProdId(long prodId) {
         this.prodId = prodId;
+    }
+
+    public List<OrderProductVo> getOrderProducts() {
+        return orderProducts;
+    }
+
+    public void setOrderProducts(List<OrderProductVo> orderProducts) {
+        this.orderProducts = orderProducts;
     }
 }

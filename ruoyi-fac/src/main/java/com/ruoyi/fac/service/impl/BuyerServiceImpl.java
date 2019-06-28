@@ -50,6 +50,8 @@ public class BuyerServiceImpl implements IBuyerService {
     private FacOrderMapper facOrderMapper;
     @Autowired
     private FacBuyerAddressMapper facBuyerAddressMapper;
+    @Autowired
+    private FacOrderProductMapper facOrderProductMapper;
 
     /**
      * 查询买者用户信息
@@ -371,13 +373,28 @@ public class BuyerServiceImpl implements IBuyerService {
         example.createCriteria().andIsDeletedEqualTo(false).andTokenEqualTo(token).andStatusIn(statuses);
         List<FacOrder> orders = this.facOrderMapper.selectByExample(example);
         if (!CollectionUtils.isEmpty(orders)) {
-            BigDecimal total = new BigDecimal("0.00");
-            BigDecimal temp;
+            List<String> orderNos = new ArrayList<>();
+            int useScore = 0;
             for (FacOrder item : orders) {
-                temp = DecimalUtils.mul(item.getPrice(), new BigDecimal(String.valueOf(item.getProdNumber())));
-                total = total.add(temp);
+                orderNos.add(item.getOrderNo());
+                useScore = useScore + item.getUserScore();
             }
-            vo.setTotleConsumed(Double.valueOf(total.toString()));
+            FacOrderProductExample orderProductExample = new FacOrderProductExample();
+            orderProductExample.createCriteria().andIsDeletedEqualTo(false).andTokenEqualTo(token).andOrderNoIn(orderNos);
+            List<FacOrderProduct> orderProducts = this.facOrderProductMapper.selectByExample(orderProductExample);
+            if (!CollectionUtils.isEmpty(orderProducts)) {
+                BigDecimal total = new BigDecimal("0.00");
+                BigDecimal temp;
+                for (FacOrderProduct item : orderProducts) {
+                    temp = DecimalUtils.mul(item.getPrice(), new BigDecimal(String.valueOf(item.getProdNumber())));
+                    total = total.add(temp);
+                }
+                // 去掉使用的积分
+                if (useScore > 0) {
+                    total = DecimalUtils.subtract(total, new BigDecimal(String.valueOf(useScore / 100)));
+                }
+                vo.setTotleConsumed(Double.valueOf(total.toString()));
+            }
         }
 
         return vo;

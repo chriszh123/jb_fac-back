@@ -97,7 +97,6 @@ CREATE TABLE `fac_order` (
   `cacel_name` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '取消订单操作人名称',
   `cacel_time` datetime DEFAULT NULL COMMENT '取消订单操作时间',
   `prepay_id` bigint(20) DEFAULT NULL COMMENT '微信预支付id',
-  `inviter_id` bigint(20) DEFAULT 0 COMMENT '商品分享人id',
   `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '最近更新时间',
   `operator_id` bigint(20) DEFAULT 0 COMMENT '操作者ID',
@@ -309,6 +308,7 @@ CREATE TABLE `fac_order_product` (
   `prod_id` bigint(20) NOT NULL DEFAULT 0 COMMENT '商品id',
   `prod_name` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '商品名称',
   `prod_number` smallint NOT NULL DEFAULT 0 COMMENT '购买商品数量',
+  `inviter_id` bigint(20) DEFAULT 0 COMMENT '商品分享人id',
   `price` decimal(8,2) NOT NULL COMMENT '金额',
   `token` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '用户微信openid，唯一',
   `open_id` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '用户微信openid，唯一 ',
@@ -321,4 +321,4 @@ CREATE TABLE `fac_order_product` (
   `operator_name` varchar(60) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT '' COMMENT '操作者姓名',
   `is_deleted` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否删除',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='订单商品信息表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='订单商品信息明细表';

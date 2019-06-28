@@ -1,7 +1,5 @@
 package com.ruoyi.fac.model;
 
-import com.ruoyi.common.annotation.Excel;
-
 import java.util.Date;
 
 public class FacBuyerSign {
@@ -19,7 +17,6 @@ public class FacBuyerSign {
      *
      * @mbggenerated
      */
-    @Excel(name="用户token")
     private String token;
 
     /**
@@ -28,7 +25,6 @@ public class FacBuyerSign {
      *
      * @mbggenerated
      */
-    @Excel(name="用户昵称")
     private String nickName;
 
     /**
@@ -37,7 +33,6 @@ public class FacBuyerSign {
      *
      * @mbggenerated
      */
-    @Excel(name = "积分来源", readConverterExp = "0=签到,2=购买商品")
     private Byte type;
 
     /**
@@ -46,7 +41,6 @@ public class FacBuyerSign {
      *
      * @mbggenerated
      */
-    @Excel(name="积分")
     private Short point;
 
     /**
@@ -63,7 +57,6 @@ public class FacBuyerSign {
      *
      * @mbggenerated
      */
-    @Excel(name = "操作时间", width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
     /**

@@ -8,6 +8,7 @@ import com.ruoyi.fac.domain.FacProductWriteoff;
 import com.ruoyi.fac.domain.Order;
 import com.ruoyi.fac.mapper.FacProductWriteoffMapper;
 import com.ruoyi.fac.mapper.OrderMapper;
+import com.ruoyi.fac.model.FacOrder;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -50,15 +51,14 @@ public class ProductWriteoffServiceImpl implements IProductWriteoffService {
             return new ArrayList<>();
         }
         // 当前商品涉及到的订单
-        Order order = new Order();
-        order.setProdId(productWriteoff.getProductId());
-        order.setIsDeleted(0);
-        List<Order> orders = this.orderMapper.selectOrderList(order);
+        List<Long> prodIds = new ArrayList<>();
+        prodIds.add(productWriteoff.getProductId());
+        List<FacOrder> orders = this.orderMapper.selectProductsByProdAndStatus(prodIds, null);
         if (CollectionUtils.isEmpty(orders)) {
             return new ArrayList<>();
         }
         List<String> orderNos = new ArrayList<>();
-        for (Order item : orders) {
+        for (FacOrder item : orders) {
             orderNos.add(item.getOrderNo());
         }
         // 当前订单对应的核销记录

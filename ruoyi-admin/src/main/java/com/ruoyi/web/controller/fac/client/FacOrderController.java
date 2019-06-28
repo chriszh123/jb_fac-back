@@ -101,14 +101,13 @@ public class FacOrderController extends BaseController {
     @PostMapping("/writeOffOrder")
     @ResponseBody
     public FacResult writeOffOrder(@RequestBody OrderReq req) {
-        if (StringUtils.isEmpty(req.getToken()) || StringUtils.isEmpty(req.getOrderNo())
-                || StringUtils.isBlank(req.getProdId())) {
+        if (StringUtils.isEmpty(req.getToken()) || StringUtils.isEmpty(req.getOrderNo())) {
             return FacResult.error(FacCode.PARAMTER_NULL.getCode(), FacCode.PARAMTER_NULL.getMsg());
         }
         try {
             // 一次指定核销一个商品对应的订单
             log.info(String.format("==============writeOffOrder start:%s", JSON.toJSONString(req)));
-            this.orderService.writeOffOrder(req.getToken(), req.getOrderNo(), req.getProdId());
+            this.orderService.writeOffOrder(req.getToken(), req.getOrderNo());
             log.info(String.format("==============writeOffOrder success:%s", JSON.toJSONString(req)));
             return FacResult.success("");
         } catch (Exception ex) {
