@@ -2,7 +2,6 @@ package com.ruoyi.fac.service;
 
 import com.ruoyi.fac.domain.Order;
 import com.ruoyi.fac.exception.FacException;
-import com.ruoyi.fac.model.FacOrderProduct;
 import com.ruoyi.fac.vo.FacStaticVo;
 import com.ruoyi.fac.vo.OrderDiagramVo;
 import com.ruoyi.fac.vo.OrderItemVo;
@@ -120,4 +119,14 @@ public interface IOrderService {
      * @param orderNo
      */
     void writeOffOrder(String token, String orderNo) throws Exception;
+
+    /**
+     * 变更订单状态
+     *
+     * @param orderNo
+     * @param remarkMngt
+     * @param status
+     * @throws Exception
+     */
+    int changeStatus(String orderNo, String remarkMngt, Integer status, SysUser sysUser) throws Exception;
 }

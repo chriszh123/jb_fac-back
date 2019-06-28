@@ -21,4 +21,6 @@ public class UserScoreLog implements Serializable {
      */
     private int behavior = 0;
     private int score;
+    // 实际购物消费金额
+    private String amount;
 }

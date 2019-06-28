@@ -92,9 +92,13 @@ public class UserSignServiceImpl implements IUserSignService {
         if (req == null || StringUtils.isBlank(req.getToken())) {
             throw new FacException("参数token不能为空");
         }
+        // 查询签到积分
+        List<Byte> types = new ArrayList<>();
+        types.add(ScoreTypeEnum.SIGN.getValue());
+
         UserSignLogs logs = new UserSignLogs();
         FacBuyerSignExample example = new FacBuyerSignExample();
-        example.createCriteria().andIsDeletedEqualTo(false).andTokenEqualTo(req.getToken()).andTypeEqualTo(ScoreTypeEnum.SIGN.getValue());
+        example.createCriteria().andIsDeletedEqualTo(false).andTokenEqualTo(req.getToken()).andTypeIn(types);
         List<FacBuyerSign> signs = this.facBuyerSignMapper.selectByExample(example);
         logs.setTotalRow(CollectionUtils.isNotEmpty(signs) ? signs.size() : 0);
         if (CollectionUtils.isEmpty(signs)) {
@@ -115,9 +119,15 @@ public class UserSignServiceImpl implements IUserSignService {
      */
     @Override
     public UserScoreLogs queryUserScoreLogs(SignReq req) throws FacException {
+        UserScoreLogs logs = new UserScoreLogs();
         if (StringUtils.isBlank(req.getToken())) {
-            return null;
+            return logs;
         }
+        List<Byte> types = new ArrayList<>();
+        types.add(ScoreTypeEnum.SIGN.getValue());
+        types.add(ScoreTypeEnum.BUY_BACK.getValue());
+        types.add(ScoreTypeEnum.COUNSUMER.getValue());
+
         FacBuyerSignExample example = new FacBuyerSignExample();
         example.createCriteria().andIsDeletedEqualTo(false).andTokenEqualTo(req.getToken());
         example.setOrderByClause(" create_time desc ");
@@ -125,7 +135,6 @@ public class UserSignServiceImpl implements IUserSignService {
         example.setPageSize(req.getPageSize());
         List<FacBuyerSign> buyerSigns = this.facBuyerSignMapper.selectByExample(example);
         if (CollectionUtils.isNotEmpty(buyerSigns)) {
-            UserScoreLogs logs = new UserScoreLogs();
             List<UserScoreLog> result = new ArrayList<>();
             UserScoreLog log;
             for (FacBuyerSign sign : buyerSigns) {
@@ -141,7 +150,7 @@ public class UserSignServiceImpl implements IUserSignService {
             return logs;
         }
 
-        return null;
+        return logs;
     }
 
     private List<UserSignLog> buildSignLogs(List<FacBuyerSign> signs) {
@@ -157,6 +166,47 @@ public class UserSignServiceImpl implements IUserSignService {
             result.add(log);
         }
         return result;
+    }
+
+    /**
+     * 查询当前用户消费金额明细
+     *
+     * @param req
+     * @return
+     * @throws FacException
+     */
+    @Override
+    public UserScoreLogs queryUserConsumerLogs(SignReq req) throws FacException {
+        UserScoreLogs logs = new UserScoreLogs();
+        if (StringUtils.isBlank(req.getToken())) {
+            return logs;
+        }
+        List<Byte> types = new ArrayList<>();
+        types.add(ScoreTypeEnum.COUNSUMER.getValue());
+
+        FacBuyerSignExample example = new FacBuyerSignExample();
+        example.createCriteria().andIsDeletedEqualTo(false).andTokenEqualTo(req.getToken()).andTypeIn(types);
+        example.setOrderByClause(" create_time desc ");
+        example.setStartRow((req.getPage() - 1) * req.getPageSize());
+        example.setPageSize(req.getPageSize());
+        List<FacBuyerSign> buyerSigns = this.facBuyerSignMapper.selectByExample(example);
+        if (CollectionUtils.isNotEmpty(buyerSigns)) {
+            List<UserScoreLog> result = new ArrayList<>();
+            UserScoreLog log;
+            for (FacBuyerSign sign : buyerSigns) {
+                log = new UserScoreLog();
+                result.add(log);
+                log.setTypeStr(ScoreTypeEnum.getNameByCode(sign.getType()));
+                log.setDateAdd(TimeUtils.date2Str(sign.getCreateTime(), TimeUtils.DEFAULT_DATE_TIME_FORMAT_HH_MM_SS));
+                log.setAmount(String.valueOf(sign.getMount()));
+                // 0为奖励，1为消费
+                log.setBehavior(1);
+            }
+            logs.setResult(result);
+            return logs;
+        }
+
+        return logs;
     }
 
 

@@ -4,7 +4,7 @@
 <head th:include="include :: header"></head>
 <body class="white-bg">
 <div class="wrapper wrapper-content animated fadeInRight ibox-content">
-	<form class="form-horizontal m" id="form-user-resetPwd">
+	<form class="form-horizontal m" id="form-order-cancel">
 		<input name="orderNo"  type="hidden"  th:value="${order.orderNo}" />
 		<div class="form-group">
 			<label class="col-sm-3 control-label ">备注：</label>
@@ -17,20 +17,18 @@
 </div>
 <div th:include="include :: footer"></div>
 <script type="text/javascript">
-    $("#form-user-resetPwd").validate({
+    $("#form-order-cancel").validate({
         rules:{
-            password:{
+            orderNo:{
                 required:true,
-                minlength: 5,
-                maxlength: 20
-            },
+            }
         },
         focusCleanup: true
     });
 
     function submitHandler() {
         if ($.validate.form()) {
-            $.operate.save(ctx + "fac/order/cancel", $('#form-user-resetPwd').serialize());
+            $.operate.save(ctx + "fac/order/cancel", $('#form-order-cancel').serialize());
         }
     }
 </script>

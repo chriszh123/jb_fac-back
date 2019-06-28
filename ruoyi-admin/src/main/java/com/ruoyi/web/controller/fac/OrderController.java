@@ -101,7 +101,7 @@ public class OrderController extends BaseController {
     }
 
     /**
-     * 修改订单
+     * 取消订单
      */
     @GetMapping("/cacelOrder/{orderNo}")
     public String cacelOrder(@PathVariable("orderNo") String orderNo, ModelMap mmap) {
@@ -109,6 +109,34 @@ public class OrderController extends BaseController {
         orderItemVo.setOrderNo(orderNo);
         mmap.put("order", orderItemVo);
         return prefix + "/cacelOrder";
+    }
+
+    /**
+     * 变更订单状态
+     */
+    @GetMapping("/changeStatus/{orderNo}")
+    public String changeStatus(@PathVariable("orderNo") String orderNo, ModelMap mmap) {
+        OrderItemVo orderItemVo = orderService.detailOrderByOrderNo(orderNo);
+        orderItemVo.setOrderNo(orderNo);
+        mmap.put("order", orderItemVo);
+        return prefix + "/changeStatus";
+    }
+
+    /**
+     * 变更订单状态
+     */
+    @RequiresPermissions("fac:order:changeStatus")
+    @Log(title = "订单", businessType = BusinessType.UPDATE)
+    @PostMapping("/changeStatus")
+    @ResponseBody
+    public AjaxResult changeStatus(Order order) {
+        SysUser user = ShiroUtils.getSysUser();
+        try {
+            return toAjax(orderService.changeStatus(order.getOrderNo(), order.getRemarkMngt(), order.getStatus(), user));
+        } catch (Exception ex) {
+            log.error(ex.getMessage(), ex);
+            return AjaxResult.error(ex.getMessage());
+        }
     }
 
     /**

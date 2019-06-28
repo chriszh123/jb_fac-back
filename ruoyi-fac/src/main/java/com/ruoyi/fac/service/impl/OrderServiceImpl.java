@@ -747,7 +747,7 @@ public class OrderServiceImpl implements IOrderService {
             throw new Exception("当前订单已不存在,请联系管理员");
         }
         FacOrder order = facOrders.get(0);
-        if (!OrderStatus.TOWRITEOFF.getCode().equals(order.getStatus())) {
+        if (!OrderStatus.TOWRITEOFF.getCode().equals(Integer.valueOf(order.getStatus()))) {
             throw new Exception("当前商品订单处于非待核销状态，请联系管理员");
         }
         FacBuyerExample buyerExample = new FacBuyerExample();
@@ -798,6 +798,8 @@ public class OrderServiceImpl implements IOrderService {
         FacOrder facOrder = new FacOrder();
         // 商品订单核销后状态更新为：已完成(以后添加评价功能后，这里状态需要更新为:待评价)
         facOrder.setStatus(OrderStatus.COMPLETED.getCode().byteValue());
+        // 核销时间
+        facOrder.setWriteoffTime(nowDate);
         facOrder.setUpdateTime(nowDate);
         facOrder.setOperatorId(Long.valueOf(business.getId()));
         facOrder.setOperatorName(business.getName());
@@ -826,6 +828,35 @@ public class OrderServiceImpl implements IOrderService {
             beanExample.createCriteria().andIsDeletedEqualTo(false).andOrderNoEqualTo(orderNo);
             this.facProductWriteOffBeanMapper.updateByExampleSelective(bean, beanExample);
         }
+    }
+
+    /**
+     * 变更订单状态
+     *
+     * @param orderNo
+     * @param remarkMngt
+     * @param status
+     * @throws Exception
+     */
+    @Override
+    public int changeStatus(String orderNo, String remarkMngt, Integer status, SysUser sysUser) throws Exception {
+        if (StringUtils.isBlank(orderNo)) {
+            throw new Exception("订单号不能为空");
+        }
+        if (status == null) {
+            throw new Exception("订单目标状态不能为空");
+        }
+        FacOrder facOrder = new FacOrder();
+        facOrder.setStatus(new Byte(status.toString()));
+        facOrder.setRemarkMngt(remarkMngt);
+        facOrder.setUpdateTime(new Date());
+        if (sysUser != null) {
+            facOrder.setOperatorId(sysUser.getUserId());
+            facOrder.setOperatorName(sysUser.getUserName());
+        }
+        FacOrderExample orderExample = new FacOrderExample();
+        orderExample.createCriteria().andIsDeletedEqualTo(false).andOrderNoEqualTo(orderNo);
+        return this.facOrderMapper.updateByExampleSelective(facOrder, orderExample);
     }
 
     private void convertOrders(OrderListVo vo, List<FacOrder> orders, int status) {

@@ -455,66 +455,6 @@ public class FacOrderExample {
             return (Criteria) this;
         }
 
-        public Criteria andPayTimeIsNull() {
-            addCriterion("pay_time is null");
-            return (Criteria) this;
-        }
-
-        public Criteria andPayTimeIsNotNull() {
-            addCriterion("pay_time is not null");
-            return (Criteria) this;
-        }
-
-        public Criteria andPayTimeEqualTo(Date value) {
-            addCriterion("pay_time =", value, "payTime");
-            return (Criteria) this;
-        }
-
-        public Criteria andPayTimeNotEqualTo(Date value) {
-            addCriterion("pay_time <>", value, "payTime");
-            return (Criteria) this;
-        }
-
-        public Criteria andPayTimeGreaterThan(Date value) {
-            addCriterion("pay_time >", value, "payTime");
-            return (Criteria) this;
-        }
-
-        public Criteria andPayTimeGreaterThanOrEqualTo(Date value) {
-            addCriterion("pay_time >=", value, "payTime");
-            return (Criteria) this;
-        }
-
-        public Criteria andPayTimeLessThan(Date value) {
-            addCriterion("pay_time <", value, "payTime");
-            return (Criteria) this;
-        }
-
-        public Criteria andPayTimeLessThanOrEqualTo(Date value) {
-            addCriterion("pay_time <=", value, "payTime");
-            return (Criteria) this;
-        }
-
-        public Criteria andPayTimeIn(List<Date> values) {
-            addCriterion("pay_time in", values, "payTime");
-            return (Criteria) this;
-        }
-
-        public Criteria andPayTimeNotIn(List<Date> values) {
-            addCriterion("pay_time not in", values, "payTime");
-            return (Criteria) this;
-        }
-
-        public Criteria andPayTimeBetween(Date value1, Date value2) {
-            addCriterion("pay_time between", value1, value2, "payTime");
-            return (Criteria) this;
-        }
-
-        public Criteria andPayTimeNotBetween(Date value1, Date value2) {
-            addCriterion("pay_time not between", value1, value2, "payTime");
-            return (Criteria) this;
-        }
-
         public Criteria andTokenIsNull() {
             addCriterion("token is null");
             return (Criteria) this;
@@ -1052,6 +992,126 @@ public class FacOrderExample {
 
         public Criteria andRemarkMngtNotBetween(String value1, String value2) {
             addCriterion("remark_mngt not between", value1, value2, "remarkMngt");
+            return (Criteria) this;
+        }
+
+        public Criteria andPayTimeIsNull() {
+            addCriterion("pay_time is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andPayTimeIsNotNull() {
+            addCriterion("pay_time is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andPayTimeEqualTo(Date value) {
+            addCriterion("pay_time =", value, "payTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andPayTimeNotEqualTo(Date value) {
+            addCriterion("pay_time <>", value, "payTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andPayTimeGreaterThan(Date value) {
+            addCriterion("pay_time >", value, "payTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andPayTimeGreaterThanOrEqualTo(Date value) {
+            addCriterion("pay_time >=", value, "payTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andPayTimeLessThan(Date value) {
+            addCriterion("pay_time <", value, "payTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andPayTimeLessThanOrEqualTo(Date value) {
+            addCriterion("pay_time <=", value, "payTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andPayTimeIn(List<Date> values) {
+            addCriterion("pay_time in", values, "payTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andPayTimeNotIn(List<Date> values) {
+            addCriterion("pay_time not in", values, "payTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andPayTimeBetween(Date value1, Date value2) {
+            addCriterion("pay_time between", value1, value2, "payTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andPayTimeNotBetween(Date value1, Date value2) {
+            addCriterion("pay_time not between", value1, value2, "payTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andWriteoffTimeIsNull() {
+            addCriterion("writeoff_time is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andWriteoffTimeIsNotNull() {
+            addCriterion("writeoff_time is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andWriteoffTimeEqualTo(Date value) {
+            addCriterion("writeoff_time =", value, "writeoffTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andWriteoffTimeNotEqualTo(Date value) {
+            addCriterion("writeoff_time <>", value, "writeoffTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andWriteoffTimeGreaterThan(Date value) {
+            addCriterion("writeoff_time >", value, "writeoffTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andWriteoffTimeGreaterThanOrEqualTo(Date value) {
+            addCriterion("writeoff_time >=", value, "writeoffTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andWriteoffTimeLessThan(Date value) {
+            addCriterion("writeoff_time <", value, "writeoffTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andWriteoffTimeLessThanOrEqualTo(Date value) {
+            addCriterion("writeoff_time <=", value, "writeoffTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andWriteoffTimeIn(List<Date> values) {
+            addCriterion("writeoff_time in", values, "writeoffTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andWriteoffTimeNotIn(List<Date> values) {
+            addCriterion("writeoff_time not in", values, "writeoffTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andWriteoffTimeBetween(Date value1, Date value2) {
+            addCriterion("writeoff_time between", value1, value2, "writeoffTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andWriteoffTimeNotBetween(Date value1, Date value2) {
+            addCriterion("writeoff_time not between", value1, value2, "writeoffTime");
             return (Criteria) this;
         }
 

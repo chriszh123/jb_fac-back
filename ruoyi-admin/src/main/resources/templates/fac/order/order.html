@@ -116,6 +116,11 @@
                     sortable: true
                 },
                 {
+                    field: 'writeoffTime',
+                    title: '核销时间',
+                    sortable: true
+                },
+                {
                     field: 'inviterId',
                     title: '分享人',
                     sortable: false,
@@ -142,12 +147,14 @@
                     align: 'center',
                     formatter: function (value, row, index) {
                         var actions = [];
-                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="#" onclick="$.operate.edit(\'' + row.orderNo + '\')"><i class="fa fa-edit"></i>详情</a> ');
+                        actions.push('<a class="btn btn-success btn-xs' + editFlag + '" href="#" onclick="$.operate.edit(\'' + row.orderNo + '\')"><i class="fa fa-edit"></i>详情</a> ');
                         if (row.status == '0') {
                             // 待付款状态订单可以取消订单
                             // actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="#" onclick="$.operate.remove(\'' + row.id + '\')"><i class="fa fa-remove"></i>取消订单</a>');
-                            actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="#" onclick="openCacelOrderDlg(\'' + row.orderNo + '\')"><i class="fa fa-remove"></i>取消订单</a>');
+                            actions.push('<a class="btn btn-danger btn-xs' + removeFlag + '" href="#" onclick="openCacelOrderDlg(\'' + row.orderNo + '\')"><i class="fa fa-remove"></i>取消订单</a>');
                         }
+                        // 变更订单状态
+                        actions.push('<a class="btn btn-danger btn-xs' + removeFlag + '" href="#" onclick="openChangeStatusDlg(\'' + row.orderNo + '\')"><i class="fa fa-remove"></i>变更状态</a>');
                         return actions.join('');
                     }
                 }]
@@ -158,6 +165,11 @@
     function openCacelOrderDlg(orderNo) {
         var url = prefix + '/cacelOrder/' + orderNo;
         $.modal.open("取消订单", url, '650', '300');
+    }
+
+    function openChangeStatusDlg(orderNo) {
+        var url = prefix + '/changeStatus/' + orderNo;
+        $.modal.open("变更订单状态【请慎重使用】", url, '650', '400');
     }
 </script>
 </body>

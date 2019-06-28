@@ -17,5 +17,5 @@ import java.util.List;
 public class UserScoreLogs implements Serializable {
     private static final long serialVersionUID = 4523438212232090553L;
 
-    private List<UserScoreLog> result = new ArrayList<>();
+    private List<UserScoreLog> result = null;
 }

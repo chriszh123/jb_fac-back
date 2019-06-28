@@ -78,6 +78,7 @@
         <if test="status != null  ">
             and main.status = #{status}
         </if>
+        order by orderProduct.create_time desc
     </select>
 
     <select id="selectOrderById" parameterType="Long" resultMap="OrderResult">
@@ -244,7 +245,7 @@
 
     <update id="updateOrderStatusAfterPayed">
         UPDATE fac_order
-        set status = #{status}
+        set status = #{status}, pay_time = now()
         where order_no = #{orderNo}
     </update>
 

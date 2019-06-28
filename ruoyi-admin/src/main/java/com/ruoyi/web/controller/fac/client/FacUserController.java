@@ -221,6 +221,7 @@ public class FacUserController extends BaseController {
             int signPoint = this.userSignService.sign(req);
             return FacResult.success(signPoint);
         } catch (FacException fe) {
+            LOGGER.error(fe.getMessage(), fe);
             return FacResult.error(fe.getMessage());
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);
@@ -235,6 +236,7 @@ public class FacUserController extends BaseController {
             UserSignLogs logs = this.userSignService.queryUserSignLogs(req);
             return FacResult.success(logs);
         } catch (FacException fe) {
+            LOGGER.error(fe.getMessage(), fe);
             return FacResult.error(fe.getMessage());
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);
@@ -249,6 +251,22 @@ public class FacUserController extends BaseController {
             UserScoreLogs logs = this.userSignService.queryUserScoreLogs(req);
             return FacResult.success(logs);
         } catch (FacException fe) {
+            LOGGER.error(fe.getMessage(), fe);
+            return FacResult.error(fe.getMessage());
+        } catch (Exception ex) {
+            LOGGER.error(ex.getMessage(), ex);
+            return FacResult.error();
+        }
+    }
+
+    @PostMapping("/amount/logs")
+    @ResponseBody
+    public FacResult consumerLogs(@RequestBody SignReq req) {
+        try {
+            UserScoreLogs logs = this.userSignService.queryUserConsumerLogs(req);
+            return FacResult.success(logs);
+        } catch (FacException fe) {
+            LOGGER.error(fe.getMessage(), fe);
             return FacResult.error(fe.getMessage());
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);

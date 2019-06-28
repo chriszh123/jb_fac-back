@@ -72,6 +72,11 @@ public class Order extends BaseEntity {
     @Excel(name = "付款时间", dateFormat = "yyyy-MM-dd HH:mm:ss")
     private Date payTime;
     /**
+     * 核销时间
+     */
+    @Excel(name = "核销时间", dateFormat = "yyyy-MM-dd HH:mm:ss")
+    private Date writeoffTime;
+    /**
      * 商品分享人
      */
     @Excel(name = "商品分享人")

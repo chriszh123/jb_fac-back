@@ -125,9 +125,9 @@ public class PayServiceImpl implements IPayService {
         // 创建hashmap(用户获得签名)
         SortedMap<String, String> paraMap = new TreeMap<String, String>();
         // 校验当前商品是否还可以购买:库存数据
-        Long[] ids = new Long[orders.size()];
-        // <prodId, Order>
-        Map<Long, FacOrderProduct> prod2Order = new HashMap<>(orders.size());
+        Long[] ids = new Long[orderProducts.size()];
+        // <prodId, FacOrderProduct>
+        Map<Long, FacOrderProduct> prod2Order = new HashMap<>(orderProducts.size());
         for (int i = 0, size = orderProducts.size(); i < size; i++) {
             ids[i] = orderProducts.get(i).getProdId();
             prod2Order.put(orderProducts.get(i).getProdId(), orderProducts.get(i));
@@ -164,12 +164,13 @@ public class PayServiceImpl implements IPayService {
             String notifyUrl = Global.getDomain() + "/fac/client/pay/wx/payCallback";
             SortedMap<String, Object> preResult = PayCommonUtil.WxPublicPay(outTradeNo, totalAmount, body, "prepayfac", openid, notifyUrl, appMchVo, request);
             if (MapUtils.isNotEmpty(preResult)) {
-                logger.info(String.format("[getWxPrePayInfo] preResult:%s", JSON.toJSONString(preResult)));
+                logger.info(String.format("[getWxPrePayInfo] orderNo:%s, preResult:%s", orderNo, JSON.toJSONString(preResult)));
                 res.setTimeStamp(String.valueOf(preResult.get("timeStamp")));
                 res.setNonceStr(String.valueOf(preResult.get("nonceStr")));
                 res.setPrepayId(String.valueOf(preResult.get("package")));
                 res.setSign(String.valueOf(preResult.get("paySign")));
-                logger.info(String.format("=========================[getWxPrePayInfo] success, result:%s============================", JSON.toJSONString(res)));
+                logger.info(String.format("=========================[getWxPrePayInfo] success, orderNo:%s,result:%s============================"
+                        , orderNo, JSON.toJSONString(res)));
                 return res;
             } else {
                 throw new Exception("预支付接口响应数据为空");
@@ -225,9 +226,10 @@ public class PayServiceImpl implements IPayService {
                 List<FacOrder> orders = this.facOrderMapper.selectByExample(orderExample);
                 if (CollectionUtils.isNotEmpty(orders)) {
                     logger.info("===========微信回调 根据订单号查询订单状态：" + orders.get(0).getStatus());
-                    if (OrderStatus.PAYING.getCode().equals(orders.get(0).getStatus())) {
-                        //修改支付状态:订单支付成功后状态变为待核销状态
+                    if (OrderStatus.PAYING.getCode().equals(Integer.valueOf(orders.get(0).getStatus()))) {
+                        //修改支付状态:订单支付成功后状态变为待核销状态、支付时间
                         int sqlRow = this.orderMapper.updateOrderStatusAfterPayed(outTradeNo, OrderStatus.TOWRITEOFF.getCode().intValue());
+                        logger.info(String.format("---------------updateOrderStatusAfterPayed sqlRow:%s, orderNo:%s", sqlRow, outTradeNo));
                         if (sqlRow >= 1) {
                             // 支付成功后，处理当前订单、商品、用户相关信息
                             this.dealOrderAndProdDataAfterPayed(orders);
@@ -267,6 +269,7 @@ public class PayServiceImpl implements IPayService {
         Map<Long, List<Long>> inviterId2ProdId = new HashMap<>();
         List<Product> products = new ArrayList<>();
         List<Long> ids = new ArrayList<>();
+        BigDecimal totalAmount = DecimalUtils.getDefaultDecimal();
         for (FacOrderProduct orderProduct : orderProducts) {
             Product product = new Product();
             product.setId(orderProduct.getProdId());
@@ -280,6 +283,8 @@ public class PayServiceImpl implements IPayService {
                 inviterId2ProdId.get(orderProduct.getInviterId()).add(orderProduct.getProdId());
                 ids.add(orderProduct.getProdId());
             }
+            // 当前订单对应的商品总金额
+            totalAmount = DecimalUtils.add(totalAmount, DecimalUtils.mul(orderProduct.getPrice(), new BigDecimal(orderProduct.getProdNumber().toString())));
         }
         this.productMapper.batchUpdateProductSales(products);
         logger.info("---------------------[dealOrderAndProdDataAfterPayed] batchUpdateProductSales success.----------------");
@@ -344,10 +349,10 @@ public class PayServiceImpl implements IPayService {
         logger.info(String.format("---------------------[dealOrderAndProdDataAfterPayed] batchInsert success.---------%s"
                 , JSON.toJSONString(productWriteoffs)));
 
+        Buyer buyer = this.buyerMapper.selectBuyerByOpenId(orders.get(0).getToken());
         // 如果当前订单使用了积分抵扣，需要扣除当前用户相应的消费积分数,并且记录消费记录
         int useScore = orders.get(0).getUserScore();
         if (useScore > 0) {
-            Buyer buyer = this.buyerMapper.selectBuyerByOpenId(orders.get(0).getToken());
             if (buyer != null) {
                 FacBuyer facBuyer = new FacBuyer();
                 int remainderPoints = buyer.getPoints() - useScore;
@@ -359,9 +364,9 @@ public class PayServiceImpl implements IPayService {
                 logger.info(String.format("==========update buyer point after consume:buyer:%s,data:%s==========", JSON.toJSON(buyer), JSON.toJSON(facBuyer)));
                 // 增加消费记录
                 FacBuyerSign record = new FacBuyerSign();
-                record.setToken(facBuyer.getToken());
+                record.setToken(buyer.getToken());
                 record.setNickName(buyer.getNickName());
-                // 积分类型：0-签到;1-购物反赠积分,2-购物消费
+                // 积分类型：0-签到;1-购物反赠积分,2-购物消费,3-用户每次订单实际消费金额
                 record.setType(ScoreTypeEnum.COUNSUMER.getValue());
                 record.setPoint(Short.valueOf(String.valueOf(useScore)));
                 record.setSignTime(nowDate);
@@ -373,6 +378,24 @@ public class PayServiceImpl implements IPayService {
             } else {
                 logger.info(String.format("==================current user is not exist, token:%s================", orders.get(0).getToken()));
             }
+            // 实际消费金额记录
+            totalAmount = DecimalUtils.subtract(totalAmount, new BigDecimal(String.valueOf(useScore)));
+        }
+        // 记录消费金额记录
+        if (buyer != null) {
+            FacBuyerSign record = new FacBuyerSign();
+            record.setToken(buyer.getToken());
+            record.setNickName(buyer.getNickName());
+            // 积分类型：0-签到;1-购物反赠积分,2-购物消费,3-用户每次订单实际消费金额
+            record.setType(ScoreTypeEnum.COUNSUMER_AMOUNT.getValue());
+            record.setMount(totalAmount);
+            record.setSignTime(nowDate);
+            record.setCreateTime(nowDate);
+            record.setUpdateTime(nowDate);
+            record.setIsDeleted(false);
+            this.facBuyerSignMapper.insertSelective(record);
+            logger.info(String.format("---------------add counsumer amount success, token:%s, orderNo:%s, totalAmount:%s",
+                    buyer.getToken(), orderNo, totalAmount));
         }
     }
 

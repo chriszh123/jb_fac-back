@@ -9,7 +9,9 @@ package com.ruoyi.fac.enums;
 public enum ScoreTypeEnum {
     SIGN("签到", new Byte("0")),
     BUY_BACK("购物反赠", new Byte("1")),
-    COUNSUMER("购物消费", new Byte("2"));
+    COUNSUMER("购物消费", new Byte("2")),
+    COUNSUMER_AMOUNT("购物消费", new Byte("3"))
+    ;
 
     private String name;
     private Byte value;
