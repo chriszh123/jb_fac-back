@@ -6,9 +6,12 @@ import java.util.List;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.fac.domain.FacProductWriteoff;
 import com.ruoyi.fac.domain.Order;
+import com.ruoyi.fac.mapper.FacProductWriteOffBeanMapper;
 import com.ruoyi.fac.mapper.FacProductWriteoffMapper;
 import com.ruoyi.fac.mapper.OrderMapper;
 import com.ruoyi.fac.model.FacOrder;
+import com.ruoyi.fac.model.FacProductWriteOffBean;
+import com.ruoyi.fac.model.FacProductWriteOffBeanExample;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +30,8 @@ public class ProductWriteoffServiceImpl implements IProductWriteoffService {
     private FacProductWriteoffMapper productWriteoffMapper;
     @Autowired
     private OrderMapper orderMapper;
+    @Autowired
+    private FacProductWriteOffBeanMapper facProductWriteOffBeanMapper;
 
     /**
      * 查询核销记录信息
@@ -46,7 +51,7 @@ public class ProductWriteoffServiceImpl implements IProductWriteoffService {
      * @return 核销记录集合
      */
     @Override
-    public List<FacProductWriteoff> selectProductWriteoffList(FacProductWriteoff productWriteoff) {
+    public List<FacProductWriteOffBean> selectProductWriteoffList(FacProductWriteoff productWriteoff) {
         if (productWriteoff.getProductId() == null) {
             return new ArrayList<>();
         }
@@ -66,7 +71,11 @@ public class ProductWriteoffServiceImpl implements IProductWriteoffService {
         if (productWriteoff.getStatus() != null) {
             status.add(productWriteoff.getStatus());
         }
-        List<FacProductWriteoff> productWriteoffs = this.productWriteoffMapper.selectFacProductWriteoffListByOrderNos(orderNos, status);
+
+        FacProductWriteOffBeanExample beanExample = new FacProductWriteOffBeanExample();
+        beanExample.createCriteria().andIsDeletedEqualTo(false).andOrderNoIn(orderNos).andProdIdEqualTo(productWriteoff.getProductId());
+        beanExample.setOrderByClause(" create_time desc ");
+        List<FacProductWriteOffBean> productWriteoffs = this.facProductWriteOffBeanMapper.selectByExample(beanExample);
 
         return productWriteoffs;
     }

@@ -129,7 +129,7 @@ public class UserSignServiceImpl implements IUserSignService {
         types.add(ScoreTypeEnum.COUNSUMER.getValue());
 
         FacBuyerSignExample example = new FacBuyerSignExample();
-        example.createCriteria().andIsDeletedEqualTo(false).andTokenEqualTo(req.getToken());
+        example.createCriteria().andIsDeletedEqualTo(false).andTokenEqualTo(req.getToken()).andTypeIn(types);
         example.setOrderByClause(" create_time desc ");
         example.setStartRow((req.getPage() - 1) * req.getPageSize());
         example.setPageSize(req.getPageSize());
@@ -182,7 +182,7 @@ public class UserSignServiceImpl implements IUserSignService {
             return logs;
         }
         List<Byte> types = new ArrayList<>();
-        types.add(ScoreTypeEnum.COUNSUMER.getValue());
+        types.add(ScoreTypeEnum.COUNSUMER_AMOUNT.getValue());
 
         FacBuyerSignExample example = new FacBuyerSignExample();
         example.createCriteria().andIsDeletedEqualTo(false).andTokenEqualTo(req.getToken()).andTypeIn(types);

@@ -124,6 +124,20 @@ public class OrderServiceImpl implements IOrderService {
             order.setCacelId(facOrder.getCacelId());
             order.setCacelName(facOrder.getCacelName());
             order.setCacelTime(facOrder.getCacelTime());
+            order.setCreateTime(facOrder.getCreateTime());
+        }
+        // 核销时间
+        FacProductWriteOffBeanExample beanExample = new FacProductWriteOffBeanExample();
+        beanExample.createCriteria().andIsDeletedEqualTo(false).andOrderNoIn(new ArrayList<>(orderNos));
+        List<FacProductWriteOffBean> beans = this.facProductWriteOffBeanMapper.selectByExample(beanExample);
+        if (CollectionUtils.isNotEmpty(beans)) {
+            Map<String, Date> order2WriteoffDate = new HashMap<>();
+            for (FacProductWriteOffBean item : beans) {
+                order2WriteoffDate.put(item.getOrderNo(), item.getWriteoffTime());
+            }
+            for (Order order : orders) {
+                order.setWriteoffTime(order2WriteoffDate.get(order.getOrderNo()));
+            }
         }
 
         return orders;
@@ -464,6 +478,34 @@ public class OrderServiceImpl implements IOrderService {
             // 累积商品总价
             amountConsume = DecimalUtils.add(amountConsume, DecimalUtils.mul(product.getPrice()
                     , new BigDecimal(String.valueOf(good.getNumber()))));
+        }
+        // 同一订单商家唯一
+        FacBuyerBusinessExample buyerBusinessExample = new FacBuyerBusinessExample();
+        buyerBusinessExample.createCriteria().andIsDeletedEqualTo(false).andBusinessProdIdIn(prodIds);
+        List<FacBuyerBusiness> buyerBusinesses = this.facBuyerBusinessMapper.selectByExample(buyerBusinessExample);
+        if (org.apache.commons.collections.CollectionUtils.isNotEmpty(buyerBusinesses)) {
+            // <businessId, [prodId]>
+            Map<Long, List<Long>> biz2ProdIds = new HashMap<>();
+            for (FacBuyerBusiness item : buyerBusinesses) {
+                if (!biz2ProdIds.containsKey(item.getBusinessId())) {
+                    biz2ProdIds.put(item.getBusinessId(), new ArrayList<>());
+                }
+                biz2ProdIds.get(item.getBusinessId()).add(item.getBusinessProdId());
+            }
+            if (biz2ProdIds.size() != 1) {
+                throw new FacException("您选择的商品在不同卖家中，不能创建订单");
+            }
+            for (Map.Entry<Long, List<Long>> entry : biz2ProdIds.entrySet()) {
+                List<Long> prodId2Business = entry.getValue();
+                for (Long prodId : prodIds) {
+                    if (!prodId2Business.contains(prodId)) {
+                        // 用户选择的商品存在于不同的卖家中，即
+                        throw new FacException("当前选择的商品在不同卖家中，不能创建订单");
+                    }
+                }
+            }
+        } else {
+            throw new FacException("系统没有商品相应卖家信息，请联系管理员");
         }
         // 当前订单用户可以使用的积分
         // 使用积分规则暂定为：消费总金额大于当前用户名下的积分数
@@ -961,7 +1003,8 @@ public class OrderServiceImpl implements IOrderService {
             // 再看看有没有用到积分，如果用到需要再扣掉积分对应的钱
             int useScore = orderVo.getScore();
             if (useScore != 0) {
-                orderTotalPrice = DecimalUtils.subtract(orderTotalPrice, new BigDecimal(String.valueOf(useScore / 100)));
+                BigDecimal scoreMount = DecimalUtils.division(useScore, 100);
+                orderTotalPrice = DecimalUtils.subtract(orderTotalPrice, scoreMount);
             }
             double amountReal = Double.valueOf(orderTotalPrice.toString());
             orderVo.setAmountReal(amountReal);
@@ -973,8 +1016,7 @@ public class OrderServiceImpl implements IOrderService {
         if (points == 0) {
             return 0;
         }
-        float score2Yuan = (float) points / 100;
-        BigDecimal scoreBD = new BigDecimal(score2Yuan);
+        BigDecimal scoreBD = DecimalUtils.division(points, 100);
         if (amountConsume.compareTo(scoreBD) > 0) {
             return points;
         }
@@ -1012,5 +1054,7 @@ public class OrderServiceImpl implements IOrderService {
     public static void main(String[] args) {
         String orderNo = DateFormatUtils.format(new Date(), "yyyyMMddHHmmssSSSS");
         System.out.println("orderNo = " + orderNo);
+        BigDecimal scoreMount = new BigDecimal(String.valueOf(2 / 100));
+        System.out.println(scoreMount);
     }
 }

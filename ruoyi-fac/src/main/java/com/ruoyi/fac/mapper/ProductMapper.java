@@ -83,8 +83,4 @@ public interface ProductMapper {
     List<Product> goodsList(QueryGoodVo vo);
 
     List<Product> selectProductsByIds(@Param("ids") Long[] ids);
-
-    int updateProductSaleNumber(@Param("id") long id, @Param("number") int number);
-
-    void batchUpdateProductSales(@Param("list") List<Product> updateObjs);
 }

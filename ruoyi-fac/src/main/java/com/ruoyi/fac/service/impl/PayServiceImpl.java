@@ -75,6 +75,10 @@ public class PayServiceImpl implements IPayService {
     private FacOrderMapper facOrderMapper;
     @Autowired
     private FacOrderProductMapper facOrderProductMapper;
+    @Autowired
+    private FacBuyerBusinessMapper facBuyerBusinessMapper;
+    @Autowired
+    private FacProductMapper facProductMapper;
 
     /**
      * 微信支付预支付接口
@@ -103,27 +107,58 @@ public class PayServiceImpl implements IPayService {
         FacOrderProductExample orderProductExample = new FacOrderProductExample();
         orderProductExample.createCriteria().andIsDeletedEqualTo(false).andOrderNoEqualTo(orderNo);
         List<FacOrderProduct> orderProducts = this.facOrderProductMapper.selectByExample(orderProductExample);
+        // 如果当前订单中出现多个不同商品，需要校验这些商品必须是来自同一个卖家名下的商品
+        if (CollectionUtils.isNotEmpty(orderProducts) && orderProducts.size() >= 2) {
+            List<Long> prodIds = new ArrayList<>();
+            for (FacOrderProduct item : orderProducts) {
+                prodIds.add(item.getProdId());
+            }
+            FacBuyerBusinessExample buyerBusinessExample = new FacBuyerBusinessExample();
+            buyerBusinessExample.createCriteria().andIsDeletedEqualTo(false).andBusinessProdIdIn(prodIds);
+            List<FacBuyerBusiness> buyerBusinesses = this.facBuyerBusinessMapper.selectByExample(buyerBusinessExample);
+            if (CollectionUtils.isNotEmpty(buyerBusinesses)) {
+                // <businessId, [prodId]>
+                Map<Long, List<Long>> biz2ProdIds = new HashMap<>();
+                for (FacBuyerBusiness item : buyerBusinesses) {
+                    if (!biz2ProdIds.containsKey(item.getBusinessId())) {
+                        biz2ProdIds.put(item.getBusinessId(), new ArrayList<>());
+                    }
+                    biz2ProdIds.get(item.getBusinessId()).add(item.getBusinessProdId());
+                }
+                if (biz2ProdIds.size() != 1) {
+                    throw new FacException("您选择的商品在不同卖家中，不能创建订单");
+                }
+                for (Map.Entry<Long, List<Long>> entry : biz2ProdIds.entrySet()) {
+                    List<Long> prodId2Business = entry.getValue();
+                    for (Long prodId : prodIds) {
+                        if (!prodId2Business.contains(prodId)) {
+                            // 用户选择的商品存在于不同的卖家中，即
+                            throw new FacException("当前选择的商品在不同卖家中，不能创建订单");
+                        }
+                    }
+                }
+            } else {
+                throw new FacException("系统没有商品相应卖家信息，请联系管理员");
+            }
+        }
+
         // 当前订单总消费金额(后台计算出来的)
         BigDecimal totalConsumeAmout = this.getTotalConsumAmout(orderProducts);
+        int userScore = orders.get(0).getUserScore();
+        if (userScore > 0) {
+            // 如果用户使用了积分，预支付金额需要扣除相应积分数对应的金额：一个积分一分钱
+            totalConsumeAmout = DecimalUtils.subtract(totalConsumeAmout, DecimalUtils.division(userScore, 100));
+        }
+        totalConsumeAmout = DecimalUtils.formatDecimal(totalConsumeAmout);
+        logger.info(String.format("-------------[getWxPrePayInfo] orderNo:%s, totalConsumeAmout:%s, userScore:%s, money/paramter:%s"
+                , orderNo, totalConsumeAmout, userScore, req.getMoney()));
+
+        // 校验订单总金额 客户端传给后端的和后端自己统计出来的金额是否一致
         if (totalConsumeAmout.compareTo(new BigDecimal(req.getMoney())) != 0) {
             log.info(String.format("-----------------[getWxPrePayInfo] consumeAmout has error, money/paramter:%s, backStatic:%s", req.getMoney()
                     , totalConsumeAmout.toString()));
             throw new Exception("当前订单商品总额与实际消费不一致，请核实");
         }
-        int userScore = orders.get(0).getUserScore();
-        if (userScore > 0) {
-            // 如果用户使用了积分，预支付金额需要扣除相应积分数对应的金额：一个积分一分钱
-            float userScore2Yuan = (float) userScore / 100;
-            totalConsumeAmout = DecimalUtils.subtract(totalConsumeAmout, new BigDecimal(userScore2Yuan));
-        }
-        totalConsumeAmout = DecimalUtils.formatDecimal(totalConsumeAmout);
-
-        //接口调用总金额单位为分,需要换算一下(测试金额改成1,单位为分则是0.01,根据自己业务场景判断是转换成float类型还是int类型)
-        //String amountFen = Integer.valueOf((Integer.parseInt(totalConsumeAmout.toString())*100)).toString();
-//        String amountFen = Float.valueOf((Float.parseFloat(totalConsumeAmout.toString()) * 100)).toString();
-        String amountFen = "1";
-        // 创建hashmap(用户获得签名)
-        SortedMap<String, String> paraMap = new TreeMap<String, String>();
         // 校验当前商品是否还可以购买:库存数据
         Long[] ids = new Long[orderProducts.size()];
         // <prodId, FacOrderProduct>
@@ -154,7 +189,7 @@ public class PayServiceImpl implements IPayService {
         // 设置商户订单号
         String outTradeNo = orderNo;
         try {
-            // 测试金额:1分钱
+            // 测试金额:1分钱 zgf
             BigDecimal totalAmount = new BigDecimal("0.01");
             AppMchVo appMchVo = new AppMchVo();
             appMchVo.setAppId(Global.getFacAppId());
@@ -270,7 +305,9 @@ public class PayServiceImpl implements IPayService {
         List<Product> products = new ArrayList<>();
         List<Long> ids = new ArrayList<>();
         BigDecimal totalAmount = DecimalUtils.getDefaultDecimal();
+        List<Long> prodIds = new ArrayList<>();
         for (FacOrderProduct orderProduct : orderProducts) {
+            prodIds.add(orderProduct.getProdId());
             Product product = new Product();
             product.setId(orderProduct.getProdId());
             product.setSales(Integer.valueOf(orderProduct.getProdNumber()));
@@ -286,8 +323,36 @@ public class PayServiceImpl implements IPayService {
             // 当前订单对应的商品总金额
             totalAmount = DecimalUtils.add(totalAmount, DecimalUtils.mul(orderProduct.getPrice(), new BigDecimal(orderProduct.getProdNumber().toString())));
         }
-        this.productMapper.batchUpdateProductSales(products);
-        logger.info("---------------------[dealOrderAndProdDataAfterPayed] batchUpdateProductSales success.----------------");
+        FacProductExample productExample = new FacProductExample();
+        productExample.createCriteria().andIsDeletedEqualTo(false).andIdIn(prodIds);
+        List<FacProduct> facProducts = this.facProductMapper.selectByExample(productExample);
+        if (CollectionUtils.isNotEmpty(facProducts)) {
+            for (FacProduct item : facProducts) {
+                for (FacOrderProduct orderProduct : orderProducts) {
+                    if (item.getId().equals(orderProduct.getProdId())) {
+                        FacProduct product = new FacProduct();
+                        // 销量
+                        int oldSales = item.getSales() != null ? Integer.valueOf(item.getSales()) : 0;
+                        int sales = oldSales + Integer.valueOf(orderProduct.getProdNumber());
+                        product.setSales(Short.valueOf(String.valueOf(sales)));
+                        // 订单数量
+                        int oldOrderCount = item.getOrderCount() != null ? Integer.valueOf(item.getOrderCount()) : 0;
+                        int orderCount = oldOrderCount + 1;
+                        product.setOrderCount(Short.valueOf(String.valueOf(orderCount)));
+                        // 库存数量
+                        int oldInventoryQuantity = item.getInventoryQuantity() != null ? Integer.valueOf(item.getInventoryQuantity()) : 0;
+                        int inventoryQuantity = oldInventoryQuantity - Integer.valueOf(orderProduct.getProdNumber());
+                        product.setInventoryQuantity(Short.valueOf(String.valueOf(inventoryQuantity)));
+                        // 更新
+                        productExample = new FacProductExample();
+                        productExample.createCriteria().andIsDeletedEqualTo(false).andIdEqualTo(orderProduct.getProdId());
+                        int result = this.facProductMapper.updateByExampleSelective(product, productExample);
+                        logger.info("---------------------[dealOrderAndProdDataAfterPayed] updateProductSales success,result:%s, orderNo:%s, product:%s"
+                                , result, orderNo, JSON.toJSONString(product));
+                    }
+                }
+            }
+        }
         // 给分享人加积分/佣金啥的
         if (MapUtils.isNotEmpty(inviterId2ProdId)) {
             Long[] idsArr = new Long[ids.size()];
@@ -379,7 +444,7 @@ public class PayServiceImpl implements IPayService {
                 logger.info(String.format("==================current user is not exist, token:%s================", orders.get(0).getToken()));
             }
             // 实际消费金额记录
-            totalAmount = DecimalUtils.subtract(totalAmount, new BigDecimal(String.valueOf(useScore)));
+            totalAmount = DecimalUtils.subtract(totalAmount, DecimalUtils.division(useScore, 100));
         }
         // 记录消费金额记录
         if (buyer != null) {

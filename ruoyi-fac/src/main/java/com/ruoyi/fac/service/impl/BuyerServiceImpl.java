@@ -391,7 +391,7 @@ public class BuyerServiceImpl implements IBuyerService {
                 }
                 // 去掉使用的积分
                 if (useScore > 0) {
-                    total = DecimalUtils.subtract(total, new BigDecimal(String.valueOf(useScore / 100)));
+                    total = DecimalUtils.subtract(total, DecimalUtils.division(useScore, 100));
                 }
                 vo.setTotleConsumed(Double.valueOf(total.toString()));
             }

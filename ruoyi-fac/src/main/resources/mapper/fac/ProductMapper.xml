@@ -261,18 +261,4 @@
         </foreach>
         order by create_time desc
     </select>
-
-    <update id="updateProductSaleNumber">
-      update fac_product
-      set sales = sales + #{number}, order_count = order_count + 1, inventory_quantity = inventory_quantity - #{number}
-      where id = #{id}
-    </update>
-
-    <update id="batchUpdateProductSales">
-        <foreach collection="list" item="record" index="index" separator=";" open="" close="">
-            UPDATE fac_product
-            set sales = sales + #{record.sales}, order_count = order_count + 1, inventory_quantity = inventory_quantity - #{record.sales}
-            WHERE  is_deleted = 0 and id = #{record.id}
-        </foreach>
-    </update>
 </mapper>

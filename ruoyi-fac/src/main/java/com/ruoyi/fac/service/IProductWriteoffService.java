@@ -1,6 +1,7 @@
 package com.ruoyi.fac.service;
 
 import com.ruoyi.fac.domain.FacProductWriteoff;
+import com.ruoyi.fac.model.FacProductWriteOffBean;
 
 import java.util.List;
 
@@ -25,7 +26,7 @@ public interface IProductWriteoffService {
      * @param productWriteoff 核销记录信息
      * @return 核销记录集合
      */
-    List<FacProductWriteoff> selectProductWriteoffList(FacProductWriteoff productWriteoff);
+    List<FacProductWriteOffBean> selectProductWriteoffList(FacProductWriteoff productWriteoff);
 
     /**
      * 新增核销记录

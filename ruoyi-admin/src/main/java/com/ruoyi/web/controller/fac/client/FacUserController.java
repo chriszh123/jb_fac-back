@@ -33,6 +33,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.List;
 
 /**
@@ -282,5 +284,11 @@ public class FacUserController extends BaseController {
         }
         UserBaseVo vo = this.buyerService.getUserInfo(req.getToken());
         return FacResult.success(vo);
+    }
+
+    public static void main(String[] args) {
+        DecimalFormat df = new DecimalFormat("0.00");
+        String s = df.format((float)2/100);
+        System.out.println(s);
     }
 }

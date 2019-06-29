@@ -6,6 +6,7 @@ import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.page.TableDataInfo;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.fac.domain.FacProductWriteoff;
+import com.ruoyi.fac.model.FacProductWriteOffBean;
 import com.ruoyi.fac.service.IProductWriteoffService;
 import com.ruoyi.framework.web.base.BaseController;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -44,7 +45,7 @@ public class ProductWriteoffController extends BaseController {
     @ResponseBody
     public TableDataInfo list(FacProductWriteoff productWriteoff) {
         startPage();
-        List<FacProductWriteoff> list = productWriteoffService.selectProductWriteoffList(productWriteoff);
+        List<FacProductWriteOffBean> list = productWriteoffService.selectProductWriteoffList(productWriteoff);
         return getDataTable(list);
     }
 
@@ -56,9 +57,9 @@ public class ProductWriteoffController extends BaseController {
     @PostMapping("/export")
     @ResponseBody
     public AjaxResult export(FacProductWriteoff productWriteoff) {
-        List<FacProductWriteoff> list = productWriteoffService.selectProductWriteoffList(productWriteoff);
-        ExcelUtil<FacProductWriteoff> util = new ExcelUtil<FacProductWriteoff>(FacProductWriteoff.class);
-        return util.exportExcel(list, ("核销记录_" + productWriteoff.getId()));
+        List<FacProductWriteOffBean> list = productWriteoffService.selectProductWriteoffList(productWriteoff);
+        ExcelUtil<FacProductWriteOffBean> util = new ExcelUtil<>(FacProductWriteOffBean.class);
+        return util.exportExcel(list, ("核销记录_" + productWriteoff.getProductId()));
     }
 
     /**

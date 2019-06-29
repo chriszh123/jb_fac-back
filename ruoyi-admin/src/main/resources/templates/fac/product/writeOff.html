@@ -33,11 +33,11 @@
             </form>
         </div>
 
-        <div class="btn-group-sm hidden-xs" id="toolbar" role="group">
-            <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="fac:productWriteoff:export">
-                <i class="fa fa-download"></i> 导出
-            </a>
-        </div>
+        <!--<div class="btn-group-sm hidden-xs" id="toolbar" role="group">-->
+            <!--<a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="fac:productWriteoff:export">-->
+                <!--<i class="fa fa-download"></i> 导出-->
+            <!--</a>-->
+        <!--</div>-->
 
         <div class="col-sm-12 select-table table-striped">
             <table id="bootstrap-table" data-mobile-responsive="true"></table>
@@ -74,8 +74,16 @@
                     visible: true
                 },
                 {
-                    field: 'code',
-                    title: '核销码',
+                    field: 'buyerId',
+                    title: '用户ID',
+                    sortable: false,
+                    formatter: function (value, row, index) {
+                        return value;
+                    }
+                },
+                {
+                    field: 'orderNo',
+                    title: '订单号',
                     sortable: false
                 },
                 {
@@ -84,7 +92,7 @@
                     sortable: false,
                     formatter: function (value, row, index) {
                         // 二维码对应的内容
-                        var qrcodeValue = "jbfac" + "," + row.orderNo + "," + row.productId;
+                        var qrcodeValue = "jbfac" + "," + row.orderNo
                         var actions = [];
                         actions.push('<a class="btn btn-primary btn-xs" href="#" onclick="writeOffQrCode(\'' + qrcodeValue + '\')">点击查看</a> ');
                         return actions.join('');
@@ -108,12 +116,9 @@
                     sortable: false
                 },
                 {
-                    field: 'buyerId',
-                    title: '用户ID',
-                    sortable: false,
-                    formatter: function (value, row, index) {
-                        return value;
-                    }
+                    field: 'createTime',
+                    title: '创建时间',
+                    sortable: false
                 }]
         };
         $.table.init(options);

@@ -52,7 +52,7 @@
     </resultMap>
 
     <sql id="selectOrderVo">
-        select main.id, main.order_no, main.status, main.pay_time, main.token,main.open_id, main.user_id, main.user_name, main.nick_name,
+        select DISTINCT main.order_no,main.id, main.status, main.pay_time, main.token,main.open_id, main.user_id, main.user_name, main.nick_name,
             main.remark, main.ship_id,main.user_score, main.ship_code, main.remark_mngt, main.ship, main.cacel_id, main.cacel_name,
             main.cacel_time, main.prepay_id,main.create_time, main.update_time, main.operator_id, main.operator_name, main.is_deleted
         from fac_order main
