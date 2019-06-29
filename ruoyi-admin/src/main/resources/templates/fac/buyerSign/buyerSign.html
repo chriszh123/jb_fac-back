@@ -17,9 +17,12 @@
                             积分来源：
                             <select id="type" name="type">
                                 <option value="">请选择...</option>
-                                <option value="0">签到</option>
-                                <option value="1">购物反赠</option>
-                                <option value="2">购物消费</option>
+                                <option value="0">签到(积分)</option>
+                                <option value="1">购物反赠(积分)</option>
+                                <option value="2">购物消费(积分)</option>
+                                <option value="3">购物消费(金额)</option>
+                                <option value="4">分享赠送积分</option>
+                                <option value="5">分享赠送奖金</option>
                             </select>
                         </li>
                         <li>
@@ -69,7 +72,7 @@
                 },
                 {
                     field: 'type',
-                    title: '积分类型',
+                    title: '类型',
                     sortable: true,
                     formatter: function (value, row, index) {
                         return POINT_TYPE[value];
@@ -80,7 +83,18 @@
                     title: '积分',
                     sortable: true,
                     formatter: function (value, row, index) {
-                        if (row.type == 2) {
+                        if (row.type == 2 || row.type == 3 ) {
+                            return ("<span style='color: green;font-weight: bold;'>" + value + "</span>");
+                        }
+                        return ("<span style='color: red;font-weight: bold;'>" + value + "</span>");
+                    }
+                },
+                {
+                    field: 'mount',
+                    title: '金额',
+                    sortable: true,
+                    formatter: function (value, row, index) {
+                        if (row.type == 2 || row.type == 3 ) {
                             return ("<span style='color: green;font-weight: bold;'>" + value + "</span>");
                         }
                         return ("<span style='color: red;font-weight: bold;'>" + value + "</span>");

@@ -79,6 +79,8 @@ public class PayServiceImpl implements IPayService {
     private FacBuyerBusinessMapper facBuyerBusinessMapper;
     @Autowired
     private FacProductMapper facProductMapper;
+    @Autowired
+    private FacCashMapper facCashMapper;
 
     /**
      * 微信支付预支付接口
@@ -303,8 +305,10 @@ public class PayServiceImpl implements IPayService {
         // <inviterId, [prodId]>
         Map<Long, List<Long>> inviterId2ProdId = new HashMap<>();
         List<Product> products = new ArrayList<>();
+        // 是被分享的商品ids
         List<Long> ids = new ArrayList<>();
         BigDecimal totalAmount = DecimalUtils.getDefaultDecimal();
+        // 商品ids
         List<Long> prodIds = new ArrayList<>();
         for (FacOrderProduct orderProduct : orderProducts) {
             prodIds.add(orderProduct.getProdId());
@@ -359,31 +363,53 @@ public class PayServiceImpl implements IPayService {
             idsArr = ids.toArray(idsArr);
             List<Product> productList = this.productMapper.selectProductsByIds(idsArr);
             if (CollectionUtils.isNotEmpty(productList)) {
+                Date nowDate = new Date();
                 Map<Long, Product> productMap = new HashMap<>(productList.size());
                 for (Product item : productList) {
                     productMap.put(item.getId(), item);
                 }
                 // <inviterId, [prodId]>
-                List<Buyer> updateObjs = new ArrayList<>();
-                for (Map.Entry<Long, List<Long>> entry : inviterId2ProdId.entrySet()) {
-                    Buyer buyer = new Buyer();
-                    // 积分
-                    int points = 0;
-                    BigDecimal balance = new BigDecimal("0.0");
-                    for (Long prodId : entry.getValue()) {
-                        if (productMap.containsKey(prodId)) {
-                            points = points + productMap.get(prodId).getBonusPoints();
-                            balance = DecimalUtils.add(balance, productMap.get(prodId).getDistribution());
-                        }
+                FacBuyerExample buyerExample = new FacBuyerExample();
+                buyerExample.createCriteria().andIsDeletedEqualTo(false).andIdIn(new ArrayList<>(inviterId2ProdId.keySet()));
+                List<FacBuyer> facBuyers = this.facBuyerMapper.selectByExample(buyerExample);
+                Map<Long, FacBuyer> id2Buyer = new HashMap<>();
+                if (CollectionUtils.isNotEmpty(facBuyers)) {
+                    for (FacBuyer buyer : facBuyers) {
+                        id2Buyer.put(buyer.getId(), buyer);
                     }
-                    buyer.setId(entry.getKey());
-                    buyer.setPoints(points);
-                    buyer.setBalance(balance);
-                    updateObjs.add(buyer);
                 }
-                this.buyerMapper.batchUpdatePoints(updateObjs);
-                logger.info(String.format("---------------------[dealOrderAndProdDataAfterPayed] batchUpdatePoints success.---------%s"
-                        , JSON.toJSONString(updateObjs)));
+                for (Map.Entry<Long, List<Long>> entry : inviterId2ProdId.entrySet()) {
+                    FacBuyer buyer = new FacBuyer();
+                    // 积分
+                    FacBuyer oldBuyer = id2Buyer.get(entry.getKey());
+                    if (oldBuyer != null) {
+                        int oldPoint = oldBuyer.getPoints() != null ? Integer.valueOf(oldBuyer.getPoints()) : 0;
+                        int newPoints = oldPoint;
+                        BigDecimal oldBalance = oldBuyer.getBalance() != null ? oldBuyer.getBalance() : DecimalUtils.getDefaultDecimal();
+                        BigDecimal balance = oldBalance;
+                        for (Long prodId : entry.getValue()) {
+                            if (productMap.containsKey(prodId)) {
+                                newPoints = newPoints
+                                        + (productMap.get(prodId).getBonusPoints() != null ? productMap.get(prodId).getBonusPoints().intValue() : 0);
+                                balance = DecimalUtils.add(balance
+                                        , (productMap.get(prodId).getDistribution() != null ? productMap.get(prodId).getDistribution() : DecimalUtils.getDefaultDecimal()));
+                            }
+                        }
+                        buyer.setPoints(Short.valueOf(String.valueOf(newPoints)));
+                        buyer.setBalance(balance);
+                        buyer.setUpdateTime(nowDate);
+                        buyerExample = new FacBuyerExample();
+                        buyerExample.createCriteria().andIsDeletedEqualTo(false).andIdEqualTo(entry.getKey());
+                        int result = this.facBuyerMapper.updateByExampleSelective(buyer, buyerExample);
+                        logger.info(String.format("---------------------[dealOrderAndProdDataAfterPayed] update point and balance,result:%s, orderNo:%s, buyerId:%s, point:%s, balance:%s"
+                                , result, orderNo, entry.getKey(), newPoints, balance));
+                        // 给分享人增加一条奖励积分或者分享金的记录
+                        // 积分、分享金有改变
+                        int changePoint = newPoints - oldPoint;
+                        BigDecimal changeBalance = DecimalUtils.subtract(balance, oldBalance);
+                        this.insertBuyerSign(oldBuyer, changePoint, changeBalance, nowDate);
+                    }
+                }
             }
         }
 
@@ -461,6 +487,52 @@ public class PayServiceImpl implements IPayService {
             this.facBuyerSignMapper.insertSelective(record);
             logger.info(String.format("---------------add counsumer amount success, token:%s, orderNo:%s, totalAmount:%s",
                     buyer.getToken(), orderNo, totalAmount));
+        }
+    }
+
+    private void insertBuyerSign(FacBuyer buyer, int points, BigDecimal balance, Date nowDate) {
+        FacBuyerSign facBuyerSign = new FacBuyerSign();
+        if (points != 0) {
+            facBuyerSign.setToken(buyer.getToken());
+            facBuyerSign.setNickName(facBuyerSign.getNickName());
+            facBuyerSign.setType(ScoreTypeEnum.INVITER_POINT.getValue());
+            facBuyerSign.setPoint(Short.valueOf(String.valueOf(points)));
+            facBuyerSign.setSignTime(nowDate);
+            facBuyerSign.setCreateTime(nowDate);
+            facBuyerSign.setUpdateTime(nowDate);
+            facBuyerSign.setIsDeleted(false);
+            int row = this.facBuyerSignMapper.insertSelective(facBuyerSign);
+            logger.info(String.format("-----------------------[insertBuyerSign4 inviter] point result:%s, buyerId:%s,points:%s"
+                    , row, buyer.getId(), facBuyerSign.getPoint()));
+        }
+        if (balance.compareTo(DecimalUtils.getDefaultDecimal()) != 0) {
+            facBuyerSign.setToken(buyer.getToken());
+            facBuyerSign.setNickName(facBuyerSign.getNickName());
+            facBuyerSign.setType(ScoreTypeEnum.INVITER_BALANCE.getValue());
+            facBuyerSign.setMount(balance);
+            facBuyerSign.setSignTime(nowDate);
+            facBuyerSign.setCreateTime(nowDate);
+            facBuyerSign.setUpdateTime(nowDate);
+            facBuyerSign.setIsDeleted(false);
+            int row = this.facBuyerSignMapper.insertSelective(facBuyerSign);
+            logger.info(String.format("-----------------------[insertBuyerSign4 inviter] balance result:%s, buyerId:%s,balance:%s"
+                    , row, buyer.getId(), facBuyerSign.getMount()));
+            // 这个场景下需要往提现表里增加一条待处理的提现记录
+            FacCash facCash = new FacCash();
+            facCash.setUserId(buyer.getId());
+            facCash.setCash(balance);
+            facCash.setReceivingAccount("");
+            facCash.setPhoneNumber("");
+            facCash.setApplyTime(nowDate);
+            facCash.setStatus(new Byte("1"));
+            facCash.setCreateTime(nowDate);
+            facCash.setUpdateTime(nowDate);
+            facCash.setOperatorId(-1L);
+            facCash.setOperatorName("default");
+            facCash.setIsDeleted(false);
+            row = this.facCashMapper.insertSelective(facCash);
+            logger.info(String.format("-----------------------[insertBuyerSign4 inviter] cash result:%s, buyerId:%s,cash:%s"
+                    , row, buyer.getId(), facBuyerSign.getMount()));
         }
     }
 

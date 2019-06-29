@@ -1,15 +1,24 @@
 package com.ruoyi.fac.service.impl;
 
-import java.util.Date;
-import java.util.List;
-
+import com.ruoyi.common.support.Convert;
+import com.ruoyi.fac.domain.Buyer;
+import com.ruoyi.fac.domain.Cash;
+import com.ruoyi.fac.mapper.BuyerMapper;
+import com.ruoyi.fac.mapper.CashMapper;
+import com.ruoyi.fac.mapper.FacBuyerMapper;
+import com.ruoyi.fac.model.FacBuyer;
+import com.ruoyi.fac.model.FacBuyerExample;
+import com.ruoyi.fac.service.ICashService;
+import com.ruoyi.fac.util.DecimalUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.ruoyi.fac.mapper.CashMapper;
-import com.ruoyi.fac.domain.Cash;
-import com.ruoyi.fac.service.ICashService;
-import com.ruoyi.common.support.Convert;
 import org.springframework.util.CollectionUtils;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
 
 /**
  * 买家提现记录 服务层实现
@@ -19,8 +28,14 @@ import org.springframework.util.CollectionUtils;
  */
 @Service
 public class CashServiceImpl implements ICashService {
+    private static final Logger logger = LoggerFactory.getLogger(CashServiceImpl.class);
+
     @Autowired
     private CashMapper cashMapper;
+    @Autowired
+    private BuyerMapper buyerMapper;
+    @Autowired
+    private FacBuyerMapper facBuyerMapper;
 
     /**
      * 查询买家提现记录信息
@@ -80,7 +95,26 @@ public class CashServiceImpl implements ICashService {
         Date now = new Date();
         cash.setUpdateTime(now);
         cash.setPayTime(now);
-        return cashMapper.updateCash(cash);
+        int rows = this.cashMapper.updateCash(cash);
+        // 如果更新成功，且打款成功需要更新当前用户对应的可用余额
+        Cash db = this.cashMapper.selectCashById(cash.getId());
+        if (db != null && db.getUserId() != null && cash.getStatus() != null && cash.getStatus().intValue() == 3) {
+            Buyer buyer = this.buyerMapper.selectBuyerById(db.getUserId());
+            if (buyer != null) {
+                FacBuyer facBuyer = new FacBuyer();
+                BigDecimal oldBalance = buyer.getBalance() != null ? buyer.getBalance() : DecimalUtils.getDefaultDecimal();
+                BigDecimal newBalance = DecimalUtils.subtract(oldBalance, db.getCash());
+                facBuyer.setBalance(newBalance);
+                facBuyer.setUpdateTime(now);
+                FacBuyerExample buyerExample = new FacBuyerExample();
+                buyerExample.createCriteria().andIsDeletedEqualTo(false).andIdEqualTo(db.getUserId());
+                rows = this.facBuyerMapper.updateByExampleSelective(facBuyer, buyerExample);
+                logger.info("------------update facBuyer balance, buyerId:%s, oldBalance:%s,newBalance:%s"
+                        , db.getUserId(), oldBalance, newBalance);
+            }
+        }
+
+        return rows;
     }
 
     /**

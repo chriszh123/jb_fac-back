@@ -143,12 +143,4 @@
         where id = #{uid}
     </update>
 
-    <update id="batchUpdatePoints">
-        <foreach collection="list" item="record" index="index" separator=";" open="" close="">
-            UPDATE fac_buyer
-            set points = points + #{record.points}, balance = balance + #{record.balance}
-            WHERE is_deleted = 0 and id = #{record.id}
-        </foreach>
-    </update>
-
 </mapper>
