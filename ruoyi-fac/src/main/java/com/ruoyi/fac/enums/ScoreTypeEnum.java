@@ -63,7 +63,7 @@ public enum ScoreTypeEnum {
      */
     public static boolean isReward(Byte code) {
         boolean reward = true;
-        if (code.equals(COUNSUMER.value)) {
+        if (code.equals(COUNSUMER.value) || code.equals(COUNSUMER_AMOUNT.value)) {
             return false;
         }
 

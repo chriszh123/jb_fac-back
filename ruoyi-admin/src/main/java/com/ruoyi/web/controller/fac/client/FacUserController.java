@@ -265,7 +265,7 @@ public class FacUserController extends BaseController {
     @ResponseBody
     public FacResult consumerLogs(@RequestBody SignReq req) {
         try {
-            UserScoreLogs logs = this.userSignService.queryUserConsumerLogs(req);
+            UserScoreLogs logs = this.userSignService.queryUserAmountLogs(req);
             return FacResult.success(logs);
         } catch (FacException fe) {
             LOGGER.error(fe.getMessage(), fe);

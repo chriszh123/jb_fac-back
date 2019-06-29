@@ -127,6 +127,7 @@ public class UserSignServiceImpl implements IUserSignService {
         types.add(ScoreTypeEnum.SIGN.getValue());
         types.add(ScoreTypeEnum.BUY_BACK.getValue());
         types.add(ScoreTypeEnum.COUNSUMER.getValue());
+        types.add(ScoreTypeEnum.INVITER_POINT.getValue());
 
         FacBuyerSignExample example = new FacBuyerSignExample();
         example.createCriteria().andIsDeletedEqualTo(false).andTokenEqualTo(req.getToken()).andTypeIn(types);
@@ -169,20 +170,21 @@ public class UserSignServiceImpl implements IUserSignService {
     }
 
     /**
-     * 查询当前用户消费金额明细
+     * 查询当前用户金额明细
      *
      * @param req
      * @return
      * @throws FacException
      */
     @Override
-    public UserScoreLogs queryUserConsumerLogs(SignReq req) throws FacException {
+    public UserScoreLogs queryUserAmountLogs(SignReq req) throws FacException {
         UserScoreLogs logs = new UserScoreLogs();
         if (StringUtils.isBlank(req.getToken())) {
             return logs;
         }
         List<Byte> types = new ArrayList<>();
         types.add(ScoreTypeEnum.COUNSUMER_AMOUNT.getValue());
+        types.add(ScoreTypeEnum.INVITER_BALANCE.getValue());
 
         FacBuyerSignExample example = new FacBuyerSignExample();
         example.createCriteria().andIsDeletedEqualTo(false).andTokenEqualTo(req.getToken()).andTypeIn(types);
@@ -200,7 +202,7 @@ public class UserSignServiceImpl implements IUserSignService {
                 log.setDateAdd(TimeUtils.date2Str(sign.getCreateTime(), TimeUtils.DEFAULT_DATE_TIME_FORMAT_HH_MM_SS));
                 log.setAmount(String.valueOf(sign.getMount()));
                 // 0为奖励，1为消费
-                log.setBehavior(1);
+                log.setBehavior(ScoreTypeEnum.isReward(sign.getType()) ? 0 : 1);
             }
             logs.setResult(result);
             return logs;
