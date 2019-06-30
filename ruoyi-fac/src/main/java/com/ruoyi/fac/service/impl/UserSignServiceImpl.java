@@ -185,6 +185,7 @@ public class UserSignServiceImpl implements IUserSignService {
         List<Byte> types = new ArrayList<>();
         types.add(ScoreTypeEnum.COUNSUMER_AMOUNT.getValue());
         types.add(ScoreTypeEnum.INVITER_BALANCE.getValue());
+        types.add(ScoreTypeEnum.CASH_OUT.getValue());
 
         FacBuyerSignExample example = new FacBuyerSignExample();
         example.createCriteria().andIsDeletedEqualTo(false).andTokenEqualTo(req.getToken()).andTypeIn(types);

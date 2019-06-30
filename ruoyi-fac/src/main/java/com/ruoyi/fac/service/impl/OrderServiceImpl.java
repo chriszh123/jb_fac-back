@@ -630,8 +630,9 @@ public class OrderServiceImpl implements IOrderService {
         buyerBusiness.setToken(token);
         buyerBusiness.setIsDeleted(0);
         List<BuyerBusiness> buyerBusinesses = this.buyerBusinessMapper.selectBuyerBusinessList(buyerBusiness);
-        // 用户类型:0-普通购买用户,1-商家
-        vo.setUserType(CollectionUtils.isEmpty(buyerBusinesses) ? 0 : 1);
+        // 用户类型:0-普通购买用户,1-商家：先屏蔽掉待核销的tab
+//        vo.setUserType(CollectionUtils.isEmpty(buyerBusinesses) ? 0 : 1);
+        vo.setUserType(0);
         if (CollectionUtils.isNotEmpty(buyerBusinesses)) {
             List<Long> prodIds = new ArrayList<>();
             for (BuyerBusiness item : buyerBusinesses) {

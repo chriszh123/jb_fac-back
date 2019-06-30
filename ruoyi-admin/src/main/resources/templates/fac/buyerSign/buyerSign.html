@@ -14,7 +14,7 @@
                             用户昵称：<input type="text" name="nickName"/>
                         </li>
                         <li>
-                            积分来源：
+                            类型：
                             <select id="type" name="type">
                                 <option value="">请选择...</option>
                                 <option value="0">签到(积分)</option>
@@ -23,6 +23,7 @@
                                 <option value="3">购物消费(金额)</option>
                                 <option value="4">分享赠送积分</option>
                                 <option value="5">分享赠送奖金</option>
+                                <option value="6">已提现奖金</option>
                             </select>
                         </li>
                         <li>
@@ -83,7 +84,7 @@
                     title: '积分',
                     sortable: true,
                     formatter: function (value, row, index) {
-                        if (row.type == 2 || row.type == 3 ) {
+                        if (row.type == 2 || row.type == 3 || row.type == 6) {
                             return ("<span style='color: green;font-weight: bold;'>" + value + "</span>");
                         }
                         return ("<span style='color: red;font-weight: bold;'>" + value + "</span>");
@@ -94,7 +95,7 @@
                     title: '金额',
                     sortable: true,
                     formatter: function (value, row, index) {
-                        if (row.type == 2 || row.type == 3 ) {
+                        if (row.type == 2 || row.type == 3 || row.type == 6) {
                             return ("<span style='color: green;font-weight: bold;'>" + value + "</span>");
                         }
                         return ("<span style='color: red;font-weight: bold;'>" + value + "</span>");
@@ -102,7 +103,7 @@
                 },
                 {
                     field: 'createTime',
-                    title: '操作时间',
+                    title: '创建时间',
                     sortable: true
                 }]
         };

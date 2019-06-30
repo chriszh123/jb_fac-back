@@ -494,7 +494,7 @@ public class PayServiceImpl implements IPayService {
         FacBuyerSign facBuyerSign = new FacBuyerSign();
         if (points != 0) {
             facBuyerSign.setToken(buyer.getToken());
-            facBuyerSign.setNickName(facBuyerSign.getNickName());
+            facBuyerSign.setNickName(buyer.getNickName());
             facBuyerSign.setType(ScoreTypeEnum.INVITER_POINT.getValue());
             facBuyerSign.setPoint(Short.valueOf(String.valueOf(points)));
             facBuyerSign.setSignTime(nowDate);
@@ -507,7 +507,7 @@ public class PayServiceImpl implements IPayService {
         }
         if (balance.compareTo(DecimalUtils.getDefaultDecimal()) != 0) {
             facBuyerSign.setToken(buyer.getToken());
-            facBuyerSign.setNickName(facBuyerSign.getNickName());
+            facBuyerSign.setNickName(buyer.getNickName());
             facBuyerSign.setType(ScoreTypeEnum.INVITER_BALANCE.getValue());
             facBuyerSign.setMount(balance);
             facBuyerSign.setSignTime(nowDate);

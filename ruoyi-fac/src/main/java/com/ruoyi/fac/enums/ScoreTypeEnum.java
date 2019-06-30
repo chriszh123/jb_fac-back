@@ -12,7 +12,8 @@ public enum ScoreTypeEnum {
     COUNSUMER("购物消费(积分)", new Byte("2")),
     COUNSUMER_AMOUNT("购物消费(金额)", new Byte("3")),
     INVITER_POINT("分享赠送积分", new Byte("4")),
-    INVITER_BALANCE("分享赠送奖金", new Byte("5")),;
+    INVITER_BALANCE("分享赠送奖金", new Byte("5")),
+    CASH_OUT("已提现奖金", new Byte("6"));
 
     private String name;
     private Byte value;
@@ -63,7 +64,7 @@ public enum ScoreTypeEnum {
      */
     public static boolean isReward(Byte code) {
         boolean reward = true;
-        if (code.equals(COUNSUMER.value) || code.equals(COUNSUMER_AMOUNT.value)) {
+        if (code.equals(COUNSUMER.value) || code.equals(COUNSUMER_AMOUNT.value) || code.equals(CASH_OUT.value)) {
             return false;
         }
 

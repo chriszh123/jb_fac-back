@@ -3,11 +3,14 @@ package com.ruoyi.fac.service.impl;
 import com.ruoyi.common.support.Convert;
 import com.ruoyi.fac.domain.Buyer;
 import com.ruoyi.fac.domain.Cash;
+import com.ruoyi.fac.enums.ScoreTypeEnum;
 import com.ruoyi.fac.mapper.BuyerMapper;
 import com.ruoyi.fac.mapper.CashMapper;
 import com.ruoyi.fac.mapper.FacBuyerMapper;
+import com.ruoyi.fac.mapper.FacBuyerSignMapper;
 import com.ruoyi.fac.model.FacBuyer;
 import com.ruoyi.fac.model.FacBuyerExample;
+import com.ruoyi.fac.model.FacBuyerSign;
 import com.ruoyi.fac.service.ICashService;
 import com.ruoyi.fac.util.DecimalUtils;
 import org.slf4j.Logger;
@@ -36,6 +39,8 @@ public class CashServiceImpl implements ICashService {
     private BuyerMapper buyerMapper;
     @Autowired
     private FacBuyerMapper facBuyerMapper;
+    @Autowired
+    private FacBuyerSignMapper facBuyerSignMapper;
 
     /**
      * 查询买家提现记录信息
@@ -96,11 +101,12 @@ public class CashServiceImpl implements ICashService {
         cash.setUpdateTime(now);
         cash.setPayTime(now);
         int rows = this.cashMapper.updateCash(cash);
-        // 如果更新成功，且打款成功需要更新当前用户对应的可用余额
+        // 如果更新成功，且打款成功需要更新当前用户对应的可用余额+增加一条提现的操作记录(fac_buyer_sign)
         Cash db = this.cashMapper.selectCashById(cash.getId());
         if (db != null && db.getUserId() != null && cash.getStatus() != null && cash.getStatus().intValue() == 3) {
             Buyer buyer = this.buyerMapper.selectBuyerById(db.getUserId());
             if (buyer != null) {
+                // 1.更细用户余额信息
                 FacBuyer facBuyer = new FacBuyer();
                 BigDecimal oldBalance = buyer.getBalance() != null ? buyer.getBalance() : DecimalUtils.getDefaultDecimal();
                 BigDecimal newBalance = DecimalUtils.subtract(oldBalance, db.getCash());
@@ -109,8 +115,21 @@ public class CashServiceImpl implements ICashService {
                 FacBuyerExample buyerExample = new FacBuyerExample();
                 buyerExample.createCriteria().andIsDeletedEqualTo(false).andIdEqualTo(db.getUserId());
                 rows = this.facBuyerMapper.updateByExampleSelective(facBuyer, buyerExample);
-                logger.info("------------update facBuyer balance, buyerId:%s, oldBalance:%s,newBalance:%s"
+                logger.info("------------update facBuyer balance success, buyerId:%s, oldBalance:%s,newBalance:%s"
                         , db.getUserId(), oldBalance, newBalance);
+                // 2.增加一条提现记录
+                FacBuyerSign facBuyerSign = new FacBuyerSign();
+                facBuyerSign.setToken(buyer.getToken());
+                facBuyerSign.setNickName(buyer.getNickName());
+                facBuyerSign.setType(ScoreTypeEnum.CASH_OUT.getValue());
+                facBuyerSign.setPoint(Short.valueOf("0"));
+                facBuyerSign.setMount(db.getCash());
+                facBuyerSign.setSignTime(now);
+                facBuyerSign.setCreateTime(now);
+                facBuyerSign.setUpdateTime(now);
+                facBuyerSign.setIsDeleted(false);
+                rows = this.facBuyerSignMapper.insertSelective(facBuyerSign);
+                logger.info("------------add cash out record success, buyerId:%s, mount:%s", db.getUserId(), db.getCash());
             }
         }
 
