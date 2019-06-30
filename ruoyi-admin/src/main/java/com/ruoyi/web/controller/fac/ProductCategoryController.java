@@ -1,5 +1,6 @@
 package com.ruoyi.web.controller.fac;
 
+import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.base.AjaxResult;
 import com.ruoyi.common.enums.BusinessType;
@@ -7,6 +8,7 @@ import com.ruoyi.common.page.TableDataInfo;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.fac.constant.FacConstant;
 import com.ruoyi.fac.domain.ProductCategory;
+import com.ruoyi.fac.exception.FacException;
 import com.ruoyi.fac.service.IProductCategoryService;
 import com.ruoyi.framework.util.ShiroUtils;
 import com.ruoyi.framework.web.base.BaseController;
@@ -93,6 +95,8 @@ public class ProductCategoryController extends BaseController {
         productCategory.setCreateTime(nowDate);
         productCategory.setUpdateTime(nowDate);
         productCategory.setIsDeleted(0);
+        // TODO
+        productCategory.setImgPath("http://trial-1258295468.cos.ap-shanghai.myqcloud.com/fac/test/5d6ed2f7ababbbbc4764113cff2f685b.jpeg");
         return toAjax(productCategoryService.insertProductCategory(productCategory));
     }
 
@@ -135,7 +139,13 @@ public class ProductCategoryController extends BaseController {
     @PostMapping("/remove")
     @ResponseBody
     public AjaxResult remove(String ids) {
-        return toAjax(productCategoryService.deleteProductCategoryByIds(ids));
+        try {
+            return toAjax(productCategoryService.deleteProductCategoryByIds(ids));
+        } catch (FacException fe) {
+            return error(fe.getMessage());
+        } catch (Exception ex) {
+            return error(ex.getMessage());
+        }
     }
 
 }

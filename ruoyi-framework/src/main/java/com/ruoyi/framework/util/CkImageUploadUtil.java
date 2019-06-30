@@ -110,12 +110,17 @@ public class CkImageUploadUtil {
         return fileName;
     }
 
-    public String uploadFile(MultipartFile file) throws Exception {
+    public String uploadFile(MultipartFile file, String imagesUploadPath, String imageReturnPrePath, String domain) throws Exception {
         String result = "";
         FileBean fileBean = new FileBean();
-        // 腾讯云上传图片
-        String fileName = COSClientUtils.getInstance().uploadFile2Cos(file);
-        String imagePath = COSClientUtils.getInstance().getImgUrl(fileName);
+//        // 腾讯云上传图片
+//        String fileName = COSClientUtils.getInstance().uploadFile2Cos(file);
+//        String imagePath = COSClientUtils.getInstance().getImgUrl(fileName);
+//        result = fileBean.success(1, file.getOriginalFilename(), imagePath, null);
+
+        String fileName = FileUploadUtils.upload(file, imagesUploadPath);
+        // 存储在数据库中的图片完整路径
+        String imagePath = domain + imageReturnPrePath + fileName;
         result = fileBean.success(1, file.getOriginalFilename(), imagePath, null);
 
         return result;

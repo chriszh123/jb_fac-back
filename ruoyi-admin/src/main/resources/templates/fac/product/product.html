@@ -7,7 +7,7 @@
     <div class="row">
         <!--查询区域-->
         <div class="col-sm-12 search-collapse">
-            <form id="formId">
+            <form id="queryArea">
                 <div class="select-list">
                     <ul>
                         <li>
@@ -31,6 +31,9 @@
                             </select>
                         </li>
                         <li>
+                            距离核销结束时间：<input type="text" name="expireTime"/>天
+                        </li>
+                        <li>
                             <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i
                                     class="fa fa-search"></i>&nbsp;搜索</a>
                             <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i
@@ -50,8 +53,8 @@
                 <i class="fa fa-plus"></i> 添加
             </a>
             <!--<a class="btn btn-primary btn-edit disabled" onclick="$.operate.edit()"-->
-               <!--shiro:hasPermission="fac:product:edit">-->
-                <!--<i class="fa fa-edit"></i> 修改-->
+            <!--shiro:hasPermission="fac:product:edit">-->
+            <!--<i class="fa fa-edit"></i> 修改-->
             <!--</a>-->
             <a class="btn btn-danger btn-del btn-del disabled" onclick="$.operate.removeAll()"
                shiro:hasPermission="fac:product:remove">
@@ -71,6 +74,16 @@
     var editFlag = [[${@permission.hasPermi('fac:product:edit')}]];
     var removeFlag = [[${@permission.hasPermi('fac:product:remove')}]];
     var prefix = ctx + "fac/product";
+
+    $("#form-product-add").validate({
+        rules: {
+            expireTime: {
+                required: false,
+                number: true,
+                digits: true
+            }
+        }
+    });
 
     $(function () {
         var options = {
@@ -116,16 +129,32 @@
                     sortable: true
                 },
                 {
+                    field: 'orderCount',
+                    title: '订单数量',
+                    sortable: true
+                },
+                {
                     field: 'status',
                     title: '状态',
                     sortable: false,
                     formatter: function (value, row, index) {
                         if (value == 1) {
-                            return "<span style='color: green;font-weight:bold;'>上架<span>";;
+                            return "<span style='color: green;font-weight:bold;'>上架<span>";
+                            ;
                         } else {
                             return "<span style='color: red;font-weight:bold;'>下架<span>";
                         }
                     }
+                },
+                {
+                    field: 'rushEnd',
+                    title: '抢购结束时间',
+                    sortable: false
+                },
+                {
+                    field: 'writeoffEnd',
+                    title: '核销结束时间',
+                    sortable: false
                 },
                 {
                     title: '操作',

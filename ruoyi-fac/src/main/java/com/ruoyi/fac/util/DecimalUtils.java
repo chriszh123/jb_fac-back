@@ -37,7 +37,7 @@ public class DecimalUtils {
     }
 
     /**
-     * 两者之和
+     * 两者之差
      *
      * @param src
      * @param dst
@@ -80,6 +80,24 @@ public class DecimalUtils {
     public static BigDecimal getDefaultDecimal() {
         BigDecimal init = new BigDecimal("0.00");
         return init;
+    }
+
+    public static BigDecimal convert(Object object) {
+        BigDecimal data = new BigDecimal(String.valueOf(object));
+        return data;
+    }
+
+    /**
+     * 两个整数相除，保留两位小数
+     *
+     * @param data1
+     * @param data2
+     * @return
+     */
+    public static BigDecimal division(int data1, int data2) {
+        DecimalFormat df = new DecimalFormat("0.00");
+        String result = df.format((float) data1 / data2);
+        return new BigDecimal(result);
     }
 
 }

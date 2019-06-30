@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.fac.mapper.FacProductWriteoffMapper">
 
-    <resultMap type="FacProductWriteoff" id="FacProductWriteoffResult">
+    <resultMap type="com.ruoyi.fac.domain.FacProductWriteoff" id="FacProductWriteoffResult">
         <result property="id" column="id"/>
         <result property="orderNo" column="order_no"/>
         <result property="productId" column="prod_id"/>
@@ -23,7 +23,7 @@
         select id, order_no,prod_id, buyer_id, code, writeoff_time, status, create_time, update_time, operator_id, operator_name, is_deleted from fac_product_writeoff
     </sql>
 
-    <select id="selectFacProductWriteoffList" parameterType="FacProductWriteoff" resultMap="FacProductWriteoffResult">
+    <select id="selectFacProductWriteoffList" parameterType="com.ruoyi.fac.domain.FacProductWriteoff" resultMap="FacProductWriteoffResult">
         <include refid="selectFacProductWriteoffVo"/>
         <where>
             <if test="id != null ">and id = #{id}</if>
@@ -77,7 +77,7 @@
         </trim>
     </insert>
 
-    <update id="updateFacProductWriteoff" parameterType="FacProductWriteoff">
+    <update id="updateFacProductWriteoff" parameterType="com.ruoyi.fac.domain.FacProductWriteoff">
         update fac_product_writeoff
         <trim prefix="SET" suffixOverrides=",">
             <if test="orderNo != null  and orderNo != ''  ">order_no = #{orderNo},</if>

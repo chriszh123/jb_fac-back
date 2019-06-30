@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.fac.domain.Product;
 import com.ruoyi.fac.enums.FocusStatus;
 import com.ruoyi.fac.enums.ProductStatus;
@@ -12,6 +13,7 @@ import com.ruoyi.fac.util.TimeUtils;
 import com.ruoyi.fac.vo.client.BannerVo;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import com.ruoyi.fac.mapper.FocusMapMapper;
 import com.ruoyi.fac.domain.FocusMap;
@@ -26,6 +28,7 @@ import com.ruoyi.common.support.Convert;
  */
 @Service
 public class FocusMapServiceImpl implements IFocusMapService {
+
     @Autowired
     private FocusMapMapper focusMapMapper;
     @Autowired
@@ -112,6 +115,10 @@ public class FocusMapServiceImpl implements IFocusMapService {
         final List<Long> productIds = new ArrayList<>();
         for (int i = 0, size = focusMaps.size(); i < size; i++) {
             FocusMap focusMap1 = focusMaps.get(i);
+            if (focusMap1.getStatus().intValue() == 2) {
+                // 隐藏的焦点图不展示
+                continue;
+            }
             // 跳转类型:1-页面；2-商品；3-分类
             if (focusMap1.getJumpType() == null || focusMap1.getJumpType().intValue() != 2) {
                 continue;

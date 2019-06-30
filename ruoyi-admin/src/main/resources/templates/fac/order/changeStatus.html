@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+	<form class="form-horizontal m" id="form-order-changestatus">
+		<input name="orderNo"  type="hidden"  th:value="${order.orderNo}" />
+		<div class="form-group">
+			<label class="col-sm-3 control-label ">订单状态：</label>
+			<div class="col-sm-8">
+				<select id="status" name="status">
+					<option value="">请选择...</option>
+					<option value="0">待付款</option>
+					<option value="1">待核销</option>
+					<option value="2">待评价</option>
+					<option value="3">已完成</option>
+					<option value="4">已取消</option>
+				</select>
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-sm-3 control-label ">备注：</label>
+			<div class="col-sm-8">
+				<textarea name="remarkMngt" autocomplete="off" maxlength="500" class="form-control" rows="5">
+					[[*{order.remarkMngt}]]
+				</textarea>
+			</div>
+		</div>
+
+	</form>
+</div>
+<div th:include="include :: footer"></div>
+<script type="text/javascript">
+    $("#form-order-changestatus").validate({
+        rules:{
+            orderNo:{
+                required:true
+            },
+            status:{
+                required:true
+            }
+        },
+        focusCleanup: true
+    });
+
+    function submitHandler() {
+        if ($.validate.form()) {
+            $.operate.save(ctx + "fac/order/changeStatus", $('#form-order-changestatus').serialize());
+        }
+    }
+</script>
+</body>
+
+</html>

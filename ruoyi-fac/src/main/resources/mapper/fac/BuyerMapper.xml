@@ -43,6 +43,7 @@
             <if test="operatorName != null  and operatorName != '' ">and operator_name = #{operatorName}</if>
             <if test="isDeleted != null ">and is_deleted = #{isDeleted}</if>
         </where>
+        ORDER by create_time DESC
     </select>
 
     <select id="selectBuyerById" parameterType="Long" resultMap="BuyerResult">
@@ -140,14 +141,6 @@
         update fac_buyer
         set nick_name = #{nickName}, gender = #{gender}, avatarUrl = #{avatarUrl},update_time = now()
         where id = #{uid}
-    </update>
-
-    <update id="batchUpdatePoints">
-        <foreach collection="list" item="record" index="index" separator=";" open="" close="">
-            UPDATE fac_buyer
-            set points = points + #{record.points}, balance = balance + #{record.balance}
-            WHERE is_deleted = 0 and id = #{record.id}
-        </foreach>
     </update>
 
 </mapper>

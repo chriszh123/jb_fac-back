@@ -38,10 +38,6 @@ public class BuyerController extends BaseController {
     @Autowired
     private IBuyerService buyerService;
 
-    @Autowired
-    private ISysMenuService menuService;
-
-
     @RequiresPermissions("fac:buyer:view")
     @GetMapping()
     public String buyer() {

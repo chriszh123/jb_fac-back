@@ -43,6 +43,16 @@
                 <div id="titleImageError" style="color: #a94442"></div>
             </div>
         </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">状态:</label>
+            <div class="col-sm-8">
+                <select id="status" name="status" th:field="*{status}" class="form-control">
+                    <option value="">请选择...</option>
+                    <option value="1">显示</option>
+                    <option value="2">隐藏</option>
+                </select>
+            </div>
+        </div>
     </form>
 </div>
 <div th:include="include::footer"></div>
@@ -71,7 +81,8 @@
         var formdata = new FormData();
         formdata.append("action", "UploadVMKImagePath");
         formdata.append("file", fileObj); //加入文件对象
-        var uploadUrl = ctx + "product/picture/batchUpload";
+        // var uploadUrl = ctx + "product/picture/batchUpload";
+        var uploadUrl = ctx + "product/picture/batchUploadFocusMap";
         $.ajax({
             url: uploadUrl,
             data: formdata,

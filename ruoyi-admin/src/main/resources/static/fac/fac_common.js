@@ -5,6 +5,12 @@ var DATA_ID = {
 };
 
 // 各对象预置数量
+var GENDER = {
+    "1": "男",
+    "2": "女"
+};
+
+// 各对象预置数量
 var OBJECT_COUNT = {
     "PRODUCT_IMG": 5,
     "PRODUCT_IMG_CATEGORY": 1
@@ -44,8 +50,19 @@ var STATUS_VISIBLE = {
     "2": "隐藏"
 }
 
+// 积分类型
+var POINT_TYPE = {
+    0: "签到(积分)",
+    1: "购物反赠(积分)",
+    2: "购物消费(积分)",
+    3: "购物消费(金额)",
+    4: "分享赠送积分",
+    5: "分享赠送奖金",
+    6: "已提现奖金"
+};
+
 // fileInput上传文件支持扩展名
-var FILEINPUTEXTENDTION = ["jpg", "jpeg", "gif", "bmp"];
+var FILEINPUTEXTENDTION = ["jpg", "jpeg", "gif", "bmp", "png"];
 
 // option：首页相关统计图
 var homepageOption = {
@@ -383,8 +400,24 @@ var initFileInputWithImgData = function (id, uploadUrl, maxFilesNum, imgPaths, c
         console.log('Key = ' + key);
         console.log(jqXHR);
         console.log(data);
-        if (!confirm("确定删除这个图片？删除后不可恢复")) {
+        var selected = confirm("确定删除这个图片？删除后不可恢复");
+        console.log("selected = " + selected);
+        if (!selected) {
             return false;
+        } else {
+            var picture = $("#picture").val();
+            var delPicture = key.split(";")[1];
+            var pictureArr = picture.split(",");
+            var result = "";
+            for (var i = 0; i < pictureArr.length; i++) {
+                if (delPicture != pictureArr[i]) {
+                    result = result + pictureArr[i] + ",";
+                }
+            }
+            if (result != "") {
+                result = result.substr(0, result.length - 1);
+            }
+            $("#picture").val(result);
         }
     });
 }

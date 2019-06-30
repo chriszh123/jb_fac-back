@@ -11,6 +11,9 @@ import com.ruoyi.fac.vo.client.res.UserSignLogs;
  * Description
  */
 public interface IUserSignService {
+
+    UserScoreLogs queryUserAmountLogs(SignReq req) throws FacException;
+
     /**
      * 当前用户签到
      *

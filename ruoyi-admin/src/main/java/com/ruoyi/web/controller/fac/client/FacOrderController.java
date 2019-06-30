@@ -6,15 +6,19 @@
  */
 package com.ruoyi.web.controller.fac.client;
 
+import com.alibaba.fastjson.JSON;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.fac.enums.FacCode;
 import com.ruoyi.fac.exception.FacException;
 import com.ruoyi.fac.service.IOrderService;
+import com.ruoyi.fac.service.impl.OrderServiceImpl;
 import com.ruoyi.fac.vo.client.*;
 import com.ruoyi.fac.vo.client.req.OrderReq;
 import com.ruoyi.framework.util.ShiroUtils;
 import com.ruoyi.framework.web.base.BaseController;
 import com.ruoyi.system.domain.SysUser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,6 +35,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 @RequestMapping("/fac/client/order")
 public class FacOrderController extends BaseController {
+    private static final Logger log = LoggerFactory.getLogger(FacOrderController.class);
 
     @Autowired
     private IOrderService orderService;
@@ -46,11 +51,15 @@ public class FacOrderController extends BaseController {
     @ResponseBody
     public FacResult create(@RequestBody OrderCreateVo order) {
         try {
+            log.info(String.format("================create order start=======, order : %s", JSON.toJSONString(order)));
             OrderCreateRes res = this.orderService.createOrderFromClient(order);
+            log.info(String.format("================create order success=======, res : %s", JSON.toJSONString(res)));
             return FacResult.success(res);
         } catch (FacException fe) {
+            log.error("==================create error, FacException=====", fe);
             return FacResult.error(fe.getMessage());
         } catch (Exception ex) {
+            log.error("=======================create error, Exception===========", ex);
             return FacResult.error();
         }
     }
@@ -68,7 +77,9 @@ public class FacOrderController extends BaseController {
         if (StringUtils.isEmpty(req.getToken()) || StringUtils.isEmpty(req.getOrderNo())) {
             return FacResult.error(FacCode.PARAMTER_NULL.getCode(), FacCode.PARAMTER_NULL.getMsg());
         }
+        log.info(String.format("================close start=======, req : %s", JSON.toJSONString(req)));
         this.orderService.closeOrder(req.getToken(), req.getOrderNo());
+        log.info(String.format("==============close success:%s", JSON.toJSONString(req)));
         return FacResult.success("");
     }
 
@@ -90,15 +101,17 @@ public class FacOrderController extends BaseController {
     @PostMapping("/writeOffOrder")
     @ResponseBody
     public FacResult writeOffOrder(@RequestBody OrderReq req) {
-        if (StringUtils.isEmpty(req.getToken()) || StringUtils.isEmpty(req.getOrderNo())
-                || StringUtils.isBlank(req.getProdId())) {
+        if (StringUtils.isEmpty(req.getToken()) || StringUtils.isEmpty(req.getOrderNo())) {
             return FacResult.error(FacCode.PARAMTER_NULL.getCode(), FacCode.PARAMTER_NULL.getMsg());
         }
         try {
             // 一次指定核销一个商品对应的订单
-            this.orderService.writeOffOrder(req.getToken(), req.getOrderNo(), req.getProdId());
+            log.info(String.format("==============writeOffOrder start:%s", JSON.toJSONString(req)));
+            this.orderService.writeOffOrder(req.getToken(), req.getOrderNo());
+            log.info(String.format("==============writeOffOrder success:%s", JSON.toJSONString(req)));
             return FacResult.success("");
         } catch (Exception ex) {
+            log.error(String.format("==============writeOffOrder error:%s", JSON.toJSONString(req)), ex);
             return FacResult.error(ex.getMessage());
         }
     }

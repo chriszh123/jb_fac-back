@@ -15,6 +15,7 @@ import com.ruoyi.fac.service.IBuyerService;
 import com.ruoyi.fac.service.IUserSignService;
 import com.ruoyi.fac.service.WechatAdapterService;
 import com.ruoyi.fac.vo.client.*;
+import com.ruoyi.fac.vo.client.req.OrderReq;
 import com.ruoyi.fac.vo.client.req.SignReq;
 import com.ruoyi.fac.vo.client.req.UserInfo;
 import com.ruoyi.fac.vo.client.req.UserReq;
@@ -32,6 +33,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.List;
 
 /**
@@ -220,6 +223,7 @@ public class FacUserController extends BaseController {
             int signPoint = this.userSignService.sign(req);
             return FacResult.success(signPoint);
         } catch (FacException fe) {
+            LOGGER.error(fe.getMessage(), fe);
             return FacResult.error(fe.getMessage());
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);
@@ -234,6 +238,7 @@ public class FacUserController extends BaseController {
             UserSignLogs logs = this.userSignService.queryUserSignLogs(req);
             return FacResult.success(logs);
         } catch (FacException fe) {
+            LOGGER.error(fe.getMessage(), fe);
             return FacResult.error(fe.getMessage());
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);
@@ -248,10 +253,42 @@ public class FacUserController extends BaseController {
             UserScoreLogs logs = this.userSignService.queryUserScoreLogs(req);
             return FacResult.success(logs);
         } catch (FacException fe) {
+            LOGGER.error(fe.getMessage(), fe);
             return FacResult.error(fe.getMessage());
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);
             return FacResult.error();
         }
+    }
+
+    @PostMapping("/amount/logs")
+    @ResponseBody
+    public FacResult consumerLogs(@RequestBody SignReq req) {
+        try {
+            UserScoreLogs logs = this.userSignService.queryUserAmountLogs(req);
+            return FacResult.success(logs);
+        } catch (FacException fe) {
+            LOGGER.error(fe.getMessage(), fe);
+            return FacResult.error(fe.getMessage());
+        } catch (Exception ex) {
+            LOGGER.error(ex.getMessage(), ex);
+            return FacResult.error();
+        }
+    }
+
+    @PostMapping("/userInfo")
+    @ResponseBody
+    public FacResult userInfo(@RequestBody OrderReq req) {
+        if (req == null || StringUtils.isBlank(req.getToken())) {
+            return FacResult.error("用户token不能为空");
+        }
+        UserBaseVo vo = this.buyerService.getUserInfo(req.getToken());
+        return FacResult.success(vo);
+    }
+
+    public static void main(String[] args) {
+        DecimalFormat df = new DecimalFormat("0.00");
+        String s = df.format((float)2/100);
+        System.out.println(s);
     }
 }

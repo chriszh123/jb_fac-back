@@ -5,8 +5,7 @@ import com.ruoyi.fac.constant.FacConstant;
 import com.ruoyi.fac.domain.*;
 import com.ruoyi.fac.enums.OrderStatus;
 import com.ruoyi.fac.mapper.*;
-import com.ruoyi.fac.model.FacOrder;
-import com.ruoyi.fac.model.FacOrderExample;
+import com.ruoyi.fac.model.*;
 import com.ruoyi.fac.service.IBuyerService;
 import com.ruoyi.fac.util.DecimalUtils;
 import com.ruoyi.fac.util.TimeUtils;
@@ -16,6 +15,7 @@ import com.ruoyi.fac.vo.client.UserAmountVo;
 import com.ruoyi.fac.vo.client.UserBaseVo;
 import com.ruoyi.fac.vo.client.UserDetailVo;
 import com.ruoyi.fac.vo.client.req.UserInfo;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,9 +47,11 @@ public class BuyerServiceImpl implements IBuyerService {
     @Autowired
     private BuyerBusinessMapper buyerBusinessMapper;
     @Autowired
-    private OrderMapper orderMapper;
-    @Autowired
     private FacOrderMapper facOrderMapper;
+    @Autowired
+    private FacBuyerAddressMapper facBuyerAddressMapper;
+    @Autowired
+    private FacOrderProductMapper facOrderProductMapper;
 
     /**
      * 查询买者用户信息
@@ -79,7 +81,36 @@ public class BuyerServiceImpl implements IBuyerService {
     @Override
     public List<Buyer> selectBuyerList(Buyer buyer) {
         buyer.setIsDeleted(0);
-        return buyerMapper.selectBuyerList(buyer);
+        List<Buyer> buyers = buyerMapper.selectBuyerList(buyer);
+        if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(buyers)) {
+            List<String> tokens = new ArrayList<>();
+            for (Buyer item : buyers) {
+                if (StringUtils.isBlank(item.getToken())) {
+                    continue;
+                }
+                tokens.add(item.getToken());
+            }
+            FacBuyerAddressExample example = new FacBuyerAddressExample();
+            example.createCriteria().andIsDeletedEqualTo(false).andTokenIn(tokens);
+            List<FacBuyerAddress> addresses = this.facBuyerAddressMapper.selectByExample(example);
+            if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(addresses)) {
+                Map<String, FacBuyerAddress> token2Phone = new HashMap<>(addresses.size());
+                for (FacBuyerAddress item : addresses) {
+                    if (item.getIsDefault()) {
+                        token2Phone.put(item.getToken(), item);
+                    }
+                }
+
+                for (Buyer item : buyers) {
+                    if (MapUtils.isNotEmpty(token2Phone) && token2Phone.containsKey(item.getToken())) {
+                        item.setPhoneNumber(token2Phone.get(item.getToken()).getPhoneNumber());
+                        item.setName(token2Phone.get(item.getToken()).getLinkman());
+                    }
+                }
+            }
+        }
+
+        return buyers;
     }
 
     /**
@@ -342,13 +373,28 @@ public class BuyerServiceImpl implements IBuyerService {
         example.createCriteria().andIsDeletedEqualTo(false).andTokenEqualTo(token).andStatusIn(statuses);
         List<FacOrder> orders = this.facOrderMapper.selectByExample(example);
         if (!CollectionUtils.isEmpty(orders)) {
-            BigDecimal total = new BigDecimal("0.00");
-            BigDecimal temp;
+            List<String> orderNos = new ArrayList<>();
+            int useScore = 0;
             for (FacOrder item : orders) {
-                temp = DecimalUtils.mul(item.getPrice(), new BigDecimal(String.valueOf(item.getProdNumber())));
-                total = total.add(temp);
+                orderNos.add(item.getOrderNo());
+                useScore = useScore + item.getUserScore();
             }
-            vo.setTotleConsumed(Double.valueOf(total.toString()));
+            FacOrderProductExample orderProductExample = new FacOrderProductExample();
+            orderProductExample.createCriteria().andIsDeletedEqualTo(false).andTokenEqualTo(token).andOrderNoIn(orderNos);
+            List<FacOrderProduct> orderProducts = this.facOrderProductMapper.selectByExample(orderProductExample);
+            if (!CollectionUtils.isEmpty(orderProducts)) {
+                BigDecimal total = new BigDecimal("0.00");
+                BigDecimal temp;
+                for (FacOrderProduct item : orderProducts) {
+                    temp = DecimalUtils.mul(item.getPrice(), new BigDecimal(String.valueOf(item.getProdNumber())));
+                    total = total.add(temp);
+                }
+                // 去掉使用的积分
+                if (useScore > 0) {
+                    total = DecimalUtils.subtract(total, DecimalUtils.division(useScore, 100));
+                }
+                vo.setTotleConsumed(Double.valueOf(total.toString()));
+            }
         }
 
         return vo;
@@ -401,6 +447,26 @@ public class BuyerServiceImpl implements IBuyerService {
         }
         this.buyerMapper.updateUserInfo(userInfo);
         return "";
+    }
+
+    /**
+     * 指定用户信息
+     *
+     * @param token
+     * @return
+     */
+    @Override
+    public UserBaseVo getUserInfo(String token) {
+        UserBaseVo vo = new UserBaseVo();
+        // 查询当前用户是不是商家，有没有自己的商品
+        BuyerBusiness buyerBusiness = new BuyerBusiness();
+        buyerBusiness.setToken(token);
+        buyerBusiness.setIsDeleted(0);
+        List<BuyerBusiness> buyerBusinesses = this.buyerBusinessMapper.selectBuyerBusinessList(buyerBusiness);
+        // 用户类型:0-普通购买用户,1-商家
+        vo.setUserType(CollectionUtils.isEmpty(buyerBusinesses) ? 0 : 1);
+
+        return vo;
     }
 
     private boolean checkProdBuyed(String prodId, List<BuyerBusiness> buyerBusinesses) {

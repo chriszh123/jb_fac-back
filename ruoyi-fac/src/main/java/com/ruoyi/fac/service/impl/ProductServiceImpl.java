@@ -8,9 +8,13 @@ import com.ruoyi.fac.domain.ProductCategory;
 import com.ruoyi.fac.enums.FocusStatus;
 import com.ruoyi.fac.enums.ProductStatus;
 import com.ruoyi.fac.exception.FacException;
+import com.ruoyi.fac.mapper.FacBusinessMapper;
 import com.ruoyi.fac.mapper.OrderMapper;
 import com.ruoyi.fac.mapper.ProductCategoryMapper;
 import com.ruoyi.fac.mapper.ProductMapper;
+import com.ruoyi.fac.model.FacBusiness;
+import com.ruoyi.fac.model.FacBusinessExample;
+import com.ruoyi.fac.model.FacOrder;
 import com.ruoyi.fac.service.IProductService;
 import com.ruoyi.fac.util.DecimalUtils;
 import com.ruoyi.fac.util.FacFileUtils;
@@ -44,6 +48,8 @@ public class ProductServiceImpl implements IProductService {
     private ProductCategoryMapper productCategoryMapper;
     @Autowired
     private OrderMapper orderMapper;
+    @Autowired
+    private FacBusinessMapper facBusinessMapper;
 
     /**
      * 查询商品信息
@@ -79,7 +85,11 @@ public class ProductServiceImpl implements IProductService {
     @Override
     public List<Product> selectProductList(Product product) {
         product.setIsDeleted(0);
-        return productMapper.selectProductList(product);
+        if (product.getExpireTime() != null) {
+            // 页面上的天数精确折算成分钟
+            product.setExpireTime(product.getExpireTime() * 24 * 60);
+        }
+        return productMapper.selectProducts(product);
     }
 
     /**
@@ -134,10 +144,10 @@ public class ProductServiceImpl implements IProductService {
             prodIds.add(productdb.getId());
             List<Integer> status = new ArrayList<>();
             status.add(Integer.valueOf("0"));
-            List<Order> pendingPaymentOrders = this.orderMapper.selectProductsByProdAndStatus(prodIds, status);
+            List<FacOrder> pendingPaymentOrders = this.orderMapper.selectProductsByProdAndStatus(prodIds, status);
             if (CollectionUtils.isNotEmpty(pendingPaymentOrders)) {
                 StringBuilder pendingPayment = new StringBuilder("当前商品在以下订单中处于待付款状态，请处理订单后再下架：\n");
-                for (Order order : pendingPaymentOrders) {
+                for (FacOrder order : pendingPaymentOrders) {
                     pendingPayment.append(order.getOrderNo()).append(",");
                 }
                 pendingPayment = pendingPayment.deleteCharAt(pendingPayment.toString().length() - 1);
@@ -161,16 +171,14 @@ public class ProductServiceImpl implements IProductService {
         for (int i = 0, size = idsArr.length; i < size; i++) {
             prodIds.add(Long.valueOf(idsArr[i]));
         }
-        List<Order> orders = this.orderMapper.selectProductsByProdAndStatus(prodIds, null);
+        List<FacOrder> orders = this.orderMapper.selectProductsByProdAndStatus(prodIds, null);
         if (CollectionUtils.isNotEmpty(orders)) {
-            prodIds = new ArrayList<>();
-            for (Order item : orders) {
-                if (!prodIds.contains(item.getProdId())) {
-                    prodIds.add(item.getProdId());
-                }
+            Set<String> orderNods = new HashSet<>();
+            for (FacOrder item : orders) {
+                orderNods.add(item.getOrderNo());
             }
-            String prodIdsStr = StringUtils.join(prodIds, ",");
-            throw new FacException("以下商品ID对应的商品已存在订单信息，不能被删除:\n" + prodIdsStr);
+            String orderNodsStr = StringUtils.join(orderNods, ",");
+            throw new FacException("删除商品已经存在于部分订单中，不能被删除，订单号:\n" + orderNodsStr);
         }
 
         return productMapper.deleteProductByIds(Convert.toStrArray(ids));
@@ -315,6 +323,22 @@ public class ProductServiceImpl implements IProductService {
         // 商品基本信息
         GoodVo basicInfo = this.convertGoodVo(product);
         vo.setBasicInfo(basicInfo);
+        // 商家信息
+        Integer businessId = product.getBusinessId();
+        if (businessId != null) {
+            FacBusinessExample example = new FacBusinessExample();
+            example.createCriteria().andIsDeletedEqualTo(false).andIdEqualTo(businessId);
+            List<FacBusiness> businesses = this.facBusinessMapper.selectByExample(example);
+            if (CollectionUtils.isNotEmpty(businesses)) {
+                FacBusiness business = businesses.get(0);
+                BusinessVo businessVo = new BusinessVo();
+                businessVo.setWid(businessId);
+                businessVo.setName(business.getName());
+                businessVo.setPhone(business.getPhoneNumber1());
+                businessVo.setAddress(business.getAddress());
+                vo.setBusiness(businessVo);
+            }
+        }
 
         return vo;
     }

@@ -5,23 +5,24 @@ import com.ruoyi.common.config.Global;
 import com.ruoyi.fac.constant.FacConstant;
 import com.ruoyi.fac.domain.Buyer;
 import com.ruoyi.fac.domain.FacProductWriteoff;
-import com.ruoyi.fac.domain.Order;
 import com.ruoyi.fac.domain.Product;
 import com.ruoyi.fac.enums.OrderStatus;
+import com.ruoyi.fac.enums.ScoreTypeEnum;
+import com.ruoyi.fac.exception.FacException;
 import com.ruoyi.fac.mapper.*;
-import com.ruoyi.fac.model.FacBuyer;
-import com.ruoyi.fac.model.FacBuyerExample;
+import com.ruoyi.fac.model.*;
 import com.ruoyi.fac.service.IPayService;
-import com.ruoyi.fac.util.*;
+import com.ruoyi.fac.util.DecimalUtils;
+import com.ruoyi.fac.util.FacCommonUtils;
+import com.ruoyi.fac.util.TimeUtils;
+import com.ruoyi.fac.vo.AppMchVo;
 import com.ruoyi.fac.vo.wxpay.WxPrePayReq;
 import com.ruoyi.fac.vo.wxpay.WxPrePayRes;
+import com.ruoyi.fac.wxpay.PayCommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.jdom2.Document;
-import org.jdom2.Element;
-import org.jdom2.input.SAXBuilder;
+import org.jdom.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,12 +31,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.math.BigDecimal;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLEncoder;
 import java.util.*;
 
 /**
@@ -71,6 +69,18 @@ public class PayServiceImpl implements IPayService {
     private FacProductWriteoffMapper facProductWriteoffMapper;
     @Autowired
     private FacBuyerMapper facBuyerMapper;
+    @Autowired
+    private FacBuyerSignMapper facBuyerSignMapper;
+    @Autowired
+    private FacOrderMapper facOrderMapper;
+    @Autowired
+    private FacOrderProductMapper facOrderProductMapper;
+    @Autowired
+    private FacBuyerBusinessMapper facBuyerBusinessMapper;
+    @Autowired
+    private FacProductMapper facProductMapper;
+    @Autowired
+    private FacCashMapper facCashMapper;
 
     /**
      * 微信支付预支付接口
@@ -81,48 +91,83 @@ public class PayServiceImpl implements IPayService {
      */
     @Override
     public WxPrePayRes getWxPrePayInfo(WxPrePayReq req, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        logger.info(String.format("====================[getWxPrePayInfo] start req:%s", JSON.toJSONString(req)));
         //设置最终返回对象
         final WxPrePayRes res = new WxPrePayRes();
         String openid = req.getToken();
         // id为订单号
-        final List<Order> orders = this.orderMapper.selectOrderByOrderNo(req.getNextAction().getId());
+        String orderNo = req.getNextAction().getId().trim();
+        FacOrderExample orderExample = new FacOrderExample();
+        orderExample.createCriteria().andIsDeletedEqualTo(false).andOrderNoEqualTo(orderNo);
+        List<FacOrder> orders = this.facOrderMapper.selectByExample(orderExample);
         if (CollectionUtils.isEmpty(orders)) {
-            throw new Exception("当前订单已不存在，请确认");
+            throw new Exception("当前订单已不存在，请联系管理员");
         }
-        if (!OrderStatus.PAYING.getCode().equals(orders.get(0).getStatus())) {
+        if (!OrderStatus.PAYING.getCode().equals(Integer.valueOf(orders.get(0).getStatus()))) {
             throw new Exception("当前订单处于非待付款状态，请核对后再操作");
         }
+        FacOrderProductExample orderProductExample = new FacOrderProductExample();
+        orderProductExample.createCriteria().andIsDeletedEqualTo(false).andOrderNoEqualTo(orderNo);
+        List<FacOrderProduct> orderProducts = this.facOrderProductMapper.selectByExample(orderProductExample);
+        // 如果当前订单中出现多个不同商品，需要校验这些商品必须是来自同一个卖家名下的商品
+        if (CollectionUtils.isNotEmpty(orderProducts) && orderProducts.size() >= 2) {
+            List<Long> prodIds = new ArrayList<>();
+            for (FacOrderProduct item : orderProducts) {
+                prodIds.add(item.getProdId());
+            }
+            FacBuyerBusinessExample buyerBusinessExample = new FacBuyerBusinessExample();
+            buyerBusinessExample.createCriteria().andIsDeletedEqualTo(false).andBusinessProdIdIn(prodIds);
+            List<FacBuyerBusiness> buyerBusinesses = this.facBuyerBusinessMapper.selectByExample(buyerBusinessExample);
+            if (CollectionUtils.isNotEmpty(buyerBusinesses)) {
+                // <businessId, [prodId]>
+                Map<Long, List<Long>> biz2ProdIds = new HashMap<>();
+                for (FacBuyerBusiness item : buyerBusinesses) {
+                    if (!biz2ProdIds.containsKey(item.getBusinessId())) {
+                        biz2ProdIds.put(item.getBusinessId(), new ArrayList<>());
+                    }
+                    biz2ProdIds.get(item.getBusinessId()).add(item.getBusinessProdId());
+                }
+                if (biz2ProdIds.size() != 1) {
+                    throw new FacException("您选择的商品在不同卖家中，不能创建订单");
+                }
+                for (Map.Entry<Long, List<Long>> entry : biz2ProdIds.entrySet()) {
+                    List<Long> prodId2Business = entry.getValue();
+                    for (Long prodId : prodIds) {
+                        if (!prodId2Business.contains(prodId)) {
+                            // 用户选择的商品存在于不同的卖家中，即
+                            throw new FacException("当前选择的商品在不同卖家中，不能创建订单");
+                        }
+                    }
+                }
+            } else {
+                throw new FacException("系统没有商品相应卖家信息，请联系管理员");
+            }
+        }
+
         // 当前订单总消费金额(后台计算出来的)
-        BigDecimal totalConsumeAmout = this.getTotalConsumAmout(orders);
+        BigDecimal totalConsumeAmout = this.getTotalConsumAmout(orderProducts);
+        int userScore = orders.get(0).getUserScore();
+        if (userScore > 0) {
+            // 如果用户使用了积分，预支付金额需要扣除相应积分数对应的金额：一个积分一分钱
+            totalConsumeAmout = DecimalUtils.subtract(totalConsumeAmout, DecimalUtils.division(userScore, 100));
+        }
+        totalConsumeAmout = DecimalUtils.formatDecimal(totalConsumeAmout);
+        logger.info(String.format("-------------[getWxPrePayInfo] orderNo:%s, totalConsumeAmout:%s, userScore:%s, money/paramter:%s"
+                , orderNo, totalConsumeAmout, userScore, req.getMoney()));
+
+        // 校验订单总金额 客户端传给后端的和后端自己统计出来的金额是否一致
         if (totalConsumeAmout.compareTo(new BigDecimal(req.getMoney())) != 0) {
-            log.info(String.format("[getWxPrePayInfo] consumeAmout has error, money/paramter:%s, backStatic:%s", req.getMoney()
+            log.info(String.format("-----------------[getWxPrePayInfo] consumeAmout has error, money/paramter:%s, backStatic:%s", req.getMoney()
                     , totalConsumeAmout.toString()));
             throw new Exception("当前订单商品总额与实际消费不一致，请核实");
         }
-        int userScore = orders.get(0).getUserScore();
-        if (userScore > 0) {
-            // 如果用户使用了积分，预支付金额需要扣除相应积分数
-            float userScore2Yuan = (float) userScore / 100;
-            totalConsumeAmout = DecimalUtils.subtract(totalConsumeAmout, new BigDecimal(userScore2Yuan));
-        }
-        totalConsumeAmout = DecimalUtils.formatDecimal(totalConsumeAmout);
-
-        //接口调用总金额单位为分,需要换算一下(测试金额改成1,单位为分则是0.01,根据自己业务场景判断是转换成float类型还是int类型)
-        //String amountFen = Integer.valueOf((Integer.parseInt(totalConsumeAmout.toString())*100)).toString();
-//        String amountFen = Float.valueOf((Float.parseFloat(totalConsumeAmout.toString()) * 100)).toString();
-        String amountFen = "1";
-        // 创建hashmap(用户获得签名)
-        SortedMap<String, String> paraMap = new TreeMap<String, String>();
-        // 设置body变量 (支付成功显示在微信支付 商品详情中)：如果是中文，可能会遇到毫无头绪的签名错误，严重者开始怀疑人生
-        String body = "JB FAC";
-
         // 校验当前商品是否还可以购买:库存数据
-        Long[] ids = new Long[orders.size()];
-        // <prodId, Order>
-        Map<Long, Order> prod2Order = new HashMap<>(orders.size());
-        for (int i = 0, size = orders.size(); i < size; i++) {
-            ids[i] = orders.get(i).getProdId();
-            prod2Order.put(orders.get(i).getProdId(), orders.get(i));
+        Long[] ids = new Long[orderProducts.size()];
+        // <prodId, FacOrderProduct>
+        Map<Long, FacOrderProduct> prod2Order = new HashMap<>(orderProducts.size());
+        for (int i = 0, size = orderProducts.size(); i < size; i++) {
+            ids[i] = orderProducts.get(i).getProdId();
+            prod2Order.put(orderProducts.get(i).getProdId(), orderProducts.get(i));
         }
         List<Product> products = this.productMapper.selectProductsByIds(ids);
         for (Product item : products) {
@@ -135,110 +180,42 @@ public class PayServiceImpl implements IPayService {
             if (item.getStatus().intValue() == 2) {
                 throw new Exception(String.format("商品【%s】已下架，请选择其它商品购买", item.getName()));
             }
+            if (prod2Order.get(item.getId()).getProdNumber() > item.getLimitQuantity()) {
+                throw new FacException(String.format("商品【%s】每人限购%s份", item.getName(), item.getLimitQuantity()));
+            }
             Date nowDate = new Date();
             if (nowDate.compareTo(item.getRushEnd()) > 0) {
                 throw new Exception(String.format("商品【%s】抢购时间已结束，请选择其它商品购买", item.getName()));
             }
         }
-        // 设置随机字符串
-        final String nonceStr = UUID.randomUUID().toString().replaceAll("-", "");
         // 设置商户订单号
-        String outTradeNo = orders.get(0).getOrderNo();
-        // 设置请求参数
-        // 公众账号ID：微信支付分配的公众账号ID（企业号corpid即为此appId）：应用ID==登陆微信公众号后台-开发-基本配置
-        paraMap.put("appid", Global.getFacAppId().toLowerCase());
-        // 设置请求参数(商户号)：微信支付分配的商户号
-        paraMap.put("mch_id", Global.getFacMchId().toUpperCase());
-        // 设置请求参数(随机字符串)：随机字符串，长度要求在32位以内
-        paraMap.put("nonce_str", FacCommonUtils.substringStr(nonceStr, 32));
-        // 设置请求参数(商品描述)
-        paraMap.put("body", body);
-        // 设置请求参数(商户订单号)：商户系统内部订单号，要求32个字符内，只能是数字、大小写字母_-|* 且在同一个商户号下唯一
-        paraMap.put("out_trade_no", outTradeNo);
-        // 设置请求参数(总金额)：订单总金额，单位为分
-        paraMap.put("total_fee", amountFen);
-        // 设置请求参数(终端IP)：支持IPV4和IPV6两种格式的IP地址。调用微信支付API的机器IP
-        paraMap.put("spbill_create_ip", WebUtils.getIpAddress(request));
-        // 设置请求参数(通知地址)：异步接收微信支付结果通知的回调地址，通知url必须为外网可访问的url，不能携带参数
-        paraMap.put("notify_url", Global.getDomain() + "/fac/client/pay/wx/payCallback");
-        // 设置请求参数(交易类型)
-        paraMap.put("trade_type", "JSAPI");
-        // 设置请求参数(openid)：trade_type=JSAPI时（即JSAPI支付），此参数必传，此参数为微信用户在商户对应appid下的唯一标识
-        paraMap.put("openid", openid);
-        // 调用逻辑传入参数按照字段名的 ASCII 码从小到大排序（字典序）
-        String stringA = formatUrlMap(paraMap, false, false);
-        // 第二步，在stringA最后拼接上key得到stringSignTemp字符串，并对stringSignTemp进行MD5运算，再将得到的字符串所有字符转换为大写，得到sign值signValue(签名)
-        String sign = MD5.MD5Encode(stringA + "&key=" + Global.getFacMchSecret()).toUpperCase();
-        // 将参数 编写XML格式
-        StringBuffer paramBuffer = new StringBuffer();
-        paramBuffer.append("<xml>");
-        paramBuffer.append("<appid>" + Global.getFacAppId().toUpperCase() + "</appid>");
-        paramBuffer.append("<attach>支付测试</attach>");
-        paramBuffer.append("<mch_id>" + Global.getFacMchId().toUpperCase() + "</mch_id>");
-        paramBuffer.append("<nonce_str>" + paraMap.get("nonce_str") + "</nonce_str>");
-        paramBuffer.append("<sign>" + sign + "</sign>");
-        paramBuffer.append("<body>" + body + "</body>");
-        paramBuffer.append("<out_trade_no>" + paraMap.get("out_trade_no") + "</out_trade_no>");
-        paramBuffer.append("<total_fee>" + paraMap.get("total_fee") + "</total_fee>");
-        paramBuffer.append("<spbill_create_ip>" + paraMap.get("spbill_create_ip") + "</spbill_create_ip>");
-        paramBuffer.append("<notify_url>" + paraMap.get("notify_url") + "</notify_url>");
-        paramBuffer.append("<trade_type>" + paraMap.get("trade_type") + "</trade_type>");
-        paramBuffer.append("<openid>" + paraMap.get("openid") + "</openid>");
-        paramBuffer.append("</xml>");
-
+        String outTradeNo = orderNo;
         try {
-            // 发送请求(POST)(获得数据包ID)(这有个注意的地方 如果不转码成ISO8859-1则会告诉你body不是UTF8编码 就算你改成UTF8编码也一样不好使 所以修改成ISO8859-1)
-            Map<String, String> map = doXMLParse(getRemotePortData(prepayUrl, new String(paramBuffer.toString().getBytes(), "ISO8859-1")));
-            logger.info(MapUtils.isNotEmpty(map) ? JSON.toJSONString(map) : "调用微信获取预支付信息接口没有响应数据");
-            // 应该创建支付表数据
-            if (map != null) {
-                if (map.containsKey("prepay_id")) {
-                    // 更新当前订单对应的微信预支付id
-                    Long prepayId = Long.valueOf(map.get("prepay_id"));
-                    for (Order order : orders) {
-                        this.orderMapper.updateOrderPrePayId(order.getId(), prepayId);
-                    }
-                    //创建 时间戳
-                    String timeStamp = Long.valueOf(System.currentTimeMillis()).toString();
-                    // 签名
-                    //创建hashmap(用户获得签名)
-                    paraMap = new TreeMap<>();
-                    //设置(小程序ID)(这块一定要是大写)
-                    paraMap.put("appId", Global.getFacAppId().toUpperCase());
-                    //设置(时间戳)
-                    paraMap.put("timeStamp", timeStamp);
-                    //设置(随机串)
-                    paraMap.put("nonceStr", nonceStr);
-                    //设置(数据包)
-                    paraMap.put("package", "prepay_id=" + prepayId);
-                    //设置(签名方式)
-                    paraMap.put("signType", "MD5");
-                    //调用逻辑传入参数按照字段名的 ASCII 码从小到大排序（字典序）
-                    stringA = formatUrlMap(paraMap, false, false);
-                    //第二步，在stringA最后拼接上key得到stringSignTemp字符串，并对stringSignTemp进行MD5运算，再将得到的字符串所有字符转换为大写，得到sign值signValue。(签名)
-                    sign = MD5.MD5Encode(stringA + "&key=" + Global.getFacMchSecret()).toUpperCase();
-                    if (StringUtils.isNotBlank(sign)) {
-                        res.setTimeStamp(timeStamp);
-                        res.setNonceStr(paraMap.get("nonce_str"));
-                        res.setPrepayId(prepayId.toString());
-                        res.setSign(sign);
-                        logger.info("微信 支付接口生成签名 设置返回值");
-                    }
-                } else {
-                    log.info(String.format("[getWxPrePayInfo] map:%s", JSON.toJSONString(map)));
-                    throw new Exception("预支付接口异常");
-                }
+            // 测试金额:1分钱 zgf
+            BigDecimal totalAmount = new BigDecimal("0.01");
+            AppMchVo appMchVo = new AppMchVo();
+            appMchVo.setAppId(Global.getFacAppId());
+            appMchVo.setMchId(Global.getFacMchId());
+            appMchVo.setApiKey(Global.getFacMchSecret());
+            String body = "JB FAC";
+            String notifyUrl = Global.getDomain() + "/fac/client/pay/wx/payCallback";
+            SortedMap<String, Object> preResult = PayCommonUtil.WxPublicPay(outTradeNo, totalAmount, body, "prepayfac", openid, notifyUrl, appMchVo, request);
+            if (MapUtils.isNotEmpty(preResult)) {
+                logger.info(String.format("[getWxPrePayInfo] orderNo:%s, preResult:%s", orderNo, JSON.toJSONString(preResult)));
+                res.setTimeStamp(String.valueOf(preResult.get("timeStamp")));
+                res.setNonceStr(String.valueOf(preResult.get("nonceStr")));
+                res.setPrepayId(String.valueOf(preResult.get("package")));
+                res.setSign(String.valueOf(preResult.get("paySign")));
+                logger.info(String.format("=========================[getWxPrePayInfo] success, orderNo:%s,result:%s============================"
+                        , orderNo, JSON.toJSONString(res)));
+                return res;
             } else {
-                throw new Exception("预支付接口未返回数据");
+                throw new Exception("预支付接口响应数据为空");
             }
-            logger.info("微信 支付接口生成签名 方法结束");
-        } catch (UnsupportedEncodingException e) {
-            logger.info("微信 统一下单 异常：" + e.getMessage(), e);
-        } catch (Exception e) {
-            logger.info("微信 统一下单 异常：" + e.getMessage(), e);
+        } catch (Exception ex) {
+            logger.error(ex.getMessage(), ex);
+            throw new Exception(ex.getMessage(), ex);
         }
-
-        return res;
     }
 
     /**
@@ -248,114 +225,191 @@ public class PayServiceImpl implements IPayService {
      * @param response
      */
     @Override
-    public void payCallback(HttpServletRequest request, HttpServletResponse response) {
-        logger.info("微信回调接口 操作逻辑 start");
-        String inputLine = "";
-        String notityXml = "";
+    public String payCallback(HttpServletRequest request, HttpServletResponse response) {
+        logger.info("----------------------------payCallback:微信回调接口 操作逻辑 start");
         try {
-            while ((inputLine = request.getReader().readLine()) != null) {
-                notityXml += inputLine;
+            InputStream inStream = request.getInputStream();
+            ByteArrayOutputStream outSteam = new ByteArrayOutputStream();
+            byte[] buffer = new byte[1024];
+            int len = 0;
+            while ((len = inStream.read(buffer)) != -1) {
+                outSteam.write(buffer, 0, len);
             }
-            //关闭流
-            request.getReader().close();
-            logger.info("微信回调内容信息：" + notityXml);
-            //解析成Map
-            Map<String, String> map = doXMLParse(notityXml);
-            //判断 支付是否成功
-            if ("SUCCESS".equals(map.get("result_code"))) {
-                logger.info("微信回调返回是否支付成功：是, " + JSON.toJSONString(map));
+            String resultxml = new String(outSteam.toByteArray(), "utf-8");
+            logger.info(String.format("------------------------------------[payCallback] resultxml:%s", resultxml));
+            Map<String, String> params = null;
+            try {
+                params = PayCommonUtil.doXMLParse(resultxml);
+            } catch (JDOMException e) {
+                logger.error("-----------------------[payCallback] JDOMException:" + e.getMessage(), e);
+            }
+            outSteam.close();
+            inStream.close();
+            if (!PayCommonUtil.isTenpaySign(params)) {
+                logger.info("===========payCallback====付款失败==============");
+                // 支付失败
+                return "fail";
+            } else {
+                logger.info("==========payCallback=====付款成功==============");
+                // ------------------------------
+                // 处理业务开始
+                logger.info("=================微信回调返回是否支付成功：是, " + JSON.toJSONString(params));
                 //获得 返回的商户订单号
-                String outTradeNo = map.get("out_trade_no");
-                logger.info("微信回调返回商户订单号：" + outTradeNo);
+                String outTradeNo = params.get("out_trade_no");
+                logger.info("===========微信回调返回商户订单号：" + outTradeNo);
                 //访问DB
-                List<Order> orders = this.orderMapper.selectOrderByOrderNo(outTradeNo);
+                FacOrderExample orderExample = new FacOrderExample();
+                orderExample.createCriteria().andIsDeletedEqualTo(false).andOrderNoEqualTo(outTradeNo);
+                List<FacOrder> orders = this.facOrderMapper.selectByExample(orderExample);
                 if (CollectionUtils.isNotEmpty(orders)) {
-                    logger.info("微信回调 根据订单号查询订单状态：" + orders.get(0).getStatus());
-                    if (OrderStatus.PAYING.getCode().equals(orders.get(0).getStatus())) {
-                        //修改支付状态:订单支付成功后状态变为待核销状态
+                    logger.info("===========微信回调 根据订单号查询订单状态：" + orders.get(0).getStatus());
+                    if (OrderStatus.PAYING.getCode().equals(Integer.valueOf(orders.get(0).getStatus()))) {
+                        //修改支付状态:订单支付成功后状态变为待核销状态、支付时间
                         int sqlRow = this.orderMapper.updateOrderStatusAfterPayed(outTradeNo, OrderStatus.TOWRITEOFF.getCode().intValue());
+                        logger.info(String.format("---------------updateOrderStatusAfterPayed sqlRow:%s, orderNo:%s", sqlRow, outTradeNo));
                         if (sqlRow >= 1) {
                             // 支付成功后，处理当前订单、商品、用户相关信息
                             this.dealOrderAndProdDataAfterPayed(orders);
-
                             logger.info("微信回调  订单号：" + outTradeNo + ",修改状态成功");
-                            //封装 返回值
-                            StringBuffer buffer = new StringBuffer();
-                            buffer.append("<xml>");
-                            buffer.append("<return_code>SUCCESS</return_code>");
-                            buffer.append("<return_msg>OK</return_msg>");
-                            buffer.append("</xml>");
-                            //给微信服务器返回 成功标示 否则会一直询问 咱们服务器 是否回调成功
-                            PrintWriter writer = response.getWriter();
-                            //返回
-                            writer.print(buffer.toString());
                         }
                     }
                 }
-                logger.info("微信回调接口 操作逻辑 end, at:" + TimeUtils.getCurrentTimeSSS());
+                logger.info("==============微信回调接口 操作逻辑 success, at:" + TimeUtils.getCurrentTimeSSS());
+                // 处理业务完毕
+
+                return "success";
             }
-        } catch (IOException e) {
-            logger.error("[payCallback IOException] error: " + e.getMessage(), e);
-        } catch (Exception e) {
-            logger.error("[payCallback Exception] error: " + e.getMessage(), e);
+        } catch (Exception ex) {
+            logger.error("=========payCallback======付款异常==============" + ex.getMessage(), ex);
         }
+
+        return "fail";
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void dealOrderAndProdDataAfterPayed(List<Order> orders) {
+    public void dealOrderAndProdDataAfterPayed(List<FacOrder> orders) {
+        logger.info(String.format("[dealOrderAndProdDataAfterPayed] orders:%s"
+                , CollectionUtils.isNotEmpty(orders) ? JSON.toJSONString(orders) : "has no order."));
         // 支付成功后，处理当前订单、商品、用户相关信息
-        if (CollectionUtils.isNotEmpty(orders)) {
+        if (CollectionUtils.isEmpty(orders)) {
+            return;
+        }
+        String orderNo = orders.get(0).getOrderNo();
+        FacOrderProductExample orderProductExample = new FacOrderProductExample();
+        orderProductExample.createCriteria().andIsDeletedEqualTo(false).andOrderNoEqualTo(orderNo);
+        List<FacOrderProduct> orderProducts = this.facOrderProductMapper.selectByExample(orderProductExample);
+        if (CollectionUtils.isEmpty(orderProducts)) {
             return;
         }
         // 批量更新当前商品对应的销售数量
         // <inviterId, [prodId]>
         Map<Long, List<Long>> inviterId2ProdId = new HashMap<>();
         List<Product> products = new ArrayList<>();
+        // 是被分享的商品ids
         List<Long> ids = new ArrayList<>();
-        for (Order order : orders) {
+        BigDecimal totalAmount = DecimalUtils.getDefaultDecimal();
+        // 商品ids
+        List<Long> prodIds = new ArrayList<>();
+        for (FacOrderProduct orderProduct : orderProducts) {
+            prodIds.add(orderProduct.getProdId());
             Product product = new Product();
-            product.setId(order.getProdId());
-            product.setSales(order.getProdNumber());
+            product.setId(orderProduct.getProdId());
+            product.setSales(Integer.valueOf(orderProduct.getProdNumber()));
             products.add(product);
             // 商品是通过别人分享购买的
-            if (order.getInviterId() != null) {
-                if (!inviterId2ProdId.containsKey(order.getInviterId())) {
-                    inviterId2ProdId.put(order.getInviterId(), new ArrayList<>());
+            if (orderProduct.getInviterId() != null) {
+                if (!inviterId2ProdId.containsKey(orderProduct.getInviterId())) {
+                    inviterId2ProdId.put(orderProduct.getInviterId(), new ArrayList<>());
                 }
-                inviterId2ProdId.get(order.getInviterId()).add(order.getProdId());
-                ids.add(order.getProdId());
+                inviterId2ProdId.get(orderProduct.getInviterId()).add(orderProduct.getProdId());
+                ids.add(orderProduct.getProdId());
+            }
+            // 当前订单对应的商品总金额
+            totalAmount = DecimalUtils.add(totalAmount, DecimalUtils.mul(orderProduct.getPrice(), new BigDecimal(orderProduct.getProdNumber().toString())));
+        }
+        FacProductExample productExample = new FacProductExample();
+        productExample.createCriteria().andIsDeletedEqualTo(false).andIdIn(prodIds);
+        List<FacProduct> facProducts = this.facProductMapper.selectByExample(productExample);
+        if (CollectionUtils.isNotEmpty(facProducts)) {
+            for (FacProduct item : facProducts) {
+                for (FacOrderProduct orderProduct : orderProducts) {
+                    if (item.getId().equals(orderProduct.getProdId())) {
+                        FacProduct product = new FacProduct();
+                        // 销量
+                        int oldSales = item.getSales() != null ? Integer.valueOf(item.getSales()) : 0;
+                        int sales = oldSales + Integer.valueOf(orderProduct.getProdNumber());
+                        product.setSales(Short.valueOf(String.valueOf(sales)));
+                        // 订单数量
+                        int oldOrderCount = item.getOrderCount() != null ? Integer.valueOf(item.getOrderCount()) : 0;
+                        int orderCount = oldOrderCount + 1;
+                        product.setOrderCount(Short.valueOf(String.valueOf(orderCount)));
+                        // 库存数量
+                        int oldInventoryQuantity = item.getInventoryQuantity() != null ? Integer.valueOf(item.getInventoryQuantity()) : 0;
+                        int inventoryQuantity = oldInventoryQuantity - Integer.valueOf(orderProduct.getProdNumber());
+                        product.setInventoryQuantity(Short.valueOf(String.valueOf(inventoryQuantity)));
+                        // 更新
+                        productExample = new FacProductExample();
+                        productExample.createCriteria().andIsDeletedEqualTo(false).andIdEqualTo(orderProduct.getProdId());
+                        int result = this.facProductMapper.updateByExampleSelective(product, productExample);
+                        logger.info("---------------------[dealOrderAndProdDataAfterPayed] updateProductSales success,result:%s, orderNo:%s, product:%s"
+                                , result, orderNo, JSON.toJSONString(product));
+                    }
+                }
             }
         }
-        this.productMapper.batchUpdateProductSales(products);
         // 给分享人加积分/佣金啥的
         if (MapUtils.isNotEmpty(inviterId2ProdId)) {
             Long[] idsArr = new Long[ids.size()];
             idsArr = ids.toArray(idsArr);
             List<Product> productList = this.productMapper.selectProductsByIds(idsArr);
             if (CollectionUtils.isNotEmpty(productList)) {
+                Date nowDate = new Date();
                 Map<Long, Product> productMap = new HashMap<>(productList.size());
                 for (Product item : productList) {
                     productMap.put(item.getId(), item);
                 }
                 // <inviterId, [prodId]>
-                List<Buyer> updateObjs = new ArrayList<>();
-                for (Map.Entry<Long, List<Long>> entry : inviterId2ProdId.entrySet()) {
-                    Buyer buyer = new Buyer();
-                    // 积分
-                    int points = 0;
-                    BigDecimal balance = new BigDecimal("0.0");
-                    for (Long prodId : entry.getValue()) {
-                        if (productMap.containsKey(prodId)) {
-                            points = points + productMap.get(prodId).getBonusPoints();
-                            balance = DecimalUtils.add(balance, productMap.get(prodId).getDistribution());
-                        }
+                FacBuyerExample buyerExample = new FacBuyerExample();
+                buyerExample.createCriteria().andIsDeletedEqualTo(false).andIdIn(new ArrayList<>(inviterId2ProdId.keySet()));
+                List<FacBuyer> facBuyers = this.facBuyerMapper.selectByExample(buyerExample);
+                Map<Long, FacBuyer> id2Buyer = new HashMap<>();
+                if (CollectionUtils.isNotEmpty(facBuyers)) {
+                    for (FacBuyer buyer : facBuyers) {
+                        id2Buyer.put(buyer.getId(), buyer);
                     }
-                    buyer.setId(entry.getKey());
-                    buyer.setPoints(points);
-                    buyer.setBalance(balance);
-                    updateObjs.add(buyer);
                 }
-                this.buyerMapper.batchUpdatePoints(updateObjs);
+                for (Map.Entry<Long, List<Long>> entry : inviterId2ProdId.entrySet()) {
+                    FacBuyer buyer = new FacBuyer();
+                    // 积分
+                    FacBuyer oldBuyer = id2Buyer.get(entry.getKey());
+                    if (oldBuyer != null) {
+                        int oldPoint = oldBuyer.getPoints() != null ? Integer.valueOf(oldBuyer.getPoints()) : 0;
+                        int newPoints = oldPoint;
+                        BigDecimal oldBalance = oldBuyer.getBalance() != null ? oldBuyer.getBalance() : DecimalUtils.getDefaultDecimal();
+                        BigDecimal balance = oldBalance;
+                        for (Long prodId : entry.getValue()) {
+                            if (productMap.containsKey(prodId)) {
+                                newPoints = newPoints
+                                        + (productMap.get(prodId).getBonusPoints() != null ? productMap.get(prodId).getBonusPoints().intValue() : 0);
+                                balance = DecimalUtils.add(balance
+                                        , (productMap.get(prodId).getDistribution() != null ? productMap.get(prodId).getDistribution() : DecimalUtils.getDefaultDecimal()));
+                            }
+                        }
+                        buyer.setPoints(Short.valueOf(String.valueOf(newPoints)));
+                        buyer.setBalance(balance);
+                        buyer.setUpdateTime(nowDate);
+                        buyerExample = new FacBuyerExample();
+                        buyerExample.createCriteria().andIsDeletedEqualTo(false).andIdEqualTo(entry.getKey());
+                        int result = this.facBuyerMapper.updateByExampleSelective(buyer, buyerExample);
+                        logger.info(String.format("---------------------[dealOrderAndProdDataAfterPayed] update point and balance,result:%s, orderNo:%s, buyerId:%s, point:%s, balance:%s"
+                                , result, orderNo, entry.getKey(), newPoints, balance));
+                        // 给分享人增加一条奖励积分或者分享金的记录
+                        // 积分、分享金有改变
+                        int changePoint = newPoints - oldPoint;
+                        BigDecimal changeBalance = DecimalUtils.subtract(balance, oldBalance);
+                        this.insertBuyerSign(oldBuyer, changePoint, changeBalance, nowDate);
+                    }
+                }
             }
         }
 
@@ -364,7 +418,7 @@ public class PayServiceImpl implements IPayService {
         FacProductWriteoff productWriteoff;
         List<FacProductWriteoff> productWriteoffs = new ArrayList<>();
         String writeOffCode;
-        for (Order item : orders) {
+        for (FacOrderProduct item : orderProducts) {
             // 核销码动态随机生成:8位整数随机码
             writeOffCode = FacCommonUtils.randomInt(FacConstant.PRODUCT_WRITEOFF_CODE_LENGTH);
             productWriteoff = new FacProductWriteoff();
@@ -383,11 +437,13 @@ public class PayServiceImpl implements IPayService {
             productWriteoffs.add(productWriteoff);
         }
         this.facProductWriteoffMapper.batchInsert(productWriteoffs);
+        logger.info(String.format("---------------------[dealOrderAndProdDataAfterPayed] batchInsert success.---------%s"
+                , JSON.toJSONString(productWriteoffs)));
 
-        // 如果当前订单使用了积分抵扣，需要扣除当前用户相应的消费积分数
+        Buyer buyer = this.buyerMapper.selectBuyerByOpenId(orders.get(0).getToken());
+        // 如果当前订单使用了积分抵扣，需要扣除当前用户相应的消费积分数,并且记录消费记录
         int useScore = orders.get(0).getUserScore();
         if (useScore > 0) {
-            Buyer buyer = this.buyerMapper.selectBuyerByOpenId(orders.get(0).getToken());
             if (buyer != null) {
                 FacBuyer facBuyer = new FacBuyer();
                 int remainderPoints = buyer.getPoints() - useScore;
@@ -396,203 +452,98 @@ public class PayServiceImpl implements IPayService {
                 FacBuyerExample buyerExample = new FacBuyerExample();
                 buyerExample.createCriteria().andIsDeletedEqualTo(false).andTokenEqualTo(orders.get(0).getToken());
                 this.facBuyerMapper.updateByExampleSelective(facBuyer, buyerExample);
-            }
-        }
-    }
-
-    /**
-     * 方法用途: 对所有传入参数按照字段名的 ASCII 码从小到大排序（字典序），并且生成url参数串<br>
-     * 实现步骤: <br>
-     *
-     * @param paraMap    要排序的Map对象
-     * @param urlEncode  是否需要URLENCODE
-     * @param keyToLower 是否需要将Key转换为全小写
-     *                   true:key转化成小写，false:不转化
-     * @return
-     */
-    private static String formatUrlMap(Map<String, String> paraMap, boolean urlEncode, boolean keyToLower) {
-        String buff = "";
-        Map<String, String> tmpMap = paraMap;
-        try {
-            List<Map.Entry<String, String>> infoIds = new ArrayList<Map.Entry<String, String>>(tmpMap.entrySet());
-            // 对所有传入参数按照字段名的 ASCII 码从小到大排序（字典序）
-            Collections.sort(infoIds, new Comparator<Map.Entry<String, String>>() {
-                @Override
-                public int compare(Map.Entry<String, String> o1, Map.Entry<String, String> o2) {
-                    return (o1.getKey()).compareTo(o2.getKey());
-                }
-            });
-            // 构造URL 键值对的格式
-            StringBuilder buf = new StringBuilder();
-            for (Map.Entry<String, String> item : infoIds) {
-                if (StringUtils.isNotBlank(item.getKey())) {
-                    String key = item.getKey();
-                    String val = item.getValue();
-                    if (urlEncode) {
-                        val = URLEncoder.encode(val, "utf-8");
-                    }
-                    if (keyToLower) {
-                        buf.append(key.toLowerCase() + "=" + val);
-                    } else {
-                        buf.append(key + "=" + val);
-                    }
-                    buf.append("&");
-                }
-
-            }
-            buff = buf.toString();
-            if (buff.isEmpty() == false) {
-                buff = buff.substring(0, buff.length() - 1);
-            }
-        } catch (Exception e) {
-            return null;
-        }
-        return buff;
-    }
-
-    /**
-     * 解析xml,返回第一级元素键值对。如果第一级元素有子节点，则此节点的值是子节点的xml数据。
-     *
-     * @param strxml
-     * @return
-     * @throws Exception
-     */
-    @SuppressWarnings("rawtypes")
-    private Map<String, String> doXMLParse(String strxml) throws Exception {
-        if (null == strxml || "".equals(strxml)) {
-            return null;
-        }
-
-        Map<String, String> m = new HashMap<String, String>();
-        InputStream in = String2Inputstream(strxml);
-        SAXBuilder builder = new SAXBuilder();
-        Document doc = builder.build(in);
-        Element root = doc.getRootElement();
-        List list = root.getChildren();
-        Iterator it = list.iterator();
-        while (it.hasNext()) {
-            Element e = (Element) it.next();
-            String k = e.getName();
-            String v = "";
-            List children = e.getChildren();
-            if (children.isEmpty()) {
-                v = e.getTextNormalize();
+                logger.info(String.format("==========update buyer point after consume:buyer:%s,data:%s==========", JSON.toJSON(buyer), JSON.toJSON(facBuyer)));
+                // 增加消费记录
+                FacBuyerSign record = new FacBuyerSign();
+                record.setToken(buyer.getToken());
+                record.setNickName(buyer.getNickName());
+                // 积分类型：0-签到;1-购物反赠积分,2-购物消费,3-用户每次订单实际消费金额
+                record.setType(ScoreTypeEnum.COUNSUMER.getValue());
+                record.setPoint(Short.valueOf(String.valueOf(useScore)));
+                record.setSignTime(nowDate);
+                record.setCreateTime(nowDate);
+                record.setUpdateTime(nowDate);
+                record.setIsDeleted(false);
+                this.facBuyerSignMapper.insertSelective(record);
+                logger.info(String.format("============add consume record:%s===============", JSON.toJSONString(record)));
             } else {
-                v = getChildrenText(children);
+                logger.info(String.format("==================current user is not exist, token:%s================", orders.get(0).getToken()));
             }
+            // 实际消费金额记录
+            totalAmount = DecimalUtils.subtract(totalAmount, DecimalUtils.division(useScore, 100));
+        }
+        // 记录消费金额记录
+        if (buyer != null) {
+            FacBuyerSign record = new FacBuyerSign();
+            record.setToken(buyer.getToken());
+            record.setNickName(buyer.getNickName());
+            // 积分类型：0-签到;1-购物反赠积分,2-购物消费,3-用户每次订单实际消费金额
+            record.setType(ScoreTypeEnum.COUNSUMER_AMOUNT.getValue());
+            record.setMount(totalAmount);
+            record.setSignTime(nowDate);
+            record.setCreateTime(nowDate);
+            record.setUpdateTime(nowDate);
+            record.setIsDeleted(false);
+            this.facBuyerSignMapper.insertSelective(record);
+            logger.info(String.format("---------------add counsumer amount success, token:%s, orderNo:%s, totalAmount:%s",
+                    buyer.getToken(), orderNo, totalAmount));
+        }
+    }
 
-            m.put(k, v);
+    private void insertBuyerSign(FacBuyer buyer, int points, BigDecimal balance, Date nowDate) {
+        FacBuyerSign facBuyerSign = new FacBuyerSign();
+        if (points != 0) {
+            facBuyerSign.setToken(buyer.getToken());
+            facBuyerSign.setNickName(buyer.getNickName());
+            facBuyerSign.setType(ScoreTypeEnum.INVITER_POINT.getValue());
+            facBuyerSign.setPoint(Short.valueOf(String.valueOf(points)));
+            facBuyerSign.setSignTime(nowDate);
+            facBuyerSign.setCreateTime(nowDate);
+            facBuyerSign.setUpdateTime(nowDate);
+            facBuyerSign.setIsDeleted(false);
+            int row = this.facBuyerSignMapper.insertSelective(facBuyerSign);
+            logger.info(String.format("-----------------------[insertBuyerSign4 inviter] point result:%s, buyerId:%s,points:%s"
+                    , row, buyer.getId(), facBuyerSign.getPoint()));
+        }
+        if (balance.compareTo(DecimalUtils.getDefaultDecimal()) != 0) {
+            facBuyerSign.setToken(buyer.getToken());
+            facBuyerSign.setNickName(buyer.getNickName());
+            facBuyerSign.setType(ScoreTypeEnum.INVITER_BALANCE.getValue());
+            facBuyerSign.setMount(balance);
+            facBuyerSign.setSignTime(nowDate);
+            facBuyerSign.setCreateTime(nowDate);
+            facBuyerSign.setUpdateTime(nowDate);
+            facBuyerSign.setIsDeleted(false);
+            int row = this.facBuyerSignMapper.insertSelective(facBuyerSign);
+            logger.info(String.format("-----------------------[insertBuyerSign4 inviter] balance result:%s, buyerId:%s,balance:%s"
+                    , row, buyer.getId(), facBuyerSign.getMount()));
+            // 这个场景下需要往提现表里增加一条待处理的提现记录
+            FacCash facCash = new FacCash();
+            facCash.setUserId(buyer.getId());
+            facCash.setCash(balance);
+            facCash.setReceivingAccount("");
+            facCash.setPhoneNumber("");
+            facCash.setApplyTime(nowDate);
+            facCash.setStatus(new Byte("1"));
+            facCash.setCreateTime(nowDate);
+            facCash.setUpdateTime(nowDate);
+            facCash.setOperatorId(-1L);
+            facCash.setOperatorName("default");
+            facCash.setIsDeleted(false);
+            row = this.facCashMapper.insertSelective(facCash);
+            logger.info(String.format("-----------------------[insertBuyerSign4 inviter] cash result:%s, buyerId:%s,cash:%s"
+                    , row, buyer.getId(), facBuyerSign.getMount()));
+        }
+    }
+
+    private BigDecimal getTotalConsumAmout(List<FacOrderProduct> orderProducts) throws Exception {
+        if (CollectionUtils.isEmpty(orderProducts)) {
+            throw new Exception("当前订单下没有商品信息，请联系管理员");
         }
 
-        //关闭流
-        in.close();
-
-        return m;
-    }
-
-    private InputStream String2Inputstream(String str) {
-        return new ByteArrayInputStream(str.getBytes());
-    }
-
-    /**
-     * 获取子结点的xml
-     *
-     * @param children
-     * @return String
-     */
-    @SuppressWarnings("rawtypes")
-    private static String getChildrenText(List children) {
-        StringBuffer sb = new StringBuffer();
-        if (!children.isEmpty()) {
-            Iterator it = children.iterator();
-            while (it.hasNext()) {
-                Element e = (Element) it.next();
-                String name = e.getName();
-                String value = e.getTextNormalize();
-                List list = e.getChildren();
-                sb.append("<" + name + ">");
-                if (!list.isEmpty()) {
-                    sb.append(getChildrenText(list));
-                }
-                sb.append(value);
-                sb.append("</" + name + ">");
-            }
-        }
-
-        return sb.toString();
-    }
-
-    /**
-     * 方法名: getRemotePortData
-     * 描述: 发送远程请求 获得代码示例
-     * 参数：  @param urls 访问路径
-     * 参数：  @param param 访问参数-字符串拼接格式, 例：port_d=10002&port_g=10007&country_a=
-     * 创建人: Xia ZhengWei
-     * 创建时间: 2017年3月6日 下午3:20:32
-     * 版本号: v1.0
-     * 返回类型: String
-     */
-    private String getRemotePortData(String urls, String param) {
-        logger.info("港距查询抓取数据----开始抓取外网港距数据");
-        try {
-            URL url = new URL(urls);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            // 设置连接超时时间
-            conn.setConnectTimeout(30000);
-            // 设置读取超时时间
-            conn.setReadTimeout(30000);
-            conn.setRequestMethod("POST");
-            if (StringUtils.isNotBlank(param)) {
-                conn.setRequestProperty("Origin", "https://sirius.searates.com");// 主要参数
-                conn.setRequestProperty("Referer", "https://sirius.searates.com/cn/port?A=ChIJP1j2OhRahjURNsllbOuKc3Y&D=567&G=16959&shipment=1&container=20st&weight=1&product=0&request=&weightcargo=1&");
-                conn.setRequestProperty("X-Requested-With", "XMLHttpRequest");// 主要参数
-            }
-            // 需要输出
-            conn.setDoInput(true);
-            // 需要输入
-            conn.setDoOutput(true);
-            // 设置是否使用缓存
-            conn.setUseCaches(false);
-            // 设置请求属性
-            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-            conn.setRequestProperty("Connection", "Keep-Alive");// 维持长连接
-            conn.setRequestProperty("Charset", "UTF-8");
-
-            if (StringUtils.isNotBlank(param)) {
-                // 建立输入流，向指向的URL传入参数
-                DataOutputStream dos = new DataOutputStream(conn.getOutputStream());
-                dos.writeBytes(param);
-                dos.flush();
-                dos.close();
-            }
-            // 输出返回结果
-            InputStream input = conn.getInputStream();
-            int resLen = 0;
-            byte[] res = new byte[1024];
-            StringBuilder sb = new StringBuilder();
-            while ((resLen = input.read(res)) != -1) {
-                sb.append(new String(res, 0, resLen));
-            }
-            return sb.toString();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-            logger.info("港距查询抓取数据----抓取外网港距数据发生异常：" + e.getMessage());
-        } catch (IOException e) {
-            e.printStackTrace();
-            logger.info("港距查询抓取数据----抓取外网港距数据发生异常：" + e.getMessage());
-        }
-        logger.info("港距查询抓取数据----抓取外网港距数据失败, 返回空字符串");
-        return "";
-    }
-
-    private BigDecimal getTotalConsumAmout(List<Order> orders) {
         BigDecimal total = DecimalUtils.getDefaultDecimal();
-        if (CollectionUtils.isEmpty(orders)) {
-            return total;
-        }
-
-        for (Order order : orders) {
-            total = DecimalUtils.add(total, DecimalUtils.mul(order.getPrice(), new BigDecimal(String.valueOf(order.getProdNumber()))));
+        for (FacOrderProduct orderProduct : orderProducts) {
+            total = DecimalUtils.add(total, DecimalUtils.mul(orderProduct.getPrice(), new BigDecimal(String.valueOf(orderProduct.getProdNumber()))));
         }
         return total;
     }

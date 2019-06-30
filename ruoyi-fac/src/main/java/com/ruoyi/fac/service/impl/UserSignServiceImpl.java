@@ -58,10 +58,18 @@ public class UserSignServiceImpl implements IUserSignService {
         if (CollectionUtils.isNotEmpty(signs)) {
             throw new FacException("今天您已签到，请明天再来");
         }
+        FacBuyerExample buyerExample = new FacBuyerExample();
+        buyerExample.createCriteria().andIsDeletedEqualTo(false).andTokenEqualTo(req.getToken());
+        List<FacBuyer> buyers = this.facBuyerMapper.selectByExample(buyerExample);
+        if (CollectionUtils.isEmpty(buyers)) {
+            throw new FacException("请重新授权登录后再签到");
+        }
+        FacBuyer buyer = buyers.get(0);
         int point = FacCommonUtils.getRandomInt(FacConstant.USER_SIGN_POINT_MAX, FacConstant.USER_SIGN_POINT_MIN);
         Date now = new Date();
         FacBuyerSign sign = new FacBuyerSign();
         sign.setToken(req.getToken());
+        sign.setNickName(buyer.getNickName());
         sign.setPoint(Short.valueOf(String.valueOf(point)));
         sign.setType(ScoreTypeEnum.SIGN.getValue());
         sign.setSignTime(nowDate);
@@ -71,16 +79,10 @@ public class UserSignServiceImpl implements IUserSignService {
         int rows = this.facBuyerSignMapper.insertSelective(sign);
         if (rows > 0) {
             // 更新用户表里当前用户相应的积分
-            FacBuyerExample buyerExample = new FacBuyerExample();
-            buyerExample.createCriteria().andIsDeletedEqualTo(false).andTokenEqualTo(req.getToken());
-            List<FacBuyer> facBuyers = this.facBuyerMapper.selectByExample(buyerExample);
-            if (CollectionUtils.isNotEmpty(facBuyers)) {
-                FacBuyer buyer = facBuyers.get(0);
-                int newPoints = buyer.getPoints() + point;
-                buyer.setPoints(Short.valueOf(String.valueOf(newPoints)));
-                buyer.setUpdateTime(new Date());
-                this.facBuyerMapper.updateByExampleSelective(buyer, buyerExample);
-            }
+            int newPoints = buyer.getPoints() + point;
+            buyer.setPoints(Short.valueOf(String.valueOf(newPoints)));
+            buyer.setUpdateTime(new Date());
+            this.facBuyerMapper.updateByExampleSelective(buyer, buyerExample);
         }
         return point;
     }
@@ -90,9 +92,13 @@ public class UserSignServiceImpl implements IUserSignService {
         if (req == null || StringUtils.isBlank(req.getToken())) {
             throw new FacException("参数token不能为空");
         }
+        // 查询签到积分
+        List<Byte> types = new ArrayList<>();
+        types.add(ScoreTypeEnum.SIGN.getValue());
+
         UserSignLogs logs = new UserSignLogs();
         FacBuyerSignExample example = new FacBuyerSignExample();
-        example.createCriteria().andIsDeletedEqualTo(false).andTokenEqualTo(req.getToken()).andTypeEqualTo(ScoreTypeEnum.SIGN.getValue());
+        example.createCriteria().andIsDeletedEqualTo(false).andTokenEqualTo(req.getToken()).andTypeIn(types);
         List<FacBuyerSign> signs = this.facBuyerSignMapper.selectByExample(example);
         logs.setTotalRow(CollectionUtils.isNotEmpty(signs) ? signs.size() : 0);
         if (CollectionUtils.isEmpty(signs)) {
@@ -113,17 +119,23 @@ public class UserSignServiceImpl implements IUserSignService {
      */
     @Override
     public UserScoreLogs queryUserScoreLogs(SignReq req) throws FacException {
+        UserScoreLogs logs = new UserScoreLogs();
         if (StringUtils.isBlank(req.getToken())) {
-            return null;
+            return logs;
         }
+        List<Byte> types = new ArrayList<>();
+        types.add(ScoreTypeEnum.SIGN.getValue());
+        types.add(ScoreTypeEnum.BUY_BACK.getValue());
+        types.add(ScoreTypeEnum.COUNSUMER.getValue());
+        types.add(ScoreTypeEnum.INVITER_POINT.getValue());
+
         FacBuyerSignExample example = new FacBuyerSignExample();
-        example.createCriteria().andIsDeletedEqualTo(false).andTokenEqualTo(req.getToken());
+        example.createCriteria().andIsDeletedEqualTo(false).andTokenEqualTo(req.getToken()).andTypeIn(types);
         example.setOrderByClause(" create_time desc ");
         example.setStartRow((req.getPage() - 1) * req.getPageSize());
         example.setPageSize(req.getPageSize());
         List<FacBuyerSign> buyerSigns = this.facBuyerSignMapper.selectByExample(example);
         if (CollectionUtils.isNotEmpty(buyerSigns)) {
-            UserScoreLogs logs = new UserScoreLogs();
             List<UserScoreLog> result = new ArrayList<>();
             UserScoreLog log;
             for (FacBuyerSign sign : buyerSigns) {
@@ -139,7 +151,7 @@ public class UserSignServiceImpl implements IUserSignService {
             return logs;
         }
 
-        return null;
+        return logs;
     }
 
     private List<UserSignLog> buildSignLogs(List<FacBuyerSign> signs) {
@@ -155,6 +167,49 @@ public class UserSignServiceImpl implements IUserSignService {
             result.add(log);
         }
         return result;
+    }
+
+    /**
+     * 查询当前用户金额明细
+     *
+     * @param req
+     * @return
+     * @throws FacException
+     */
+    @Override
+    public UserScoreLogs queryUserAmountLogs(SignReq req) throws FacException {
+        UserScoreLogs logs = new UserScoreLogs();
+        if (StringUtils.isBlank(req.getToken())) {
+            return logs;
+        }
+        List<Byte> types = new ArrayList<>();
+        types.add(ScoreTypeEnum.COUNSUMER_AMOUNT.getValue());
+        types.add(ScoreTypeEnum.INVITER_BALANCE.getValue());
+        types.add(ScoreTypeEnum.CASH_OUT.getValue());
+
+        FacBuyerSignExample example = new FacBuyerSignExample();
+        example.createCriteria().andIsDeletedEqualTo(false).andTokenEqualTo(req.getToken()).andTypeIn(types);
+        example.setOrderByClause(" create_time desc ");
+        example.setStartRow((req.getPage() - 1) * req.getPageSize());
+        example.setPageSize(req.getPageSize());
+        List<FacBuyerSign> buyerSigns = this.facBuyerSignMapper.selectByExample(example);
+        if (CollectionUtils.isNotEmpty(buyerSigns)) {
+            List<UserScoreLog> result = new ArrayList<>();
+            UserScoreLog log;
+            for (FacBuyerSign sign : buyerSigns) {
+                log = new UserScoreLog();
+                result.add(log);
+                log.setTypeStr(ScoreTypeEnum.getNameByCode(sign.getType()));
+                log.setDateAdd(TimeUtils.date2Str(sign.getCreateTime(), TimeUtils.DEFAULT_DATE_TIME_FORMAT_HH_MM_SS));
+                log.setAmount(String.valueOf(sign.getMount()));
+                // 0为奖励，1为消费
+                log.setBehavior(ScoreTypeEnum.isReward(sign.getType()) ? 0 : 1);
+            }
+            logs.setResult(result);
+            return logs;
+        }
+
+        return logs;
     }
 
 

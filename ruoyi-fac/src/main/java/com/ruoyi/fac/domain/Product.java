@@ -152,6 +152,10 @@ public class Product extends BaseEntity {
      * 商品图片完全路径
      */
     private String imgPath;
+    /**
+     * 页面查询条件：距离核销结束时间多少天:查询条件中会精确折算成分钟
+     */
+    private Integer expireTime;
 
     public void setId(Long id) {
         this.id = id;
@@ -456,5 +460,13 @@ public class Product extends BaseEntity {
 
     public void setOrderCount(Integer orderCount) {
         this.orderCount = orderCount;
+    }
+
+    public Integer getExpireTime() {
+        return expireTime;
+    }
+
+    public void setExpireTime(Integer expireTime) {
+        this.expireTime = expireTime;
     }
 }

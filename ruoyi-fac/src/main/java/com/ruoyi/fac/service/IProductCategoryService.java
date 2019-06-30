@@ -1,6 +1,7 @@
 package com.ruoyi.fac.service;
 
 import com.ruoyi.fac.domain.ProductCategory;
+import com.ruoyi.fac.exception.FacException;
 import com.ruoyi.fac.vo.client.CategoryVo;
 
 import java.util.List;
@@ -50,7 +51,7 @@ public interface IProductCategoryService {
      * @param ids 需要删除的数据ID
      * @return 结果
      */
-    int deleteProductCategoryByIds(String ids);
+    int deleteProductCategoryByIds(String ids) throws FacException;
 
     /**
      * 查询当前商品分类信息

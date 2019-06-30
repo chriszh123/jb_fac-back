@@ -53,9 +53,9 @@ public class FileUploadUtils {
      * @return 文件名称
      * @throws Exception
      */
-    public static final String upload(MultipartFile file) throws IOException {
+    public static final String upload(MultipartFile file, String basePath) throws IOException {
         try {
-            return upload(getDefaultBaseDir(), file, FileUploadUtils.IMAGE_JPG_EXTENSION);
+            return upload(basePath, file, FileUploadUtils.IMAGE_JPG_EXTENSION);
         } catch (Exception e) {
             throw new IOException(e.getMessage(), e);
         }
@@ -107,7 +107,7 @@ public class FileUploadUtils {
 
     public static final String extractFilename(MultipartFile file, String extension) {
         String filename = file.getOriginalFilename();
-        filename = DateUtils.datePath() + "/" + encodingFilename(filename) + extension;
+        filename = DateUtils.datePath() + "/" + encodingFilename(filename);
         return filename;
     }
 
@@ -128,7 +128,8 @@ public class FileUploadUtils {
      */
     public static final String encodingFilename(String filename) {
         filename = filename.replace("_", " ");
-        filename = Md5Utils.hash(filename + System.nanoTime() + counter++);
+        String fileExtesion = filename.substring(filename.lastIndexOf("."));
+        filename = Md5Utils.hash(filename + System.nanoTime() + counter++) + fileExtesion;
         return filename;
     }
 

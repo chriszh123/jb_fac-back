@@ -293,6 +293,8 @@ public class ShiroConfig
         filterChainDefinitionMap.put("/fac/client/template-msg/**", "anon");
         filterChainDefinitionMap.put("/fac/client/user/**", "anon");
         filterChainDefinitionMap.put("/fac/client/pay/**", "anon");
+        // 客户端访问图片
+        filterChainDefinitionMap.put("/images/**", "anon");
         // 系统权限列表
         // filterChainDefinitionMap.putAll(SpringUtils.getBean(IMenuService.class).selectPermsAll());
 

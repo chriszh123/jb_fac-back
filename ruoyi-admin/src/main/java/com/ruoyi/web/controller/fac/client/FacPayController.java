@@ -1,5 +1,6 @@
 package com.ruoyi.web.controller.fac.client;
 
+import com.alibaba.fastjson.JSON;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.fac.enums.FacCode;
 import com.ruoyi.fac.service.IPayService;
@@ -44,24 +45,30 @@ public class FacPayController extends BaseController {
         logger.info("微信 统一下单 接口调用");
         try {
             if (req == null || StringUtils.isBlank(req.getToken()) || StringUtils.isBlank(req.getMoney())
-                    || req.getNextAction() == null || StringUtils.isBlank(req.getNextAction().getId())) {
+                    || req.getNextAction() == null || StringUtils.isBlank(req.getNextAction().getId())
+                    || StringUtils.isBlank(req.getNextAction().getId().trim())) {
                 return FacResult.error(FacCode.PARAMTER_NULL.getCode(), FacCode.PARAMTER_NULL.getMsg());
             }
+            logger.info(String.format("============================wxPay start：%s", JSON.toJSONString(req)));
             WxPrePayRes res = this.payService.getWxPrePayInfo(req, request, response);
+            logger.info(String.format("==================================wxPay success：%s", JSON.toJSONString(res)));
             return FacResult.success(res);
         } catch (Exception ex) {
+            logger.error("================wxPay error", ex);
             return FacResult.error(ex.getMessage());
         }
     }
 
     @PostMapping("/wx/payCallback")
     @ResponseBody
-    public void payCallback(HttpServletRequest request, HttpServletResponse response) {
+    public String payCallback(HttpServletRequest request, HttpServletResponse response) {
         // 通知地址 回调服务器 支付结果(这个回调 如果不返回给微信服务器 是否成功回调标示 则会一直回调8次 一直到返回成功标示位置)
         try {
-            this.payService.payCallback(request, response);
+            logger.info("=================================payCallback start.=====================");
+            return this.payService.payCallback(request, response);
         } catch (Exception ex) {
             logger.error("[payCallback] error", ex);
         }
+        return "fail";
     }
 }

@@ -12,6 +12,7 @@ import com.ruoyi.framework.util.CkImageUploadUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -36,6 +37,15 @@ import java.util.List;
 @Controller
 public class CommonController {
     private static final Logger log = LoggerFactory.getLogger(CommonController.class);
+
+    @Value("${file.imagesUploadPath}")
+    private String imagesUploadPath;
+
+    @Value("${file.imageReturnPrePath}")
+    private String imageReturnPrePath;
+
+    @Value("${ruoyi.domain}")
+    private String domain;
 
     @RequestMapping("common/download")
     public void fileDownload(String fileName, Boolean delete, HttpServletResponse response, HttpServletRequest request) {
@@ -70,12 +80,12 @@ public class CommonController {
             log.info("[uplodaImg] fileSize: " + file.getSize());
             // 图片大小不超过500K
             if (file.getSize() > FacConstant.FILE_SIZE_FAC) {
-                String error = fileVo.error(0, "图片大小超过500K");
+                String error = fileVo.error(0, "图片大小不能超过500K");
                 out.println(error);
                 return;
             }
 
-            String success = CkImageUploadUtil.getInstance().uploadFile(file);
+            String success = CkImageUploadUtil.getInstance().uploadFile(file, imagesUploadPath, imageReturnPrePath, domain);
             out.println(success);
         } catch (Exception e) {
             log.error("[uplodaImg] error", e);
@@ -121,6 +131,46 @@ public class CommonController {
                 }
             } catch (Exception e) {
                 log.error("[batchUploadProductImg] 上传出现异常！异常出现在：class.CommonController.batchUploadProductImg()！", e);
+                vo.setMsg("上传出现异常！");
+            }
+        } else {
+            vo.setMsg("没有检测到文件！");
+        }
+
+        return vo;
+    }
+
+    @RequestMapping("/product/picture/batchUploadFocusMap")
+    @ResponseBody
+    public ProductImgVo batchUploadFocusMap(HttpServletRequest request, HttpServletResponse response, @RequestParam("file") MultipartFile[] file) throws Exception {
+        ProductImgVo vo = new ProductImgVo();
+        vo.setCode(FacConstant.AJAX_CODE_FAIL);
+        if (file != null && file.length > 0) {
+            List<String> fileNames = new ArrayList<>();
+            List<String> imgPaths = new ArrayList<>();
+            try {
+                for (int i = 0; i < file.length; i++) {
+                    if (!file[i].isEmpty()) {
+                        // 图片大小不超过500K
+                        if (file[i].getSize() > FacConstant.FILE_SIZE_FAC) {
+                            vo.setMsg("图片大小不能超过500K");
+                            break;
+                        }
+                        String fileName = FileUploadUtils.upload(file[i], imagesUploadPath);
+                        // 存储在数据库中的图片完整路径
+                        String imgUrl = domain + imageReturnPrePath + fileName;
+                        fileNames.add(fileName);
+                        imgPaths.add(imgUrl);
+                    }
+                }
+                //上传成功
+                if (!CollectionUtils.isEmpty(fileNames)) {
+                    vo.setCode(FacConstant.AJAX_CODE_SUCCESS);
+                    vo.setFileName(StringUtils.join(fileNames, ","));
+                    vo.setImgPath(StringUtils.join(imgPaths, ","));
+                }
+            } catch (Exception e) {
+                log.error("[batchUploadFocusMap] 上传出现异常！异常出现在：class.CommonController.batchUploadFocusMap()！", e);
                 vo.setMsg("上传出现异常！");
             }
         } else {
