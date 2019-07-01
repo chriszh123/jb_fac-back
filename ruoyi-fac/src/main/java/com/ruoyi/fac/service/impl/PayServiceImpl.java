@@ -135,12 +135,12 @@ public class PayServiceImpl implements IPayService {
                     for (Long prodId : prodIds) {
                         if (!prodId2Business.contains(prodId)) {
                             // 用户选择的商品存在于不同的卖家中，即
-                            throw new FacException("当前选择的商品在不同卖家中，不能创建订单");
+                            throw new FacException("当前订单中的商品在不同卖家中，不能创建订单");
                         }
                     }
                 }
             } else {
-                throw new FacException("系统没有商品相应卖家信息，请联系管理员");
+                throw new FacException("当前商品暂未绑定商家，请联系管理员");
             }
         }
 
