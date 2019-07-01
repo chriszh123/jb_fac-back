@@ -14,4 +14,9 @@ package com.ruoyi.fac.constant;
  **/
 public class ErrorMsg {
 
+    public static String ORDER_NOT_EXIST = "当前订单已不存在，请联系管理员";
+
+    public static String ORDER_STATUS_NOT_WRITEODDING = "当前订单处于非待付款状态，请核对后再操作";
+
+    public static String ORDER_PRODUCT_NOT_IN_SAME_BUSINESS = "您选择的商品在不同卖家中，不能创建订单";
 }

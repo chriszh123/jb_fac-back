@@ -2,6 +2,7 @@ package com.ruoyi.fac.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.ruoyi.common.config.Global;
+import com.ruoyi.fac.constant.ErrorMsg;
 import com.ruoyi.fac.constant.FacConstant;
 import com.ruoyi.fac.domain.Buyer;
 import com.ruoyi.fac.domain.FacProductWriteoff;
@@ -57,8 +58,6 @@ import java.util.*;
 public class PayServiceImpl implements IPayService {
     private static final Logger logger = LoggerFactory.getLogger(PayServiceImpl.class);
 
-    private static final String prepayUrl = "https://api.mch.weixin.qq.com/pay/unifiedorder";
-
     @Autowired
     private OrderMapper orderMapper;
     @Autowired
@@ -101,10 +100,10 @@ public class PayServiceImpl implements IPayService {
         orderExample.createCriteria().andIsDeletedEqualTo(false).andOrderNoEqualTo(orderNo);
         List<FacOrder> orders = this.facOrderMapper.selectByExample(orderExample);
         if (CollectionUtils.isEmpty(orders)) {
-            throw new Exception("当前订单已不存在，请联系管理员");
+            throw new Exception(ErrorMsg.ORDER_NOT_EXIST);
         }
         if (!OrderStatus.PAYING.getCode().equals(Integer.valueOf(orders.get(0).getStatus()))) {
-            throw new Exception("当前订单处于非待付款状态，请核对后再操作");
+            throw new Exception(ErrorMsg.ORDER_STATUS_NOT_WRITEODDING);
         }
         FacOrderProductExample orderProductExample = new FacOrderProductExample();
         orderProductExample.createCriteria().andIsDeletedEqualTo(false).andOrderNoEqualTo(orderNo);
@@ -128,7 +127,7 @@ public class PayServiceImpl implements IPayService {
                     biz2ProdIds.get(item.getBusinessId()).add(item.getBusinessProdId());
                 }
                 if (biz2ProdIds.size() != 1) {
-                    throw new FacException("您选择的商品在不同卖家中，不能创建订单");
+                    throw new FacException(ErrorMsg.ORDER_PRODUCT_NOT_IN_SAME_BUSINESS);
                 }
                 for (Map.Entry<Long, List<Long>> entry : biz2ProdIds.entrySet()) {
                     List<Long> prodId2Business = entry.getValue();
