@@ -499,13 +499,13 @@ public class OrderServiceImpl implements IOrderService {
                 List<Long> prodId2Business = entry.getValue();
                 for (Long prodId : prodIds) {
                     if (!prodId2Business.contains(prodId)) {
-                        // 用户选择的商品存在于不同的卖家中，即
-                        throw new FacException("当前选择的商品在不同卖家中，不能创建订单");
+                        // 用户选择的商品存在于不同的卖家中
+                        throw new FacException("当前订单中的商品在不同卖家中，不能创建订单");
                     }
                 }
             }
         } else {
-            throw new FacException("系统没有商品相应卖家信息，请联系管理员");
+            throw new FacException("当前商品暂未绑定商家，请联系管理员");
         }
         // 当前订单用户可以使用的积分
         // 使用积分规则暂定为：消费总金额大于当前用户名下的积分数
