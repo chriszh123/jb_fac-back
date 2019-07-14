@@ -190,8 +190,9 @@ public class PayServiceImpl implements IPayService {
         // 设置商户订单号
         String outTradeNo = orderNo;
         try {
-            // 测试金额:1分钱 zgf
-            BigDecimal totalAmount = new BigDecimal("0.01");
+            // 测试金额:1分钱
+//            BigDecimal totalAmount = new BigDecimal("0.01");
+            BigDecimal totalAmount = totalConsumeAmout;
             AppMchVo appMchVo = new AppMchVo();
             appMchVo.setAppId(Global.getFacAppId());
             appMchVo.setMchId(Global.getFacMchId());
