@@ -183,6 +183,8 @@
             <div class="col-sm-9" style="margin-bottom: 30px;">
                 <button type="button" class="btn btn-success" onclick="editProduct()">确定</button>
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <button type="button" class="btn btn-primary" onclick="previewProdInstruction()">预览</button>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                 <button type="button" class="btn btn-default" onclick="closeCurrentTab('1')">取消</button>
             </div>
         </div>
@@ -257,6 +259,28 @@
             }
         }
     });
+
+    // 商品介绍内容预览
+    var previewProdInstruction = function () {
+        var introduction = CKEDITOR.instances.spjs.getData();
+        if (introduction == undefined || introduction == "") {
+            $.modal.alertError("请先填写当前商品介绍再预览！");
+            return;
+        }
+        layer.open({
+            title: '预览商品介绍',
+            area: ['1100px', '800px'],
+            fix: false,
+            //不固定
+            maxmin: true,
+            shade: 0.3,
+            content: introduction,
+            btn: ['确定'],
+            yes: function (index, layero) {
+                layer.close(index);
+            }
+        });
+    }
 
     function editProduct() {
         // 商品图片
