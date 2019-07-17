@@ -151,7 +151,7 @@
                         if (row.status == '0') {
                             // 待付款状态订单可以取消订单
                             // actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="#" onclick="$.operate.remove(\'' + row.id + '\')"><i class="fa fa-remove"></i>取消订单</a>');
-                            actions.push('<a class="btn btn-danger btn-xs' + removeFlag + '" href="#" onclick="openCacelOrderDlg(\'' + row.orderNo + '\')"><i class="fa fa-remove"></i>取消订单</a>');
+                            actions.push('<a class="btn btn-danger btn-xs' + removeFlag + '" href="#" onclick="openCacelOrderDlg(\'' + row.orderNo + '\')"><i class="fa fa-remove"></i>取消订单</a>&nbsp;');
                         }
                         // 变更订单状态
                         actions.push('<a class="btn btn-danger btn-xs' + removeFlag + '" href="#" onclick="openChangeStatusDlg(\'' + row.orderNo + '\')"><i class="fa fa-remove"></i>变更状态</a>');
