@@ -68,6 +68,13 @@ spring:
     restart:
       # 热部署开关
       enabled: true
+  redis:
+    host: 127.0.0.1
+    database: 0
+    port: 6379
+    password:
+    #客户端超时时间单位是毫秒 默认是2000
+    timeout: 10000
 
 # MyBatis
 mybatis:
@@ -150,3 +157,4 @@ wxapp:
     secret: 59bdf9b1efcdf2ac080b14021745b023
     mchId: 1516843871
     mchsecret: MhBCCK8x4stXCXSBbPvia1TWSO0PNymz
+

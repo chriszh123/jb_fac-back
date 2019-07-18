@@ -1,6 +1,7 @@
 package com.ruoyi.fac.service.impl;
 
 import com.ruoyi.common.support.Convert;
+import com.ruoyi.fac.cache.ProductCache;
 import com.ruoyi.fac.constant.FacConstant;
 import com.ruoyi.fac.domain.Order;
 import com.ruoyi.fac.domain.Product;
@@ -22,6 +23,7 @@ import com.ruoyi.fac.util.TimeUtils;
 import com.ruoyi.fac.vo.ProductImgVo;
 import com.ruoyi.fac.vo.client.*;
 import com.ruoyi.fac.vo.condition.QueryGoodVo;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -39,6 +41,7 @@ import java.util.*;
  * @date 2018-12-24
  */
 @Service
+@Slf4j
 public class ProductServiceImpl implements IProductService {
     private static final Logger logger = LoggerFactory.getLogger(ProductServiceImpl.class);
 
@@ -51,6 +54,9 @@ public class ProductServiceImpl implements IProductService {
     @Autowired
     private FacBusinessMapper facBusinessMapper;
 
+    @Autowired
+    private ProductCache productCache;
+
     /**
      * 查询商品信息
      *
@@ -59,7 +65,16 @@ public class ProductServiceImpl implements IProductService {
      */
     @Override
     public Product selectProductById(Long id) {
-        Product product = productMapper.selectProductById(id);
+        Product product = null;
+        try {
+            product = this.productCache.getProductCache(id.toString());
+        } catch (Exception ex) {
+            log.error("[selectProductById] cache", ex);
+        }
+        if (product == null) {
+            product = this.productMapper.selectProductById(id);
+        }
+
         if (product.getRushStart() != null) {
             product.setRushStartStr(TimeUtils.date2Str(product.getRushStart(), TimeUtils.DEFAULT_DATE_TIME_FORMAT_HH_MM));
         }
@@ -155,6 +170,14 @@ public class ProductServiceImpl implements IProductService {
             }
         }
         product.setPicture(this.filterBlankPictures(product.getPicture()));
+
+        // 删除缓存
+        try {
+            this.productCache.deleteProdCache(productdb.getId().toString());
+        } catch (Exception ex) {
+            log.error("[updateProduct] delete cache", ex);
+        }
+
         return productMapper.updateProduct(product);
     }
 
