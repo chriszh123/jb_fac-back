@@ -4,11 +4,11 @@ import com.ruoyi.fac.domain.Product;
 import com.ruoyi.fac.model.FacProduct;
 
 public interface ProductCache {
-    Product getProductCache(String prodId) throws Exception;
+    Product getProductCache(String prodId);
 
-    FacProduct getFacProductCache(String prodId) throws Exception;
+    FacProduct getFacProductCache(String prodId);
 
-    void deleteProdCache(String prodId) throws Exception;
+    void deleteProdCache(String prodId);
 
-    void deleteFacProdCache(String prodId) throws Exception;
+    void deleteFacProdCache(String prodId);
 }

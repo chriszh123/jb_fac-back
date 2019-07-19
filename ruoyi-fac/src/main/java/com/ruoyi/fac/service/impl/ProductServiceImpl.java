@@ -65,12 +65,7 @@ public class ProductServiceImpl implements IProductService {
      */
     @Override
     public Product selectProductById(Long id) {
-        Product product = null;
-        try {
-            product = this.productCache.getProductCache(id.toString());
-        } catch (Exception ex) {
-            log.error("[selectProductById] cache", ex);
-        }
+        Product product = this.productCache.getProductCache(id.toString());
         if (product == null) {
             product = this.productMapper.selectProductById(id);
         }
@@ -170,13 +165,8 @@ public class ProductServiceImpl implements IProductService {
             }
         }
         product.setPicture(this.filterBlankPictures(product.getPicture()));
-
         // 删除缓存
-        try {
-            this.productCache.deleteProdCache(productdb.getId().toString());
-        } catch (Exception ex) {
-            log.error("[updateProduct] delete cache", ex);
-        }
+        this.productCache.deleteProdCache(productdb.getId().toString());
 
         return productMapper.updateProduct(product);
     }
