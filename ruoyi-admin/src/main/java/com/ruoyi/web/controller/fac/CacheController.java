@@ -48,9 +48,9 @@ public class CacheController extends BaseController {
     @RequiresPermissions("fac:cache:list")
     @PostMapping("/list")
     @ResponseBody
-    public TableDataInfo list() {
+    public TableDataInfo list(CacheVo vo) {
         startPage();
-        List<CacheVo> list = this.cacheService.findCaches();
+        List<CacheVo> list = this.cacheService.findCaches(vo);
         return getDataTable(list);
     }
 

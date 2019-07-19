@@ -18,7 +18,7 @@ import java.util.List;
  **/
 public interface ICacheService {
 
-    List<CacheVo> findCaches();
+    List<CacheVo> findCaches(CacheVo vo);
 
     int removeCache(String keys);
 }
