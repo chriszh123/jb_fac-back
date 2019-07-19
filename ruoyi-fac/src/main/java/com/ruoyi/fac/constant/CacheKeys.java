@@ -13,4 +13,6 @@ public class CacheKeys {
      * 商品key：product:商品id
      */
     public static String KEY_PRODUCT = "fac:product:%s";
+
+    public static final String KEY_PREFIX = "fac*";
 }

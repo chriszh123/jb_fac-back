@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 @Service("productCache")
 public class ProductCacheImpl implements ProductCache {
     @Autowired
-    StringRedisTemplate stringRedisTemplate;
+    private StringRedisTemplate stringRedisTemplate;
 
     @Autowired
     private FacProductMapper facProductMapper;
