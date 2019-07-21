@@ -37,19 +37,14 @@ public class CacheServiceImpl implements ICacheService {
     @Override
     public List<CacheVo> findCaches(CacheVo vo) {
         final List<CacheVo> result = new ArrayList<>();
-        final Set<String> keys = this.stringRedisTemplate.keys(CacheKeys.KEY_PREFIX);
+        String pattern = CacheKeys.KEY_PREFIX;
+        if (StringUtils.isNotBlank(vo.getId()) && !StringUtils.equals("fac", vo.getId().trim().toLowerCase())) {
+            pattern = pattern + vo.getId() + "*";
+        }
+        final Set<String> keys = this.stringRedisTemplate.keys(pattern);
         if (CollectionUtils.isNotEmpty(keys)) {
             List<String> keysList = new ArrayList<>();
-            // 页面模糊查询
-            if (vo != null && StringUtils.isNotBlank(vo.getId())) {
-                for (String key : keys) {
-                    if (key.indexOf(vo.getId()) >= 0) {
-                        keysList.add(key);
-                    }
-                }
-            } else {
-                keysList.addAll(keys);
-            }
+            keysList.addAll(keys);
             List<String> values = this.stringRedisTemplate.opsForValue().multiGet(keysList);
             if (CollectionUtils.isNotEmpty(values) && values.size() == keysList.size()) {
                 log.info(String.format("[findCaches] keysList:%s, values:%s", JSON.toJSONString(keysList), JSON.toJSONString(values)));

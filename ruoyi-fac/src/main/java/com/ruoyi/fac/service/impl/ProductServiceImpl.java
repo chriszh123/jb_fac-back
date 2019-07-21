@@ -167,6 +167,7 @@ public class ProductServiceImpl implements IProductService {
         product.setPicture(this.filterBlankPictures(product.getPicture()));
         // 删除缓存
         this.productCache.deleteProdCache(productdb.getId().toString());
+        this.productCache.deleteFacProdCache(productdb.getId().toString());
 
         return productMapper.updateProduct(product);
     }
