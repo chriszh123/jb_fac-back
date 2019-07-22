@@ -125,7 +125,7 @@ public class ProductServiceImpl implements IProductService {
     public int updateProduct(Product product) throws FacException {
         // 编辑场景下用introductionEdit字段存储最新的商品介绍内容
         product.setIntroduction(product.getIntroductionEdit());
-        Product productdb = this.productMapper.selectProductById(product.getId());
+        Product productdb = this.productCache.getProductCache(product.getId().toString());
         if (productdb == null || productdb.getIsDeleted().intValue() == 1) {
             throw new FacException("当前商品已被删除，请确认");
         }
@@ -211,7 +211,7 @@ public class ProductServiceImpl implements IProductService {
         if (product == null || product.getId() == null) {
             return vo;
         }
-        Product dstProduct = this.productMapper.selectProductById(product.getId());
+        Product dstProduct = this.productCache.getProductCache(product.getId().toString());
         if (dstProduct == null) {
             return vo;
         }
@@ -294,7 +294,8 @@ public class ProductServiceImpl implements IProductService {
             return null;
         }
         GoodDetailVo vo = new GoodDetailVo();
-        Product product = this.productMapper.selectProductById(Long.valueOf(id));
+//        Product product = this.productMapper.selectProductById(Long.valueOf(id));
+        Product product = this.productCache.getProductCache(id);
         if (product == null || product.getIsDeleted() == 1) {
             return null;
         }
@@ -368,7 +369,7 @@ public class ProductServiceImpl implements IProductService {
         if (StringUtils.isEmpty(id)) {
             return null;
         }
-        Product product = this.productMapper.selectProductById(Long.valueOf(id));
+        Product product = this.productCache.getProductCache(id);
         if (product == null) {
             return null;
         }
@@ -400,7 +401,7 @@ public class ProductServiceImpl implements IProductService {
         }
         String prodId = key.split(FacConstant.SEPARATOR_SEMICOLON)[0];
         String fullImgPath = key.split(FacConstant.SEPARATOR_SEMICOLON)[1];
-        Product product = this.productMapper.selectProductById(Long.valueOf(prodId));
+        Product product = this.productCache.getProductCache(prodId);
         if (product == null) {
             return 0;
         }

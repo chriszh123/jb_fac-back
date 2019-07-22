@@ -2,6 +2,7 @@ package com.ruoyi.fac.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.ruoyi.common.support.Convert;
+import com.ruoyi.fac.cache.ProductCache;
 import com.ruoyi.fac.domain.*;
 import com.ruoyi.fac.enums.CashStatus;
 import com.ruoyi.fac.enums.OrderStatus;
@@ -69,6 +70,9 @@ public class OrderServiceImpl implements IOrderService {
     private FacBuyerBusinessMapper facBuyerBusinessMapper;
     @Autowired
     private FacProductWriteOffBeanMapper facProductWriteOffBeanMapper;
+
+    @Autowired
+    private ProductCache productCache;
 
     @Override
     public List<Order> selectFacOrderProductList(Order order) {
@@ -823,7 +827,7 @@ public class OrderServiceImpl implements IOrderService {
 
         Business prodBusiness = null;
         for (FacOrderProduct orderProduct : orderProducts) {
-            Product product = this.productMapper.selectProductById(orderProduct.getProdId());
+            Product product = this.productCache.getProductCache(orderProduct.getProdId().toString());
             if (product == null) {
                 throw new Exception(String.format("商品【%s】已不存在,请联系管理员", product.getName()));
             }
