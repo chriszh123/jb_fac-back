@@ -67,13 +67,17 @@ public class ProductWriteoffServiceImpl implements IProductWriteoffService {
             orderNos.add(item.getOrderNo());
         }
         // 当前订单对应的核销记录
-        List<Integer> status = new ArrayList<>();
+        List<Byte> status = new ArrayList<>();
         if (productWriteoff.getStatus() != null) {
-            status.add(productWriteoff.getStatus());
+            status.add(productWriteoff.getStatus().byteValue());
         }
 
         FacProductWriteOffBeanExample beanExample = new FacProductWriteOffBeanExample();
-        beanExample.createCriteria().andIsDeletedEqualTo(false).andOrderNoIn(orderNos).andProdIdEqualTo(productWriteoff.getProductId());
+        FacProductWriteOffBeanExample.Criteria criteria = beanExample.createCriteria();
+        criteria.andIsDeletedEqualTo(false).andOrderNoIn(orderNos).andProdIdEqualTo(productWriteoff.getProductId());
+        if (CollectionUtils.isNotEmpty(status)) {
+            criteria.andStatusIn(status);
+        }
         beanExample.setOrderByClause(" create_time desc ");
         List<FacProductWriteOffBean> productWriteoffs = this.facProductWriteOffBeanMapper.selectByExample(beanExample);
 

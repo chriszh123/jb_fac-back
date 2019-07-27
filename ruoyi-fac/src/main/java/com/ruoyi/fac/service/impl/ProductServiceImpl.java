@@ -1,6 +1,7 @@
 package com.ruoyi.fac.service.impl;
 
 import com.ruoyi.common.support.Convert;
+import com.ruoyi.fac.cache.ProductCache;
 import com.ruoyi.fac.constant.FacConstant;
 import com.ruoyi.fac.domain.Order;
 import com.ruoyi.fac.domain.Product;
@@ -22,6 +23,7 @@ import com.ruoyi.fac.util.TimeUtils;
 import com.ruoyi.fac.vo.ProductImgVo;
 import com.ruoyi.fac.vo.client.*;
 import com.ruoyi.fac.vo.condition.QueryGoodVo;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -39,6 +41,7 @@ import java.util.*;
  * @date 2018-12-24
  */
 @Service
+@Slf4j
 public class ProductServiceImpl implements IProductService {
     private static final Logger logger = LoggerFactory.getLogger(ProductServiceImpl.class);
 
@@ -51,6 +54,9 @@ public class ProductServiceImpl implements IProductService {
     @Autowired
     private FacBusinessMapper facBusinessMapper;
 
+    @Autowired
+    private ProductCache productCache;
+
     /**
      * 查询商品信息
      *
@@ -59,7 +65,11 @@ public class ProductServiceImpl implements IProductService {
      */
     @Override
     public Product selectProductById(Long id) {
-        Product product = productMapper.selectProductById(id);
+        Product product = this.productCache.getProductCache(id.toString());
+        if (product == null) {
+            product = this.productMapper.selectProductById(id);
+        }
+
         if (product.getRushStart() != null) {
             product.setRushStartStr(TimeUtils.date2Str(product.getRushStart(), TimeUtils.DEFAULT_DATE_TIME_FORMAT_HH_MM));
         }
@@ -115,7 +125,7 @@ public class ProductServiceImpl implements IProductService {
     public int updateProduct(Product product) throws FacException {
         // 编辑场景下用introductionEdit字段存储最新的商品介绍内容
         product.setIntroduction(product.getIntroductionEdit());
-        Product productdb = this.productMapper.selectProductById(product.getId());
+        Product productdb = this.productCache.getProductCache(product.getId().toString());
         if (productdb == null || productdb.getIsDeleted().intValue() == 1) {
             throw new FacException("当前商品已被删除，请确认");
         }
@@ -155,6 +165,10 @@ public class ProductServiceImpl implements IProductService {
             }
         }
         product.setPicture(this.filterBlankPictures(product.getPicture()));
+        // 删除缓存
+        this.productCache.deleteProdCache(productdb.getId().toString());
+        this.productCache.deleteFacProdCache(productdb.getId().toString());
+
         return productMapper.updateProduct(product);
     }
 
@@ -197,7 +211,7 @@ public class ProductServiceImpl implements IProductService {
         if (product == null || product.getId() == null) {
             return vo;
         }
-        Product dstProduct = this.productMapper.selectProductById(product.getId());
+        Product dstProduct = this.productCache.getProductCache(product.getId().toString());
         if (dstProduct == null) {
             return vo;
         }
@@ -280,7 +294,8 @@ public class ProductServiceImpl implements IProductService {
             return null;
         }
         GoodDetailVo vo = new GoodDetailVo();
-        Product product = this.productMapper.selectProductById(Long.valueOf(id));
+//        Product product = this.productMapper.selectProductById(Long.valueOf(id));
+        Product product = this.productCache.getProductCache(id);
         if (product == null || product.getIsDeleted() == 1) {
             return null;
         }
@@ -354,7 +369,7 @@ public class ProductServiceImpl implements IProductService {
         if (StringUtils.isEmpty(id)) {
             return null;
         }
-        Product product = this.productMapper.selectProductById(Long.valueOf(id));
+        Product product = this.productCache.getProductCache(id);
         if (product == null) {
             return null;
         }
@@ -386,7 +401,7 @@ public class ProductServiceImpl implements IProductService {
         }
         String prodId = key.split(FacConstant.SEPARATOR_SEMICOLON)[0];
         String fullImgPath = key.split(FacConstant.SEPARATOR_SEMICOLON)[1];
-        Product product = this.productMapper.selectProductById(Long.valueOf(prodId));
+        Product product = this.productCache.getProductCache(prodId);
         if (product == null) {
             return 0;
         }
