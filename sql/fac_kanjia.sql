@@ -10,7 +10,6 @@ CREATE TABLE `fac_kanjia` (
   `sales` smallint NOT NULL DEFAULT '0' COMMENT '销量',
   `original_price` decimal(8,2) NOT NULL DEFAULT '0.0' COMMENT '原价',
   `price` decimal(8,2) NOT NULL DEFAULT '0.0' COMMENT '底价',
-  `original_price` decimal(8,2) NOT NULL DEFAULT '0.0' COMMENT '原价',
   `min` decimal(8,2) NOT NULL DEFAULT '0.0' COMMENT '砍价一次随机减少的金额范围:最小值',
   `max` decimal(8,2) NOT NULL DEFAULT '0.0' COMMENT '砍价一次随机减少的金额范围:最大值',
   `status` tinyint(2) NOT NULL DEFAULT '1' COMMENT '状态:1-正常,2-禁用',
@@ -53,8 +52,8 @@ CREATE TABLE `fac_kanjia_joiner` (
 -- --------------------------
 -- 3、帮砍价人员明细表
 -- --------------------------
-drop table if exists `fac_kanjia_helper_item`;
-CREATE TABLE `fac_product_writeoff` (
+drop table if exists `fac_kanjia_helper`;
+CREATE TABLE `fac_kanjia_helper` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
   `kanjia_id` bigint(20) NOT NULL DEFAULT 0 COMMENT '砍价id',
   `join_id` bigint(20) NOT NULL DEFAULT 0 COMMENT '参与商品砍价活动记录id',

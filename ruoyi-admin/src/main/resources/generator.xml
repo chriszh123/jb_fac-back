@@ -13,7 +13,7 @@
         <!-- 数据库的相关配置 -->
         <jdbcConnection
                 driverClass="com.mysql.jdbc.Driver"
-                connectionURL="jdbc:mysql://localhost:3306/ry?serverTimezone=GMT"
+                connectionURL="jdbc:mysql://localhost:3306/ry-pin?serverTimezone=GMT"
                 userId="root"
                 password="123456"/>
 
@@ -162,6 +162,33 @@
         </table>
 
         <table tableName="fac_order_product" domainObjectName="FacOrderProduct"
+               enableInsert="true" enableSelectByPrimaryKey="true"
+               enableSelectByExample="true" enableUpdateByPrimaryKey="true"
+               enableDeleteByPrimaryKey="true" enableDeleteByExample="true"
+               enableCountByExample="true" enableUpdateByExample="true"
+               selectByExampleQueryId="true">
+            <generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />
+        </table>
+
+        <table tableName="fac_kanjia" domainObjectName="FacKanjia"
+               enableInsert="true" enableSelectByPrimaryKey="true"
+               enableSelectByExample="true" enableUpdateByPrimaryKey="true"
+               enableDeleteByPrimaryKey="true" enableDeleteByExample="true"
+               enableCountByExample="true" enableUpdateByExample="true"
+               selectByExampleQueryId="true">
+            <generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />
+        </table>
+
+        <table tableName="fac_kanjia_joiner" domainObjectName="FacKanjiaJoiner"
+               enableInsert="true" enableSelectByPrimaryKey="true"
+               enableSelectByExample="true" enableUpdateByPrimaryKey="true"
+               enableDeleteByPrimaryKey="true" enableDeleteByExample="true"
+               enableCountByExample="true" enableUpdateByExample="true"
+               selectByExampleQueryId="true">
+            <generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />
+        </table>
+
+        <table tableName="fac_kanjia_helper" domainObjectName="FacKanjiaHelper"
                enableInsert="true" enableSelectByPrimaryKey="true"
                enableSelectByExample="true" enableUpdateByPrimaryKey="true"
                enableDeleteByPrimaryKey="true" enableDeleteByExample="true"
