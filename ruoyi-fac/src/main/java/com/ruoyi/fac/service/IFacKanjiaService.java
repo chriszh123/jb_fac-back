@@ -18,4 +18,10 @@ public interface IFacKanjiaService {
     List<FacKanjia> selectFacKanjiaList(FacKanjia kanjia) throws FacException;
 
     int insertFacKanjia(KanjiaVo kanjia, SysUser user) throws FacException;
+
+    FacKanjia selectFacKanjiaById(Long id) throws FacException;
+
+    int updateFacKanjia(FacKanjia kanjia, SysUser user) throws FacException;
+
+    int deleteFacKanjiaByIds(String ids, SysUser user) throws FacException;
 }

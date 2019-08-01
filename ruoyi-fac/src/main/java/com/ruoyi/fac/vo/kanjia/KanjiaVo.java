@@ -3,6 +3,7 @@ package com.ruoyi.fac.vo.kanjia;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 @Data
 public class KanjiaVo implements Serializable {
@@ -11,10 +12,10 @@ public class KanjiaVo implements Serializable {
     private Long prodId;
     private Short total;
     private Short sales;
-    private String originalPrice;
-    private String price;
-    private String min;
-    private String max;
+    private BigDecimal originalPrice;
+    private BigDecimal price;
+    private BigDecimal min;
+    private BigDecimal max;
     private String startDate;
     private String stopDate;
 }

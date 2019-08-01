@@ -112,8 +112,15 @@ public class FacKanjiaController extends BaseController {
      */
     @GetMapping("/edit/{id}")
     public String edit(@PathVariable("id") Long id, ModelMap mmap) {
-//		FacKanjia facKanjia = facKanjiaService.selectFacKanjiaById(id);
-//		mmap.put("facKanjia", facKanjia);
+        FacKanjia facKanjia = new FacKanjia();
+        try {
+            facKanjia = facKanjiaService.selectFacKanjiaById(id);
+        } catch (FacException fe) {
+            log.error("FacException:" + fe.getMessage(), fe);
+        } catch (Exception ex) {
+            log.error(ex.getMessage(), ex);
+        }
+        mmap.put("facKanjia", facKanjia);
         return prefix + "/edit";
     }
 
@@ -125,8 +132,17 @@ public class FacKanjiaController extends BaseController {
     @PostMapping("/edit")
     @ResponseBody
     public AjaxResult editSave(FacKanjia kanjia) {
-//		return toAjax(facKanjiaService.updateFacKanjia(facKanjia));
-        return null;
+        SysUser user = ShiroUtils.getSysUser();
+        try {
+            int rows = this.facKanjiaService.updateFacKanjia(kanjia, user);
+            return toAjax(rows);
+        } catch (FacException fe) {
+            log.error("FacException:" + fe.getMessage(), fe);
+            return AjaxResult.error(fe.getMessage());
+        } catch (Exception ex) {
+            log.error(ex.getMessage(), ex);
+            return AjaxResult.error();
+        }
     }
 
     /**
@@ -137,8 +153,17 @@ public class FacKanjiaController extends BaseController {
     @PostMapping("/remove")
     @ResponseBody
     public AjaxResult remove(String ids) {
-//		return toAjax(facKanjiaService.deleteFacKanjiaByIds(ids));
-        return null;
+        SysUser user = ShiroUtils.getSysUser();
+        try {
+            int rows = this.facKanjiaService.deleteFacKanjiaByIds(ids, user);
+            return toAjax(rows);
+        } catch (FacException fe) {
+            log.error("FacException:" + fe.getMessage(), fe);
+            return AjaxResult.error(fe.getMessage());
+        } catch (Exception ex) {
+            log.error(ex.getMessage(), ex);
+            return AjaxResult.error();
+        }
     }
 
 }
