@@ -70,7 +70,7 @@
             <div class="col-sm-3 input-group date" style="margin-left: 15px;"><span
                     class="input-group-addon"><i
                     class="fa fa-calendar"></i></span>
-                <input type="text" class="form-control" id="startDate" name="startDate" th:field="*{startDate}"
+                <input type="text" class="form-control" id="startDate" name="startDate" th:field="*{startDateStr}"
                        value=""
                        placeholder="开始时间">
             </div>
@@ -78,7 +78,7 @@
         <div class="form-group">
             <label class="col-sm-3 control-label">砍价截止时间：</label>
             <div class="col-sm-3 input-group date"><span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                <input type="text" class="form-control" id="stopDate" name="stopDate" th:field="*{stopDate}"
+                <input type="text" class="form-control" id="stopDate" name="stopDate" th:field="*{stopDateStr}"
                        value=""
                        placeholder="截止时间">
             </div>
@@ -90,6 +90,18 @@
 <script th:src="@{/ajax/libs//datapicker/bootstrap-datetimepicker.zh-CN.js}"></script>
 <script type="text/javascript">
     var prefix = ctx + "fac/facKanjia";
+    $(".input-group.date").datetimepicker({
+        format: 'yyyy-mm-dd hh:ii',
+        todayBtn: "linked",
+        keyboardNavigation: !1,
+        forceParse: !1,
+        calendarWeeks: !0,
+        autoclose: !0,
+        todayHighlight: 1,
+        initialDate: new Date(),
+        language: "zh-CN"
+    });
+
     $("#form-facKanjia-edit").validate({
         rules: {
             prodId: {

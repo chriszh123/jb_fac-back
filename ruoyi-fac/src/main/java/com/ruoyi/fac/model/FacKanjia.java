@@ -1,5 +1,7 @@
 package com.ruoyi.fac.model;
 
+import com.ruoyi.common.annotation.Excel;
+
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -10,6 +12,7 @@ public class FacKanjia {
      *
      * @mbggenerated
      */
+    @Excel(name = "砍价ID")
     private Long id;
 
     /**
@@ -18,6 +21,7 @@ public class FacKanjia {
      *
      * @mbggenerated
      */
+    @Excel(name = "商品ID")
     private Long prodId;
 
     /**
@@ -26,6 +30,7 @@ public class FacKanjia {
      *
      * @mbggenerated
      */
+    @Excel(name = "商品名称")
     private String prodName;
 
     /**
@@ -34,6 +39,7 @@ public class FacKanjia {
      *
      * @mbggenerated
      */
+    @Excel(name = "总份数")
     private Short total;
 
     /**
@@ -42,6 +48,7 @@ public class FacKanjia {
      *
      * @mbggenerated
      */
+    @Excel(name = "销量")
     private Short sales;
 
     /**
@@ -50,6 +57,7 @@ public class FacKanjia {
      *
      * @mbggenerated
      */
+    @Excel(name = "原价")
     private BigDecimal originalPrice;
 
     /**
@@ -58,6 +66,7 @@ public class FacKanjia {
      *
      * @mbggenerated
      */
+    @Excel(name = "底价")
     private BigDecimal price;
 
     /**
@@ -82,6 +91,7 @@ public class FacKanjia {
      *
      * @mbggenerated
      */
+    @Excel(name = "状态", readConverterExp = "1=正常,2=禁用")
     private Byte status;
 
     /**
@@ -90,6 +100,7 @@ public class FacKanjia {
      *
      * @mbggenerated
      */
+    @Excel(name = "开始时间", dateFormat = "yyyy-MM-dd HH:mm:ss")
     private Date startDate;
 
     private String startDateStr;
@@ -100,6 +111,7 @@ public class FacKanjia {
      *
      * @mbggenerated
      */
+    @Excel(name = "截止时间", dateFormat = "yyyy-MM-dd HH:mm:ss")
     private Date stopDate;
 
     private String stopDateStr;

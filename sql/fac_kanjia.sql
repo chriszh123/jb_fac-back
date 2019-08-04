@@ -39,7 +39,7 @@ CREATE TABLE `fac_kanjia_joiner` (
   `current_price` decimal(8,2) NOT NULL DEFAULT '0.0' COMMENT '当前价格',
   `price` decimal(8,2) NOT NULL DEFAULT '0.0' COMMENT '底价',
   `help_people_count` smallint NOT NULL DEFAULT '0' COMMENT '帮砍人数,包括自己',
-  `status` tinyint(2) NOT NULL DEFAULT '1' COMMENT '状态:1-进行中;2-砍价完成;3-砍价未完成(已过期)',
+  `status` tinyint(2) NOT NULL DEFAULT '1' COMMENT '状态:1-进行中;2-无效;3-完成',
 
   `create_time` datetime NOT NULL COMMENT '创建时间',
   `update_time` datetime NOT NULL COMMENT '最近更新时间',

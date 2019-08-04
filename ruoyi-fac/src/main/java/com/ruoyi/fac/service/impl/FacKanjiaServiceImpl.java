@@ -53,6 +53,7 @@ public class FacKanjiaServiceImpl implements IFacKanjiaService {
                 criteria.andStatusEqualTo(kanjia.getStatus());
             }
         }
+        example.setOrderByClause("create_time desc");
         List<FacKanjia> list = this.facKanjiaMapper.selectByExample(example);
         return list;
     }

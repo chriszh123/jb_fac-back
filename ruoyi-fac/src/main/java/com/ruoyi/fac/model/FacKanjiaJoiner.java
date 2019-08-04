@@ -1,5 +1,7 @@
 package com.ruoyi.fac.model;
 
+import com.ruoyi.common.annotation.Excel;
+
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -18,6 +20,7 @@ public class FacKanjiaJoiner {
      *
      * @mbggenerated
      */
+    @Excel(name = "砍价ID")
     private Long kanjiaId;
 
     /**
@@ -26,6 +29,7 @@ public class FacKanjiaJoiner {
      *
      * @mbggenerated
      */
+    @Excel(name = "商品ID")
     private Long prodId;
 
     /**
@@ -34,6 +38,7 @@ public class FacKanjiaJoiner {
      *
      * @mbggenerated
      */
+    @Excel(name = "商品名称")
     private String prodName;
 
     /**
@@ -42,6 +47,7 @@ public class FacKanjiaJoiner {
      *
      * @mbggenerated
      */
+    @Excel(name = "手机号码")
     private String phoneNumber;
 
     /**
@@ -58,6 +64,7 @@ public class FacKanjiaJoiner {
      *
      * @mbggenerated
      */
+    @Excel(name = "用户昵称")
     private String nickName;
 
     /**
@@ -66,6 +73,7 @@ public class FacKanjiaJoiner {
      *
      * @mbggenerated
      */
+    @Excel(name = "当前价格")
     private BigDecimal currentPrice;
 
     /**
@@ -74,6 +82,7 @@ public class FacKanjiaJoiner {
      *
      * @mbggenerated
      */
+    @Excel(name = "底价")
     private BigDecimal price;
 
     /**
@@ -82,6 +91,7 @@ public class FacKanjiaJoiner {
      *
      * @mbggenerated
      */
+    @Excel(name = "帮砍人数")
     private Short helpPeopleCount;
 
     /**
@@ -90,6 +100,7 @@ public class FacKanjiaJoiner {
      *
      * @mbggenerated
      */
+    @Excel(name = "状态", readConverterExp = "1=进行中,2=无效,3=完成")
     private Byte status;
 
     /**
@@ -98,6 +109,7 @@ public class FacKanjiaJoiner {
      *
      * @mbggenerated
      */
+    @Excel(name = "操作时间", dateFormat = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
     /**
