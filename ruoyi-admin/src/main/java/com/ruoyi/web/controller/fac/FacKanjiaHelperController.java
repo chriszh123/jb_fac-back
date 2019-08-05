@@ -4,14 +4,19 @@ import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.base.AjaxResult;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.page.TableDataInfo;
+import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.fac.model.FacKanjiaHelper;
 import com.ruoyi.fac.service.IFacKanjiaHelperService;
+import com.ruoyi.framework.util.ShiroUtils;
 import com.ruoyi.framework.web.base.BaseController;
+import com.ruoyi.system.domain.SysUser;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * 帮砍价人员明细 信息操作处理
@@ -40,10 +45,9 @@ public class FacKanjiaHelperController extends BaseController {
     @PostMapping("/list")
     @ResponseBody
     public TableDataInfo list(FacKanjiaHelper facKanjiaHelper) {
-//		startPage();
-//        List<FacKanjiaHelper> list = facKanjiaHelperService.selectFacKanjiaHelperList(facKanjiaHelper);
-//		return getDataTable(list);
-        return null;
+        startPage();
+        List<FacKanjiaHelper> list = facKanjiaHelperService.selectFacKanjiaHelperList(facKanjiaHelper);
+        return getDataTable(list);
     }
 
 
@@ -54,10 +58,9 @@ public class FacKanjiaHelperController extends BaseController {
     @PostMapping("/export")
     @ResponseBody
     public AjaxResult export(FacKanjiaHelper facKanjiaHelper) {
-//    	List<FacKanjiaHelper> list = facKanjiaHelperService.selectFacKanjiaHelperList(facKanjiaHelper);
-//        ExcelUtil<FacKanjiaHelper> util = new ExcelUtil<FacKanjiaHelper>(FacKanjiaHelper.class);
-//        return util.exportExcel(list, "facKanjiaHelper");
-        return null;
+        List<FacKanjiaHelper> list = facKanjiaHelperService.selectFacKanjiaHelperList(facKanjiaHelper);
+        ExcelUtil<FacKanjiaHelper> util = new ExcelUtil<>(FacKanjiaHelper.class);
+        return util.exportExcel(list, "砍价明细");
     }
 
     /**
@@ -110,8 +113,8 @@ public class FacKanjiaHelperController extends BaseController {
     @PostMapping("/remove")
     @ResponseBody
     public AjaxResult remove(String ids) {
-//		return toAjax(facKanjiaHelperService.deleteFacKanjiaHelperByIds(ids));
-        return null;
+        SysUser user = ShiroUtils.getSysUser();
+        return toAjax(facKanjiaHelperService.deleteFacKanjiaHelperByIds(ids, user));
     }
 
 }
