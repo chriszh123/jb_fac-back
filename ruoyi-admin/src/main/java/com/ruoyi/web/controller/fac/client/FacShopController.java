@@ -8,12 +8,17 @@ package com.ruoyi.web.controller.fac.client;
 
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.fac.enums.FacCode;
+import com.ruoyi.fac.exception.FacException;
+import com.ruoyi.fac.service.IFacKanjiaService;
 import com.ruoyi.fac.service.IProductCategoryService;
 import com.ruoyi.fac.service.IProductService;
 import com.ruoyi.fac.vo.client.*;
 import com.ruoyi.fac.vo.client.req.ShopReq;
+import com.ruoyi.fac.vo.client.res.KanjiaListVo;
 import com.ruoyi.framework.web.base.BaseController;
 import org.apache.commons.collections.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,12 +37,15 @@ import java.util.List;
 @Controller
 @RequestMapping("/fac/client/shop")
 public class FacShopController extends BaseController {
+    private static final Logger log = LoggerFactory.getLogger(FacShopController.class);
 
     @Autowired
     private IProductCategoryService productCategoryService;
-
     @Autowired
     private IProductService productService;
+    @Autowired
+    private IFacKanjiaService facKanjiaService;
+
 
     /**
      * 参加砍价活动的商品
@@ -47,7 +55,16 @@ public class FacShopController extends BaseController {
     @PostMapping("/goods/kanjia/list")
     @ResponseBody
     public FacResult kanjiaList() {
-        return FacResult.error(FacCode.HAS_NO_DATA.getCode(), FacCode.HAS_NO_DATA.getMsg());
+        try {
+            KanjiaListVo data = this.facKanjiaService.queryKanjiaListFromClient();
+            return FacResult.success(data);
+        } catch (FacException fe) {
+            log.error(fe.getMessage(), fe);
+            return FacResult.error(fe.getMessage());
+        } catch (Exception ex) {
+            log.error(ex.getMessage(), ex);
+            return FacResult.error();
+        }
     }
 
     @PostMapping("/goods/category/all")

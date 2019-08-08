@@ -2,6 +2,8 @@ package com.ruoyi.fac.service;
 
 import com.ruoyi.fac.exception.FacException;
 import com.ruoyi.fac.model.FacKanjia;
+import com.ruoyi.fac.model.FacKanjiaJoiner;
+import com.ruoyi.fac.vo.client.res.KanjiaListVo;
 import com.ruoyi.fac.vo.kanjia.KanjiaVo;
 import com.ruoyi.system.domain.SysUser;
 
@@ -24,4 +26,7 @@ public interface IFacKanjiaService {
     int updateFacKanjia(FacKanjia kanjia, SysUser user) throws FacException;
 
     int deleteFacKanjiaByIds(String ids, SysUser user) throws FacException;
+
+    // 小程序端获取砍价商品列表
+    KanjiaListVo queryKanjiaListFromClient() throws FacException;
 }

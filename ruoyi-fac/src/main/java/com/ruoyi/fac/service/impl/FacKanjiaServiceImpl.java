@@ -10,6 +10,9 @@ import com.ruoyi.fac.model.FacKanjiaExample;
 import com.ruoyi.fac.model.FacProduct;
 import com.ruoyi.fac.service.IFacKanjiaService;
 import com.ruoyi.fac.util.TimeUtils;
+import com.ruoyi.fac.vo.client.res.KanjiaItemVo;
+import com.ruoyi.fac.vo.client.res.KanjiaListVo;
+import com.ruoyi.fac.vo.client.res.KanjiaProdVo;
 import com.ruoyi.fac.vo.kanjia.KanjiaVo;
 import com.ruoyi.system.domain.SysUser;
 import lombok.extern.slf4j.Slf4j;
@@ -18,9 +21,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * 商品砍价设置 服务层实现
@@ -160,5 +161,76 @@ public class FacKanjiaServiceImpl implements IFacKanjiaService {
         example.createCriteria().andIsDeletedEqualTo(false).andIdIn(idsList);
         int rows = this.facKanjiaMapper.updateByExampleSelective(update, example);
         return rows;
+    }
+
+    @Override
+    public KanjiaListVo queryKanjiaListFromClient() throws FacException {
+        // 小程序端获取砍价商品列表
+        KanjiaListVo data = new KanjiaListVo();
+
+        FacKanjiaExample example = new FacKanjiaExample();
+        example.createCriteria().andIsDeletedEqualTo(false);
+        example.setOrderByClause(" create_time desc ");
+        List<FacKanjia> kanjias = this.facKanjiaMapper.selectByExample(example);
+        if (CollectionUtils.isEmpty(kanjias)) {
+            return data;
+        }
+        Date nowDate = new Date();
+        List<KanjiaItemVo> result = new ArrayList<>();
+        // <goodId, KanjiaProdVo>
+        Map<Long, KanjiaProdVo> goodsMap = new HashMap<>();
+        KanjiaItemVo vo;
+        KanjiaProdVo kanjiaProdVo;
+        for (FacKanjia kanjia : kanjias) {
+            FacProduct facProduct = this.productCache.getFacProductCache(kanjia.getProdId().toString());
+            if (facProduct == null || facProduct.getIsDeleted()) {
+                log.info(String.format("[queryKanjiaListFromClient] product is not exist, productId:%s", kanjia.getProdId()));
+                continue;
+            }
+            if (!kanjia.getStatus().equals(new Byte("1"))) {
+                log.info(String.format("[queryKanjiaListFromClient] kanjia status is not normal, productId:%s", kanjia.getProdId()));
+                continue;
+            }
+            if (nowDate.compareTo(kanjia.getStartDate()) < 0 || nowDate.compareTo(kanjia.getStopDate()) > 0) {
+                log.info(String.format("[queryKanjiaListFromClient] knajia is 未开始或者已经结束, productId:%s", kanjia.getProdId()));
+                continue;
+            }
+            vo = new KanjiaItemVo();
+            vo.setKanjiaId(kanjia.getId());
+            vo.setGoodsId(kanjia.getProdId());
+            vo.setOriginalPrice(kanjia.getOriginalPrice().toString());
+            vo.setMinPrice(kanjia.getPrice().toString());
+            result.add(vo);
+
+            kanjiaProdVo = new KanjiaProdVo();
+            kanjiaProdVo.setName(facProduct.getName());
+            // 默认取第一张图片
+            if (StringUtils.isNotEmpty(facProduct.getPicture())) {
+                String pics = facProduct.getPicture();
+                kanjiaProdVo.setPic(this.getFirstNotBlankPic(pics));
+            }
+            // 商品的特征说明
+            kanjiaProdVo.setCharacteristic("");
+            goodsMap.put(kanjia.getProdId(), kanjiaProdVo);
+        }
+
+        data.setResult(result);
+        data.setGoodsMap(goodsMap);
+        log.info(String.format("[queryKanjiaListFromClient] success, size = %s", data.getResult().size()));
+
+        return data;
+    }
+
+    private String getFirstNotBlankPic(String pics) {
+        if (StringUtils.isBlank(pics)) {
+            return "";
+        }
+        String[] picsArr = pics.split(",");
+        for (int i = 0, size = picsArr.length; i < size; i++) {
+            if (StringUtils.isNotBlank(picsArr[i])) {
+                return picsArr[i];
+            }
+        }
+        return "";
     }
 }
