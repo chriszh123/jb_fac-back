@@ -13,6 +13,7 @@ import com.ruoyi.fac.util.TimeUtils;
 import com.ruoyi.fac.vo.client.res.KanjiaItemVo;
 import com.ruoyi.fac.vo.client.res.KanjiaListVo;
 import com.ruoyi.fac.vo.client.res.KanjiaProdVo;
+import com.ruoyi.fac.vo.client.res.KanjiaSetVo;
 import com.ruoyi.fac.vo.kanjia.KanjiaVo;
 import com.ruoyi.system.domain.SysUser;
 import lombok.extern.slf4j.Slf4j;
@@ -219,6 +220,29 @@ public class FacKanjiaServiceImpl implements IFacKanjiaService {
         log.info(String.format("[queryKanjiaListFromClient] success, size = %s", data.getResult().size()));
 
         return data;
+    }
+
+    @Override
+    public KanjiaSetVo queryKanjiaSet(String prodId) throws FacException {
+        // 指定商品对应的砍价活动信息
+        Date nowDate = new Date();
+        FacKanjiaExample example = new FacKanjiaExample();
+        example.createCriteria().andIsDeletedEqualTo(false).andProdIdEqualTo(Long.valueOf(prodId))
+                .andStartDateLessThanOrEqualTo(nowDate).andStopDateGreaterThanOrEqualTo(nowDate);
+        List<FacKanjia> kanjias = this.facKanjiaMapper.selectByExample(example);
+        if (CollectionUtils.isEmpty(kanjias)) {
+            return null;
+        }
+        KanjiaSetVo vo = new KanjiaSetVo();
+        FacKanjia kanjia = kanjias.get(0);
+        vo.setId(kanjia.getId());
+        vo.setNumber(kanjia.getTotal());
+        vo.setNumberBuy(kanjia.getSales());
+        vo.setOriginalPrice(kanjia.getOriginalPrice().toString());
+        vo.setMinPrice(kanjia.getPrice().toString());
+        vo.setDateEnd(TimeUtils.date2Str(kanjia.getStopDate(), TimeUtils.DEFAULT_DATE_TIME_FORMAT_HH_MM));
+
+        return vo;
     }
 
     private String getFirstNotBlankPic(String pics) {
