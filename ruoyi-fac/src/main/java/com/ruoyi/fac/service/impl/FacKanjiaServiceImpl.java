@@ -3,17 +3,12 @@ package com.ruoyi.fac.service.impl;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.fac.cache.ProductCache;
 import com.ruoyi.fac.exception.FacException;
-import com.ruoyi.fac.mapper.FacKanjiaMapper;
-import com.ruoyi.fac.mapper.FacProductMapper;
-import com.ruoyi.fac.model.FacKanjia;
-import com.ruoyi.fac.model.FacKanjiaExample;
-import com.ruoyi.fac.model.FacProduct;
+import com.ruoyi.fac.mapper.*;
+import com.ruoyi.fac.model.*;
 import com.ruoyi.fac.service.IFacKanjiaService;
 import com.ruoyi.fac.util.TimeUtils;
-import com.ruoyi.fac.vo.client.res.KanjiaItemVo;
-import com.ruoyi.fac.vo.client.res.KanjiaListVo;
-import com.ruoyi.fac.vo.client.res.KanjiaProdVo;
-import com.ruoyi.fac.vo.client.res.KanjiaSetVo;
+import com.ruoyi.fac.vo.client.req.KanjiaReq;
+import com.ruoyi.fac.vo.client.res.*;
 import com.ruoyi.fac.vo.kanjia.KanjiaVo;
 import com.ruoyi.system.domain.SysUser;
 import lombok.extern.slf4j.Slf4j;
@@ -37,7 +32,12 @@ public class FacKanjiaServiceImpl implements IFacKanjiaService {
     private FacKanjiaMapper facKanjiaMapper;
     @Autowired
     private ProductCache productCache;
-
+    @Autowired
+    private FacBuyerMapper facBuyerMapper;
+    @Autowired
+    private FacKanjiaJoinerMapper facKanjiaJoinerMapper;
+    @Autowired
+    private FacKanjiaHelperMapper facKanjiaHelperMapper;
 
     @Override
     public List<FacKanjia> selectFacKanjiaList(FacKanjia kanjia) throws FacException {
@@ -223,7 +223,7 @@ public class FacKanjiaServiceImpl implements IFacKanjiaService {
     }
 
     @Override
-    public KanjiaSetVo queryKanjiaSet(String prodId) throws FacException {
+    public KanjiaSetVo queryKanjiaSetFromClient(String prodId) throws FacException {
         // 指定商品对应的砍价活动信息
         Date nowDate = new Date();
         FacKanjiaExample example = new FacKanjiaExample();
@@ -241,6 +241,56 @@ public class FacKanjiaServiceImpl implements IFacKanjiaService {
         vo.setOriginalPrice(kanjia.getOriginalPrice().toString());
         vo.setMinPrice(kanjia.getPrice().toString());
         vo.setDateEnd(TimeUtils.date2Str(kanjia.getStopDate(), TimeUtils.DEFAULT_DATE_TIME_FORMAT_HH_MM));
+
+        return vo;
+    }
+
+    @Override
+    public KanjiaInfoVo queryKanJiaInfoFromClient(KanjiaReq req) throws FacException {
+        // 查询当前商品砍价活动参与信息
+        Date nowDate = new Date();
+        FacKanjiaExample example = new FacKanjiaExample();
+        example.createCriteria().andIsDeletedEqualTo(false).andIdEqualTo(req.getKjid());
+        List<FacKanjia> kanjias = this.facKanjiaMapper.selectByExample(example);
+        if (CollectionUtils.isEmpty(kanjias)) {
+            return null;
+        }
+        FacKanjia kanjia = kanjias.get(0);
+        KanjiaInfoVo vo = new KanjiaInfoVo();
+        // 当前用户信息
+        JoinerVo joiner = new JoinerVo();
+        vo.setJoiner(joiner);
+        FacBuyerExample buyerExample = new FacBuyerExample();
+        buyerExample.createCriteria().andIsDeletedEqualTo(false).andIdEqualTo(req.getJoiner());
+        List<FacBuyer> buyers = this.facBuyerMapper.selectByExample(buyerExample);
+        if (CollectionUtils.isNotEmpty(buyers)) {
+            FacBuyer facBuyer = buyers.get(0);
+            joiner.setNick(facBuyer.getNickName());
+            // 当前商品对应的当前用户砍价活动信息
+            FacKanjiaJoinerExample joinerExample = new FacKanjiaJoinerExample();
+            joinerExample.createCriteria().andKanjiaIdEqualTo(req.getKjid()).andTokenEqualTo(facBuyer.getToken());
+            List<FacKanjiaJoiner> joiners = this.facKanjiaJoinerMapper.selectByExample(joinerExample);
+            if (CollectionUtils.isNotEmpty(joiners)) {
+                // 当前用户 + 当前商品的 砍价活动参与信息
+                FacKanjiaJoiner kjJoiner = joiners.get(0);
+                KjInfoVo kanjiaInfo = new KjInfoVo();
+                vo.setKanjiaInfo(kanjiaInfo);
+                kanjiaInfo.setCurPrice(kjJoiner.getCurrentPrice());
+                String statusStr = "进行中";
+                if (nowDate.compareTo(kanjia.getStartDate()) < 0) {
+                    statusStr = "未开始";
+                } else if (nowDate.compareTo(kanjia.getStopDate()) > 0) {
+                    statusStr = "已结束";
+                }
+                kanjiaInfo.setStatusStr(statusStr);
+                kanjiaInfo.setDateAdd(TimeUtils.date2Str(kjJoiner.getCreateTime(), TimeUtils.DEFAULT_DATE_TIME_FORMAT_HH_MM_SS));
+                // 助力人数(包括自己)
+                FacKanjiaHelperExample helperExample = new FacKanjiaHelperExample();
+                helperExample.createCriteria().andKanjiaIdEqualTo(req.getKjid()).andJoinIdEqualTo(Long.valueOf(kjJoiner.getId()));
+                int helperNumers = this.facKanjiaHelperMapper.countByExample(helperExample);
+                kanjiaInfo.setHelpNumber(helperNumers);
+            }
+        }
 
         return vo;
     }

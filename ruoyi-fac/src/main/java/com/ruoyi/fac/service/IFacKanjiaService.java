@@ -3,6 +3,8 @@ package com.ruoyi.fac.service;
 import com.ruoyi.fac.exception.FacException;
 import com.ruoyi.fac.model.FacKanjia;
 import com.ruoyi.fac.model.FacKanjiaJoiner;
+import com.ruoyi.fac.vo.client.req.KanjiaReq;
+import com.ruoyi.fac.vo.client.res.KanjiaInfoVo;
 import com.ruoyi.fac.vo.client.res.KanjiaListVo;
 import com.ruoyi.fac.vo.client.res.KanjiaSetVo;
 import com.ruoyi.fac.vo.kanjia.KanjiaVo;
@@ -32,5 +34,8 @@ public interface IFacKanjiaService {
     KanjiaListVo queryKanjiaListFromClient() throws FacException;
 
     // 指定商品对应的砍价活动信息
-    KanjiaSetVo queryKanjiaSet(String prodId) throws FacException;
+    KanjiaSetVo queryKanjiaSetFromClient(String prodId) throws FacException;
+
+    // 查询当前商品砍价活动参与信息
+    KanjiaInfoVo queryKanJiaInfoFromClient(KanjiaReq req) throws FacException;
 }

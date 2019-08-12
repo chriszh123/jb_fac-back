@@ -15,6 +15,7 @@ import com.ruoyi.fac.service.IProductService;
 import com.ruoyi.fac.vo.client.*;
 import com.ruoyi.fac.vo.client.req.KanjiaReq;
 import com.ruoyi.fac.vo.client.req.ShopReq;
+import com.ruoyi.fac.vo.client.res.KanjiaInfoVo;
 import com.ruoyi.fac.vo.client.res.KanjiaListVo;
 import com.ruoyi.fac.vo.client.res.KanjiaSetVo;
 import com.ruoyi.framework.web.base.BaseController;
@@ -124,15 +125,17 @@ public class FacShopController extends BaseController {
             return FacResult.error(FacCode.PARAMTER_NULL.getCode(), FacCode.PARAMTER_NULL.getMsg());
         }
         try {
-            KanjiaSetVo kanjiaSetVo = this.facKanjiaService.queryKanjiaSet(req.getGoodsId());
+            KanjiaSetVo kanjiaSetVo = this.facKanjiaService.queryKanjiaSetFromClient(req.getGoodsId());
             if (kanjiaSetVo != null) {
                 return FacResult.success(kanjiaSetVo);
             } else {
                 return FacResult.error(FacCode.HAS_NO_DATA.getCode(), FacCode.HAS_NO_DATA.getMsg());
             }
         } catch (FacException fe) {
+            log.error(fe.getMessage(), fe);
             return FacResult.error(fe.getMessage());
         } catch (Exception ex) {
+            log.error(ex.getMessage(), ex);
             return FacResult.error();
         }
     }
@@ -144,9 +147,9 @@ public class FacShopController extends BaseController {
             return FacResult.error(FacCode.PARAMTER_NULL.getCode(), FacCode.PARAMTER_NULL.getMsg());
         }
         try {
-            KanjiaSetVo kanjiaSetVo = this.facKanjiaService.queryKanjiaSet(req.getJoinerUser());
-            if (kanjiaSetVo != null) {
-                return FacResult.success(kanjiaSetVo);
+            KanjiaInfoVo kanjiaInfoVo = this.facKanjiaService.queryKanJiaInfoFromClient(req);
+            if (kanjiaInfoVo != null) {
+                return FacResult.success(kanjiaInfoVo);
             } else {
                 return FacResult.error(FacCode.HAS_NO_DATA.getCode(), FacCode.HAS_NO_DATA.getMsg());
             }
@@ -164,7 +167,7 @@ public class FacShopController extends BaseController {
             return FacResult.error(FacCode.PARAMTER_NULL.getCode(), FacCode.PARAMTER_NULL.getMsg());
         }
         try {
-            KanjiaSetVo kanjiaSetVo = this.facKanjiaService.queryKanjiaSet(req.getToken());
+            KanjiaSetVo kanjiaSetVo = this.facKanjiaService.queryKanjiaSetFromClient(req.getToken());
             if (kanjiaSetVo != null) {
                 return FacResult.success(kanjiaSetVo);
             } else {
