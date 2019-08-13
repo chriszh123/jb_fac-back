@@ -154,8 +154,10 @@ public class FacShopController extends BaseController {
                 return FacResult.error(FacCode.HAS_NO_DATA.getCode(), FacCode.HAS_NO_DATA.getMsg());
             }
         } catch (FacException fe) {
+            log.error(fe.getMessage(), fe);
             return FacResult.error(fe.getMessage());
         } catch (Exception ex) {
+            log.error(ex.getMessage(), ex);
             return FacResult.error();
         }
     }
@@ -174,8 +176,28 @@ public class FacShopController extends BaseController {
                 return FacResult.error(FacCode.HAS_NO_DATA.getCode(), FacCode.HAS_NO_DATA.getMsg());
             }
         } catch (FacException fe) {
+            log.error(fe.getMessage(), fe);
             return FacResult.error(fe.getMessage());
         } catch (Exception ex) {
+            log.error(ex.getMessage(), ex);
+            return FacResult.error();
+        }
+    }
+
+    @PostMapping("/goods/kanjia/join")
+    @ResponseBody
+    public FacResult joinKanjia(@RequestBody KanjiaReq req) {
+        if (req == null || StringUtils.isBlank(req.getToken()) || req.getKjid() == null) {
+            return FacResult.error(FacCode.PARAMTER_NULL.getCode(), FacCode.PARAMTER_NULL.getMsg());
+        }
+        try {
+            this.facKanjiaService.joinKanjia(req);
+            return FacResult.success("");
+        } catch (FacException fe) {
+            log.error(fe.getMessage(), fe);
+            return FacResult.error(fe.getMessage());
+        } catch (Exception ex) {
+            log.error(ex.getMessage(), ex);
             return FacResult.error();
         }
     }

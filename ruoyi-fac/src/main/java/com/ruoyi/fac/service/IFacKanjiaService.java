@@ -38,4 +38,7 @@ public interface IFacKanjiaService {
 
     // 查询当前商品砍价活动参与信息
     KanjiaInfoVo queryKanJiaInfoFromClient(KanjiaReq req) throws FacException;
+
+    // 用户参加指定商品砍价活动
+    void joinKanjia(KanjiaReq req) throws FacException;
 }

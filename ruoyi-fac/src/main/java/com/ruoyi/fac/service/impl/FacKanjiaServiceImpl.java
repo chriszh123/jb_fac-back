@@ -2,6 +2,7 @@ package com.ruoyi.fac.service.impl;
 
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.fac.cache.ProductCache;
+import com.ruoyi.fac.enums.KanjiaStatus;
 import com.ruoyi.fac.exception.FacException;
 import com.ruoyi.fac.mapper.*;
 import com.ruoyi.fac.model.*;
@@ -289,10 +290,61 @@ public class FacKanjiaServiceImpl implements IFacKanjiaService {
                 helperExample.createCriteria().andKanjiaIdEqualTo(req.getKjid()).andJoinIdEqualTo(Long.valueOf(kjJoiner.getId()));
                 int helperNumers = this.facKanjiaHelperMapper.countByExample(helperExample);
                 kanjiaInfo.setHelpNumber(helperNumers);
+            } else {
+                // 当前指定用户没有参加当前商品砍价活动就返回null
+                return null;
             }
         }
 
         return vo;
+    }
+
+    @Override
+    public void joinKanjia(KanjiaReq req) throws FacException {
+        FacKanjiaExample example = new FacKanjiaExample();
+        example.createCriteria().andIsDeletedEqualTo(false).andIdEqualTo(req.getKjid());
+        List<FacKanjia> kanjias = this.facKanjiaMapper.selectByExample(example);
+        if (CollectionUtils.isEmpty(kanjias)) {
+            throw new FacException("当前商品砍价活动已不存在，请联系管理员");
+        }
+        FacKanjia kanjia = kanjias.get(0);
+        Date nowDate = new Date();
+        if (nowDate.compareTo(kanjia.getStartDate()) < 0) {
+            throw new FacException("当前商品砍价活动暂未开始");
+        }
+        if (nowDate.compareTo(kanjia.getStopDate()) > 0) {
+            throw new FacException("当前商品砍价活动已结束");
+        }
+
+        FacBuyerExample buyerExample = new FacBuyerExample();
+        buyerExample.createCriteria().andIsDeletedEqualTo(false).andTokenEqualTo(req.getToken());
+        List<FacBuyer> buyers = this.facBuyerMapper.selectByExample(buyerExample);
+        if (CollectionUtils.isEmpty(buyers)) {
+            throw new FacException("对不起，系统没有您的个人信息，请先授权登录");
+        }
+        FacBuyer facBuyer = buyers.get(0);
+
+        FacKanjiaJoiner kanjiaJoiner = new FacKanjiaJoiner();
+        kanjiaJoiner.setKanjiaId(req.getKjid());
+        kanjiaJoiner.setProdId(kanjia.getProdId());
+        kanjiaJoiner.setProdName(kanjia.getProdName());
+        // 参加用户手机号码
+        kanjiaJoiner.setPhoneNumber("");
+        kanjiaJoiner.setToken(req.getToken());
+        kanjiaJoiner.setNickName(facBuyer.getNickName());
+        kanjiaJoiner.setCurrentPrice(kanjia.getOriginalPrice());
+        kanjiaJoiner.setPrice(kanjia.getPrice());
+        kanjiaJoiner.setHelpPeopleCount(Short.valueOf("0"));
+        kanjiaJoiner.setStatus(KanjiaStatus.ING.getValue());
+        kanjiaJoiner.setCreateTime(nowDate);
+        kanjiaJoiner.setUpdateTime(nowDate);
+        kanjiaJoiner.setOperatorId(facBuyer.getId());
+        kanjiaJoiner.setOperatorName(facBuyer.getNickName());
+        kanjiaJoiner.setIsDeleted(false);
+
+        this.facKanjiaJoinerMapper.insertSelective(kanjiaJoiner);
+        log.info(String.format("--------------[joinKanjia] succcess, buyerId:%s, nickName:%s, prodName:%s, joinId:%s"
+                , facBuyer.getId(), facBuyer.getNickName(), kanjia.getProdName(), kanjiaJoiner.getId()));
     }
 
     private String getFirstNotBlankPic(String pics) {
