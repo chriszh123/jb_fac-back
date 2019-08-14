@@ -3,6 +3,8 @@ package com.ruoyi.fac.vo.client.res;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 public class KanjiaInfoVo implements Serializable{
@@ -10,4 +12,5 @@ public class KanjiaInfoVo implements Serializable{
 
     private JoinerVo joiner;
     private KjInfoVo kanjiaInfo;
+    private List<KjHelperVo> helps = new ArrayList<>();
 }

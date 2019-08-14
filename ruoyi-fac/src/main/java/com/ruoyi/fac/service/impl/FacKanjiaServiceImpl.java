@@ -290,6 +290,40 @@ public class FacKanjiaServiceImpl implements IFacKanjiaService {
                 helperExample.createCriteria().andKanjiaIdEqualTo(req.getKjid()).andJoinIdEqualTo(Long.valueOf(kjJoiner.getId()));
                 int helperNumers = this.facKanjiaHelperMapper.countByExample(helperExample);
                 kanjiaInfo.setHelpNumber(helperNumers);
+
+                // 当前参与砍价活动的助力砍价信息
+                if (helperNumers > 0) {
+                    helperExample.setOrderByClause(" create_time desc ");
+                    List<FacKanjiaHelper> helpers = this.facKanjiaHelperMapper.selectByExample(helperExample);
+                    KjHelperVo helperVo;
+                    FacKanjiaHelper helper;
+                    List<String> helperTokens = new ArrayList<>();
+                    for (int i = 0, size = helpers.size(); i < size; i++) {
+                        helperVo = new KjHelperVo();
+                        vo.getHelps().add(helperVo);
+                        helper = helpers.get(i);
+                        helperVo.setToken(helper.getTokenHelper());
+                        helperVo.setNick(helper.getNickNameHelper());
+                        helperVo.setCutPrice(helper.getHelpPrice());
+                        helperVo.setDateAdd(TimeUtils.date2Str(helper.getCreateTime(), TimeUtils.DEFAULT_DATE_TIME_FORMAT_HH_MM_SS));
+                        helperTokens.add(helper.getTokenHelper());
+                    }
+
+                    // 查询当前助力人员对应的头像信息
+                    buyerExample.clear();
+                    buyerExample.createCriteria().andIsDeletedEqualTo(false).andTokenIn(helperTokens);
+                    List<FacBuyer> helpBuyers = this.facBuyerMapper.selectByExample(buyerExample);
+                    // <token, avatarUrl>
+                    Map<String, String> token2AvatarUrl = new HashMap<>();
+                    if (CollectionUtils.isNotEmpty(helpBuyers)) {
+                        for (FacBuyer item : helpBuyers) {
+                            token2AvatarUrl.put(item.getToken(), item.getAvatarurl());
+                        }
+                    }
+                    for (KjHelperVo item : vo.getHelps()) {
+                        item.setAvatarUrl(token2AvatarUrl.containsKey(item.getToken()) ? token2AvatarUrl.get(item.getToken()) : "");
+                    }
+                }
             } else {
                 // 当前指定用户没有参加当前商品砍价活动就返回null
                 return null;
