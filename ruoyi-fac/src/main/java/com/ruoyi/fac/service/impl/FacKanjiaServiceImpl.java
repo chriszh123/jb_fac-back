@@ -1,5 +1,6 @@
 package com.ruoyi.fac.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.fac.cache.ProductCache;
 import com.ruoyi.fac.enums.KanjiaStatus;
@@ -7,6 +8,7 @@ import com.ruoyi.fac.exception.FacException;
 import com.ruoyi.fac.mapper.*;
 import com.ruoyi.fac.model.*;
 import com.ruoyi.fac.service.IFacKanjiaService;
+import com.ruoyi.fac.util.DecimalUtils;
 import com.ruoyi.fac.util.TimeUtils;
 import com.ruoyi.fac.vo.client.req.KanjiaReq;
 import com.ruoyi.fac.vo.client.res.*;
@@ -18,6 +20,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 /**
@@ -357,6 +360,12 @@ public class FacKanjiaServiceImpl implements IFacKanjiaService {
             throw new FacException("对不起，系统没有您的个人信息，请先授权登录");
         }
         FacBuyer facBuyer = buyers.get(0);
+        FacKanjiaJoinerExample joinerExample = new FacKanjiaJoinerExample();
+        joinerExample.createCriteria().andIsDeletedEqualTo(false).andKanjiaIdEqualTo(req.getKjid()).andTokenEqualTo(req.getToken());
+        int count = this.facKanjiaJoinerMapper.countByExample(joinerExample);
+        if (count > 0) {
+            throw new FacException("您已参加过当前商品砍价活动，机会留给别人吧~");
+        }
 
         FacKanjiaJoiner kanjiaJoiner = new FacKanjiaJoiner();
         kanjiaJoiner.setKanjiaId(req.getKjid());
@@ -381,6 +390,165 @@ public class FacKanjiaServiceImpl implements IFacKanjiaService {
                 , facBuyer.getId(), facBuyer.getNickName(), kanjia.getProdName(), kanjiaJoiner.getId()));
     }
 
+    @Override
+    public void kanjiaHelp(KanjiaReq req) throws FacException {
+        // 帮他砍价，包括自己给自己砍价：俗称的第一刀
+        log.info(String.format("----------[kanjiaHelp] start, req:%s", JSON.toJSON(req)));
+        FacKanjiaExample example = new FacKanjiaExample();
+        example.createCriteria().andIsDeletedEqualTo(false).andIdEqualTo(req.getKjid());
+        List<FacKanjia> kanjias = this.facKanjiaMapper.selectByExample(example);
+        if (CollectionUtils.isEmpty(kanjias)) {
+            throw new FacException("当前商品砍价活动已不存在，请联系管理员");
+        }
+        Date nowDate = new Date();
+        FacKanjia kanjia = kanjias.get(0);
+        if (nowDate.compareTo(kanjia.getStartDate()) <= 0) {
+            throw new FacException("当前商品砍价活动暂未开始");
+        }
+        if (nowDate.compareTo(kanjia.getStopDate()) >= 0) {
+            throw new FacException("当前商品砍价活动已结束");
+        }
+        // 当前操作涉及到的人员信息：参加砍价活动的人(joinerUser)、助力人员(token)
+        FacBuyerExample buyerExample = new FacBuyerExample();
+        buyerExample.or().andTokenEqualTo(req.getToken()); // 助力的人
+        buyerExample.or().andIdEqualTo(req.getJoinerUser()); // 参与当前商品砍价活动的人
+        List<FacBuyer> buyers = this.facBuyerMapper.selectByExample(buyerExample);
+        if (CollectionUtils.isEmpty(buyers)) {
+            throw new FacException("当前人员信息不存在，请联系管理员");
+        }
+        FacBuyer joiner = null, helper = null;
+        if (buyers.size() == 1) {
+            joiner = buyers.get(0);
+            helper = buyers.get(0);
+        } else {
+            for (FacBuyer item : buyers) {
+                if (item.getId().equals(req.getJoinerUser())) {
+                    joiner = item;
+                } else {
+                    helper = item;
+                }
+            }
+        }
+        if (joiner == null) {
+            throw new FacException("缺失商品砍价活动参与人员信息");
+        }
+        if (helper == null) {
+            throw new FacException("缺失商品砍价活动助力人员信息");
+        }
+        FacKanjiaJoinerExample joinerExample = new FacKanjiaJoinerExample();
+        joinerExample.createCriteria().andIsDeletedEqualTo(false).andKanjiaIdEqualTo(req.getKjid()).andTokenEqualTo(joiner.getToken());
+        List<FacKanjiaJoiner> kanjiaJoiners = this.facKanjiaJoinerMapper.selectByExample(joinerExample);
+        if (CollectionUtils.isEmpty(kanjiaJoiners)) {
+            log.info(String.format("----------[kanjiaHelp] lose FacKanjiaJoiner"));
+            throw new FacException("请先参加砍价活动再帮他砍价");
+        }
+        // 当前操作对应的参与的商品砍价活动数据
+        FacKanjiaJoiner kanjiaJoiner = kanjiaJoiners.get(0);
+        FacKanjiaHelperExample helperExample = new FacKanjiaHelperExample();
+        helperExample.createCriteria().andIsDeletedEqualTo(false).andKanjiaIdEqualTo(kanjia.getId())
+                .andJoinIdEqualTo(Long.valueOf(kanjiaJoiner.getId())).andTokenHelperEqualTo(helper.getToken());
+        int count = this.facKanjiaHelperMapper.countByExample(helperExample);
+        if (count > 0) {
+            throw new FacException("您已帮他砍过价,不能重复操作");
+        }
+
+        // 当前操作对应的助力数据对象
+        FacKanjiaHelper kanjiaHelper = new FacKanjiaHelper();
+        kanjiaHelper.setKanjiaId(req.getKjid());
+        kanjiaHelper.setJoinId(Long.valueOf(kanjiaJoiner.getId()));
+        kanjiaHelper.setProdId(kanjiaJoiner.getProdId());
+        kanjiaHelper.setProdName(kanjiaJoiner.getProdName());
+        kanjiaHelper.setTokenJoiner(joiner.getToken());
+        kanjiaHelper.setNickNameJoiner(joiner.getNickName());
+        kanjiaHelper.setPhoneNumberJoiner("");
+        kanjiaHelper.setTokenHelper(helper.getToken());
+        kanjiaHelper.setNickNameHelper(helper.getNickName());
+        kanjiaHelper.setPhoneNumberHelper("");
+        // 当前操作的实际砍价金额
+        BigDecimal helpPrice = this.calCutPrice(kanjia.getOriginalPrice(), kanjia.getPrice(), kanjiaJoiner.getCurrentPrice());
+        kanjiaHelper.setHelpPrice(helpPrice);
+        kanjiaHelper.setCreateTime(nowDate);
+        kanjiaHelper.setUpdateTime(nowDate);
+        kanjiaHelper.setOperatorId(helper.getId());
+        kanjiaHelper.setOperatorName(helper.getNickName());
+        // 保存当前助力信息
+        this.facKanjiaHelperMapper.insertSelective(kanjiaHelper);
+        log.info(String.format("----------[kanjiaHelp] insert join helper success, kanjiaHelper:%s", JSON.toJSONString(kanjiaHelper)));
+        // 更新当前惭怍对应的砍价活动在此次助力后的实际价格
+        BigDecimal real = DecimalUtils.subtract(kanjiaJoiner.getCurrentPrice(), helpPrice);
+
+        kanjiaJoiner.setCurrentPrice(real);
+        kanjiaJoiner.setUpdateTime(nowDate);
+        kanjiaJoiner.setOperatorId(helper.getId());
+        kanjiaJoiner.setOperatorName(helper.getNickName());
+        joinerExample.clear();
+        joinerExample.createCriteria().andIsDeletedEqualTo(false).andIdEqualTo(kanjiaJoiner.getId());
+        this.facKanjiaJoinerMapper.updateByExampleSelective(kanjiaJoiner, joinerExample);
+        log.info(String.format("----------[kanjiaHelp] update join current price success, kanjiaJoiner:%s", JSON.toJSONString(kanjiaJoiner)));
+    }
+
+    @Override
+    public KjHelperVo kanjiaMyHelp(KanjiaReq req) throws FacException {
+        // 当前指定人对应的助力信息
+        FacKanjiaExample example = new FacKanjiaExample();
+        example.createCriteria().andIsDeletedEqualTo(false).andIdEqualTo(req.getKjid());
+        List<FacKanjia> kanjias = this.facKanjiaMapper.selectByExample(example);
+        if (CollectionUtils.isEmpty(kanjias)) {
+            throw new FacException("当前商品砍价活动已不存在，请联系管理员");
+        }
+        FacKanjia kanjia = kanjias.get(0);
+        // 当前操作涉及到的人员信息：参加砍价活动的人(joinerUser)、助力人员(token)
+        FacBuyerExample buyerExample = new FacBuyerExample();
+        buyerExample.or().andTokenEqualTo(req.getToken()); // 助力的人
+        buyerExample.or().andIdEqualTo(req.getJoinerUser()); // 参与当前商品砍价活动的人
+        List<FacBuyer> buyers = this.facBuyerMapper.selectByExample(buyerExample);
+        if (CollectionUtils.isEmpty(buyers)) {
+            throw new FacException("当前人员信息不存在，请联系管理员");
+        }
+        FacBuyer joiner = null, helper = null;
+        if (buyers.size() == 1) {
+            joiner = buyers.get(0);
+            helper = buyers.get(0);
+        } else {
+            for (FacBuyer item : buyers) {
+                if (item.getId().equals(req.getJoinerUser())) {
+                    joiner = item;
+                } else {
+                    helper = item;
+                }
+            }
+        }
+        if (joiner == null) {
+            throw new FacException("缺失商品砍价活动参与人员信息");
+        }
+        if (helper == null) {
+            throw new FacException("缺失商品砍价活动助力人员信息");
+        }
+        FacKanjiaJoinerExample joinerExample = new FacKanjiaJoinerExample();
+        joinerExample.createCriteria().andIsDeletedEqualTo(false).andKanjiaIdEqualTo(req.getKjid()).andTokenEqualTo(joiner.getToken());
+        List<FacKanjiaJoiner> kanjiaJoiners = this.facKanjiaJoinerMapper.selectByExample(joinerExample);
+        if (CollectionUtils.isEmpty(kanjiaJoiners)) {
+            log.info(String.format("----------[kanjiaHelp] lose FacKanjiaJoiner"));
+            throw new FacException("缺失当前人员参与商品砍价活动信息");
+        }
+        FacKanjiaJoiner kanjiaJoiner = kanjiaJoiners.get(0);
+
+        FacKanjiaHelperExample helperExample = new FacKanjiaHelperExample();
+        helperExample.createCriteria().andIsDeletedEqualTo(false).andKanjiaIdEqualTo(kanjia.getId())
+                .andJoinIdEqualTo(Long.valueOf(kanjiaJoiner.getId())).andTokenHelperEqualTo(req.getToken());
+        List<FacKanjiaHelper> kanjiaHelpers = this.facKanjiaHelperMapper.selectByExample(helperExample);
+        if (CollectionUtils.isEmpty(kanjiaHelpers)) {
+            throw new FacException("您暂未参加当前商品砍价活动");
+        }
+        FacKanjiaHelper kanjiaHelper = kanjiaHelpers.get(0);
+        KjHelperVo helperVo = new KjHelperVo();
+        helperVo.setCutPrice(kanjiaHelper.getHelpPrice());
+        helperVo.setNick(kanjiaHelper.getNickNameHelper());
+        helperVo.setDateAdd(TimeUtils.date2Str(kanjiaHelper.getCreateTime(), TimeUtils.DEFAULT_DATE_TIME_FORMAT_HH_MM_SS));
+
+        return helperVo;
+    }
+
     private String getFirstNotBlankPic(String pics) {
         if (StringUtils.isBlank(pics)) {
             return "";
@@ -392,5 +560,20 @@ public class FacKanjiaServiceImpl implements IFacKanjiaService {
             }
         }
         return "";
+    }
+
+    /**
+     * 每次砍价金额：算法
+     *
+     * @param originalPrice 原价
+     * @param price         底价
+     * @param currentPrice  当前价格
+     * @return
+     */
+    private BigDecimal calCutPrice(BigDecimal originalPrice, BigDecimal price, BigDecimal currentPrice) {
+        BigDecimal cutPrice = new BigDecimal("0");
+
+
+        return cutPrice;
     }
 }

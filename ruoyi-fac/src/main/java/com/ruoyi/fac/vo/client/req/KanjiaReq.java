@@ -12,5 +12,6 @@ public class KanjiaReq implements Serializable{
     // 用户id
     private Long joiner;
     private String token;
-    private String joinerUser;
+    private Long joinerUser;
+    private String remark;
 }

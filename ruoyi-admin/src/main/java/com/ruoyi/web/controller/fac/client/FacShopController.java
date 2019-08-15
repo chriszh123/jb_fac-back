@@ -18,6 +18,7 @@ import com.ruoyi.fac.vo.client.req.ShopReq;
 import com.ruoyi.fac.vo.client.res.KanjiaInfoVo;
 import com.ruoyi.fac.vo.client.res.KanjiaListVo;
 import com.ruoyi.fac.vo.client.res.KanjiaSetVo;
+import com.ruoyi.fac.vo.client.res.KjHelperVo;
 import com.ruoyi.framework.web.base.BaseController;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
@@ -165,16 +166,13 @@ public class FacShopController extends BaseController {
     @PostMapping("/goods/kanjia/myHelp")
     @ResponseBody
     public FacResult kanjiaMyHelp(@RequestBody KanjiaReq req) {
-        if (req == null || req.getJoiner() == null || req.getKjid() == null) {
+        if (req == null || req.getJoinerUser() == null || req.getKjid() == null
+                || StringUtils.isBlank(req.getToken())) {
             return FacResult.error(FacCode.PARAMTER_NULL.getCode(), FacCode.PARAMTER_NULL.getMsg());
         }
         try {
-            KanjiaSetVo kanjiaSetVo = this.facKanjiaService.queryKanjiaSetFromClient(req.getToken());
-            if (kanjiaSetVo != null) {
-                return FacResult.success(kanjiaSetVo);
-            } else {
-                return FacResult.error(FacCode.HAS_NO_DATA.getCode(), FacCode.HAS_NO_DATA.getMsg());
-            }
+            KjHelperVo kjHelperVo = this.facKanjiaService.kanjiaMyHelp(req);
+            return FacResult.success(kjHelperVo);
         } catch (FacException fe) {
             log.error(fe.getMessage(), fe);
             return FacResult.error(fe.getMessage());
@@ -192,6 +190,25 @@ public class FacShopController extends BaseController {
         }
         try {
             this.facKanjiaService.joinKanjia(req);
+            return FacResult.success("");
+        } catch (FacException fe) {
+            log.error(fe.getMessage(), fe);
+            return FacResult.error(fe.getMessage());
+        } catch (Exception ex) {
+            log.error(ex.getMessage(), ex);
+            return FacResult.error();
+        }
+    }
+
+    @PostMapping("/goods/kanjia/help")
+    @ResponseBody
+    public FacResult kanjiaHelp(@RequestBody KanjiaReq req) {
+        if (req == null || StringUtils.isBlank(req.getToken()) || req.getKjid() == null
+                || req.getJoinerUser() == null) {
+            return FacResult.error(FacCode.PARAMTER_NULL.getCode(), FacCode.PARAMTER_NULL.getMsg());
+        }
+        try {
+            this.facKanjiaService.kanjiaHelp(req);
             return FacResult.success("");
         } catch (FacException fe) {
             log.error(fe.getMessage(), fe);

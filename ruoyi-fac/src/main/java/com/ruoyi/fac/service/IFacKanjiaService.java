@@ -1,12 +1,14 @@
 package com.ruoyi.fac.service;
 
 import com.ruoyi.fac.exception.FacException;
+import com.ruoyi.fac.model.FacBuyer;
 import com.ruoyi.fac.model.FacKanjia;
 import com.ruoyi.fac.model.FacKanjiaJoiner;
 import com.ruoyi.fac.vo.client.req.KanjiaReq;
 import com.ruoyi.fac.vo.client.res.KanjiaInfoVo;
 import com.ruoyi.fac.vo.client.res.KanjiaListVo;
 import com.ruoyi.fac.vo.client.res.KanjiaSetVo;
+import com.ruoyi.fac.vo.client.res.KjHelperVo;
 import com.ruoyi.fac.vo.kanjia.KanjiaVo;
 import com.ruoyi.system.domain.SysUser;
 
@@ -41,4 +43,10 @@ public interface IFacKanjiaService {
 
     // 用户参加指定商品砍价活动
     void joinKanjia(KanjiaReq req) throws FacException;
+
+    // 帮他砍价，包括自己给自己砍价：俗称的第一刀
+    void kanjiaHelp(KanjiaReq req) throws FacException;
+
+    // 当前指定人对应的助力信息
+    KjHelperVo kanjiaMyHelp(KanjiaReq req) throws FacException;
 }
