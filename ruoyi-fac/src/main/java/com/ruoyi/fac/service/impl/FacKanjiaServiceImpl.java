@@ -391,7 +391,7 @@ public class FacKanjiaServiceImpl implements IFacKanjiaService {
     }
 
     @Override
-    public void kanjiaHelp(KanjiaReq req) throws FacException {
+    public KjHelperVo kanjiaHelp(KanjiaReq req) throws FacException {
         // 帮他砍价，包括自己给自己砍价：俗称的第一刀
         log.info(String.format("----------[kanjiaHelp] start, req:%s", JSON.toJSON(req)));
         FacKanjiaExample example = new FacKanjiaExample();
@@ -485,6 +485,11 @@ public class FacKanjiaServiceImpl implements IFacKanjiaService {
         joinerExample.createCriteria().andIsDeletedEqualTo(false).andIdEqualTo(kanjiaJoiner.getId());
         this.facKanjiaJoinerMapper.updateByExampleSelective(kanjiaJoiner, joinerExample);
         log.info(String.format("----------[kanjiaHelp] update join current price success, kanjiaJoiner:%s", JSON.toJSONString(kanjiaJoiner)));
+
+        KjHelperVo kjHelperVo = new KjHelperVo();
+        kjHelperVo.setCutPrice(helpPrice);
+
+        return kjHelperVo;
     }
 
     @Override

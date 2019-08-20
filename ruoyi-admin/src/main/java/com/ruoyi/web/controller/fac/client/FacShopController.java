@@ -208,8 +208,8 @@ public class FacShopController extends BaseController {
             return FacResult.error(FacCode.PARAMTER_NULL.getCode(), FacCode.PARAMTER_NULL.getMsg());
         }
         try {
-            this.facKanjiaService.kanjiaHelp(req);
-            return FacResult.success("");
+            KjHelperVo helperVo = this.facKanjiaService.kanjiaHelp(req);
+            return FacResult.success(helperVo);
         } catch (FacException fe) {
             log.error(fe.getMessage(), fe);
             return FacResult.error(fe.getMessage());

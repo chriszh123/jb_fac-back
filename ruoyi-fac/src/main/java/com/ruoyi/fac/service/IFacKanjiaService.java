@@ -45,7 +45,7 @@ public interface IFacKanjiaService {
     void joinKanjia(KanjiaReq req) throws FacException;
 
     // 帮他砍价，包括自己给自己砍价：俗称的第一刀
-    void kanjiaHelp(KanjiaReq req) throws FacException;
+    KjHelperVo kanjiaHelp(KanjiaReq req) throws FacException;
 
     // 当前指定人对应的助力信息
     KjHelperVo kanjiaMyHelp(KanjiaReq req) throws FacException;
