@@ -1,8 +1,12 @@
 package com.ruoyi.fac.util;
 
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 public class KJAlgorithmUtil {
 
     /**
@@ -75,33 +79,32 @@ public class KJAlgorithmUtil {
      * @param count      个数 : 砍价过程 多少次砍价可以结束
      * @return
      */
-    public static List<Double> splitReducePrice(int toCutMoney, int minMoney, int maxMoney, int count) {
+    public static String splitReducePrice(int toCutMoney, int minMoney, int maxMoney, int count) {
         MAXMONEY = maxMoney;
         MINMONEY = minMoney;
         //红包合法性分析
         if (!isRight(toCutMoney, count)) {
-            return new ArrayList<>();
+            return "";
         }
         //红包列表
         List<Double> list = new ArrayList<>();
         //每个红包的最大的金额为平均金额的TIMES倍
         int max = (int) (toCutMoney * TIMES / count);
         max = max > MAXMONEY ? MAXMONEY : max;
-        //分配红包
         int sum = 0;
-
         for (int i = 0; i < count; i++) {
             int one = randomReducePrice(toCutMoney, MINMONEY, max, count - i);
             list.add(one / 100.0);
             toCutMoney -= one;
             sum += one;
         }
-        return list;
+        log.info("---------[splitReducePrice] 待砍价总额(分),sum = " + sum);
+
+        return StringUtils.join(list, ",");
     }
 
     public static void main(String[] args) {
-        List<Double> list = splitReducePrice(3900, 220, 3000, 11);
-        String result = list.toString();
+        String result = splitReducePrice(3900, 120, 2000, 11);
         System.out.println("result = " + result);
     }
 }
