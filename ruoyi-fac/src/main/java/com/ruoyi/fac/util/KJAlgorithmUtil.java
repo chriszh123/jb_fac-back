@@ -96,12 +96,12 @@ public class KJAlgorithmUtil {
             toCutMoney -= one;
             sum += one;
         }
-        System.out.println("sum:" + sum);
         return list;
     }
 
     public static void main(String[] args) {
         List<Double> list = splitReducePrice(3900, 220, 3000, 11);
-        System.out.println(list);
+        String result = list.toString();
+        System.out.println("result = " + result);
     }
 }
