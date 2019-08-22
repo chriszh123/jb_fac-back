@@ -9,6 +9,7 @@ import com.ruoyi.fac.mapper.*;
 import com.ruoyi.fac.model.*;
 import com.ruoyi.fac.service.IFacKanjiaService;
 import com.ruoyi.fac.util.DecimalUtils;
+import com.ruoyi.fac.util.KJAlgorithmUtil;
 import com.ruoyi.fac.util.TimeUtils;
 import com.ruoyi.fac.vo.client.req.KanjiaReq;
 import com.ruoyi.fac.vo.client.res.*;
@@ -32,6 +33,7 @@ import java.util.*;
 @Service("facKanjiaService")
 @Slf4j
 public class FacKanjiaServiceImpl implements IFacKanjiaService {
+
     @Autowired
     private FacKanjiaMapper facKanjiaMapper;
     @Autowired
@@ -93,7 +95,8 @@ public class FacKanjiaServiceImpl implements IFacKanjiaService {
             record.setOperatorId(user.getUserId());
             record.setOperatorName(user.getUserName());
         }
-
+        // 校验当前设置的砍价范围和当前商品价格是否能正常生成助力金额
+        this.checkKanjiaSF(record);
         int rows = this.facKanjiaMapper.insertSelective(record);
         return rows;
     }
@@ -120,6 +123,13 @@ public class FacKanjiaServiceImpl implements IFacKanjiaService {
         if (kanjia == null || kanjia.getId() == null) {
             throw new FacException("砍价id不能为空");
         }
+        FacKanjiaJoinerExample joinerExample = new FacKanjiaJoinerExample();
+        joinerExample.createCriteria().andIsDeletedEqualTo(false).andKanjiaIdEqualTo(kanjia.getId());
+        int joinerCount = this.facKanjiaJoinerMapper.countByExample(joinerExample);
+        if (joinerCount > 0) {
+            throw new FacException("当前商品砍价活动已经有人参与，不能再修改相应内容");
+        }
+
         Date nowDate = new Date();
         FacKanjia update = new FacKanjia();
         BeanUtils.copyProperties(kanjia, update);
@@ -367,6 +377,18 @@ public class FacKanjiaServiceImpl implements IFacKanjiaService {
             throw new FacException("您已参加过当前商品砍价活动，机会留给别人吧~");
         }
 
+        BigDecimal toCutMoney = DecimalUtils.subtract(kanjia.getOriginalPrice(), kanjia.getPrice());
+        int toCutMoneyI = DecimalUtils.convertFen(toCutMoney);
+        int minMoney = DecimalUtils.convertFen(kanjia.getMin());
+        int maxMoney = DecimalUtils.convertFen(kanjia.getMax());
+        int helpCount = kanjia.getHelpPeopleCount();
+        String helpAmount = KJAlgorithmUtil.splitReducePrice(toCutMoneyI, minMoney, maxMoney, helpCount);
+        if (StringUtils.isBlank(helpAmount)) {
+            log.info("----[joinKanjia] helpAmount fail, toCutMoneyI:%s, minMoney:%s, maxMoney:%s, helpCount:%s"
+                    , toCutMoneyI, minMoney, maxMoney, helpCount);
+            throw new FacException("参与失败，请联系管理员");
+        }
+
         FacKanjiaJoiner kanjiaJoiner = new FacKanjiaJoiner();
         kanjiaJoiner.setKanjiaId(req.getKjid());
         kanjiaJoiner.setProdId(kanjia.getProdId());
@@ -377,7 +399,6 @@ public class FacKanjiaServiceImpl implements IFacKanjiaService {
         kanjiaJoiner.setNickName(facBuyer.getNickName());
         kanjiaJoiner.setCurrentPrice(kanjia.getOriginalPrice());
         kanjiaJoiner.setPrice(kanjia.getPrice());
-        kanjiaJoiner.setHelpPeopleCount(Short.valueOf("0"));
         kanjiaJoiner.setStatus(KanjiaStatus.ING.getValue());
         kanjiaJoiner.setCreateTime(nowDate);
         kanjiaJoiner.setUpdateTime(nowDate);
@@ -580,5 +601,19 @@ public class FacKanjiaServiceImpl implements IFacKanjiaService {
 
 
         return cutPrice;
+    }
+
+    private void checkKanjiaSF(FacKanjia kanjia) throws FacException {
+        BigDecimal toCutMoney = DecimalUtils.subtract(kanjia.getOriginalPrice(), kanjia.getPrice());
+        int toCutMoneyI = DecimalUtils.convertFen(toCutMoney);
+        int minMoney = DecimalUtils.convertFen(kanjia.getMin());
+        int maxMoney = DecimalUtils.convertFen(kanjia.getMax());
+        int helpCount = kanjia.getHelpPeopleCount();
+        String helpAmount = KJAlgorithmUtil.splitReducePrice(toCutMoneyI, minMoney, maxMoney, helpCount);
+        if (StringUtils.isBlank(helpAmount)) {
+            throw new FacException("当前设置的砍价金额范围与当前商品价格生成的助力金额为空，请重新设置砍价范围");
+        }
+        log.info(String.format("------[checkKanjiaSF] success, kanjia:[%s], helpCount:%s"
+                , JSON.toJSONString(kanjia), helpAmount));
     }
 }

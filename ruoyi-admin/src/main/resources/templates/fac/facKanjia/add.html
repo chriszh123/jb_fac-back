@@ -31,6 +31,12 @@
                 <input id="price" name="price" class="form-control" type="text">
             </div>
         </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">需助力个数：</label>
+            <div class="col-sm-8">
+                <input id="helpPeopleCount" name="helpPeopleCount" class="form-control" type="text">
+            </div>
+        </div>
 
         <div class="form-group">
             <label class="col-sm-3 control-label">砍价金额：</label>
@@ -78,6 +84,10 @@
 
     $("#form-facKanjia-add").validate({
         rules: {
+            total: {
+                required: true,
+                digits: true
+            },
             prodId: {
                 required: true,
                 digits: true
@@ -87,6 +97,10 @@
             },
             price: {
                 required: true
+            },
+            helpPeopleCount: {
+                required: true,
+                digits: true
             },
             min: {
                 required: true

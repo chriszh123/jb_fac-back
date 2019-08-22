@@ -15,6 +15,7 @@ CREATE TABLE `fac_kanjia` (
   `status` tinyint(2) NOT NULL DEFAULT '1' COMMENT '状态:1-正常,2-禁用',
   `start_date` datetime NULL COMMENT '开始时间',
   `stop_date` datetime NULL COMMENT '截止时间',
+  `help_people_count` smallint NOT NULL DEFAULT '0' COMMENT '帮砍人数,包括自己',
 
   `create_time` datetime NOT NULL COMMENT '创建时间',
   `update_time` datetime NOT NULL COMMENT '最近更新时间',
@@ -38,7 +39,7 @@ CREATE TABLE `fac_kanjia_joiner` (
   `nick_name` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '用户昵称',
   `current_price` decimal(8,2) NOT NULL DEFAULT '0.0' COMMENT '当前价格',
   `price` decimal(8,2) NOT NULL DEFAULT '0.0' COMMENT '底价',
-  `help_people_count` smallint NOT NULL DEFAULT '0' COMMENT '帮砍人数,包括自己',
+  `help_amount` varchar(1024) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '事先设置好对应砍价份数的每份砍价金额,逗号分隔',
   `status` tinyint(2) NOT NULL DEFAULT '1' COMMENT '状态:1-进行中;2-无效;3-完成',
 
   `create_time` datetime NOT NULL COMMENT '创建时间',

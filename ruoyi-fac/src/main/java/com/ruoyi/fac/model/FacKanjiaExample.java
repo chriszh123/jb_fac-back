@@ -926,6 +926,66 @@ public class FacKanjiaExample {
             return (Criteria) this;
         }
 
+        public Criteria andHelpPeopleCountIsNull() {
+            addCriterion("help_people_count is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andHelpPeopleCountIsNotNull() {
+            addCriterion("help_people_count is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andHelpPeopleCountEqualTo(Short value) {
+            addCriterion("help_people_count =", value, "helpPeopleCount");
+            return (Criteria) this;
+        }
+
+        public Criteria andHelpPeopleCountNotEqualTo(Short value) {
+            addCriterion("help_people_count <>", value, "helpPeopleCount");
+            return (Criteria) this;
+        }
+
+        public Criteria andHelpPeopleCountGreaterThan(Short value) {
+            addCriterion("help_people_count >", value, "helpPeopleCount");
+            return (Criteria) this;
+        }
+
+        public Criteria andHelpPeopleCountGreaterThanOrEqualTo(Short value) {
+            addCriterion("help_people_count >=", value, "helpPeopleCount");
+            return (Criteria) this;
+        }
+
+        public Criteria andHelpPeopleCountLessThan(Short value) {
+            addCriterion("help_people_count <", value, "helpPeopleCount");
+            return (Criteria) this;
+        }
+
+        public Criteria andHelpPeopleCountLessThanOrEqualTo(Short value) {
+            addCriterion("help_people_count <=", value, "helpPeopleCount");
+            return (Criteria) this;
+        }
+
+        public Criteria andHelpPeopleCountIn(List<Short> values) {
+            addCriterion("help_people_count in", values, "helpPeopleCount");
+            return (Criteria) this;
+        }
+
+        public Criteria andHelpPeopleCountNotIn(List<Short> values) {
+            addCriterion("help_people_count not in", values, "helpPeopleCount");
+            return (Criteria) this;
+        }
+
+        public Criteria andHelpPeopleCountBetween(Short value1, Short value2) {
+            addCriterion("help_people_count between", value1, value2, "helpPeopleCount");
+            return (Criteria) this;
+        }
+
+        public Criteria andHelpPeopleCountNotBetween(Short value1, Short value2) {
+            addCriterion("help_people_count not between", value1, value2, "helpPeopleCount");
+            return (Criteria) this;
+        }
+
         public Criteria andCreateTimeIsNull() {
             addCriterion("create_time is null");
             return (Criteria) this;

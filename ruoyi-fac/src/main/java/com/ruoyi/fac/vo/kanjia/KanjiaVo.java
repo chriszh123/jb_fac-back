@@ -18,4 +18,5 @@ public class KanjiaVo implements Serializable {
     private BigDecimal max;
     private String startDate;
     private String stopDate;
+    private Short helpPeopleCount;
 }

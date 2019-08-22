@@ -776,63 +776,73 @@ public class FacKanjiaJoinerExample {
             return (Criteria) this;
         }
 
-        public Criteria andHelpPeopleCountIsNull() {
-            addCriterion("help_people_count is null");
+        public Criteria andHelpAmountIsNull() {
+            addCriterion("help_amount is null");
             return (Criteria) this;
         }
 
-        public Criteria andHelpPeopleCountIsNotNull() {
-            addCriterion("help_people_count is not null");
+        public Criteria andHelpAmountIsNotNull() {
+            addCriterion("help_amount is not null");
             return (Criteria) this;
         }
 
-        public Criteria andHelpPeopleCountEqualTo(Short value) {
-            addCriterion("help_people_count =", value, "helpPeopleCount");
+        public Criteria andHelpAmountEqualTo(String value) {
+            addCriterion("help_amount =", value, "helpAmount");
             return (Criteria) this;
         }
 
-        public Criteria andHelpPeopleCountNotEqualTo(Short value) {
-            addCriterion("help_people_count <>", value, "helpPeopleCount");
+        public Criteria andHelpAmountNotEqualTo(String value) {
+            addCriterion("help_amount <>", value, "helpAmount");
             return (Criteria) this;
         }
 
-        public Criteria andHelpPeopleCountGreaterThan(Short value) {
-            addCriterion("help_people_count >", value, "helpPeopleCount");
+        public Criteria andHelpAmountGreaterThan(String value) {
+            addCriterion("help_amount >", value, "helpAmount");
             return (Criteria) this;
         }
 
-        public Criteria andHelpPeopleCountGreaterThanOrEqualTo(Short value) {
-            addCriterion("help_people_count >=", value, "helpPeopleCount");
+        public Criteria andHelpAmountGreaterThanOrEqualTo(String value) {
+            addCriterion("help_amount >=", value, "helpAmount");
             return (Criteria) this;
         }
 
-        public Criteria andHelpPeopleCountLessThan(Short value) {
-            addCriterion("help_people_count <", value, "helpPeopleCount");
+        public Criteria andHelpAmountLessThan(String value) {
+            addCriterion("help_amount <", value, "helpAmount");
             return (Criteria) this;
         }
 
-        public Criteria andHelpPeopleCountLessThanOrEqualTo(Short value) {
-            addCriterion("help_people_count <=", value, "helpPeopleCount");
+        public Criteria andHelpAmountLessThanOrEqualTo(String value) {
+            addCriterion("help_amount <=", value, "helpAmount");
             return (Criteria) this;
         }
 
-        public Criteria andHelpPeopleCountIn(List<Short> values) {
-            addCriterion("help_people_count in", values, "helpPeopleCount");
+        public Criteria andHelpAmountLike(String value) {
+            addCriterion("help_amount like", value, "helpAmount");
             return (Criteria) this;
         }
 
-        public Criteria andHelpPeopleCountNotIn(List<Short> values) {
-            addCriterion("help_people_count not in", values, "helpPeopleCount");
+        public Criteria andHelpAmountNotLike(String value) {
+            addCriterion("help_amount not like", value, "helpAmount");
             return (Criteria) this;
         }
 
-        public Criteria andHelpPeopleCountBetween(Short value1, Short value2) {
-            addCriterion("help_people_count between", value1, value2, "helpPeopleCount");
+        public Criteria andHelpAmountIn(List<String> values) {
+            addCriterion("help_amount in", values, "helpAmount");
             return (Criteria) this;
         }
 
-        public Criteria andHelpPeopleCountNotBetween(Short value1, Short value2) {
-            addCriterion("help_people_count not between", value1, value2, "helpPeopleCount");
+        public Criteria andHelpAmountNotIn(List<String> values) {
+            addCriterion("help_amount not in", values, "helpAmount");
+            return (Criteria) this;
+        }
+
+        public Criteria andHelpAmountBetween(String value1, String value2) {
+            addCriterion("help_amount between", value1, value2, "helpAmount");
+            return (Criteria) this;
+        }
+
+        public Criteria andHelpAmountNotBetween(String value1, String value2) {
+            addCriterion("help_amount not between", value1, value2, "helpAmount");
             return (Criteria) this;
         }
 
