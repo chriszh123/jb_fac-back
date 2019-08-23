@@ -400,6 +400,7 @@ public class FacKanjiaServiceImpl implements IFacKanjiaService {
         kanjiaJoiner.setCurrentPrice(kanjia.getOriginalPrice());
         kanjiaJoiner.setPrice(kanjia.getPrice());
         kanjiaJoiner.setStatus(KanjiaStatus.ING.getValue());
+        kanjiaJoiner.setHelpAmount(helpAmount);
         kanjiaJoiner.setCreateTime(nowDate);
         kanjiaJoiner.setUpdateTime(nowDate);
         kanjiaJoiner.setOperatorId(facBuyer.getId());
@@ -472,7 +473,20 @@ public class FacKanjiaServiceImpl implements IFacKanjiaService {
         if (count > 0) {
             throw new FacException("您已帮他砍过价,不能重复操作");
         }
-
+        String helpAmount = kanjiaJoiner.getHelpAmount();
+        if (StringUtils.isBlank(helpAmount)) {
+            throw new FacException("砍价活动已结束");
+        }
+        String[] helpAmountArr = helpAmount.split(",");
+        // 剩余的助力金额：助力一次就取走原先的助力金额的第一个，直至取完
+        String leftHelpAmount = "";
+        if (helpAmountArr.length >= 2) {
+            String[] leftHelpAmountArr = new String[helpAmountArr.length - 1];
+            System.arraycopy(helpAmountArr, 1, leftHelpAmountArr, 0, helpAmountArr.length - 1);
+            leftHelpAmount = StringUtils.join(leftHelpAmountArr, ",");
+        }
+        // 当前助力砍价的助力帮砍价金额
+        BigDecimal helpPrice = DecimalUtils.convert(helpAmount.split(",")[0]);
         // 当前操作对应的助力数据对象
         FacKanjiaHelper kanjiaHelper = new FacKanjiaHelper();
         kanjiaHelper.setKanjiaId(req.getKjid());
@@ -486,7 +500,6 @@ public class FacKanjiaServiceImpl implements IFacKanjiaService {
         kanjiaHelper.setNickNameHelper(helper.getNickName());
         kanjiaHelper.setPhoneNumberHelper("");
         // 当前操作的实际砍价金额
-        BigDecimal helpPrice = this.calCutPrice(kanjia.getOriginalPrice(), kanjia.getPrice(), kanjiaJoiner.getCurrentPrice());
         kanjiaHelper.setHelpPrice(helpPrice);
         kanjiaHelper.setCreateTime(nowDate);
         kanjiaHelper.setUpdateTime(nowDate);
@@ -499,6 +512,7 @@ public class FacKanjiaServiceImpl implements IFacKanjiaService {
         BigDecimal real = DecimalUtils.subtract(kanjiaJoiner.getCurrentPrice(), helpPrice);
 
         kanjiaJoiner.setCurrentPrice(real);
+        kanjiaJoiner.setHelpAmount(leftHelpAmount);
         kanjiaJoiner.setUpdateTime(nowDate);
         kanjiaJoiner.setOperatorId(helper.getId());
         kanjiaJoiner.setOperatorName(helper.getNickName());
@@ -586,21 +600,6 @@ public class FacKanjiaServiceImpl implements IFacKanjiaService {
             }
         }
         return "";
-    }
-
-    /**
-     * 每次砍价金额：算法
-     *
-     * @param originalPrice 原价
-     * @param price         底价
-     * @param currentPrice  当前价格
-     * @return
-     */
-    private BigDecimal calCutPrice(BigDecimal originalPrice, BigDecimal price, BigDecimal currentPrice) {
-        BigDecimal cutPrice = new BigDecimal("0");
-
-
-        return cutPrice;
     }
 
     private void checkKanjiaSF(FacKanjia kanjia) throws FacException {
