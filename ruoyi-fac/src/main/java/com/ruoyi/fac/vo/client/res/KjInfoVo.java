@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 public class KjInfoVo implements Serializable {
     private static final long serialVersionUID = 6259264998822685105L;
 
+    private Long prodId;
     private BigDecimal curPrice;
     private int helpNumber = 0;
     private String statusStr;

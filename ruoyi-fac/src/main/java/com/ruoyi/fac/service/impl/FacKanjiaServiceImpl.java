@@ -1,3 +1,4 @@
+
 package com.ruoyi.fac.service.impl;
 
 import com.alibaba.fastjson.JSON;
@@ -73,6 +74,11 @@ public class FacKanjiaServiceImpl implements IFacKanjiaService {
             throw new FacException("当前指定商品不存在，请核实");
         }
         Date nowDate = new Date();
+        // 校验当前商品在当前时刻是否已经存在砍价活动
+        final FacKanjiaExample kanjiaExample = new FacKanjiaExample();
+        kanjiaExample.createCriteria().andIsDeletedEqualTo(false).andProdIdEqualTo(kanjia.getProdId());
+
+        this.facKanjiaMapper.countByExample(kanjiaExample);
         FacKanjia record = new FacKanjia();
         BeanUtils.copyProperties(kanjia, record);
 
@@ -289,6 +295,7 @@ public class FacKanjiaServiceImpl implements IFacKanjiaService {
                 FacKanjiaJoiner kjJoiner = joiners.get(0);
                 KjInfoVo kanjiaInfo = new KjInfoVo();
                 vo.setKanjiaInfo(kanjiaInfo);
+                kanjiaInfo.setProdId(kanjia.getProdId());
                 kanjiaInfo.setCurPrice(kjJoiner.getCurrentPrice());
                 String statusStr = "进行中";
                 if (nowDate.compareTo(kanjia.getStartDate()) < 0) {
@@ -466,6 +473,13 @@ public class FacKanjiaServiceImpl implements IFacKanjiaService {
         }
         // 当前操作对应的参与的商品砍价活动数据
         FacKanjiaJoiner kanjiaJoiner = kanjiaJoiners.get(0);
+        if (StringUtils.equals(kanjiaJoiner.getStatus().toString(), KanjiaStatus.COMPLETED.getValue().toString())) {
+            throw new FacException("砍价活动已结束");
+        }
+        if (StringUtils.equals(kanjiaJoiner.getStatus().toString(), KanjiaStatus.UNCOMPLETED.getValue().toString())) {
+            throw new FacException("砍价活动已过期");
+        }
+
         FacKanjiaHelperExample helperExample = new FacKanjiaHelperExample();
         helperExample.createCriteria().andIsDeletedEqualTo(false).andKanjiaIdEqualTo(kanjia.getId())
                 .andJoinIdEqualTo(Long.valueOf(kanjiaJoiner.getId())).andTokenHelperEqualTo(helper.getToken());

@@ -3,19 +3,13 @@ package com.ruoyi.fac.service.impl;
 import com.ruoyi.common.support.Convert;
 import com.ruoyi.fac.cache.ProductCache;
 import com.ruoyi.fac.constant.FacConstant;
-import com.ruoyi.fac.domain.Order;
 import com.ruoyi.fac.domain.Product;
 import com.ruoyi.fac.domain.ProductCategory;
 import com.ruoyi.fac.enums.FocusStatus;
 import com.ruoyi.fac.enums.ProductStatus;
 import com.ruoyi.fac.exception.FacException;
-import com.ruoyi.fac.mapper.FacBusinessMapper;
-import com.ruoyi.fac.mapper.OrderMapper;
-import com.ruoyi.fac.mapper.ProductCategoryMapper;
-import com.ruoyi.fac.mapper.ProductMapper;
-import com.ruoyi.fac.model.FacBusiness;
-import com.ruoyi.fac.model.FacBusinessExample;
-import com.ruoyi.fac.model.FacOrder;
+import com.ruoyi.fac.mapper.*;
+import com.ruoyi.fac.model.*;
 import com.ruoyi.fac.service.IProductService;
 import com.ruoyi.fac.util.DecimalUtils;
 import com.ruoyi.fac.util.FacFileUtils;
@@ -53,6 +47,8 @@ public class ProductServiceImpl implements IProductService {
     private OrderMapper orderMapper;
     @Autowired
     private FacBusinessMapper facBusinessMapper;
+    @Autowired
+    private FacKanjiaMapper kanjiaMapper;
 
     @Autowired
     private ProductCache productCache;
@@ -335,9 +331,6 @@ public class ProductServiceImpl implements IProductService {
         }
         // 商品介绍
         vo.setContent(product.getIntroduction());
-        // 商品基本信息
-        GoodVo basicInfo = this.convertGoodVo(product);
-        vo.setBasicInfo(basicInfo);
         // 商家信息
         Integer businessId = product.getBusinessId();
         if (businessId != null) {
@@ -354,6 +347,12 @@ public class ProductServiceImpl implements IProductService {
                 vo.setBusiness(businessVo);
             }
         }
+
+        // 商品基本信息
+        GoodVo basicInfo = this.convertGoodVo(product);
+        // 如果当前商品在当前时刻存在砍价活动信息，则覆盖相应部分basicinfo数据
+        this.resetBasicInfo4ExistKanjia(basicInfo, product.getId());
+        vo.setBasicInfo(basicInfo);
 
         return vo;
     }
@@ -527,5 +526,25 @@ public class ProductServiceImpl implements IProductService {
             return sb.toString();
         }
         return "";
+    }
+
+    private GoodVo resetBasicInfo4ExistKanjia(GoodVo basicInfo, Long prodctId) {
+        // 当前商品在此时如果存在砍价活动，则覆盖部分数据：minPrice
+        Date nowDate = new Date();
+        final FacKanjiaExample kanjiaExample = new FacKanjiaExample();
+        kanjiaExample.createCriteria().andIsDeletedEqualTo(false).andStartDateLessThanOrEqualTo(nowDate)
+                .andStopDateGreaterThanOrEqualTo(nowDate).andProdIdEqualTo(prodctId);
+        List<FacKanjia> kanjias = this.kanjiaMapper.selectByExample(kanjiaExample);
+        if (CollectionUtils.isEmpty(kanjias)) {
+            return basicInfo;
+        }
+        // 当前商品在在砍价活动中对应商品原价
+        FacKanjia kanjia = kanjias.get(0);
+        basicInfo.setMinPrice(Double.valueOf(kanjia.getOriginalPrice().toString()));
+
+
+        
+
+        return basicInfo;
     }
 }

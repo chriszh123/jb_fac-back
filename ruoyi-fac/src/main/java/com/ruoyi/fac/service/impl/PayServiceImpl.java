@@ -7,6 +7,7 @@ import com.ruoyi.fac.constant.FacConstant;
 import com.ruoyi.fac.domain.Buyer;
 import com.ruoyi.fac.domain.FacProductWriteoff;
 import com.ruoyi.fac.domain.Product;
+import com.ruoyi.fac.enums.KanjiaStatus;
 import com.ruoyi.fac.enums.OrderStatus;
 import com.ruoyi.fac.enums.ScoreTypeEnum;
 import com.ruoyi.fac.exception.FacException;
@@ -80,6 +81,10 @@ public class PayServiceImpl implements IPayService {
     private FacProductMapper facProductMapper;
     @Autowired
     private FacCashMapper facCashMapper;
+    @Autowired
+    private FacKanjiaMapper kanjiaMapper;
+    @Autowired
+    private FacKanjiaJoinerMapper kanjiaJoinerMapper;
 
     /**
      * 微信支付预支付接口
@@ -105,6 +110,28 @@ public class PayServiceImpl implements IPayService {
         if (!OrderStatus.PAYING.getCode().equals(Integer.valueOf(orders.get(0).getStatus()))) {
             throw new Exception(ErrorMsg.ORDER_STATUS_NOT_WRITEODDING);
         }
+        FacOrder order = orders.get(0);
+        Date nowDate = new Date();
+        // 存在砍价活动场景
+        FacKanjia kanjia = null;
+        if (order.getKanjiaId() != null && !order.getKanjiaId().equals(0L)) {
+            final FacKanjiaExample kanjiaExample = new FacKanjiaExample();
+            kanjiaExample.createCriteria().andIsDeletedEqualTo(false).andIdEqualTo(order.getKanjiaId());
+            List<FacKanjia> kanjias = this.kanjiaMapper.selectByExample(kanjiaExample);
+            if (org.apache.commons.collections4.CollectionUtils.isEmpty(kanjias)) {
+                log.info(String.format("-----------getWxPrePayInfo: kanjia set is not exist, token:%s, kanjiaId:%s", order.getToken()
+                        , order.getKanjiaId()));
+                throw new FacException("当前砍价活动信息不存在，请联系管理员");
+            }
+            kanjia = kanjias.get(0);
+            if (nowDate.compareTo(kanjia.getStartDate()) < 0) {
+                throw new FacException("砍价活动暂未开始");
+            }
+            if (nowDate.compareTo(kanjia.getStopDate()) > 0) {
+                throw new FacException("砍价活动已结束");
+            }
+        }
+
         FacOrderProductExample orderProductExample = new FacOrderProductExample();
         orderProductExample.createCriteria().andIsDeletedEqualTo(false).andOrderNoEqualTo(orderNo);
         List<FacOrderProduct> orderProducts = this.facOrderProductMapper.selectByExample(orderProductExample);
@@ -173,17 +200,23 @@ public class PayServiceImpl implements IPayService {
             if (item == null || item.getIsDeleted() == 1) {
                 throw new Exception(String.format("商品【%s】已被删除，请选择其它商品购买", item.getName()));
             }
-            if (prod2Order.containsKey(item.getId()) && item.getInventoryQuantity() < prod2Order.get(item.getId()).getProdNumber()) {
+            if (kanjia != null) {
+                int total = kanjia.getTotal();
+                int sales = kanjia.getSales();
+                int left = total - sales;
+                if (left < prod2Order.get(item.getId()).getProdNumber()) {
+                    throw new FacException(String.format("商品【%s】库存数量已不足，请选择其它商品购买", item.getName()));
+                }
+            } else if (prod2Order.containsKey(item.getId()) && item.getInventoryQuantity() < prod2Order.get(item.getId()).getProdNumber()) {
                 throw new Exception(String.format("商品【%s】库存数量已不足，请选择其它商品购买", item.getName()));
             }
             if (item.getStatus().intValue() == 2) {
                 throw new Exception(String.format("商品【%s】已下架，请选择其它商品购买", item.getName()));
             }
-            if (prod2Order.get(item.getId()).getProdNumber() > item.getLimitQuantity()) {
+            if (kanjia == null && prod2Order.get(item.getId()).getProdNumber() > item.getLimitQuantity()) {
                 throw new FacException(String.format("商品【%s】每人限购%s份", item.getName(), item.getLimitQuantity()));
             }
-            Date nowDate = new Date();
-            if (nowDate.compareTo(item.getRushEnd()) > 0) {
+            if (kanjia == null && nowDate.compareTo(item.getRushEnd()) > 0) {
                 throw new Exception(String.format("商品【%s】抢购时间已结束，请选择其它商品购买", item.getName()));
             }
         }
@@ -487,6 +520,41 @@ public class PayServiceImpl implements IPayService {
             this.facBuyerSignMapper.insertSelective(record);
             logger.info(String.format("---------------add counsumer amount success, token:%s, orderNo:%s, totalAmount:%s",
                     buyer.getToken(), orderNo, totalAmount));
+        }
+
+        // 如果当前订单对应的商品是砍价活动的商品需要更新砍价那边对应的相关数据
+        FacOrder order = orders.get(0);
+        if (order.getKanjiaId() != null && !order.getKanjiaId().equals(0L)) {
+            // 更新fac_kanjia表立商品销量
+            final FacKanjiaExample kanjiaExample = new FacKanjiaExample();
+            kanjiaExample.createCriteria().andIsDeletedEqualTo(false).andIdEqualTo(order.getKanjiaId());
+            List<FacKanjia> kanjias = this.kanjiaMapper.selectByExample(kanjiaExample);
+            if (CollectionUtils.isNotEmpty(kanjias)) {
+                FacKanjia kanjia = kanjias.get(0);
+                short sales = kanjia.getSales();
+                sales = (short) (sales + orderProducts.get(0).getProdNumber());
+                kanjia.setSales(sales);
+                kanjia.setUpdateTime(nowDate);
+                kanjia.setOperatorId(buyer.getOperatorId());
+                kanjia.setOperatorName(buyer.getOperatorName());
+                int rows = this.kanjiaMapper.updateByExampleSelective(kanjia, kanjiaExample);
+                log.info(String.format("--------------update kanjia sales, kanjiaId:%s, rows:%s", order.getKanjiaId(), rows));
+
+                // 更新参与用户相应砍价状态
+                final FacKanjiaJoinerExample kanjiaJoinerExample = new FacKanjiaJoinerExample();
+                kanjiaJoinerExample.createCriteria().andIsDeletedEqualTo(false).andKanjiaIdEqualTo(order.getKanjiaId())
+                        .andTokenEqualTo(order.getToken());
+                final FacKanjiaJoiner kanjiaJoiner = new FacKanjiaJoiner();
+                kanjiaJoiner.setStatus(KanjiaStatus.COMPLETED.getValue());
+                kanjiaJoiner.setUpdateTime(nowDate);
+                kanjiaJoiner.setOperatorId(buyer.getOperatorId());
+                kanjiaJoiner.setOperatorName(buyer.getOperatorName());
+                this.kanjiaJoinerMapper.updateByExampleSelective(kanjiaJoiner, kanjiaJoinerExample);
+                log.info(String.format("--------------update kanjia joner status, kanjiaId:%s, token:%s, rows:%s", order.getKanjiaId()
+                        , order.getToken(), rows));
+            } else {
+                log.info(String.format("-----------update kanjia, has no kanjia data,kanjiaId:%s", order.getKanjiaId()));
+            }
         }
     }
 

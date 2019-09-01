@@ -70,6 +70,10 @@ public class OrderServiceImpl implements IOrderService {
     private FacBuyerBusinessMapper facBuyerBusinessMapper;
     @Autowired
     private FacProductWriteOffBeanMapper facProductWriteOffBeanMapper;
+    @Autowired
+    private FacKanjiaMapper kanjiaMapper;
+    @Autowired
+    private FacKanjiaJoinerMapper kanjiaJoinerMapper;
 
     @Autowired
     private ProductCache productCache;
@@ -434,7 +438,7 @@ public class OrderServiceImpl implements IOrderService {
         // 下架的商品
         StringBuilder lowerProds = new StringBuilder();
         for (Product product : products) {
-            // 下架的商品能创建订单
+            // 下架的商品不能创建订单
             if (product.getStatus().equals(ProductStatus.LOWER_SHELF)) {
                 lowerProds.append(product.getName()).append(",");
             }
@@ -444,9 +448,28 @@ public class OrderServiceImpl implements IOrderService {
             lowerProds = lowerProds.deleteCharAt(lowerProds.toString().length() - 1);
             throw new FacException("以下商品已下架，不能创建订单:\n" + lowerProds.toString());
         }
+        Date nowDate = new Date();
+        // 存在砍价活动场景
+        FacKanjia kanjia = null;
+        if (orderCreateVo.getKjid() != null && !orderCreateVo.getKjid().equals(0L)) {
+            final FacKanjiaExample kanjiaExample = new FacKanjiaExample();
+            kanjiaExample.createCriteria().andIsDeletedEqualTo(false).andIdEqualTo(orderCreateVo.getKjid());
+            List<FacKanjia> kanjias = this.kanjiaMapper.selectByExample(kanjiaExample);
+            if (CollectionUtils.isEmpty(kanjias)) {
+                log.info(String.format("-----------createOrder: kanjia set is not exist, token:%s, kanjiaId:%s", orderCreateVo.getToken()
+                        , orderCreateVo.getKjid()));
+                throw new FacException("当前砍价活动信息不存在，请联系管理员");
+            }
+            kanjia = kanjias.get(0);
+            if (nowDate.compareTo(kanjia.getStartDate()) < 0) {
+                throw new FacException("砍价活动暂未开始");
+            }
+            if (nowDate.compareTo(kanjia.getStopDate()) > 0) {
+                throw new FacException("砍价活动已结束");
+            }
+        }
         // 转换用户选择的商品信息
         List<FacOrder> orders = new ArrayList<>();
-        Date nowDate = new Date();
         // 累积商品总价
         BigDecimal amountConsume = new BigDecimal("0");
         // 当前订单单号
@@ -460,16 +483,23 @@ public class OrderServiceImpl implements IOrderService {
             if (product == null || product.getIsDeleted() == 1) {
                 throw new FacException(String.format("商品【%s】已被删除，请选择其它商品购买", product.getName()));
             }
-            if (product.getStatus().intValue() == 2) {
+            if (kanjia == null && product.getStatus().intValue() == 2) {
                 throw new FacException(String.format("商品【%s】已下架，请选择其它商品购买", product.getName()));
             }
-            if (nowDate.compareTo(product.getRushEnd()) > 0) {
+            if (kanjia == null && nowDate.compareTo(product.getRushEnd()) > 0) {
                 throw new FacException(String.format("商品【%s】抢购时间已结束，请选择其它商品购买", product.getName()));
             }
-            if (product.getInventoryQuantity() == 0 || (product.getInventoryQuantity() < good.getNumber())) {
+            if (kanjia != null) {
+                int total = kanjia.getTotal();
+                int sales = kanjia.getSales();
+                int left = total - sales;
+                if (left < good.getNumber()) {
+                    throw new FacException(String.format("商品【%s】库存数量已不足，请选择其它商品购买", product.getName()));
+                }
+            } else if (product.getInventoryQuantity() == 0 || (product.getInventoryQuantity() < good.getNumber())) {
                 throw new FacException(String.format("商品【%s】库存数量已不足，请选择其它商品购买", product.getName()));
             }
-            if (good.getNumber() > product.getLimitQuantity()) {
+            if (kanjia == null && good.getNumber() > product.getLimitQuantity()) {
                 throw new FacException(String.format("商品【%s】每人限购%s份", product.getName(), product.getLimitQuantity()));
             }
             // 当前订单涉及到的商品
@@ -555,6 +585,7 @@ public class OrderServiceImpl implements IOrderService {
         order.setShipId(-1L);
         order.setShip(new Byte("2"));
         order.setShipCode("");
+        order.setKanjiaId(orderCreateVo.getKjid());
         order.setCreateTime(nowDate);
         order.setUpdateTime(nowDate);
         order.setOperatorId(buyer.getId());
@@ -565,7 +596,7 @@ public class OrderServiceImpl implements IOrderService {
     }
 
     private void insertFacOrderProduct(Buyer buyer, FacOrder order, List<GoodsJsonStrVo> goodsJsonStr, Map<Long, Product> productMap
-            , Map<Long, Long> prodId2InviterId, Date nowDate) {
+            , Map<Long, Long> prodId2InviterId, Date nowDate) throws FacException {
         if (CollectionUtils.isEmpty(goodsJsonStr) || MapUtils.isEmpty(productMap)) {
             return;
         }
@@ -580,7 +611,22 @@ public class OrderServiceImpl implements IOrderService {
             if (prodId2InviterId.containsKey(product.getId()) && prodId2InviterId.get(product.getId()) != 0) {
                 facOrderProduct.setInviterId(prodId2InviterId.get(product.getId()));
             }
-            facOrderProduct.setPrice(product.getPrice());
+            if (order.getKanjiaId() != null && !order.getKanjiaId().equals(0L)) {
+                FacKanjiaJoinerExample kanjiaJoinerExample = new FacKanjiaJoinerExample();
+                kanjiaJoinerExample.createCriteria().andIsDeletedEqualTo(false).andKanjiaIdEqualTo(order.getKanjiaId())
+                        .andTokenEqualTo(order.getToken());
+                List<FacKanjiaJoiner> kanjiaJoiners = this.kanjiaJoinerMapper.selectByExample(kanjiaJoinerExample);
+                if (CollectionUtils.isEmpty(kanjiaJoiners)) {
+                    log.info(String.format("---------------create order->create order product, has no kanjia joiner info, token:%s, kanjiaId:%s"
+                            , order.getToken(), order.getKanjiaId()));
+                    throw new FacException("您当前商品砍价信息不存在，请联系管理员");
+                }
+                // 砍价活动商品价格为砍价活动当前的实时商品价格
+                FacKanjiaJoiner kanjiaJoiner = kanjiaJoiners.get(0);
+                facOrderProduct.setPrice(kanjiaJoiner.getCurrentPrice());
+            } else {
+                facOrderProduct.setPrice(product.getPrice());
+            }
             facOrderProduct.setToken(order.getToken());
             facOrderProduct.setOpenId(order.getOpenId());
             facOrderProduct.setUserId(order.getUserId());

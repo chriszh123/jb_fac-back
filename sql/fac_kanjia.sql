@@ -76,3 +76,8 @@ CREATE TABLE `fac_kanjia_helper` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='帮砍价人员明细表';
 
+-- --------------------------
+-- 4、订单表里增加砍价id
+-- --------------------------
+alter table fac_order add COLUMN kanjia_id bigint(20) DEFAULT 0 COMMENT '当前订单商品对应的砍价活动id' after prepay_id;
+

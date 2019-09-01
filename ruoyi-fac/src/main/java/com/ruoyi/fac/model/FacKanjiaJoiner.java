@@ -1,7 +1,5 @@
 package com.ruoyi.fac.model;
 
-import com.ruoyi.common.annotation.Excel;
-
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -20,7 +18,6 @@ public class FacKanjiaJoiner {
      *
      * @mbggenerated
      */
-    @Excel(name = "砍价ID")
     private Long kanjiaId;
 
     /**
@@ -29,7 +26,6 @@ public class FacKanjiaJoiner {
      *
      * @mbggenerated
      */
-    @Excel(name = "商品ID")
     private Long prodId;
 
     /**
@@ -38,7 +34,6 @@ public class FacKanjiaJoiner {
      *
      * @mbggenerated
      */
-    @Excel(name = "商品名称")
     private String prodName;
 
     /**
@@ -47,7 +42,6 @@ public class FacKanjiaJoiner {
      *
      * @mbggenerated
      */
-    @Excel(name = "手机号码")
     private String phoneNumber;
 
     /**
@@ -64,7 +58,6 @@ public class FacKanjiaJoiner {
      *
      * @mbggenerated
      */
-    @Excel(name = "用户昵称")
     private String nickName;
 
     /**
@@ -73,7 +66,6 @@ public class FacKanjiaJoiner {
      *
      * @mbggenerated
      */
-    @Excel(name = "当前价格")
     private BigDecimal currentPrice;
 
     /**
@@ -82,7 +74,6 @@ public class FacKanjiaJoiner {
      *
      * @mbggenerated
      */
-    @Excel(name = "底价")
     private BigDecimal price;
 
     /**
@@ -91,7 +82,6 @@ public class FacKanjiaJoiner {
      *
      * @mbggenerated
      */
-    @Excel(name = "各助力金额")
     private String helpAmount;
 
     /**
@@ -100,7 +90,6 @@ public class FacKanjiaJoiner {
      *
      * @mbggenerated
      */
-    @Excel(name = "状态", readConverterExp = "1=进行中,2=无效,3=完成")
     private Byte status;
 
     /**
@@ -109,7 +98,6 @@ public class FacKanjiaJoiner {
      *
      * @mbggenerated
      */
-    @Excel(name = "操作时间", dateFormat = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
     /**
@@ -149,6 +137,7 @@ public class FacKanjiaJoiner {
      * This method returns the value of the database column fac_kanjia_joiner.id
      *
      * @return the value of fac_kanjia_joiner.id
+     *
      * @mbggenerated
      */
     public Integer getId() {
@@ -160,6 +149,7 @@ public class FacKanjiaJoiner {
      * This method sets the value of the database column fac_kanjia_joiner.id
      *
      * @param id the value for fac_kanjia_joiner.id
+     *
      * @mbggenerated
      */
     public void setId(Integer id) {
@@ -171,6 +161,7 @@ public class FacKanjiaJoiner {
      * This method returns the value of the database column fac_kanjia_joiner.kanjia_id
      *
      * @return the value of fac_kanjia_joiner.kanjia_id
+     *
      * @mbggenerated
      */
     public Long getKanjiaId() {
@@ -182,6 +173,7 @@ public class FacKanjiaJoiner {
      * This method sets the value of the database column fac_kanjia_joiner.kanjia_id
      *
      * @param kanjiaId the value for fac_kanjia_joiner.kanjia_id
+     *
      * @mbggenerated
      */
     public void setKanjiaId(Long kanjiaId) {
@@ -193,6 +185,7 @@ public class FacKanjiaJoiner {
      * This method returns the value of the database column fac_kanjia_joiner.prod_id
      *
      * @return the value of fac_kanjia_joiner.prod_id
+     *
      * @mbggenerated
      */
     public Long getProdId() {
@@ -204,6 +197,7 @@ public class FacKanjiaJoiner {
      * This method sets the value of the database column fac_kanjia_joiner.prod_id
      *
      * @param prodId the value for fac_kanjia_joiner.prod_id
+     *
      * @mbggenerated
      */
     public void setProdId(Long prodId) {
@@ -215,6 +209,7 @@ public class FacKanjiaJoiner {
      * This method returns the value of the database column fac_kanjia_joiner.prod_name
      *
      * @return the value of fac_kanjia_joiner.prod_name
+     *
      * @mbggenerated
      */
     public String getProdName() {
@@ -226,6 +221,7 @@ public class FacKanjiaJoiner {
      * This method sets the value of the database column fac_kanjia_joiner.prod_name
      *
      * @param prodName the value for fac_kanjia_joiner.prod_name
+     *
      * @mbggenerated
      */
     public void setProdName(String prodName) {
@@ -237,6 +233,7 @@ public class FacKanjiaJoiner {
      * This method returns the value of the database column fac_kanjia_joiner.phone_number
      *
      * @return the value of fac_kanjia_joiner.phone_number
+     *
      * @mbggenerated
      */
     public String getPhoneNumber() {
@@ -248,6 +245,7 @@ public class FacKanjiaJoiner {
      * This method sets the value of the database column fac_kanjia_joiner.phone_number
      *
      * @param phoneNumber the value for fac_kanjia_joiner.phone_number
+     *
      * @mbggenerated
      */
     public void setPhoneNumber(String phoneNumber) {
@@ -259,6 +257,7 @@ public class FacKanjiaJoiner {
      * This method returns the value of the database column fac_kanjia_joiner.token
      *
      * @return the value of fac_kanjia_joiner.token
+     *
      * @mbggenerated
      */
     public String getToken() {
@@ -270,6 +269,7 @@ public class FacKanjiaJoiner {
      * This method sets the value of the database column fac_kanjia_joiner.token
      *
      * @param token the value for fac_kanjia_joiner.token
+     *
      * @mbggenerated
      */
     public void setToken(String token) {
@@ -281,6 +281,7 @@ public class FacKanjiaJoiner {
      * This method returns the value of the database column fac_kanjia_joiner.nick_name
      *
      * @return the value of fac_kanjia_joiner.nick_name
+     *
      * @mbggenerated
      */
     public String getNickName() {
@@ -292,6 +293,7 @@ public class FacKanjiaJoiner {
      * This method sets the value of the database column fac_kanjia_joiner.nick_name
      *
      * @param nickName the value for fac_kanjia_joiner.nick_name
+     *
      * @mbggenerated
      */
     public void setNickName(String nickName) {
@@ -303,6 +305,7 @@ public class FacKanjiaJoiner {
      * This method returns the value of the database column fac_kanjia_joiner.current_price
      *
      * @return the value of fac_kanjia_joiner.current_price
+     *
      * @mbggenerated
      */
     public BigDecimal getCurrentPrice() {
@@ -314,6 +317,7 @@ public class FacKanjiaJoiner {
      * This method sets the value of the database column fac_kanjia_joiner.current_price
      *
      * @param currentPrice the value for fac_kanjia_joiner.current_price
+     *
      * @mbggenerated
      */
     public void setCurrentPrice(BigDecimal currentPrice) {
@@ -325,6 +329,7 @@ public class FacKanjiaJoiner {
      * This method returns the value of the database column fac_kanjia_joiner.price
      *
      * @return the value of fac_kanjia_joiner.price
+     *
      * @mbggenerated
      */
     public BigDecimal getPrice() {
@@ -336,6 +341,7 @@ public class FacKanjiaJoiner {
      * This method sets the value of the database column fac_kanjia_joiner.price
      *
      * @param price the value for fac_kanjia_joiner.price
+     *
      * @mbggenerated
      */
     public void setPrice(BigDecimal price) {
@@ -347,6 +353,7 @@ public class FacKanjiaJoiner {
      * This method returns the value of the database column fac_kanjia_joiner.help_amount
      *
      * @return the value of fac_kanjia_joiner.help_amount
+     *
      * @mbggenerated
      */
     public String getHelpAmount() {
@@ -358,6 +365,7 @@ public class FacKanjiaJoiner {
      * This method sets the value of the database column fac_kanjia_joiner.help_amount
      *
      * @param helpAmount the value for fac_kanjia_joiner.help_amount
+     *
      * @mbggenerated
      */
     public void setHelpAmount(String helpAmount) {
@@ -369,6 +377,7 @@ public class FacKanjiaJoiner {
      * This method returns the value of the database column fac_kanjia_joiner.status
      *
      * @return the value of fac_kanjia_joiner.status
+     *
      * @mbggenerated
      */
     public Byte getStatus() {
@@ -380,6 +389,7 @@ public class FacKanjiaJoiner {
      * This method sets the value of the database column fac_kanjia_joiner.status
      *
      * @param status the value for fac_kanjia_joiner.status
+     *
      * @mbggenerated
      */
     public void setStatus(Byte status) {
@@ -391,6 +401,7 @@ public class FacKanjiaJoiner {
      * This method returns the value of the database column fac_kanjia_joiner.create_time
      *
      * @return the value of fac_kanjia_joiner.create_time
+     *
      * @mbggenerated
      */
     public Date getCreateTime() {
@@ -402,6 +413,7 @@ public class FacKanjiaJoiner {
      * This method sets the value of the database column fac_kanjia_joiner.create_time
      *
      * @param createTime the value for fac_kanjia_joiner.create_time
+     *
      * @mbggenerated
      */
     public void setCreateTime(Date createTime) {
@@ -413,6 +425,7 @@ public class FacKanjiaJoiner {
      * This method returns the value of the database column fac_kanjia_joiner.update_time
      *
      * @return the value of fac_kanjia_joiner.update_time
+     *
      * @mbggenerated
      */
     public Date getUpdateTime() {
@@ -424,6 +437,7 @@ public class FacKanjiaJoiner {
      * This method sets the value of the database column fac_kanjia_joiner.update_time
      *
      * @param updateTime the value for fac_kanjia_joiner.update_time
+     *
      * @mbggenerated
      */
     public void setUpdateTime(Date updateTime) {
@@ -435,6 +449,7 @@ public class FacKanjiaJoiner {
      * This method returns the value of the database column fac_kanjia_joiner.operator_id
      *
      * @return the value of fac_kanjia_joiner.operator_id
+     *
      * @mbggenerated
      */
     public Long getOperatorId() {
@@ -446,6 +461,7 @@ public class FacKanjiaJoiner {
      * This method sets the value of the database column fac_kanjia_joiner.operator_id
      *
      * @param operatorId the value for fac_kanjia_joiner.operator_id
+     *
      * @mbggenerated
      */
     public void setOperatorId(Long operatorId) {
@@ -457,6 +473,7 @@ public class FacKanjiaJoiner {
      * This method returns the value of the database column fac_kanjia_joiner.operator_name
      *
      * @return the value of fac_kanjia_joiner.operator_name
+     *
      * @mbggenerated
      */
     public String getOperatorName() {
@@ -468,6 +485,7 @@ public class FacKanjiaJoiner {
      * This method sets the value of the database column fac_kanjia_joiner.operator_name
      *
      * @param operatorName the value for fac_kanjia_joiner.operator_name
+     *
      * @mbggenerated
      */
     public void setOperatorName(String operatorName) {
@@ -479,6 +497,7 @@ public class FacKanjiaJoiner {
      * This method returns the value of the database column fac_kanjia_joiner.is_deleted
      *
      * @return the value of fac_kanjia_joiner.is_deleted
+     *
      * @mbggenerated
      */
     public Boolean getIsDeleted() {
@@ -490,6 +509,7 @@ public class FacKanjiaJoiner {
      * This method sets the value of the database column fac_kanjia_joiner.is_deleted
      *
      * @param isDeleted the value for fac_kanjia_joiner.is_deleted
+     *
      * @mbggenerated
      */
     public void setIsDeleted(Boolean isDeleted) {
