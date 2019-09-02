@@ -113,6 +113,7 @@ public class OrderServiceImpl implements IOrderService {
             orders.add(order);
             order.setId(orderProduct.getId());
             order.setOrderNo(orderProduct.getOrderNo());
+            order.setKanjiaId(facOrder.getKanjiaId());
             order.setToken(orderProduct.getToken());
             order.setOpenId(orderProduct.getOpenId());
             order.setNickName(orderProduct.getNickName());
