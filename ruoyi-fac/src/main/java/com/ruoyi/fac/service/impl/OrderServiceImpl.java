@@ -491,6 +491,10 @@ public class OrderServiceImpl implements IOrderService {
                 throw new FacException(String.format("商品【%s】抢购时间已结束，请选择其它商品购买", product.getName()));
             }
             if (kanjia != null) {
+                // 如果是砍价活动的商品，现在砍价活动商品只能购买一件
+                if (good.getNumber() > 1) {
+                    throw new FacException("砍价活动商品只能购买一件");
+                }
                 int total = kanjia.getTotal();
                 int sales = kanjia.getSales();
                 int left = total - sales;
