@@ -181,6 +181,29 @@ public class FacKanjiaServiceImpl implements IFacKanjiaService {
         FacKanjiaExample example = new FacKanjiaExample();
         example.createCriteria().andIsDeletedEqualTo(false).andIdIn(idsList);
         int rows = this.facKanjiaMapper.updateByExampleSelective(update, example);
+        // 相应砍价参与信息
+        FacKanjiaJoiner kanjiaJoiner = new FacKanjiaJoiner();
+        kanjiaJoiner.setIsDeleted(true);
+        kanjiaJoiner.setUpdateTime(nowDate);
+        if (user != null) {
+            kanjiaJoiner.setOperatorId(user.getUserId());
+            kanjiaJoiner.setOperatorName(user.getUserName());
+        }
+        FacKanjiaJoinerExample joinerExample = new FacKanjiaJoinerExample();
+        joinerExample.createCriteria().andIsDeletedEqualTo(false).andKanjiaIdIn(idsList);
+        this.facKanjiaJoinerMapper.updateByExampleSelective(kanjiaJoiner, joinerExample);
+        // 相应助力信息
+        FacKanjiaHelper helper = new FacKanjiaHelper();
+        helper.setIsDeleted(true);
+        helper.setUpdateTime(nowDate);
+        if (user != null) {
+            helper.setOperatorId(user.getUserId());
+            helper.setOperatorName(user.getUserName());
+        }
+        FacKanjiaHelperExample helperExample = new FacKanjiaHelperExample();
+        helperExample.createCriteria().andIsDeletedEqualTo(false).andKanjiaIdIn(idsList);
+        this.facKanjiaHelperMapper.updateByExampleSelective(helper, helperExample);
+
         return rows;
     }
 
@@ -303,6 +326,7 @@ public class FacKanjiaServiceImpl implements IFacKanjiaService {
                 } else if (nowDate.compareTo(kanjia.getStopDate()) > 0) {
                     statusStr = "已结束";
                 }
+                kanjiaInfo.setUid(facBuyer.getId());
                 kanjiaInfo.setStatusStr(statusStr);
                 kanjiaInfo.setDateAdd(TimeUtils.date2Str(kjJoiner.getCreateTime(), TimeUtils.DEFAULT_DATE_TIME_FORMAT_HH_MM_SS));
                 // 助力人数(包括自己)
@@ -310,6 +334,9 @@ public class FacKanjiaServiceImpl implements IFacKanjiaService {
                 helperExample.createCriteria().andKanjiaIdEqualTo(req.getKjid()).andJoinIdEqualTo(Long.valueOf(kjJoiner.getId()));
                 int helperNumers = this.facKanjiaHelperMapper.countByExample(helperExample);
                 kanjiaInfo.setHelpNumber(helperNumers);
+                // 是否已经达到砍价的底价
+                boolean upToMinPrice = kanjia.getPrice().compareTo(kanjiaInfo.getCurPrice()) == 0;
+                kanjiaInfo.setUpToMinPrice(upToMinPrice);
 
                 // 当前参与砍价活动的助力砍价信息
                 if (helperNumers > 0) {
@@ -344,13 +371,14 @@ public class FacKanjiaServiceImpl implements IFacKanjiaService {
                         item.setAvatarUrl(token2AvatarUrl.containsKey(item.getToken()) ? token2AvatarUrl.get(item.getToken()) : "");
                     }
                 }
+                return vo;
             } else {
                 // 当前指定用户没有参加当前商品砍价活动就返回null
                 return null;
             }
         }
 
-        return vo;
+        return null;
     }
 
     @Override

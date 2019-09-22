@@ -15,4 +15,6 @@ public class KjInfoVo implements Serializable {
     private String statusStr;
     private String dateAdd;
     private Long uid;
+    // 是否已经达到砍价的底价
+    private Boolean upToMinPrice;
 }
