@@ -133,7 +133,7 @@ public class FacKanjiaServiceImpl implements IFacKanjiaService {
         joinerExample.createCriteria().andIsDeletedEqualTo(false).andKanjiaIdEqualTo(kanjia.getId());
         int joinerCount = this.facKanjiaJoinerMapper.countByExample(joinerExample);
         if (joinerCount > 0) {
-            throw new FacException("当前商品砍价活动已经有人参与，不能再修改相应内容");
+//            throw new FacException("当前商品砍价活动已经有人参与，不能再修改相应内容");
         }
 
         Date nowDate = new Date();
