@@ -3,7 +3,7 @@
 <generatorConfiguration>
 
     <!-- 本地数据库驱动程序jar包的全路径 -->
-    <classPathEntry location="F:\\tools\\mysql\\mysql-connector-java-8.0.13.jar"/>
+    <classPathEntry location="D:\\tools\\mysql\\mysql-connector-java-8.0.13.jar"/>
     <context id="context" targetRuntime="MyBatis3">
         <commentGenerator>
             <property name="suppressAllComments" value="false"/>

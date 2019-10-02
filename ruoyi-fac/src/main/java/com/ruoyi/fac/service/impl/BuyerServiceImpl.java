@@ -1,6 +1,7 @@
 package com.ruoyi.fac.service.impl;
 
 import com.ruoyi.common.support.Convert;
+import com.ruoyi.fac.cache.BuyerCache;
 import com.ruoyi.fac.constant.FacConstant;
 import com.ruoyi.fac.domain.*;
 import com.ruoyi.fac.enums.OrderStatus;
@@ -22,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
@@ -53,6 +55,9 @@ public class BuyerServiceImpl implements IBuyerService {
     private FacBuyerAddressMapper facBuyerAddressMapper;
     @Autowired
     private FacOrderProductMapper facOrderProductMapper;
+
+    @Autowired
+    private BuyerCache buyerCache;
 
     /**
      * 查询买者用户信息
@@ -132,6 +137,7 @@ public class BuyerServiceImpl implements IBuyerService {
      * @return 结果
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public int updateBuyer(Buyer buyer) {
         // 删除用户与商家商品关联表
         Buyer buyerDB = this.buyerMapper.selectBuyerById(buyer.getId());
@@ -171,6 +177,11 @@ public class BuyerServiceImpl implements IBuyerService {
                 return this.buyerBusinessMapper.batchInsert(list);
             }
         }
+
+        // 删除相应人员缓存信息
+        this.buyerCache.deleteBuyerCache(buyer.getId());
+        this.buyerCache.deleteBuyerCache(buyer.getToken());
+
         return 1;
     }
 

@@ -130,6 +130,17 @@ public class PayServiceImpl implements IPayService {
             if (nowDate.compareTo(kanjia.getStopDate()) > 0) {
                 throw new FacException("砍价活动已结束");
             }
+
+            // 当前砍价活动，一个用户只能参与一次
+            final FacOrderExample kjOrderExample = new FacOrderExample();
+            kjOrderExample.createCriteria().andIsDeletedEqualTo(false).andTokenEqualTo(order.getToken()).andKanjiaIdEqualTo(kanjia.getId());
+            List<FacOrder> kjOrders = this.facOrderMapper.selectByExample(kjOrderExample);
+            if (CollectionUtils.isEmpty(kjOrders)) {
+                throw new FacException("当前商品砍价活动中没有您的参与信息，请联系管理员");
+            }
+            if (kjOrders.size() != 1) {
+                throw new FacException("砍价活动您已经参与过了哦，请把机会留给别人吧~~~");
+            }
         }
 
         FacOrderProductExample orderProductExample = new FacOrderProductExample();

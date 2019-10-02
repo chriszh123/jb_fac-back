@@ -14,5 +14,15 @@ public class CacheKeys {
      */
     public static String KEY_PRODUCT = "fac:product:%s";
 
+    /**
+     * 用户key：fac:buyer:token:
+     */
+    public static String KEY_FAC_BUYER_TOKEN = "fac:buyer:token:%s";
+
+    /**
+     * 用户key：fac:buyer:id:
+     */
+    public static String KEY_FAC_BUYER_ID = "fac:buyer:id:%s";
+
     public static final String KEY_PREFIX = "fac*";
 }

@@ -403,6 +403,16 @@ public class OrderServiceImpl implements IOrderService {
         if (StringUtils.isBlank(orderCreateVo.getGoodsJsonStr()) || StringUtils.isEmpty(orderCreateVo.getToken())) {
             return res;
         }
+        // 如果是商品砍价活动，判断当前用户是否已经参与过，一个用户只能参与一次：已经存在已付款的记录
+        if (orderCreateVo.getKjid() != null && orderCreateVo.getKjid() != 0L) {
+            final FacOrderExample kjOrderExample = new FacOrderExample();
+            kjOrderExample.createCriteria().andIsDeletedEqualTo(false).andTokenEqualTo(orderCreateVo.getToken()).andKanjiaIdEqualTo(orderCreateVo.getKjid());
+            final List<FacOrder> kjOrders = this.facOrderMapper.selectByExample(kjOrderExample);
+            if (CollectionUtils.isNotEmpty(kjOrders)) {
+                throw new FacException("砍价活动您已经参与过了哦，请把机会留给别人吧~~~");
+            }
+        }
+
         List<GoodsJsonStrVo> goodsJsonStr = JSON.parseArray(orderCreateVo.getGoodsJsonStr(), GoodsJsonStrVo.class);
         // 当前用户信息
         Buyer buyer = this.buyerMapper.selectBuyerByOpenId(orderCreateVo.getToken());
