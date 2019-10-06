@@ -475,6 +475,9 @@ public class OrderServiceImpl implements IOrderService {
             if (nowDate.compareTo(kanjia.getStartDate()) < 0) {
                 throw new FacException("砍价活动暂未开始");
             }
+            if (kanjia.getTotal() != null && kanjia.getSales() != null && kanjia.getTotal().equals(kanjia.getSales())) {
+                throw new FacException("砍价活动商品已售罄，请选择其它商品购买");
+            }
             if (nowDate.compareTo(kanjia.getStopDate()) > 0) {
                 throw new FacException("砍价活动已结束");
             }
