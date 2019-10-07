@@ -264,15 +264,20 @@ public class ProductServiceImpl implements IProductService {
         List<Product> products = this.productMapper.goodsList(vo);
         if (!CollectionUtils.isEmpty(products)) {
             GoodVo goodVo = null;
+            final Date nowDate = new Date();
             for (int i = 0, size = products.size(); i < size; i++) {
                 Product product = products.get(i);
                 // 处于下架状态的商品不展示
                 if (ProductStatus.LOWER_SHELF.getValue().equals(product.getStatus())) {
                     continue;
                 }
+//                // 已经过抢购时间的商品不展示，抢购那边对应的商品和这边不紧
+//                if (nowDate.compareTo(product.getRushEnd()) > 0) {
+//                    continue;
+//                }
+
                 goodVo = this.convertGoodVo(product);
                 goodVos.add(goodVo);
-
             }
         }
 
