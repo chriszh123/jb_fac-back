@@ -25,4 +25,9 @@ public class CacheKeys {
     public static String KEY_FAC_BUYER_ID = "fac:buyer:id:%s";
 
     public static final String KEY_PREFIX = "fac*";
+
+    /**
+     *  微信access_token过期：2小时
+     */
+    public static final int EXPIRIER_TIME_ACCESS_TOKEN = 7200;
 }
