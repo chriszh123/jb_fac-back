@@ -12,13 +12,12 @@ import com.ruoyi.fac.exception.FacException;
 import com.ruoyi.fac.service.IFacKanjiaService;
 import com.ruoyi.fac.service.IProductCategoryService;
 import com.ruoyi.fac.service.IProductService;
+import com.ruoyi.fac.service.WeiXinService;
 import com.ruoyi.fac.vo.client.*;
 import com.ruoyi.fac.vo.client.req.KanjiaReq;
 import com.ruoyi.fac.vo.client.req.ShopReq;
-import com.ruoyi.fac.vo.client.res.KanjiaInfoVo;
-import com.ruoyi.fac.vo.client.res.KanjiaListVo;
-import com.ruoyi.fac.vo.client.res.KanjiaSetVo;
-import com.ruoyi.fac.vo.client.res.KjHelperVo;
+import com.ruoyi.fac.vo.client.req.WxaQrcodeReq;
+import com.ruoyi.fac.vo.client.res.*;
 import com.ruoyi.framework.web.base.BaseController;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
@@ -49,6 +48,8 @@ public class FacShopController extends BaseController {
     private IProductService productService;
     @Autowired
     private IFacKanjiaService facKanjiaService;
+    @Autowired
+    private WeiXinService weiXinService;
 
 
     /**
@@ -240,6 +241,24 @@ public class FacShopController extends BaseController {
             return FacResult.success(goodsPriceVo);
         } else {
             return FacResult.error(FacCode.HAS_NO_DATA.getCode(), FacCode.HAS_NO_DATA.getMsg());
+        }
+    }
+
+    @PostMapping("/wxaQrcode")
+    @ResponseBody
+    public FacResult wxaQrcode(@RequestBody WxaQrcodeReq req) {
+        if (req == null || StringUtils.isBlank(req.getProductId())
+                || StringUtils.isBlank(req.getPage())
+                || req.getInviterUid() == null) {
+            return FacResult.error(FacCode.PARAMTER_NULL.getCode(), FacCode.PARAMTER_NULL.getMsg());
+        }
+
+        try {
+            WxaQrcodeVo wxaQrcodeVo = this.weiXinService.createPoster(req);
+            return FacResult.success(wxaQrcodeVo);
+        } catch (Exception ex) {
+            log.error(ex.getMessage(), ex);
+            return FacResult.error();
         }
     }
 }

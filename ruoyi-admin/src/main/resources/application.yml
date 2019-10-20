@@ -74,7 +74,7 @@ spring:
     port: 6379
     password:
     #客户端超时时间单位是毫秒 默认是2000
-    timeout: 10000
+    timeout: 60000
 
 # MyBatis
 mybatis:

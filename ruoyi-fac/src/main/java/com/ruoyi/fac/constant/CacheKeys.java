@@ -27,7 +27,12 @@ public class CacheKeys {
     public static final String KEY_PREFIX = "fac*";
 
     /**
-     *  微信access_token过期：2小时
+     * 微信access_token过期：2小时
      */
     public static final int EXPIRIER_TIME_ACCESS_TOKEN = 7200;
+
+    /**
+     *  微信access_token缓存key
+     */
+    public static final String REDIS_KEY_ACCESSTOKEN = "fac:accesstoken:%s";
 }
