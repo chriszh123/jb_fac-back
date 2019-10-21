@@ -63,9 +63,8 @@ public class WeiXinServiceImpl implements WeiXinService {
         lineColor.put("b", 0);
         paramJson.put("line_color", lineColor);
 
-        // 小程序应用二维码图片文件 start
-        String resourcePath = WeiXinServiceImpl.class.getResource("/image/").getPath();
-        String qrcodeName = "qrcode_" + UUID.randomUUID().toString().replace("-", "");
+        // 小程序应用小程序码图片文件名称 start
+        String qrcodeName = UUID.randomUUID().toString().replace("-", "");
 
         // 微信小程序access_token
         String accessToken = this.productCache.getWeixinAccessToken();
@@ -75,6 +74,8 @@ public class WeiXinServiceImpl implements WeiXinService {
         httpPost.addHeader(HTTP.CONTENT_TYPE, "application/json");
         String body = paramJson.toJSONString();
         StringEntity entity;
+        // 小程序对应的小程序码图片文件
+        File qrcodeFile;
         try {
             entity = new StringEntity(body);
             // 也可以是image/jpg
@@ -83,7 +84,9 @@ public class WeiXinServiceImpl implements WeiXinService {
             HttpResponse response = httpClient.execute(httpPost);
             InputStream inputStream = response.getEntity().getContent();
             // 临时存储小程序码图片，后面操作结束后会删除掉这个临时文件
-            File qrcodeFile = new File(resourcePath + qrcodeName + ".png");
+            String qrcodeImgUrl = Global.getImagesUploadPath() + "template/temp/" + qrcodeName + ".jpg";
+            qrcodeFile = new File(qrcodeImgUrl);
+
             this.saveBitPic(inputStream, qrcodeFile);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -96,8 +99,6 @@ public class WeiXinServiceImpl implements WeiXinService {
         FileInputStream fis = null;
         ByteArrayOutputStream os = null;
         try {
-            //二维码图片文件
-            File qrCodeImg = FileUtils.toFile(WeiXinServiceImpl.class.getResource("/image/" + qrcodeName + ".png"));
             //海报背景图片地址地址
             URL url = WeiXinServiceImpl.class.getResource("/image/qrcodebg.jpg");
             File fileBg = FileUtils.toFile(url);
@@ -107,12 +108,12 @@ public class WeiXinServiceImpl implements WeiXinService {
             Image srcImg = ImageIO.read(fis);
             // 创建画布，根据背景图片的宽高
             BufferedImage bufferedImage = new BufferedImage(
-                //宽度
-                srcImg.getWidth(null) + 200,
-                //高度
-                srcImg.getHeight(null) + 200,
-                //图片类型
-                BufferedImage.TYPE_INT_RGB);
+                    //宽度
+                    srcImg.getWidth(null) + 200,
+                    //高度
+                    srcImg.getHeight(null) + 200,
+                    //图片类型
+                    BufferedImage.TYPE_INT_RGB);
             int width = bufferedImage.getWidth();
             int height = bufferedImage.getHeight();
             // 得到2d画笔对象
@@ -123,7 +124,7 @@ public class WeiXinServiceImpl implements WeiXinService {
             g.drawImage(srcImg.getScaledInstance(width, height, Image.SCALE_SMOOTH), 0, 0, null);
             // 开始作画
             //把商品图片和二维码图片划入背景
-            g.drawImage(ImageIO.read(qrCodeImg), 100, 80, srcImg.getWidth(null), srcImg.getHeight(null), null);
+            g.drawImage(ImageIO.read(qrcodeFile), 100, 80, srcImg.getWidth(null), srcImg.getHeight(null), null);
             // 结束作画
             // 处理画作
             g.dispose();
@@ -137,7 +138,7 @@ public class WeiXinServiceImpl implements WeiXinService {
             // 关闭输入输出流
             os.close();
             fis.close();
-            qrCodeImg.delete();
+            qrcodeFile.delete();
         } finally {
             IOUtils.closeQuietly(fis);
             IOUtils.closeQuietly(os);
@@ -149,7 +150,7 @@ public class WeiXinServiceImpl implements WeiXinService {
         String imageUrl = Global.getDomain() + "/images/template/qrcode/" + qrcodeFileName + ".jpg";
         log.info(String.format("--------------[createPoster] success, cost time : %s, imageUrl:%s", (end - start), imageUrl));
 
-        // String imageUrl = "https://www.jbfac.xyz/images/template/qrcode/583f8aa556ef409e96cda602bd84162e.jpg";
+//        String imageUrl = "https://www.jbfac.xyz/images/template/qrcode/583f8aa556ef409e96cda602bd84162e.jpg";
 
         WxaQrcodeVo result = new WxaQrcodeVo();
         result.setImageUrl(imageUrl);
