@@ -12,5 +12,5 @@ public interface ProductCache {
 
     void deleteFacProdCache(String prodId);
 
-    String getWeixinAccessToken() throws Exception;
+    String getWeixinAccessToken();
 }

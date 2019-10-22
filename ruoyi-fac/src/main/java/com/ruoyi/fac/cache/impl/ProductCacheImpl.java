@@ -96,9 +96,9 @@ public class ProductCacheImpl implements ProductCache {
     }
 
     @Override
-    public String getWeixinAccessToken() throws Exception{
+    public String getWeixinAccessToken() {
         String appid = Global.getFacAppId();
-        String key = String.format(CacheKeys.KEY_PRODUCT, appid);
+        String key = String.format(CacheKeys.REDIS_KEY_ACCESSTOKEN, appid);
         String accessTokenStr = this.stringRedisTemplate.opsForValue().get(key);
         if (StringUtils.isNotBlank(accessTokenStr)) {
             AccessToken accessTokenVo = JSON.parseObject(accessTokenStr, AccessToken.class);
@@ -115,12 +115,14 @@ public class ProductCacheImpl implements ProductCache {
         try {
             Response response = okHttpClient.newCall(request).execute();
             if (response != null && response.isSuccessful()) {
-                // eg:{"access_token":"26_ch8pJUHYZb7uM8hSV2jX0NhjDCj2ltw4j2lu2slpNV4tpVvlEF4s91ycutVaXtVGY_ygG4UayCo6Z2XcfO5OUqgkEuxVGx1pxUKGS5wrdHoXJ5YHpK8ga2AVebn3niaOHVdVtCLd3rMwMECaZLUgAIALXG","expires_in":7200}
+                // eg:{"access_token":"26_ch8pJUHYZb7uM8hSV2jX0NhjDCj2ltw4j2lu2s4tpVvlEF4s91ycutVaXtVGY_ygG4UayCo6Z2XcfO5OUqguxVGx1pxUKGS5wrdHoXJ5YHpK8ga2AVebn3niaOHVdVtCLd3rMwMECaZLUgAIALXG","expires_in":7200}
                 AccessToken accessTokenVo = JSON.parseObject(response.body().string(), AccessToken.class);
-                if (accessTokenVo != null && org.apache.commons.lang3.StringUtils.isNotBlank(accessTokenVo.getAccess_token())) {
-                    log.info(String.format("----------------[getWeixinAccessToken] accessTokenVo : %s", accessTokenVo));
-                    // access_token设置2小时的过期时间
-                    this.stringRedisTemplate.opsForValue().set(key, JSON.toJSONString(accessTokenVo), CacheKeys.EXPIRIER_TIME_ACCESS_TOKEN, TimeUnit.SECONDS);
+                log.info(String.format("----------------[getWeixinAccessToken] accessTokenVo : %s", accessTokenVo != null ? accessTokenVo :
+                    "accessTokenVo is null."));
+                if (accessTokenVo != null && StringUtils.isNotBlank(accessTokenVo.getAccess_token())) {
+                    Long expireTime = accessTokenVo.getExpires_in() != null ? accessTokenVo.getExpires_in() : CacheKeys.EXPIRIER_TIME_ACCESS_TOKEN;
+                    // access_token设置过期时间 : 按照微信官方给的过期时间
+                    this.stringRedisTemplate.opsForValue().set(key, JSON.toJSONString(accessTokenVo), expireTime, TimeUnit.SECONDS);
 
                     String accessToken = accessTokenVo.getAccess_token();
 
