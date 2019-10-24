@@ -465,6 +465,11 @@ public class FacOrderExample {
             return (Criteria) this;
         }
 
+        public Criteria andKanjiaIdEqualTo(Long value) {
+            addCriterion("kanjia_id =", value, "kanjiaId");
+            return (Criteria) this;
+        }
+
         public Criteria andTokenEqualTo(String value) {
             addCriterion("token =", value, "token");
             return (Criteria) this;

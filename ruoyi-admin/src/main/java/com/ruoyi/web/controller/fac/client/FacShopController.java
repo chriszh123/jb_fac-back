@@ -8,12 +8,20 @@ package com.ruoyi.web.controller.fac.client;
 
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.fac.enums.FacCode;
+import com.ruoyi.fac.exception.FacException;
+import com.ruoyi.fac.service.IFacKanjiaService;
 import com.ruoyi.fac.service.IProductCategoryService;
 import com.ruoyi.fac.service.IProductService;
+import com.ruoyi.fac.service.WeiXinService;
 import com.ruoyi.fac.vo.client.*;
+import com.ruoyi.fac.vo.client.req.KanjiaReq;
 import com.ruoyi.fac.vo.client.req.ShopReq;
+import com.ruoyi.fac.vo.client.req.WxaQrcodeReq;
+import com.ruoyi.fac.vo.client.res.*;
 import com.ruoyi.framework.web.base.BaseController;
 import org.apache.commons.collections.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,12 +40,17 @@ import java.util.List;
 @Controller
 @RequestMapping("/fac/client/shop")
 public class FacShopController extends BaseController {
+    private static final Logger log = LoggerFactory.getLogger(FacShopController.class);
 
     @Autowired
     private IProductCategoryService productCategoryService;
-
     @Autowired
     private IProductService productService;
+    @Autowired
+    private IFacKanjiaService facKanjiaService;
+    @Autowired
+    private WeiXinService weiXinService;
+
 
     /**
      * 参加砍价活动的商品
@@ -47,7 +60,16 @@ public class FacShopController extends BaseController {
     @PostMapping("/goods/kanjia/list")
     @ResponseBody
     public FacResult kanjiaList() {
-        return FacResult.error(FacCode.HAS_NO_DATA.getCode(), FacCode.HAS_NO_DATA.getMsg());
+        try {
+            KanjiaListVo data = this.facKanjiaService.queryKanjiaListFromClient();
+            return FacResult.success(data);
+        } catch (FacException fe) {
+            log.error(fe.getMessage(), fe);
+            return FacResult.error(fe.getMessage());
+        } catch (Exception ex) {
+            log.error(ex.getMessage(), ex);
+            return FacResult.error();
+        }
     }
 
     @PostMapping("/goods/category/all")
@@ -92,6 +114,112 @@ public class FacShopController extends BaseController {
         }
     }
 
+    /**
+     * 轮播图片点击或者点击商品分类里的商品
+     *
+     * @param req
+     * @return
+     */
+    @PostMapping("/goods/kanjia/set")
+    @ResponseBody
+    public FacResult kanjiaSet(@RequestBody ShopReq req) {
+        if (StringUtils.isBlank(req.getGoodsId())) {
+            return FacResult.error(FacCode.PARAMTER_NULL.getCode(), FacCode.PARAMTER_NULL.getMsg());
+        }
+        try {
+            KanjiaSetVo kanjiaSetVo = this.facKanjiaService.queryKanjiaSetFromClient(req.getGoodsId());
+            if (kanjiaSetVo != null) {
+                return FacResult.success(kanjiaSetVo);
+            } else {
+                return FacResult.error(FacCode.HAS_NO_DATA.getCode(), FacCode.HAS_NO_DATA.getMsg());
+            }
+        } catch (FacException fe) {
+            log.error(fe.getMessage(), fe);
+            return FacResult.error(fe.getMessage());
+        } catch (Exception ex) {
+            log.error(ex.getMessage(), ex);
+            return FacResult.error();
+        }
+    }
+
+    @PostMapping("/goods/kanjia/info")
+    @ResponseBody
+    public FacResult kanjiaInfo(@RequestBody KanjiaReq req) {
+        if (req == null || req.getJoiner() == null || req.getKjid() == null) {
+            return FacResult.error(FacCode.PARAMTER_NULL.getCode(), FacCode.PARAMTER_NULL.getMsg());
+        }
+        try {
+            KanjiaInfoVo kanjiaInfoVo = this.facKanjiaService.queryKanJiaInfoFromClient(req);
+            if (kanjiaInfoVo != null) {
+                return FacResult.success(kanjiaInfoVo);
+            } else {
+                return FacResult.error(FacCode.HAS_NO_DATA.getCode(), FacCode.HAS_NO_DATA.getMsg());
+            }
+        } catch (FacException fe) {
+            log.error(fe.getMessage(), fe);
+            return FacResult.error(fe.getMessage());
+        } catch (Exception ex) {
+            log.error(ex.getMessage(), ex);
+            return FacResult.error();
+        }
+    }
+
+    @PostMapping("/goods/kanjia/myHelp")
+    @ResponseBody
+    public FacResult kanjiaMyHelp(@RequestBody KanjiaReq req) {
+        if (req == null || req.getJoinerUser() == null || req.getKjid() == null
+                || StringUtils.isBlank(req.getToken())) {
+            return FacResult.error(FacCode.PARAMTER_NULL.getCode(), FacCode.PARAMTER_NULL.getMsg());
+        }
+        try {
+            KjHelperVo kjHelperVo = this.facKanjiaService.kanjiaMyHelp(req);
+            return FacResult.success(kjHelperVo);
+        } catch (FacException fe) {
+            log.error(fe.getMessage(), fe);
+            return FacResult.error(fe.getMessage());
+        } catch (Exception ex) {
+            log.error(ex.getMessage(), ex);
+            return FacResult.error();
+        }
+    }
+
+    @PostMapping("/goods/kanjia/join")
+    @ResponseBody
+    public FacResult joinKanjia(@RequestBody KanjiaReq req) {
+        if (req == null || StringUtils.isBlank(req.getToken()) || req.getKjid() == null) {
+            return FacResult.error(FacCode.PARAMTER_NULL.getCode(), FacCode.PARAMTER_NULL.getMsg());
+        }
+        try {
+            this.facKanjiaService.joinKanjia(req);
+            return FacResult.success("");
+        } catch (FacException fe) {
+            log.error(fe.getMessage(), fe);
+            return FacResult.error(fe.getMessage());
+        } catch (Exception ex) {
+            log.error(ex.getMessage(), ex);
+            return FacResult.error();
+        }
+    }
+
+    @PostMapping("/goods/kanjia/help")
+    @ResponseBody
+    public FacResult kanjiaHelp(@RequestBody KanjiaReq req) {
+        if (req == null || StringUtils.isBlank(req.getToken()) || req.getKjid() == null
+                || req.getJoinerUser() == null) {
+            return FacResult.error(FacCode.PARAMTER_NULL.getCode(), FacCode.PARAMTER_NULL.getMsg());
+        }
+        try {
+            KjHelperVo helperVo = this.facKanjiaService.kanjiaHelp(req);
+            return FacResult.success(helperVo);
+        } catch (FacException fe) {
+            log.error(fe.getMessage(), fe);
+            return FacResult.error(fe.getMessage());
+        } catch (Exception ex) {
+            log.error(ex.getMessage(), ex);
+            return FacResult.error();
+        }
+    }
+
     @PostMapping("/goods/reputation")
     @ResponseBody
     public FacResult reputation(@RequestBody ShopReq req) {
@@ -113,6 +241,24 @@ public class FacShopController extends BaseController {
             return FacResult.success(goodsPriceVo);
         } else {
             return FacResult.error(FacCode.HAS_NO_DATA.getCode(), FacCode.HAS_NO_DATA.getMsg());
+        }
+    }
+
+    @PostMapping("/wxaQrcode")
+    @ResponseBody
+    public FacResult wxaQrcode(@RequestBody WxaQrcodeReq req) {
+        if (req == null || StringUtils.isBlank(req.getProductId())
+                || StringUtils.isBlank(req.getPage())
+                || req.getInviterUid() == null) {
+            return FacResult.error(FacCode.PARAMTER_NULL.getCode(), FacCode.PARAMTER_NULL.getMsg());
+        }
+
+        try {
+            WxaQrcodeVo wxaQrcodeVo = this.weiXinService.createPoster(req);
+            return FacResult.success(wxaQrcodeVo);
+        } catch (Exception ex) {
+            log.error(ex.getMessage(), ex);
+            return FacResult.error();
         }
     }
 }

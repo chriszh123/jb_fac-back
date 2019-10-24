@@ -31,4 +31,6 @@ public class OrderCreateVo implements Serializable {
      * 是否使用积分:0-不使用，1-使用
      */
     private int userScore = 0;
+    // 当前商品砍价活动wid
+    private Long kjid = 0L;
 }

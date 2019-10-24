@@ -194,4 +194,9 @@ public class Global {
     public static String getDomain() {
         return getConfig("ruoyi.domain");
     }
+
+    public static String getImagesUploadPath() {
+        return getConfig("file.imagesUploadPath");
+    }
+
 }

@@ -61,6 +61,13 @@ var POINT_TYPE = {
     6: "已提现奖金"
 };
 
+// 商品砍价活动状态
+var STATUS_PRODUCT_KANJIA = {
+    "1": "进行中",
+    "2": "已完成",
+    "3":"未完成(已过期)"
+};
+
 // fileInput上传文件支持扩展名
 var FILEINPUTEXTENDTION = ["jpg", "jpeg", "gif", "bmp", "png"];
 

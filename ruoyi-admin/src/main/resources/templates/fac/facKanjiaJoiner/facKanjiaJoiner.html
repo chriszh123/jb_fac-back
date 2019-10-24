@@ -1,0 +1,160 @@
+<!DOCTYPE HTML>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="gray-bg">
+
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <div class="select-list">
+                    <ul>
+                        <li>
+                            砍价id：<input type="text" name="kanjiaId"/>
+                        </li>
+
+                        <li>
+                            商品id：<input type="text" name="prodId"/>
+                        </li>
+
+                        <li>
+                            商品名称：<input type="text" name="prodName"/>
+                        </li>
+
+                        <li>
+                            手机号码：<input type="text" name="phoneNumber"/>
+                        </li>
+                        <li>
+                            用户昵称：<input type="text" name="nickName"/>
+                        </li>
+                        <li>
+                            状态：
+                            <select id="status" name="status">
+                                <option value="">请选择...</option>
+                                <option value="1">进行中</option>
+                                <option value="2">无效</option>
+                                <option value="3">完成</option>
+                            </select>
+                        </li>
+
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i
+                                    class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i
+                                    class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <div class="btn-group-sm hidden-xs" id="toolbar" role="group">
+            <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="fac:facKanjiaJoiner:export">
+                <i class="fa fa-download"></i> 导出
+            </a>
+        </div>
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table" data-mobile-responsive="true"></table>
+        </div>
+    </div>
+</div>
+<div th:include="include :: footer"></div>
+<script th:src="@{/fac/fac_common.js}"></script>
+<script th:inline="javascript">
+    var editFlag = [[${@permission.hasPermi('fac:facKanjiaJoiner:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('fac:facKanjiaJoiner:remove')}]];
+    var prefix = ctx + "fac/facKanjiaJoiner";
+
+    $(function () {
+        var options = {
+            url: prefix + "/list",
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove",
+            exportUrl: prefix + "/export",
+            modalName: "参与商品砍价活动人员记录",
+            showExport: true,
+            columns: [{
+                checkbox: true
+            },
+                {
+                    field: 'id',
+                    title: '',
+                    visible: false
+                },
+                {
+                    field: 'kanjiaId',
+                    title: '砍价id',
+                    sortable: true
+                },
+                {
+                    field: 'prodId',
+                    title: '商品id',
+                    sortable: true
+                },
+//                {
+//                    field: 'prodName',
+//                    title: '商品名称',
+//                    sortable: true
+//                },
+                {
+                    field: 'phoneNumber',
+                    title: '手机号码',
+                    sortable: true
+                },
+//                {
+//                    field: 'token',
+//                    title: '参与用户token ',
+//                    sortable: true
+//                },
+                {
+                    field: 'nickName',
+                    title: '用户昵称',
+                    sortable: true
+                },
+                {
+                    field: 'currentPrice',
+                    title: '当前价格',
+                    sortable: true
+                },
+                {
+                    field: 'price',
+                    title: '底价',
+                    sortable: true
+                },
+                {
+                    field: 'helpAmount',
+                    title: '各助力金额',
+                    sortable: true
+                },
+                {
+                    field: 'status',
+                    title: '状态',
+                    sortable: true,
+                    formatter: function (value, row, index) {
+                        return STATUS_PRODUCT_KANJIA[value];
+                    }
+                },
+                {
+                    field: 'createTime',
+                    title: '操作时间',
+                    sortable: true
+                }
+//                ,
+//                {
+//                    title: '操作',
+//                    align: 'center',
+//                    formatter: function (value, row, index) {
+//                        var actions = [];
+//                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="#" onclick="$.operate.edit(\'' + row.id + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+//                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="#" onclick="$.operate.remove(\'' + row.id + '\')"><i class="fa fa-remove"></i>删除</a>');
+//                        return actions.join('');
+//                    }
+//                }
+            ]
+        };
+        $.table.init(options);
+    });
+</script>
+</body>
+</html>

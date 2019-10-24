@@ -27,6 +27,9 @@ public class Order extends BaseEntity {
      */
     @Excel(name = "订单号")
     private String orderNo;
+
+    @Excel(name = "砍价ID")
+    private Long kanjiaId;
     /**
      * 用户token
      */

@@ -1,0 +1,127 @@
+<!DOCTYPE HTML>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<link th:href="@{/ajax/libs/datapicker/bootstrap-datetimepicker.min.css}" rel="stylesheet"/>
+<link th:href="@{/fac/fac.css}" rel="stylesheet"/>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+    <form class="form-horizontal m" id="form-facKanjia-add">
+        <div class="form-group">
+            <label class="col-sm-3 control-label">商品id：</label>
+            <div class="col-sm-8">
+                <input id="prodId" name="prodId" class="form-control" type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">总份数：</label>
+            <div class="col-sm-8">
+                <input id="total" name="total" class="form-control" type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">原价：</label>
+            <div class="col-sm-8">
+                <input id="originalPrice" name="originalPrice" class="form-control" type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">底价：</label>
+            <div class="col-sm-8">
+                <input id="price" name="price" class="form-control" type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">需助力个数：</label>
+            <div class="col-sm-8">
+                <input id="helpPeopleCount" name="helpPeopleCount" class="form-control" type="text">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label">砍价金额：</label>
+            <div class="col-sm-8">
+                <input id="min" name="min" class="kanjia-min-max" type="text"> -
+                <input id="max" name="max" class="kanjia-min-max" type="text">
+                砍价一次随机减少的金额范围
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label">砍价开始时间：</label>
+            <div class="col-sm-3 input-group date" style=""><span class="input-group-addon"><i
+                    class="fa fa-calendar"></i></span>
+                <input type="text" class="form-control" id="startDate" name="startDate" value=""
+                       placeholder="开始时间">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label">砍价截止时间：</label>
+            <div class="col-sm-3 input-group date"><span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                <input type="text" class="form-control" id="stopDate" name="stopDate" value=""
+                       placeholder="结束时间">
+            </div>
+        </div>
+    </form>
+
+</div>
+<div th:include="include::footer"></div>
+<script th:src="@{/ajax/libs//datapicker/bootstrap-datetimepicker.min.js}"></script>
+<script th:src="@{/ajax/libs//datapicker/bootstrap-datetimepicker.zh-CN.js}"></script>
+<script>
+    var prefix = ctx + "fac/facKanjia";
+    $(".input-group.date").datetimepicker({
+        format: 'yyyy-mm-dd hh:ii',
+        todayBtn: "linked",
+        keyboardNavigation: !1,
+        forceParse: !1,
+        calendarWeeks: !0,
+        autoclose: !0,
+        initialDate: new Date(),
+        language: "zh-CN"
+    });
+
+    $("#form-facKanjia-add").validate({
+        rules: {
+            total: {
+                required: true,
+                digits: true
+            },
+            prodId: {
+                required: true,
+                digits: true
+            },
+            originalPrice: {
+                required: true
+            },
+            price: {
+                required: true
+            },
+            helpPeopleCount: {
+                required: true,
+                digits: true
+            },
+            min: {
+                required: true
+            },
+            max: {
+                required: true
+            },
+            startDate: {
+                required: true
+            },
+            stopDate: {
+                required: true
+            }
+        }
+    });
+
+    function submitHandler() {
+        if ($.validate.form()) {
+            $.operate.save(prefix + "/add", $('#form-facKanjia-add').serialize());
+        }
+    }
+</script>
+</body>
+</html>

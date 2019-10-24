@@ -11,4 +11,6 @@ public interface ProductCache {
     void deleteProdCache(String prodId);
 
     void deleteFacProdCache(String prodId);
+
+    String getWeixinAccessToken();
 }

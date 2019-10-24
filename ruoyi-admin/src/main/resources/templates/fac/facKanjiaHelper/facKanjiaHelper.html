@@ -1,0 +1,134 @@
+<!DOCTYPE HTML>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="gray-bg">
+
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <div class="select-list">
+                    <ul>
+                        <li>
+                            砍价id：<input type="text" name="kanjiaId"/>
+                        </li>
+                        <li>
+                            参与砍价活动id：<input type="text" name="joinId"/>
+                        </li>
+
+                        <li>
+                            商品id：<input type="text" name="prodId"/>
+                        </li>
+
+                        <li>
+                            商品名称：<input type="text" name="prodName"/>
+                        </li>
+
+                        <li>
+                            参与用户昵称：<input type="text" name="nickNameJoiner"/>
+                        </li>
+
+                        <li>
+                            参与用户手机号码：<input type="text" name="phoneNumberJoiner"/>
+                        </li>
+
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i
+                                    class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i
+                                    class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <div class="btn-group-sm hidden-xs" id="toolbar" role="group">
+            <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="fac:facKanjiaHelper:export">
+                <i class="fa fa-download"></i> 导出
+            </a>
+        </div>
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table" data-mobile-responsive="true"></table>
+        </div>
+    </div>
+</div>
+<div th:include="include :: footer"></div>
+<script th:inline="javascript">
+    var prefix = ctx + "fac/facKanjiaHelper";
+
+    $(function () {
+        var options = {
+            url: prefix + "/list",
+            createUrl: prefix + "/add",
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove",
+            exportUrl: prefix + "/export",
+            modalName: "帮砍价人员明细",
+            showExport: true,
+            columns: [{
+                checkbox: true
+            },
+                {
+                    field: 'id',
+                    title: '',
+                    visible: true,
+                    sortable: true
+                },
+                {
+                    field: 'kanjiaId',
+                    title: '砍价id',
+                    sortable: true
+                },
+                {
+                    field: 'joinId',
+                    title: '参与砍价活动id',
+                    sortable: true
+                },
+                {
+                    field: 'prodId',
+                    title: '商品id',
+                    sortable: true
+                },
+                {
+                    field: 'prodName',
+                    title: '商品名称',
+                    sortable: true
+                },
+                {
+                    field: 'nickNameJoiner',
+                    title: '昵称[参与]',
+                    sortable: true
+                },
+                {
+                    field: 'phoneNumberJoiner',
+                    title: '手机号码[参与]',
+                    sortable: true
+                },
+                {
+                    field: 'nickNameHelper',
+                    title: '昵称[助力]',
+                    sortable: true
+                },
+                {
+                    field: 'phoneNumberHelper',
+                    title: '手机号码[助力]',
+                    sortable: true
+                },
+                {
+                    field: 'helpPrice',
+                    title: '助力金额',
+                    sortable: true
+                },
+                {
+                    field: 'createTime',
+                    title: '砍价时间',
+                    sortable: true
+                }]
+        };
+        $.table.init(options);
+    });
+</script>
+</body>
+</html>

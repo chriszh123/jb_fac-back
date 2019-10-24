@@ -1,7 +1,8 @@
 package com.ruoyi.fac.enums;
 
 /**
- * 商品状态：上架、下架
+ * 前后端接口响应code
+ * <p>
  * Created by zgf
  * Date 2019/1/5 21:06
  * Description
@@ -13,8 +14,7 @@ public enum FacCode {
     ERROR_WX_LOGIN_SESSION("查询微信用户session接口异常", 10000001),
     ERROR_SERVER_INTERVAL("服务启内部异常，请联系管理员", 509),
     UNREGISTER("未注册", 10000),
-    DATA_NOT_EXIST("用户数据已经不存在", 1000001)
-    ;
+    DATA_NOT_EXIST("用户数据已经不存在", 1000001);
 
     private String msg;
     private Integer code;

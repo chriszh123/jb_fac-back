@@ -9,6 +9,7 @@ import java.text.DecimalFormat;
  * Description
  */
 public class DecimalUtils {
+    private static java.text.DecimalFormat df = new java.text.DecimalFormat("0");
 
     /**
      * 两个数值比较大小
@@ -100,4 +101,11 @@ public class DecimalUtils {
         return new BigDecimal(result);
     }
 
+    public static int convertFen(BigDecimal amount) {
+        amount = amount.multiply(new BigDecimal(100));
+        String amountStr = df.format(amount);
+        int result = Integer.valueOf(amountStr);
+
+        return result;
+    }
 }

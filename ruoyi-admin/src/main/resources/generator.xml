@@ -13,7 +13,7 @@
         <!-- 数据库的相关配置 -->
         <jdbcConnection
                 driverClass="com.mysql.jdbc.Driver"
-                connectionURL="jdbc:mysql://localhost:3306/ry?serverTimezone=GMT"
+                connectionURL="jdbc:mysql://localhost:3306/ry-pin?serverTimezone=GMT"
                 userId="root"
                 password="123456"/>
 
@@ -53,122 +53,149 @@
             <generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />
         </table>
 
-        <table tableName="fac_product_category" domainObjectName="FacProductCategory"
-               enableInsert="true" enableSelectByPrimaryKey="true"
-               enableSelectByExample="true" enableUpdateByPrimaryKey="true"
-               enableDeleteByPrimaryKey="true" enableDeleteByExample="true"
-               enableCountByExample="true" enableUpdateByExample="true"
-               selectByExampleQueryId="true">
-            <generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />
-        </table>
+        <!--<table tableName="fac_product_category" domainObjectName="FacProductCategory"-->
+               <!--enableInsert="true" enableSelectByPrimaryKey="true"-->
+               <!--enableSelectByExample="true" enableUpdateByPrimaryKey="true"-->
+               <!--enableDeleteByPrimaryKey="true" enableDeleteByExample="true"-->
+               <!--enableCountByExample="true" enableUpdateByExample="true"-->
+               <!--selectByExampleQueryId="true">-->
+            <!--<generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />-->
+        <!--</table>-->
 
-        <table tableName="fac_product_writeoff" domainObjectName="FacProductWriteOffBean"
-               enableInsert="true" enableSelectByPrimaryKey="true"
-               enableSelectByExample="true" enableUpdateByPrimaryKey="true"
-               enableDeleteByPrimaryKey="true" enableDeleteByExample="true"
-               enableCountByExample="true" enableUpdateByExample="true"
-               selectByExampleQueryId="true">
-            <generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />
-        </table>
+        <!--<table tableName="fac_product_writeoff" domainObjectName="FacProductWriteOffBean"-->
+               <!--enableInsert="true" enableSelectByPrimaryKey="true"-->
+               <!--enableSelectByExample="true" enableUpdateByPrimaryKey="true"-->
+               <!--enableDeleteByPrimaryKey="true" enableDeleteByExample="true"-->
+               <!--enableCountByExample="true" enableUpdateByExample="true"-->
+               <!--selectByExampleQueryId="true">-->
+            <!--<generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />-->
+        <!--</table>-->
 
-        <table tableName="fac_order" domainObjectName="FacOrder"
-               enableInsert="true" enableSelectByPrimaryKey="true"
-               enableSelectByExample="true" enableUpdateByPrimaryKey="true"
-               enableDeleteByPrimaryKey="true" enableDeleteByExample="true"
-               enableCountByExample="true" enableUpdateByExample="true"
-               selectByExampleQueryId="true">
-            <generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />
-        </table>
+        <!--<table tableName="fac_order" domainObjectName="FacOrder"-->
+               <!--enableInsert="true" enableSelectByPrimaryKey="true"-->
+               <!--enableSelectByExample="true" enableUpdateByPrimaryKey="true"-->
+               <!--enableDeleteByPrimaryKey="true" enableDeleteByExample="true"-->
+               <!--enableCountByExample="true" enableUpdateByExample="true"-->
+               <!--selectByExampleQueryId="true">-->
+            <!--<generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />-->
+        <!--</table>-->
 
-        <table tableName="fac_business" domainObjectName="FacBusiness"
-               enableInsert="true" enableSelectByPrimaryKey="true"
-               enableSelectByExample="true" enableUpdateByPrimaryKey="true"
-               enableDeleteByPrimaryKey="true" enableDeleteByExample="true"
-               enableCountByExample="true" enableUpdateByExample="true"
-               selectByExampleQueryId="true">
-            <generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />
-        </table>
+        <!--<table tableName="fac_business" domainObjectName="FacBusiness"-->
+               <!--enableInsert="true" enableSelectByPrimaryKey="true"-->
+               <!--enableSelectByExample="true" enableUpdateByPrimaryKey="true"-->
+               <!--enableDeleteByPrimaryKey="true" enableDeleteByExample="true"-->
+               <!--enableCountByExample="true" enableUpdateByExample="true"-->
+               <!--selectByExampleQueryId="true">-->
+            <!--<generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />-->
+        <!--</table>-->
 
-        <table tableName="fac_channel" domainObjectName="FacChannel"
-               enableInsert="true" enableSelectByPrimaryKey="true"
-               enableSelectByExample="true" enableUpdateByPrimaryKey="true"
-               enableDeleteByPrimaryKey="true" enableDeleteByExample="true"
-               enableCountByExample="true" enableUpdateByExample="true"
-               selectByExampleQueryId="true">
-            <generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />
-        </table>
+        <!--<table tableName="fac_channel" domainObjectName="FacChannel"-->
+               <!--enableInsert="true" enableSelectByPrimaryKey="true"-->
+               <!--enableSelectByExample="true" enableUpdateByPrimaryKey="true"-->
+               <!--enableDeleteByPrimaryKey="true" enableDeleteByExample="true"-->
+               <!--enableCountByExample="true" enableUpdateByExample="true"-->
+               <!--selectByExampleQueryId="true">-->
+            <!--<generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />-->
+        <!--</table>-->
 
-        <table tableName="fac_buyer" domainObjectName="FacBuyer"
-               enableInsert="true" enableSelectByPrimaryKey="true"
-               enableSelectByExample="true" enableUpdateByPrimaryKey="true"
-               enableDeleteByPrimaryKey="true" enableDeleteByExample="true"
-               enableCountByExample="true" enableUpdateByExample="true"
-               selectByExampleQueryId="true">
-            <generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />
-        </table>
+        <!--<table tableName="fac_buyer" domainObjectName="FacBuyer"-->
+               <!--enableInsert="true" enableSelectByPrimaryKey="true"-->
+               <!--enableSelectByExample="true" enableUpdateByPrimaryKey="true"-->
+               <!--enableDeleteByPrimaryKey="true" enableDeleteByExample="true"-->
+               <!--enableCountByExample="true" enableUpdateByExample="true"-->
+               <!--selectByExampleQueryId="true">-->
+            <!--<generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />-->
+        <!--</table>-->
 
-        <table tableName="fac_buyer_business" domainObjectName="FacBuyerBusiness"
-               enableInsert="true" enableSelectByPrimaryKey="true"
-               enableSelectByExample="true" enableUpdateByPrimaryKey="true"
-               enableDeleteByPrimaryKey="true" enableDeleteByExample="true"
-               enableCountByExample="true" enableUpdateByExample="true"
-               selectByExampleQueryId="true">
-            <generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />
-        </table>
+        <!--<table tableName="fac_buyer_business" domainObjectName="FacBuyerBusiness"-->
+               <!--enableInsert="true" enableSelectByPrimaryKey="true"-->
+               <!--enableSelectByExample="true" enableUpdateByPrimaryKey="true"-->
+               <!--enableDeleteByPrimaryKey="true" enableDeleteByExample="true"-->
+               <!--enableCountByExample="true" enableUpdateByExample="true"-->
+               <!--selectByExampleQueryId="true">-->
+            <!--<generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />-->
+        <!--</table>-->
 
-        <table tableName="fac_cash" domainObjectName="FacCash"
-               enableInsert="true" enableSelectByPrimaryKey="true"
-               enableSelectByExample="true" enableUpdateByPrimaryKey="true"
-               enableDeleteByPrimaryKey="true" enableDeleteByExample="true"
-               enableCountByExample="true" enableUpdateByExample="true"
-               selectByExampleQueryId="true">
-            <generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />
-        </table>
+        <!--<table tableName="fac_cash" domainObjectName="FacCash"-->
+               <!--enableInsert="true" enableSelectByPrimaryKey="true"-->
+               <!--enableSelectByExample="true" enableUpdateByPrimaryKey="true"-->
+               <!--enableDeleteByPrimaryKey="true" enableDeleteByExample="true"-->
+               <!--enableCountByExample="true" enableUpdateByExample="true"-->
+               <!--selectByExampleQueryId="true">-->
+            <!--<generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />-->
+        <!--</table>-->
 
-        <table tableName="fac_focus_map" domainObjectName="FacFocusMap"
-               enableInsert="true" enableSelectByPrimaryKey="true"
-               enableSelectByExample="true" enableUpdateByPrimaryKey="true"
-               enableDeleteByPrimaryKey="true" enableDeleteByExample="true"
-               enableCountByExample="true" enableUpdateByExample="true"
-               selectByExampleQueryId="true">
-            <generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />
-        </table>
+        <!--<table tableName="fac_focus_map" domainObjectName="FacFocusMap"-->
+               <!--enableInsert="true" enableSelectByPrimaryKey="true"-->
+               <!--enableSelectByExample="true" enableUpdateByPrimaryKey="true"-->
+               <!--enableDeleteByPrimaryKey="true" enableDeleteByExample="true"-->
+               <!--enableCountByExample="true" enableUpdateByExample="true"-->
+               <!--selectByExampleQueryId="true">-->
+            <!--<generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />-->
+        <!--</table>-->
 
-        <table tableName="fac_menu" domainObjectName="FacMenu"
-               enableInsert="true" enableSelectByPrimaryKey="true"
-               enableSelectByExample="true" enableUpdateByPrimaryKey="true"
-               enableDeleteByPrimaryKey="true" enableDeleteByExample="true"
-               enableCountByExample="true" enableUpdateByExample="true"
-               selectByExampleQueryId="true">
-            <generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />
-        </table>
+        <!--<table tableName="fac_menu" domainObjectName="FacMenu"-->
+               <!--enableInsert="true" enableSelectByPrimaryKey="true"-->
+               <!--enableSelectByExample="true" enableUpdateByPrimaryKey="true"-->
+               <!--enableDeleteByPrimaryKey="true" enableDeleteByExample="true"-->
+               <!--enableCountByExample="true" enableUpdateByExample="true"-->
+               <!--selectByExampleQueryId="true">-->
+            <!--<generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />-->
+        <!--</table>-->
 
-        <table tableName="fac_buyer_address" domainObjectName="FacBuyerAddress"
-               enableInsert="true" enableSelectByPrimaryKey="true"
-               enableSelectByExample="true" enableUpdateByPrimaryKey="true"
-               enableDeleteByPrimaryKey="true" enableDeleteByExample="true"
-               enableCountByExample="true" enableUpdateByExample="true"
-               selectByExampleQueryId="true">
-            <generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />
-        </table>
+        <!--<table tableName="fac_buyer_address" domainObjectName="FacBuyerAddress"-->
+               <!--enableInsert="true" enableSelectByPrimaryKey="true"-->
+               <!--enableSelectByExample="true" enableUpdateByPrimaryKey="true"-->
+               <!--enableDeleteByPrimaryKey="true" enableDeleteByExample="true"-->
+               <!--enableCountByExample="true" enableUpdateByExample="true"-->
+               <!--selectByExampleQueryId="true">-->
+            <!--<generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />-->
+        <!--</table>-->
 
-        <table tableName="fac_buyer_sign" domainObjectName="FacBuyerSign"
-               enableInsert="true" enableSelectByPrimaryKey="true"
-               enableSelectByExample="true" enableUpdateByPrimaryKey="true"
-               enableDeleteByPrimaryKey="true" enableDeleteByExample="true"
-               enableCountByExample="true" enableUpdateByExample="true"
-               selectByExampleQueryId="true">
-            <generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />
-        </table>
+        <!--<table tableName="fac_buyer_sign" domainObjectName="FacBuyerSign"-->
+               <!--enableInsert="true" enableSelectByPrimaryKey="true"-->
+               <!--enableSelectByExample="true" enableUpdateByPrimaryKey="true"-->
+               <!--enableDeleteByPrimaryKey="true" enableDeleteByExample="true"-->
+               <!--enableCountByExample="true" enableUpdateByExample="true"-->
+               <!--selectByExampleQueryId="true">-->
+            <!--<generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />-->
+        <!--</table>-->
 
-        <table tableName="fac_order_product" domainObjectName="FacOrderProduct"
-               enableInsert="true" enableSelectByPrimaryKey="true"
-               enableSelectByExample="true" enableUpdateByPrimaryKey="true"
-               enableDeleteByPrimaryKey="true" enableDeleteByExample="true"
-               enableCountByExample="true" enableUpdateByExample="true"
-               selectByExampleQueryId="true">
-            <generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />
-        </table>
+        <!--<table tableName="fac_order_product" domainObjectName="FacOrderProduct"-->
+               <!--enableInsert="true" enableSelectByPrimaryKey="true"-->
+               <!--enableSelectByExample="true" enableUpdateByPrimaryKey="true"-->
+               <!--enableDeleteByPrimaryKey="true" enableDeleteByExample="true"-->
+               <!--enableCountByExample="true" enableUpdateByExample="true"-->
+               <!--selectByExampleQueryId="true">-->
+            <!--<generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />-->
+        <!--</table>-->
+
+        <!--<table tableName="fac_kanjia" domainObjectName="FacKanjia"-->
+               <!--enableInsert="true" enableSelectByPrimaryKey="true"-->
+               <!--enableSelectByExample="true" enableUpdateByPrimaryKey="true"-->
+               <!--enableDeleteByPrimaryKey="true" enableDeleteByExample="true"-->
+               <!--enableCountByExample="true" enableUpdateByExample="true"-->
+               <!--selectByExampleQueryId="true">-->
+            <!--<generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />-->
+        <!--</table>-->
+
+        <!--<table tableName="fac_kanjia_joiner" domainObjectName="FacKanjiaJoiner"-->
+               <!--enableInsert="true" enableSelectByPrimaryKey="true"-->
+               <!--enableSelectByExample="true" enableUpdateByPrimaryKey="true"-->
+               <!--enableDeleteByPrimaryKey="true" enableDeleteByExample="true"-->
+               <!--enableCountByExample="true" enableUpdateByExample="true"-->
+               <!--selectByExampleQueryId="true">-->
+            <!--<generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />-->
+        <!--</table>-->
+
+        <!--<table tableName="fac_kanjia_helper" domainObjectName="FacKanjiaHelper"-->
+               <!--enableInsert="true" enableSelectByPrimaryKey="true"-->
+               <!--enableSelectByExample="true" enableUpdateByPrimaryKey="true"-->
+               <!--enableDeleteByPrimaryKey="true" enableDeleteByExample="true"-->
+               <!--enableCountByExample="true" enableUpdateByExample="true"-->
+               <!--selectByExampleQueryId="true">-->
+            <!--<generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />-->
+        <!--</table>-->
 
     </context>
 </generatorConfiguration>
