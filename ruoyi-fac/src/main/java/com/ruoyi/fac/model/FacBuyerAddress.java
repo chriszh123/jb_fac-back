@@ -1,5 +1,7 @@
 package com.ruoyi.fac.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.util.Date;
 
 public class FacBuyerAddress {
@@ -129,6 +131,7 @@ public class FacBuyerAddress {
      *
      * @mbggenerated
      */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
     /**
@@ -168,7 +171,6 @@ public class FacBuyerAddress {
      * This method returns the value of the database column fac_buyer_address.id
      *
      * @return the value of fac_buyer_address.id
-     *
      * @mbggenerated
      */
     public Long getId() {
@@ -180,7 +182,6 @@ public class FacBuyerAddress {
      * This method sets the value of the database column fac_buyer_address.id
      *
      * @param id the value for fac_buyer_address.id
-     *
      * @mbggenerated
      */
     public void setId(Long id) {
@@ -192,7 +193,6 @@ public class FacBuyerAddress {
      * This method returns the value of the database column fac_buyer_address.buyer_id
      *
      * @return the value of fac_buyer_address.buyer_id
-     *
      * @mbggenerated
      */
     public Long getBuyerId() {
@@ -204,7 +204,6 @@ public class FacBuyerAddress {
      * This method sets the value of the database column fac_buyer_address.buyer_id
      *
      * @param buyerId the value for fac_buyer_address.buyer_id
-     *
      * @mbggenerated
      */
     public void setBuyerId(Long buyerId) {
@@ -216,7 +215,6 @@ public class FacBuyerAddress {
      * This method returns the value of the database column fac_buyer_address.token
      *
      * @return the value of fac_buyer_address.token
-     *
      * @mbggenerated
      */
     public String getToken() {
@@ -228,7 +226,6 @@ public class FacBuyerAddress {
      * This method sets the value of the database column fac_buyer_address.token
      *
      * @param token the value for fac_buyer_address.token
-     *
      * @mbggenerated
      */
     public void setToken(String token) {
@@ -240,7 +237,6 @@ public class FacBuyerAddress {
      * This method returns the value of the database column fac_buyer_address.open_id
      *
      * @return the value of fac_buyer_address.open_id
-     *
      * @mbggenerated
      */
     public String getOpenId() {
@@ -252,7 +248,6 @@ public class FacBuyerAddress {
      * This method sets the value of the database column fac_buyer_address.open_id
      *
      * @param openId the value for fac_buyer_address.open_id
-     *
      * @mbggenerated
      */
     public void setOpenId(String openId) {
@@ -264,7 +259,6 @@ public class FacBuyerAddress {
      * This method returns the value of the database column fac_buyer_address.address
      *
      * @return the value of fac_buyer_address.address
-     *
      * @mbggenerated
      */
     public String getAddress() {
@@ -276,7 +270,6 @@ public class FacBuyerAddress {
      * This method sets the value of the database column fac_buyer_address.address
      *
      * @param address the value for fac_buyer_address.address
-     *
      * @mbggenerated
      */
     public void setAddress(String address) {
@@ -288,7 +281,6 @@ public class FacBuyerAddress {
      * This method returns the value of the database column fac_buyer_address.provinceId
      *
      * @return the value of fac_buyer_address.provinceId
-     *
      * @mbggenerated
      */
     public Integer getProvinceid() {
@@ -300,7 +292,6 @@ public class FacBuyerAddress {
      * This method sets the value of the database column fac_buyer_address.provinceId
      *
      * @param provinceid the value for fac_buyer_address.provinceId
-     *
      * @mbggenerated
      */
     public void setProvinceid(Integer provinceid) {
@@ -312,7 +303,6 @@ public class FacBuyerAddress {
      * This method returns the value of the database column fac_buyer_address.province_str
      *
      * @return the value of fac_buyer_address.province_str
-     *
      * @mbggenerated
      */
     public String getProvinceStr() {
@@ -324,7 +314,6 @@ public class FacBuyerAddress {
      * This method sets the value of the database column fac_buyer_address.province_str
      *
      * @param provinceStr the value for fac_buyer_address.province_str
-     *
      * @mbggenerated
      */
     public void setProvinceStr(String provinceStr) {
@@ -336,7 +325,6 @@ public class FacBuyerAddress {
      * This method returns the value of the database column fac_buyer_address.cityId
      *
      * @return the value of fac_buyer_address.cityId
-     *
      * @mbggenerated
      */
     public Integer getCityid() {
@@ -348,7 +336,6 @@ public class FacBuyerAddress {
      * This method sets the value of the database column fac_buyer_address.cityId
      *
      * @param cityid the value for fac_buyer_address.cityId
-     *
      * @mbggenerated
      */
     public void setCityid(Integer cityid) {
@@ -360,7 +347,6 @@ public class FacBuyerAddress {
      * This method returns the value of the database column fac_buyer_address.city_str
      *
      * @return the value of fac_buyer_address.city_str
-     *
      * @mbggenerated
      */
     public String getCityStr() {
@@ -372,7 +358,6 @@ public class FacBuyerAddress {
      * This method sets the value of the database column fac_buyer_address.city_str
      *
      * @param cityStr the value for fac_buyer_address.city_str
-     *
      * @mbggenerated
      */
     public void setCityStr(String cityStr) {
@@ -384,7 +369,6 @@ public class FacBuyerAddress {
      * This method returns the value of the database column fac_buyer_address.districtId
      *
      * @return the value of fac_buyer_address.districtId
-     *
      * @mbggenerated
      */
     public Integer getDistrictid() {
@@ -396,7 +380,6 @@ public class FacBuyerAddress {
      * This method sets the value of the database column fac_buyer_address.districtId
      *
      * @param districtid the value for fac_buyer_address.districtId
-     *
      * @mbggenerated
      */
     public void setDistrictid(Integer districtid) {
@@ -408,7 +391,6 @@ public class FacBuyerAddress {
      * This method returns the value of the database column fac_buyer_address.district_str
      *
      * @return the value of fac_buyer_address.district_str
-     *
      * @mbggenerated
      */
     public String getDistrictStr() {
@@ -420,7 +402,6 @@ public class FacBuyerAddress {
      * This method sets the value of the database column fac_buyer_address.district_str
      *
      * @param districtStr the value for fac_buyer_address.district_str
-     *
      * @mbggenerated
      */
     public void setDistrictStr(String districtStr) {
@@ -432,7 +413,6 @@ public class FacBuyerAddress {
      * This method returns the value of the database column fac_buyer_address.linkMan
      *
      * @return the value of fac_buyer_address.linkMan
-     *
      * @mbggenerated
      */
     public String getLinkman() {
@@ -444,7 +424,6 @@ public class FacBuyerAddress {
      * This method sets the value of the database column fac_buyer_address.linkMan
      *
      * @param linkman the value for fac_buyer_address.linkMan
-     *
      * @mbggenerated
      */
     public void setLinkman(String linkman) {
@@ -456,7 +435,6 @@ public class FacBuyerAddress {
      * This method returns the value of the database column fac_buyer_address.phone_number
      *
      * @return the value of fac_buyer_address.phone_number
-     *
      * @mbggenerated
      */
     public String getPhoneNumber() {
@@ -468,7 +446,6 @@ public class FacBuyerAddress {
      * This method sets the value of the database column fac_buyer_address.phone_number
      *
      * @param phoneNumber the value for fac_buyer_address.phone_number
-     *
      * @mbggenerated
      */
     public void setPhoneNumber(String phoneNumber) {
@@ -480,7 +457,6 @@ public class FacBuyerAddress {
      * This method returns the value of the database column fac_buyer_address.code
      *
      * @return the value of fac_buyer_address.code
-     *
      * @mbggenerated
      */
     public String getCode() {
@@ -492,7 +468,6 @@ public class FacBuyerAddress {
      * This method sets the value of the database column fac_buyer_address.code
      *
      * @param code the value for fac_buyer_address.code
-     *
      * @mbggenerated
      */
     public void setCode(String code) {
@@ -504,7 +479,6 @@ public class FacBuyerAddress {
      * This method returns the value of the database column fac_buyer_address.is_default
      *
      * @return the value of fac_buyer_address.is_default
-     *
      * @mbggenerated
      */
     public Boolean getIsDefault() {
@@ -516,7 +490,6 @@ public class FacBuyerAddress {
      * This method sets the value of the database column fac_buyer_address.is_default
      *
      * @param isDefault the value for fac_buyer_address.is_default
-     *
      * @mbggenerated
      */
     public void setIsDefault(Boolean isDefault) {
@@ -528,7 +501,6 @@ public class FacBuyerAddress {
      * This method returns the value of the database column fac_buyer_address.create_time
      *
      * @return the value of fac_buyer_address.create_time
-     *
      * @mbggenerated
      */
     public Date getCreateTime() {
@@ -540,7 +512,6 @@ public class FacBuyerAddress {
      * This method sets the value of the database column fac_buyer_address.create_time
      *
      * @param createTime the value for fac_buyer_address.create_time
-     *
      * @mbggenerated
      */
     public void setCreateTime(Date createTime) {
@@ -552,7 +523,6 @@ public class FacBuyerAddress {
      * This method returns the value of the database column fac_buyer_address.update_time
      *
      * @return the value of fac_buyer_address.update_time
-     *
      * @mbggenerated
      */
     public Date getUpdateTime() {
@@ -564,7 +534,6 @@ public class FacBuyerAddress {
      * This method sets the value of the database column fac_buyer_address.update_time
      *
      * @param updateTime the value for fac_buyer_address.update_time
-     *
      * @mbggenerated
      */
     public void setUpdateTime(Date updateTime) {
@@ -576,7 +545,6 @@ public class FacBuyerAddress {
      * This method returns the value of the database column fac_buyer_address.operator_id
      *
      * @return the value of fac_buyer_address.operator_id
-     *
      * @mbggenerated
      */
     public Long getOperatorId() {
@@ -588,7 +556,6 @@ public class FacBuyerAddress {
      * This method sets the value of the database column fac_buyer_address.operator_id
      *
      * @param operatorId the value for fac_buyer_address.operator_id
-     *
      * @mbggenerated
      */
     public void setOperatorId(Long operatorId) {
@@ -600,7 +567,6 @@ public class FacBuyerAddress {
      * This method returns the value of the database column fac_buyer_address.operator_name
      *
      * @return the value of fac_buyer_address.operator_name
-     *
      * @mbggenerated
      */
     public String getOperatorName() {
@@ -612,7 +578,6 @@ public class FacBuyerAddress {
      * This method sets the value of the database column fac_buyer_address.operator_name
      *
      * @param operatorName the value for fac_buyer_address.operator_name
-     *
      * @mbggenerated
      */
     public void setOperatorName(String operatorName) {
@@ -624,7 +589,6 @@ public class FacBuyerAddress {
      * This method returns the value of the database column fac_buyer_address.is_deleted
      *
      * @return the value of fac_buyer_address.is_deleted
-     *
      * @mbggenerated
      */
     public Boolean getIsDeleted() {
@@ -636,7 +600,6 @@ public class FacBuyerAddress {
      * This method sets the value of the database column fac_buyer_address.is_deleted
      *
      * @param isDeleted the value for fac_buyer_address.is_deleted
-     *
      * @mbggenerated
      */
     public void setIsDeleted(Boolean isDeleted) {

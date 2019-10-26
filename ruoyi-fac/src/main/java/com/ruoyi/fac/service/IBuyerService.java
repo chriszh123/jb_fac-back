@@ -1,12 +1,14 @@
 package com.ruoyi.fac.service;
 
 import com.ruoyi.fac.domain.Buyer;
+import com.ruoyi.fac.model.FacBuyerAddress;
 import com.ruoyi.fac.vo.UserDiagramVo;
 import com.ruoyi.fac.vo.client.ShippingAddress;
 import com.ruoyi.fac.vo.client.UserAmountVo;
 import com.ruoyi.fac.vo.client.UserBaseVo;
 import com.ruoyi.fac.vo.client.UserDetailVo;
 import com.ruoyi.fac.vo.client.req.UserInfo;
+import com.ruoyi.system.domain.SysUser;
 
 import java.util.List;
 import java.util.Map;
@@ -110,4 +112,28 @@ public interface IBuyerService {
      * @return
      */
     UserBaseVo getUserInfo(String token);
+
+    /**
+     * 删除用户地址信息
+     *
+     * @param id
+     * @return
+     */
+    int deleteUserAddress(String id, SysUser user);
+
+    /**
+     * 用户地址列表
+     *
+     * @param address
+     * @return
+     */
+    List<FacBuyerAddress> listBuyerAddresses(FacBuyerAddress address);
+
+    /**
+     * 编辑地址
+     *
+     * @param address
+     * @return
+     */
+    int editAddress(FacBuyerAddress address);
 }

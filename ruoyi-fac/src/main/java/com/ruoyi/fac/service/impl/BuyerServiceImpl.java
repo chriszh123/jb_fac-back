@@ -3,7 +3,10 @@ package com.ruoyi.fac.service.impl;
 import com.ruoyi.common.support.Convert;
 import com.ruoyi.fac.cache.BuyerCache;
 import com.ruoyi.fac.constant.FacConstant;
-import com.ruoyi.fac.domain.*;
+import com.ruoyi.fac.domain.Business;
+import com.ruoyi.fac.domain.Buyer;
+import com.ruoyi.fac.domain.BuyerBusiness;
+import com.ruoyi.fac.domain.Product;
 import com.ruoyi.fac.enums.OrderStatus;
 import com.ruoyi.fac.mapper.*;
 import com.ruoyi.fac.model.*;
@@ -16,11 +19,10 @@ import com.ruoyi.fac.vo.client.UserAmountVo;
 import com.ruoyi.fac.vo.client.UserBaseVo;
 import com.ruoyi.fac.vo.client.UserDetailVo;
 import com.ruoyi.fac.vo.client.req.UserInfo;
+import com.ruoyi.system.domain.SysUser;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,10 +39,9 @@ import java.util.*;
  * @author ruoyi
  * @date 2018-12-24
  */
-@Service
+@Slf4j
+@Service("buyerService")
 public class BuyerServiceImpl implements IBuyerService {
-    private static final Logger log = LoggerFactory.getLogger(BuyerServiceImpl.class);
-
     @Autowired
     private BuyerMapper buyerMapper;
     @Autowired
@@ -55,6 +56,8 @@ public class BuyerServiceImpl implements IBuyerService {
     private FacBuyerAddressMapper facBuyerAddressMapper;
     @Autowired
     private FacOrderProductMapper facOrderProductMapper;
+    @Autowired
+    private FacBuyerAddressMapper addressMapper;
 
     @Autowired
     private BuyerCache buyerCache;
@@ -479,6 +482,58 @@ public class BuyerServiceImpl implements IBuyerService {
         vo.setUserType(CollectionUtils.isEmpty(buyerBusinesses) ? 0 : 1);
 
         return vo;
+    }
+
+    @Override
+    public int deleteUserAddress(String id, SysUser user) {
+        if (StringUtils.isBlank(id)) {
+            log.error(String.format("--------------------[deleteUserAddress] id is blank."));
+            return -1;
+        }
+        final Date nowDate = new Date();
+        final FacBuyerAddress buyerAddress = new FacBuyerAddress();
+        buyerAddress.setIsDeleted(false);
+        buyerAddress.setUpdateTime(nowDate);
+        if (user != null) {
+            buyerAddress.setOperatorId(user.getUserId());
+            buyerAddress.setOperatorName(user.getUserName());
+        }
+        final FacBuyerAddressExample addressExample = new FacBuyerAddressExample();
+        addressExample.createCriteria().andIsDeletedEqualTo(true).andIdEqualTo(Long.valueOf(id));
+        int rows = this.addressMapper.updateByExampleSelective(buyerAddress, addressExample);
+
+        return rows;
+    }
+
+    @Override
+    public List<FacBuyerAddress> listBuyerAddresses(FacBuyerAddress address) {
+        final FacBuyerAddressExample addressExample = new FacBuyerAddressExample();
+        final FacBuyerAddressExample.Criteria criteria = addressExample.or();
+        if (address != null) {
+            // 用户id
+            if (address.getBuyerId() != null) {
+                criteria.andBuyerIdEqualTo(address.getBuyerId());
+            }
+            // 手机号码
+            if (StringUtils.isNotBlank(address.getPhoneNumber())) {
+                String phoneNumber = "%" + address.getPhoneNumber().trim() + "%";
+                criteria.andPhoneNumberLike(phoneNumber);
+            }
+            // 地址
+            if (StringUtils.isNotBlank(address.getAddress())) {
+                String addressContent = "%" + address.getAddress().trim() + "%";
+                criteria.andAddressLike(addressContent);
+            }
+        }
+        addressExample.setOrderByClause(" create_time desc ");
+        final List<FacBuyerAddress> addresses = this.addressMapper.selectByExample(addressExample);
+
+        return addresses;
+    }
+
+    @Override
+    public int editAddress(FacBuyerAddress address) {
+        return 0;
     }
 
     private boolean checkProdBuyed(String prodId, List<BuyerBusiness> buyerBusinesses) {
