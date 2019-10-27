@@ -21,12 +21,12 @@ import com.ruoyi.fac.vo.client.UserDetailVo;
 import com.ruoyi.fac.vo.client.req.UserInfo;
 import com.ruoyi.system.domain.SysUser;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import java.math.BigDecimal;
@@ -492,14 +492,14 @@ public class BuyerServiceImpl implements IBuyerService {
         }
         final Date nowDate = new Date();
         final FacBuyerAddress buyerAddress = new FacBuyerAddress();
-        buyerAddress.setIsDeleted(false);
+        buyerAddress.setIsDeleted(true);
         buyerAddress.setUpdateTime(nowDate);
         if (user != null) {
             buyerAddress.setOperatorId(user.getUserId());
             buyerAddress.setOperatorName(user.getUserName());
         }
         final FacBuyerAddressExample addressExample = new FacBuyerAddressExample();
-        addressExample.createCriteria().andIsDeletedEqualTo(true).andIdEqualTo(Long.valueOf(id));
+        addressExample.createCriteria().andIdEqualTo(Long.valueOf(id));
         int rows = this.addressMapper.updateByExampleSelective(buyerAddress, addressExample);
 
         return rows;
@@ -509,6 +509,7 @@ public class BuyerServiceImpl implements IBuyerService {
     public List<FacBuyerAddress> listBuyerAddresses(FacBuyerAddress address) {
         final FacBuyerAddressExample addressExample = new FacBuyerAddressExample();
         final FacBuyerAddressExample.Criteria criteria = addressExample.or();
+        criteria.andIsDeletedEqualTo(false);
         if (address != null) {
             // 用户id
             if (address.getBuyerId() != null) {
@@ -533,7 +534,26 @@ public class BuyerServiceImpl implements IBuyerService {
 
     @Override
     public int editAddress(FacBuyerAddress address) {
-        return 0;
+        final Date nowDate = new Date();
+        address.setUpdateTime(nowDate);
+        address.setIsDefault(address.getIsDefault() != null);
+
+        final FacBuyerAddressExample addressExample = new FacBuyerAddressExample();
+        addressExample.createCriteria().andIdEqualTo(address.getId());
+
+        int rows = this.addressMapper.updateByExampleSelective(address, addressExample);
+        return rows;
+    }
+
+    @Override
+    public FacBuyerAddress selectAddress(Long id) {
+        final FacBuyerAddressExample addressExample = new FacBuyerAddressExample();
+        addressExample.createCriteria().andIdEqualTo(id);
+        List<FacBuyerAddress> addresses = this.addressMapper.selectByExample(addressExample);
+        if (CollectionUtils.isNotEmpty(addresses)) {
+            return addresses.get(0);
+        }
+        return null;
     }
 
     private boolean checkProdBuyed(String prodId, List<BuyerBusiness> buyerBusinesses) {

@@ -181,6 +181,13 @@ public class BuyerController extends BaseController {
         return toAjax(buyerService.deleteUserAddress(ids, user));
     }
 
+    @GetMapping("/toEditAddress/{id}")
+    public String toEditAddress(@PathVariable("id") Long id, ModelMap mmap) {
+        FacBuyerAddress address = buyerService.selectAddress(id);
+        mmap.put("address", address);
+        return prefix + "/editaddress";
+    }
+
     @RequiresPermissions("fac:buyer:editAddress")
     @Log(title = "买者用户地址-编辑", businessType = BusinessType.UPDATE)
     @PostMapping("/editAddress")

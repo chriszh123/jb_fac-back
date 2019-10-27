@@ -136,4 +136,6 @@ public interface IBuyerService {
      * @return
      */
     int editAddress(FacBuyerAddress address);
+
+    FacBuyerAddress selectAddress(Long id);
 }

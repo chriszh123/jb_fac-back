@@ -126,7 +126,6 @@ public class ProductController extends BaseController {
             return AjaxResult.error(FacConstant.ERROR_MSG_LOGIN_USER_NULL);
         }
         Date now = new Date();
-        product.setCreateTime(now);
         product.setUpdateTime(now);
         if (product.getStatus() == null) {
             product.setStatus(ProductStatus.LOWER_SHELF.getValue());
