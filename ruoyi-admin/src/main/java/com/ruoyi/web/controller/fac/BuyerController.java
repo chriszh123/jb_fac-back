@@ -8,6 +8,7 @@ import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.fac.constant.FacConstant;
 import com.ruoyi.fac.domain.Buyer;
+import com.ruoyi.fac.model.FacBuyerAddress;
 import com.ruoyi.fac.service.IBuyerService;
 import com.ruoyi.fac.vo.UserDiagramVo;
 import com.ruoyi.framework.util.ShiroUtils;
@@ -154,5 +155,51 @@ public class BuyerController extends BaseController {
         // 默认当前一周日期内(Basic area chart)
         UserDiagramVo vo = this.buyerService.queryRecentUserInfo(startDate, endDate);
         return vo;
+    }
+
+    @RequiresPermissions("fac:buyer:address")
+    @GetMapping("/address")
+    public String address() {
+        return prefix + "/address";
+    }
+
+    @RequiresPermissions("fac:buyer:listAddress")
+    @PostMapping("/listAddress")
+    @ResponseBody
+    public TableDataInfo listAddress(FacBuyerAddress address) {
+        startPage();
+        List<FacBuyerAddress> list = buyerService.listBuyerAddresses(address);
+        return getDataTable(list);
+    }
+
+    @RequiresPermissions("fac:buyer:removeAddress")
+    @Log(title = "买者用户地址-删除", businessType = BusinessType.DELETE)
+    @PostMapping("/removeAddress")
+    @ResponseBody
+    public AjaxResult removeAddress(String ids) {
+        SysUser user = ShiroUtils.getSysUser();
+        return toAjax(buyerService.deleteUserAddress(ids, user));
+    }
+
+    @GetMapping("/toEditAddress/{id}")
+    public String toEditAddress(@PathVariable("id") Long id, ModelMap mmap) {
+        FacBuyerAddress address = buyerService.selectAddress(id);
+        mmap.put("address", address);
+        return prefix + "/editaddress";
+    }
+
+    @RequiresPermissions("fac:buyer:editAddress")
+    @Log(title = "买者用户地址-编辑", businessType = BusinessType.UPDATE)
+    @PostMapping("/editAddress")
+    @ResponseBody
+    public AjaxResult editAddress(FacBuyerAddress address) {
+        SysUser user = ShiroUtils.getSysUser();
+        if (user != null) {
+            address.setOperatorName(user.getUserName());
+            address.setOperatorId(user.getUserId());
+        } else {
+            return AjaxResult.error(FacConstant.ERROR_MSG_LOGIN_USER_NULL);
+        }
+        return toAjax(buyerService.editAddress(address));
     }
 }
