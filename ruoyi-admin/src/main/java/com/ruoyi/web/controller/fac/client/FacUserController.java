@@ -10,15 +10,13 @@ import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.fac.domain.Buyer;
 import com.ruoyi.fac.enums.FacCode;
 import com.ruoyi.fac.exception.FacException;
+import com.ruoyi.fac.model.FacLeaveMessage;
 import com.ruoyi.fac.service.IBuyerAddressService;
 import com.ruoyi.fac.service.IBuyerService;
 import com.ruoyi.fac.service.IUserSignService;
 import com.ruoyi.fac.service.WechatAdapterService;
 import com.ruoyi.fac.vo.client.*;
-import com.ruoyi.fac.vo.client.req.OrderReq;
-import com.ruoyi.fac.vo.client.req.SignReq;
-import com.ruoyi.fac.vo.client.req.UserInfo;
-import com.ruoyi.fac.vo.client.req.UserReq;
+import com.ruoyi.fac.vo.client.req.*;
 import com.ruoyi.fac.vo.client.res.LoginVo;
 import com.ruoyi.fac.vo.client.res.UserScoreLogs;
 import com.ruoyi.fac.vo.client.res.UserSignLogs;
@@ -284,6 +282,27 @@ public class FacUserController extends BaseController {
         }
         UserBaseVo vo = this.buyerService.getUserInfo(req.getToken());
         return FacResult.success(vo);
+    }
+
+
+    @PostMapping("/leavemessage/add")
+    @ResponseBody
+    public FacResult addLeaveMessage(@RequestBody FacLeaveMessage vo) {
+        if (vo == null || StringUtils.isBlank(vo.getToken())) {
+            return FacResult.error("用户token不能为空");
+        }
+        this.buyerService.addLeaveMessage(vo);
+        return FacResult.success("");
+    }
+
+    @PostMapping("/leavemessage/list")
+    @ResponseBody
+    public FacResult listLeaveMessage(@RequestBody QuestionReq req) {
+        if (req == null || StringUtils.isBlank(req.getToken())) {
+            return FacResult.error("用户token不能为空");
+        }
+        List<FacLeaveMessage> messages = this.buyerService.listLeaveMessage(req);
+        return FacResult.success(messages);
     }
 
     public static void main(String[] args) {

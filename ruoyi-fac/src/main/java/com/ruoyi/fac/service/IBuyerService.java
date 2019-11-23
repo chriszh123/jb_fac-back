@@ -2,11 +2,13 @@ package com.ruoyi.fac.service;
 
 import com.ruoyi.fac.domain.Buyer;
 import com.ruoyi.fac.model.FacBuyerAddress;
+import com.ruoyi.fac.model.FacLeaveMessage;
 import com.ruoyi.fac.vo.UserDiagramVo;
 import com.ruoyi.fac.vo.client.ShippingAddress;
 import com.ruoyi.fac.vo.client.UserAmountVo;
 import com.ruoyi.fac.vo.client.UserBaseVo;
 import com.ruoyi.fac.vo.client.UserDetailVo;
+import com.ruoyi.fac.vo.client.req.QuestionReq;
 import com.ruoyi.fac.vo.client.req.UserInfo;
 import com.ruoyi.system.domain.SysUser;
 
@@ -138,4 +140,19 @@ public interface IBuyerService {
     int editAddress(FacBuyerAddress address);
 
     FacBuyerAddress selectAddress(Long id);
+
+    /**
+     *  查询指定的用户对应的留言
+     *
+     * @param req QuestionReq
+     * @return List<FacLeaveMessage>
+     */
+    List<FacLeaveMessage> listLeaveMessage(QuestionReq req);
+
+    /**
+     *  增加一条留言信息
+     *
+     * @param vo FacLeaveMessage
+     */
+    void addLeaveMessage(FacLeaveMessage vo);
 }

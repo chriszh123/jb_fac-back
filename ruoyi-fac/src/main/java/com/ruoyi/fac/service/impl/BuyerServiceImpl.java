@@ -18,12 +18,15 @@ import com.ruoyi.fac.vo.UserDiagramVo;
 import com.ruoyi.fac.vo.client.UserAmountVo;
 import com.ruoyi.fac.vo.client.UserBaseVo;
 import com.ruoyi.fac.vo.client.UserDetailVo;
+import com.ruoyi.fac.vo.client.req.QuestionReq;
 import com.ruoyi.fac.vo.client.req.UserInfo;
 import com.ruoyi.system.domain.SysUser;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.NoUniqueBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,6 +61,8 @@ public class BuyerServiceImpl implements IBuyerService {
     private FacOrderProductMapper facOrderProductMapper;
     @Autowired
     private FacBuyerAddressMapper addressMapper;
+    @Autowired
+    private FacLeaveMessageMapper leaveMessageMapper;
 
     @Autowired
     private BuyerCache buyerCache;
@@ -554,6 +559,31 @@ public class BuyerServiceImpl implements IBuyerService {
             return addresses.get(0);
         }
         return null;
+    }
+
+    @Override
+    public List<FacLeaveMessage> listLeaveMessage(QuestionReq req) {
+        final FacLeaveMessageExample messageExample = new FacLeaveMessageExample();
+        FacLeaveMessageExample.Criteria criteria = messageExample.createCriteria();
+        criteria.andIsDeletedEqualTo(false).andTokenEqualTo(req.getToken());
+        if (req.getPage() != null && req.getSize() != null) {
+            messageExample.setStartRow(req.getPage() * req.getSize());
+            messageExample.setPageSize(req.getSize());
+        }
+        List<FacLeaveMessage> leaveMessages = this.leaveMessageMapper.selectByExample(messageExample);
+        return leaveMessages;
+    }
+
+    @Override
+    public void addLeaveMessage(FacLeaveMessage vo) {
+        final Date nowDate = new Date();
+        vo.setCreateTime(nowDate);
+        vo.setUpdateTime(nowDate);
+        vo.setIsDeleted(false);
+        vo.setOperatorId(-1L);
+        vo.setOperatorName(vo.getToken());
+
+        this.leaveMessageMapper.insert(vo);
     }
 
     private boolean checkProdBuyed(String prodId, List<BuyerBusiness> buyerBusinesses) {

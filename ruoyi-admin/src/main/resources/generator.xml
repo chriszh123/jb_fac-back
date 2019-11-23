@@ -44,14 +44,14 @@
         </javaClientGenerator>
 
         <!-- 相关表的配置 -->
-        <table tableName="fac_product" domainObjectName="FacProduct"
-               enableInsert="true" enableSelectByPrimaryKey="true"
-               enableSelectByExample="true" enableUpdateByPrimaryKey="true"
-               enableDeleteByPrimaryKey="true" enableDeleteByExample="true"
-               enableCountByExample="true" enableUpdateByExample="true"
-               selectByExampleQueryId="true">
-            <generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />
-        </table>
+        <!--<table tableName="fac_product" domainObjectName="FacProduct"-->
+               <!--enableInsert="true" enableSelectByPrimaryKey="true"-->
+               <!--enableSelectByExample="true" enableUpdateByPrimaryKey="true"-->
+               <!--enableDeleteByPrimaryKey="true" enableDeleteByExample="true"-->
+               <!--enableCountByExample="true" enableUpdateByExample="true"-->
+               <!--selectByExampleQueryId="true">-->
+            <!--<generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />-->
+        <!--</table>-->
 
         <!--<table tableName="fac_product_category" domainObjectName="FacProductCategory"-->
                <!--enableInsert="true" enableSelectByPrimaryKey="true"-->
@@ -196,6 +196,24 @@
                <!--selectByExampleQueryId="true">-->
             <!--<generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />-->
         <!--</table>-->
+
+        <!--<table tableName="fac_leave_message" domainObjectName="FacLeaveMessage"-->
+               <!--enableInsert="true" enableSelectByPrimaryKey="true"-->
+               <!--enableSelectByExample="true" enableUpdateByPrimaryKey="true"-->
+               <!--enableDeleteByPrimaryKey="true" enableDeleteByExample="true"-->
+               <!--enableCountByExample="true" enableUpdateByExample="true"-->
+               <!--selectByExampleQueryId="true">-->
+            <!--<generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />-->
+        <!--</table>-->
+
+        <table tableName="fac_leave_message_reply" domainObjectName="FacLeaveMessageReply"
+               enableInsert="true" enableSelectByPrimaryKey="true"
+               enableSelectByExample="true" enableUpdateByPrimaryKey="true"
+               enableDeleteByPrimaryKey="true" enableDeleteByExample="true"
+               enableCountByExample="true" enableUpdateByExample="true"
+               selectByExampleQueryId="true">
+            <generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />
+        </table>
 
     </context>
 </generatorConfiguration>
