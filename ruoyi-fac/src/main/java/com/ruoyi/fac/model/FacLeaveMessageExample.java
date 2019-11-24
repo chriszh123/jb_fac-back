@@ -414,6 +414,146 @@ public class FacLeaveMessageExample {
             return (Criteria) this;
         }
 
+        public Criteria andTokenAnswerIsNull() {
+            addCriterion("token_answer is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andTokenAnswerIsNotNull() {
+            addCriterion("token_answer is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andTokenAnswerEqualTo(String value) {
+            addCriterion("token_answer =", value, "tokenAnswer");
+            return (Criteria) this;
+        }
+
+        public Criteria andTokenAnswerNotEqualTo(String value) {
+            addCriterion("token_answer <>", value, "tokenAnswer");
+            return (Criteria) this;
+        }
+
+        public Criteria andTokenAnswerGreaterThan(String value) {
+            addCriterion("token_answer >", value, "tokenAnswer");
+            return (Criteria) this;
+        }
+
+        public Criteria andTokenAnswerGreaterThanOrEqualTo(String value) {
+            addCriterion("token_answer >=", value, "tokenAnswer");
+            return (Criteria) this;
+        }
+
+        public Criteria andTokenAnswerLessThan(String value) {
+            addCriterion("token_answer <", value, "tokenAnswer");
+            return (Criteria) this;
+        }
+
+        public Criteria andTokenAnswerLessThanOrEqualTo(String value) {
+            addCriterion("token_answer <=", value, "tokenAnswer");
+            return (Criteria) this;
+        }
+
+        public Criteria andTokenAnswerLike(String value) {
+            addCriterion("token_answer like", value, "tokenAnswer");
+            return (Criteria) this;
+        }
+
+        public Criteria andTokenAnswerNotLike(String value) {
+            addCriterion("token_answer not like", value, "tokenAnswer");
+            return (Criteria) this;
+        }
+
+        public Criteria andTokenAnswerIn(List<String> values) {
+            addCriterion("token_answer in", values, "tokenAnswer");
+            return (Criteria) this;
+        }
+
+        public Criteria andTokenAnswerNotIn(List<String> values) {
+            addCriterion("token_answer not in", values, "tokenAnswer");
+            return (Criteria) this;
+        }
+
+        public Criteria andTokenAnswerBetween(String value1, String value2) {
+            addCriterion("token_answer between", value1, value2, "tokenAnswer");
+            return (Criteria) this;
+        }
+
+        public Criteria andTokenAnswerNotBetween(String value1, String value2) {
+            addCriterion("token_answer not between", value1, value2, "tokenAnswer");
+            return (Criteria) this;
+        }
+
+        public Criteria andMngtRemarkIsNull() {
+            addCriterion("mngt_remark is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andMngtRemarkIsNotNull() {
+            addCriterion("mngt_remark is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andMngtRemarkEqualTo(String value) {
+            addCriterion("mngt_remark =", value, "mngtRemark");
+            return (Criteria) this;
+        }
+
+        public Criteria andMngtRemarkNotEqualTo(String value) {
+            addCriterion("mngt_remark <>", value, "mngtRemark");
+            return (Criteria) this;
+        }
+
+        public Criteria andMngtRemarkGreaterThan(String value) {
+            addCriterion("mngt_remark >", value, "mngtRemark");
+            return (Criteria) this;
+        }
+
+        public Criteria andMngtRemarkGreaterThanOrEqualTo(String value) {
+            addCriterion("mngt_remark >=", value, "mngtRemark");
+            return (Criteria) this;
+        }
+
+        public Criteria andMngtRemarkLessThan(String value) {
+            addCriterion("mngt_remark <", value, "mngtRemark");
+            return (Criteria) this;
+        }
+
+        public Criteria andMngtRemarkLessThanOrEqualTo(String value) {
+            addCriterion("mngt_remark <=", value, "mngtRemark");
+            return (Criteria) this;
+        }
+
+        public Criteria andMngtRemarkLike(String value) {
+            addCriterion("mngt_remark like", value, "mngtRemark");
+            return (Criteria) this;
+        }
+
+        public Criteria andMngtRemarkNotLike(String value) {
+            addCriterion("mngt_remark not like", value, "mngtRemark");
+            return (Criteria) this;
+        }
+
+        public Criteria andMngtRemarkIn(List<String> values) {
+            addCriterion("mngt_remark in", values, "mngtRemark");
+            return (Criteria) this;
+        }
+
+        public Criteria andMngtRemarkNotIn(List<String> values) {
+            addCriterion("mngt_remark not in", values, "mngtRemark");
+            return (Criteria) this;
+        }
+
+        public Criteria andMngtRemarkBetween(String value1, String value2) {
+            addCriterion("mngt_remark between", value1, value2, "mngtRemark");
+            return (Criteria) this;
+        }
+
+        public Criteria andMngtRemarkNotBetween(String value1, String value2) {
+            addCriterion("mngt_remark not between", value1, value2, "mngtRemark");
+            return (Criteria) this;
+        }
+
         public Criteria andCreateTimeIsNull() {
             addCriterion("create_time is null");
             return (Criteria) this;

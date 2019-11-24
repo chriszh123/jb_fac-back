@@ -155,4 +155,12 @@ public interface IBuyerService {
      * @param vo FacLeaveMessage
      */
     void addLeaveMessage(FacLeaveMessage vo);
+
+    /**
+     * 删除用户留言信息：客户端用户自己撤回留言
+     *
+     * @param token
+     * @param id
+     */
+    void removeLeaveMessage(String token, Long id);
 }

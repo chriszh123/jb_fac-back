@@ -284,6 +284,15 @@ public class FacUserController extends BaseController {
         return FacResult.success(vo);
     }
 
+    @PostMapping("/leavemessage/list")
+    @ResponseBody
+    public FacResult listLeaveMessage(@RequestBody QuestionReq req) {
+        if (req == null || StringUtils.isBlank(req.getToken())) {
+            return FacResult.error("用户token不能为空");
+        }
+        List<FacLeaveMessage> messages = this.buyerService.listLeaveMessage(req);
+        return FacResult.success(messages);
+    }
 
     @PostMapping("/leavemessage/add")
     @ResponseBody
@@ -295,14 +304,17 @@ public class FacUserController extends BaseController {
         return FacResult.success("");
     }
 
-    @PostMapping("/leavemessage/list")
+    @PostMapping("/leavemessage/remove")
     @ResponseBody
-    public FacResult listLeaveMessage(@RequestBody QuestionReq req) {
-        if (req == null || StringUtils.isBlank(req.getToken())) {
+    public FacResult removeLeaveMessage(@RequestBody FacLeaveMessage vo) {
+        if (vo == null || StringUtils.isBlank(vo.getToken())) {
             return FacResult.error("用户token不能为空");
         }
-        List<FacLeaveMessage> messages = this.buyerService.listLeaveMessage(req);
-        return FacResult.success(messages);
+        if (vo.getId() == null) {
+            return FacResult.error("留言id不能为空");
+        }
+        this.buyerService.removeLeaveMessage(vo.getToken(), vo.getId());
+        return FacResult.success("");
     }
 
     public static void main(String[] args) {

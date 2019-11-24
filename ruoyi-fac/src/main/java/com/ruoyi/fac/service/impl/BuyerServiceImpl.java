@@ -570,6 +570,7 @@ public class BuyerServiceImpl implements IBuyerService {
             messageExample.setStartRow(req.getPage() * req.getSize());
             messageExample.setPageSize(req.getSize());
         }
+        messageExample.setOrderByClause(" create_time desc");
         List<FacLeaveMessage> leaveMessages = this.leaveMessageMapper.selectByExample(messageExample);
         return leaveMessages;
     }
@@ -582,8 +583,26 @@ public class BuyerServiceImpl implements IBuyerService {
         vo.setIsDeleted(false);
         vo.setOperatorId(-1L);
         vo.setOperatorName(vo.getToken());
+        vo.setMngtRemark("");
 
         this.leaveMessageMapper.insert(vo);
+    }
+
+    /**
+     * 删除用户留言信息：客户端用户自己撤回留言
+     *
+     * @param token
+     * @param id
+     */
+    @Override
+    public void removeLeaveMessage(String token, Long id) {
+        final FacLeaveMessage update = new FacLeaveMessage();
+        update.setIsDeleted(true);
+        update.setUpdateTime(new Date());
+        update.setOperatorName(token);
+        final FacLeaveMessageExample example = new FacLeaveMessageExample();
+        example.createCriteria().andIsDeletedEqualTo(false).andTokenEqualTo(token).andIdEqualTo(id);
+        this.leaveMessageMapper.updateByExampleSelective(update, example);
     }
 
     private boolean checkProdBuyed(String prodId, List<BuyerBusiness> buyerBusinesses) {
