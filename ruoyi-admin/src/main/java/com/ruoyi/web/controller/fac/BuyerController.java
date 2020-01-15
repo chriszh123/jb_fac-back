@@ -36,11 +36,13 @@ import java.util.Map;
 public class BuyerController extends BaseController {
     private String prefix = "fac/buyer";
     private String prefix_analysis = "fac/dataAnalysis";
+    private String prefix_message = "fac/leavemessage";
 
     @Autowired
     private IBuyerService buyerService;
 
-    @RequiresPermissions("fac:buyer:view")
+    @RequiresPermissions("fac:buyer:view"
+        + "")
     @GetMapping()
     public String buyer() {
         return prefix + "/buyer";
@@ -205,13 +207,13 @@ public class BuyerController extends BaseController {
     }
 
     @RequiresPermissions("fac:buyer:viewleavemessage")
-    @GetMapping()
+    @GetMapping("/toLeaveMessage")
     public String leaveMessage() {
-        return prefix + "/leavemessage";
+        return prefix_message + "/leavemessage";
     }
 
-    @RequiresPermissions("fac:buyer:leaveMessage")
-    @PostMapping("/listMessage")
+    @RequiresPermissions("fac:buyer:listLeaveMessage")
+    @PostMapping("/listLeaveMessage")
     @ResponseBody
     public TableDataInfo listLeaveMessage(FacLeaveMessage message) {
         startPage();
@@ -223,6 +225,6 @@ public class BuyerController extends BaseController {
     public String toEditLeaveMessage(@PathVariable("id") Long id, ModelMap mmap) {
         final FacLeaveMessage message = this.buyerService.selectLeaveMessage(id);
         mmap.put("message", message);
-        return prefix + "/editleavemessage";
+        return prefix_message + "/editleavemessage";
     }
 }
