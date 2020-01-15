@@ -4,7 +4,6 @@ import com.ruoyi.fac.domain.Buyer;
 import com.ruoyi.fac.model.FacBuyerAddress;
 import com.ruoyi.fac.model.FacLeaveMessage;
 import com.ruoyi.fac.vo.UserDiagramVo;
-import com.ruoyi.fac.vo.client.ShippingAddress;
 import com.ruoyi.fac.vo.client.UserAmountVo;
 import com.ruoyi.fac.vo.client.UserBaseVo;
 import com.ruoyi.fac.vo.client.UserDetailVo;
