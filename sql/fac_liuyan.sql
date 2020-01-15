@@ -18,7 +18,7 @@ CREATE TABLE `fac_leave_message` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='用户留言表';
 
 -- --------------------------
--- 2、用户留言回复表表
+-- 2、用户留言回复表表(暂未使用)
 -- --------------------------
 drop table if exists `fac_leave_message_reply`;
 CREATE TABLE `fac_leave_message_reply` (

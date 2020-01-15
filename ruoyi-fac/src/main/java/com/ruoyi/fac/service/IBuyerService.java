@@ -162,4 +162,14 @@ public interface IBuyerService {
      * @param id
      */
     void removeLeaveMessage(String token, Long id);
+
+    /**
+     *  用户留言信息：列表
+     *
+     * @param message FacLeaveMessage
+     * @return List<FacLeaveMessage>
+     */
+    List<FacLeaveMessage> selectLeaveMessages(FacLeaveMessage message);
+
+    FacLeaveMessage selectLeaveMessage(Long id);
 }

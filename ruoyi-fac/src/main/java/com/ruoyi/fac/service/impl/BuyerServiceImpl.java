@@ -605,6 +605,32 @@ public class BuyerServiceImpl implements IBuyerService {
         this.leaveMessageMapper.updateByExampleSelective(update, example);
     }
 
+    /**
+     *  用户留言信息：列表
+     *
+     * @param message FacLeaveMessage
+     * @return List<FacLeaveMessage>
+     */
+    @Override
+    public List<FacLeaveMessage> selectLeaveMessages(FacLeaveMessage message) {
+        final FacLeaveMessageExample example = new FacLeaveMessageExample();
+        example.createCriteria().andIsDeletedEqualTo(false);
+        example.setOrderByClause("create_time desc");
+        final List<FacLeaveMessage> messages = this.leaveMessageMapper.selectByExample(example);
+        return messages;
+    }
+
+    @Override
+    public FacLeaveMessage selectLeaveMessage(Long id) {
+        final FacLeaveMessageExample example = new FacLeaveMessageExample();
+        example.createCriteria().andIsDeletedEqualTo(false).andIdEqualTo(id);
+        final List<FacLeaveMessage> messages = this.leaveMessageMapper.selectByExample(example);
+        if (CollectionUtils.isNotEmpty(messages)) {
+            return messages.get(0);
+        }
+        return null;
+    }
+
     private boolean checkProdBuyed(String prodId, List<BuyerBusiness> buyerBusinesses) {
         if (StringUtils.isEmpty(prodId) || CollectionUtils.isEmpty(buyerBusinesses)) {
             return false;
