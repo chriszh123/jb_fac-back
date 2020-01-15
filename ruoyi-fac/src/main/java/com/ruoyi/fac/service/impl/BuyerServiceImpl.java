@@ -614,7 +614,17 @@ public class BuyerServiceImpl implements IBuyerService {
     @Override
     public List<FacLeaveMessage> selectLeaveMessages(FacLeaveMessage message) {
         final FacLeaveMessageExample example = new FacLeaveMessageExample();
-        example.createCriteria().andIsDeletedEqualTo(false);
+        FacLeaveMessageExample.Criteria criteria = example.createCriteria();
+        criteria.andIsDeletedEqualTo(false);
+        if (StringUtils.isNotBlank(message.getRemark()) && StringUtils.isNotBlank(message.getRemark().trim())) {
+            criteria.andRemarkLike("%" + message.getRemark().trim() + "%");
+        }
+        if (message.getStatus() != null) {
+            criteria.andStatusEqualTo(message.getStatus());
+        }
+        if (StringUtils.isNotBlank(message.getMngtRemark()) && StringUtils.isNotBlank(message.getMngtRemark().trim())) {
+            criteria.andMngtRemarkLike("%" + message.getMngtRemark().trim() + "%");
+        }
         example.setOrderByClause("create_time desc");
         final List<FacLeaveMessage> messages = this.leaveMessageMapper.selectByExample(example);
         return messages;

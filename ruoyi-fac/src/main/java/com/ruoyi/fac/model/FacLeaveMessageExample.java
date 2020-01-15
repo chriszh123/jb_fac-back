@@ -344,6 +344,76 @@ public class FacLeaveMessageExample {
             return (Criteria) this;
         }
 
+        public Criteria andNickNameIsNull() {
+            addCriterion("nick_name is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andNickNameIsNotNull() {
+            addCriterion("nick_name is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andNickNameEqualTo(String value) {
+            addCriterion("nick_name =", value, "nickName");
+            return (Criteria) this;
+        }
+
+        public Criteria andNickNameNotEqualTo(String value) {
+            addCriterion("nick_name <>", value, "nickName");
+            return (Criteria) this;
+        }
+
+        public Criteria andNickNameGreaterThan(String value) {
+            addCriterion("nick_name >", value, "nickName");
+            return (Criteria) this;
+        }
+
+        public Criteria andNickNameGreaterThanOrEqualTo(String value) {
+            addCriterion("nick_name >=", value, "nickName");
+            return (Criteria) this;
+        }
+
+        public Criteria andNickNameLessThan(String value) {
+            addCriterion("nick_name <", value, "nickName");
+            return (Criteria) this;
+        }
+
+        public Criteria andNickNameLessThanOrEqualTo(String value) {
+            addCriterion("nick_name <=", value, "nickName");
+            return (Criteria) this;
+        }
+
+        public Criteria andNickNameLike(String value) {
+            addCriterion("nick_name like", value, "nickName");
+            return (Criteria) this;
+        }
+
+        public Criteria andNickNameNotLike(String value) {
+            addCriterion("nick_name not like", value, "nickName");
+            return (Criteria) this;
+        }
+
+        public Criteria andNickNameIn(List<String> values) {
+            addCriterion("nick_name in", values, "nickName");
+            return (Criteria) this;
+        }
+
+        public Criteria andNickNameNotIn(List<String> values) {
+            addCriterion("nick_name not in", values, "nickName");
+            return (Criteria) this;
+        }
+
+        public Criteria andNickNameBetween(String value1, String value2) {
+            addCriterion("nick_name between", value1, value2, "nickName");
+            return (Criteria) this;
+        }
+
+        public Criteria andNickNameNotBetween(String value1, String value2) {
+            addCriterion("nick_name not between", value1, value2, "nickName");
+            return (Criteria) this;
+        }
+
         public Criteria andRemarkIsNull() {
             addCriterion("remark is null");
             return (Criteria) this;
@@ -551,6 +621,66 @@ public class FacLeaveMessageExample {
 
         public Criteria andMngtRemarkNotBetween(String value1, String value2) {
             addCriterion("mngt_remark not between", value1, value2, "mngtRemark");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatusIsNull() {
+            addCriterion("status is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatusIsNotNull() {
+            addCriterion("status is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatusEqualTo(Boolean value) {
+            addCriterion("status =", value, "status");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatusNotEqualTo(Boolean value) {
+            addCriterion("status <>", value, "status");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatusGreaterThan(Boolean value) {
+            addCriterion("status >", value, "status");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatusGreaterThanOrEqualTo(Boolean value) {
+            addCriterion("status >=", value, "status");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatusLessThan(Boolean value) {
+            addCriterion("status <", value, "status");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatusLessThanOrEqualTo(Boolean value) {
+            addCriterion("status <=", value, "status");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatusIn(List<Boolean> values) {
+            addCriterion("status in", values, "status");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatusNotIn(List<Boolean> values) {
+            addCriterion("status not in", values, "status");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatusBetween(Boolean value1, Boolean value2) {
+            addCriterion("status between", value1, value2, "status");
+            return (Criteria) this;
+        }
+
+        public Criteria andStatusNotBetween(Boolean value1, Boolean value2) {
+            addCriterion("status not between", value1, value2, "status");
             return (Criteria) this;
         }
 
