@@ -41,8 +41,7 @@ public class BuyerController extends BaseController {
     @Autowired
     private IBuyerService buyerService;
 
-    @RequiresPermissions("fac:buyer:view"
-        + "")
+    @RequiresPermissions("fac:buyer:view")
     @GetMapping()
     public String buyer() {
         return prefix + "/buyer";
