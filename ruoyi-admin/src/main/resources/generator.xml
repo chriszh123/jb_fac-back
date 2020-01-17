@@ -16,7 +16,10 @@
                 driverClass="com.mysql.jdbc.Driver"
                 connectionURL="jdbc:mysql://localhost:3306/ry?serverTimezone=GMT"
                 userId="root"
-                password="123456"/>
+                password="123456">
+                <!--识别主键,生成****ByPrimaryKey****方法-->
+                <property name="useInformationSchema" value="true"/>
+        </jdbcConnection>
 
         <javaTypeResolver>
             <property name="forceBigDecimals" value="false"/>
