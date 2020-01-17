@@ -10,7 +10,7 @@ package com.ruoyi.mry.constant;
  * Fac常量定义类
  *
  * @author zhangguifeng
- * @create 2019-01-08 11:27
+ * @create 2020-01-18 11:27
  **/
 public class MryConstant {
 
