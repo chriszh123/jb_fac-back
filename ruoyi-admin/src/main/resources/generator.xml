@@ -216,77 +216,86 @@
             <!--<generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />-->
         <!--</table>-->
 
-        <!--<table tableName="mry_basic_shop" domainObjectName="MryShop"-->
-               <!--enableInsert="true" enableSelectByPrimaryKey="true"-->
-               <!--enableSelectByExample="true" enableUpdateByPrimaryKey="true"-->
-               <!--enableDeleteByPrimaryKey="true" enableDeleteByExample="true"-->
-               <!--enableCountByExample="true" enableUpdateByExample="true"-->
-               <!--selectByExampleQueryId="true">-->
-            <!--<generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />-->
-        <!--</table>-->
+        <table tableName="mry_basic_shop" domainObjectName="MryShop"
+               enableInsert="true" enableSelectByPrimaryKey="true"
+               enableSelectByExample="true" enableUpdateByPrimaryKey="true"
+               enableDeleteByPrimaryKey="true" enableDeleteByExample="true"
+               enableCountByExample="true" enableUpdateByExample="true"
+               selectByExampleQueryId="true">
+            <generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />
+        </table>
 
-        <!--<table tableName="mry_basic_service_pro" domainObjectName="MryServicePro"-->
-               <!--enableInsert="true" enableSelectByPrimaryKey="true"-->
-               <!--enableSelectByExample="true" enableUpdateByPrimaryKey="true"-->
-               <!--enableDeleteByPrimaryKey="true" enableDeleteByExample="true"-->
-               <!--enableCountByExample="true" enableUpdateByExample="true"-->
-               <!--selectByExampleQueryId="true">-->
-            <!--<generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />-->
-        <!--</table>-->
+        <table tableName="mry_basic_service_pro" domainObjectName="MryServicePro"
+               enableInsert="true" enableSelectByPrimaryKey="true"
+               enableSelectByExample="true" enableUpdateByPrimaryKey="true"
+               enableDeleteByPrimaryKey="true" enableDeleteByExample="true"
+               enableCountByExample="true" enableUpdateByExample="true"
+               selectByExampleQueryId="true">
+            <generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />
+        </table>
 
-        <!--<table tableName="mry_customer" domainObjectName="MryCustomer"-->
-               <!--enableInsert="true" enableSelectByPrimaryKey="true"-->
-               <!--enableSelectByExample="true" enableUpdateByPrimaryKey="true"-->
-               <!--enableDeleteByPrimaryKey="true" enableDeleteByExample="true"-->
-               <!--enableCountByExample="true" enableUpdateByExample="true"-->
-               <!--selectByExampleQueryId="true">-->
-            <!--<generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />-->
-        <!--</table>-->
+        <table tableName="mry_customer" domainObjectName="MryCustomer"
+               enableInsert="true" enableSelectByPrimaryKey="true"
+               enableSelectByExample="true" enableUpdateByPrimaryKey="true"
+               enableDeleteByPrimaryKey="true" enableDeleteByExample="true"
+               enableCountByExample="true" enableUpdateByExample="true"
+               selectByExampleQueryId="true">
+            <generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />
+        </table>
 
-        <!--<table tableName="mry_worklog" domainObjectName="MryWorklog"-->
-               <!--enableInsert="true" enableSelectByPrimaryKey="true"-->
-               <!--enableSelectByExample="true" enableUpdateByPrimaryKey="true"-->
-               <!--enableDeleteByPrimaryKey="true" enableDeleteByExample="true"-->
-               <!--enableCountByExample="true" enableUpdateByExample="true"-->
-               <!--selectByExampleQueryId="true">-->
-            <!--<generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />-->
-        <!--</table>-->
+        <table tableName="mry_worklog" domainObjectName="MryWorklog"
+               enableInsert="true" enableSelectByPrimaryKey="true"
+               enableSelectByExample="true" enableUpdateByPrimaryKey="true"
+               enableDeleteByPrimaryKey="true" enableDeleteByExample="true"
+               enableCountByExample="true" enableUpdateByExample="true"
+               selectByExampleQueryId="true">
+            <generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />
+        </table>
 
-        <!--<table tableName="mry_staff" domainObjectName="MryStaff"-->
-               <!--enableInsert="true" enableSelectByPrimaryKey="true"-->
-               <!--enableSelectByExample="true" enableUpdateByPrimaryKey="true"-->
-               <!--enableDeleteByPrimaryKey="true" enableDeleteByExample="true"-->
-               <!--enableCountByExample="true" enableUpdateByExample="true"-->
-               <!--selectByExampleQueryId="true">-->
-            <!--<generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />-->
-        <!--</table>-->
+        <table tableName="mry_staff" domainObjectName="MryStaff"
+               enableInsert="true" enableSelectByPrimaryKey="true"
+               enableSelectByExample="true" enableUpdateByPrimaryKey="true"
+               enableDeleteByPrimaryKey="true" enableDeleteByExample="true"
+               enableCountByExample="true" enableUpdateByExample="true"
+               selectByExampleQueryId="true">
+            <generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />
+        </table>
 
-        <!--<table tableName="mry_customer_pro" domainObjectName="MryCustomerPro"-->
-               <!--enableInsert="true" enableSelectByPrimaryKey="true"-->
-               <!--enableSelectByExample="true" enableUpdateByPrimaryKey="true"-->
-               <!--enableDeleteByPrimaryKey="true" enableDeleteByExample="true"-->
-               <!--enableCountByExample="true" enableUpdateByExample="true"-->
-               <!--selectByExampleQueryId="true">-->
-            <!--<generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />-->
-        <!--</table>-->
+        <table tableName="mry_customer_pro" domainObjectName="MryCustomerPro"
+               enableInsert="true" enableSelectByPrimaryKey="true"
+               enableSelectByExample="true" enableUpdateByPrimaryKey="true"
+               enableDeleteByPrimaryKey="true" enableDeleteByExample="true"
+               enableCountByExample="true" enableUpdateByExample="true"
+               selectByExampleQueryId="true">
+            <generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />
+        </table>
 
-        <!--<table tableName="mry_basic_shop_card" domainObjectName="MryShopCard"-->
-               <!--enableInsert="true" enableSelectByPrimaryKey="true"-->
-               <!--enableSelectByExample="true" enableUpdateByPrimaryKey="true"-->
-               <!--enableDeleteByPrimaryKey="true" enableDeleteByExample="true"-->
-               <!--enableCountByExample="true" enableUpdateByExample="true"-->
-               <!--selectByExampleQueryId="true">-->
-            <!--<generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />-->
-        <!--</table>-->
+        <table tableName="mry_customer_pro_item" domainObjectName="MryCustomerProItem"
+            enableInsert="true" enableSelectByPrimaryKey="true"
+            enableSelectByExample="true" enableUpdateByPrimaryKey="true"
+            enableDeleteByPrimaryKey="true" enableDeleteByExample="true"
+            enableCountByExample="true" enableUpdateByExample="true"
+            selectByExampleQueryId="true">
+            <generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />
+        </table>
 
-        <!--<table tableName="mry_customer_card" domainObjectName="MryCustomerCard"-->
-               <!--enableInsert="true" enableSelectByPrimaryKey="true"-->
-               <!--enableSelectByExample="true" enableUpdateByPrimaryKey="true"-->
-               <!--enableDeleteByPrimaryKey="true" enableDeleteByExample="true"-->
-               <!--enableCountByExample="true" enableUpdateByExample="true"-->
-               <!--selectByExampleQueryId="true">-->
-            <!--<generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />-->
-        <!--</table>-->
+        <table tableName="mry_basic_shop_card" domainObjectName="MryShopCard"
+               enableInsert="true" enableSelectByPrimaryKey="true"
+               enableSelectByExample="true" enableUpdateByPrimaryKey="true"
+               enableDeleteByPrimaryKey="true" enableDeleteByExample="true"
+               enableCountByExample="true" enableUpdateByExample="true"
+               selectByExampleQueryId="true">
+            <generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />
+        </table>
+
+        <table tableName="mry_customer_card" domainObjectName="MryCustomerCard"
+               enableInsert="true" enableSelectByPrimaryKey="true"
+               enableSelectByExample="true" enableUpdateByPrimaryKey="true"
+               enableDeleteByPrimaryKey="true" enableDeleteByExample="true"
+               enableCountByExample="true" enableUpdateByExample="true"
+               selectByExampleQueryId="true">
+            <generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />
+        </table>
 
         <table tableName="mry_staff_leave" domainObjectName="MryStaffLeave"
                enableInsert="true" enableSelectByPrimaryKey="true"
