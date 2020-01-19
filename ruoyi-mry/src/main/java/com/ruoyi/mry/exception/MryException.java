@@ -7,7 +7,7 @@
 package com.ruoyi.mry.exception;
 
 /**
- * Facc异常信息
+ * Mry异常信息
  *
  * @author zhangguifeng
  * @create 2019-03-22 10:59

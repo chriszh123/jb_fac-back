@@ -15,6 +15,7 @@ CREATE TABLE `mry_basic_shop` (
   `phone_number2` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci  default '' COMMENT '联系人2的手机号码',
   `biz_time_start` datetime NOT NULL COMMENT '日常营业开始时间',
   `biz_time_end` datetime NOT NULL COMMENT '日常营业结束时间',
+  `remark` varchar(2048) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci default '' COMMENT '备注说明',
 
   `create_time` datetime NOT NULL COMMENT '创建时间',
   `update_time` datetime NOT NULL COMMENT '最近更新时间',
@@ -34,8 +35,8 @@ CREATE TABLE `mry_basic_service_pro` (
   `shop_id` smallint NOT NULL COMMENT '当前服务项目所属店面',
   `pro_desc` varchar(1512) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci default '' COMMENT '服务项目简单功效描述',
   `service_circle` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci default '' COMMENT '服务项目周期 ',
-  `remark` varchar(1024) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci default '' COMMENT '项目备注信息',
   `staff_id` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci default '' COMMENT '当前服务项目可操作员工id，多个逗号分隔',
+  `remark` varchar(1024) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci default '' COMMENT '项目备注信息',
 
   `create_time` datetime NOT NULL COMMENT '创建时间',
   `update_time` datetime NOT NULL COMMENT '最近更新时间',
@@ -58,7 +59,7 @@ CREATE TABLE `mry_customer` (
   `address` varchar(1512) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci default '' COMMENT '家庭住址',
   `phone_number` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci  default '' COMMENT '联系电话',
   `work` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci default '' COMMENT '职业',
-  `remark` varchar(1512) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci default '' COMMENT '备注说明',
+  `remark` varchar(2048) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci default '' COMMENT '备注说明',
 
   `create_time` datetime NOT NULL COMMENT '创建时间',
   `update_time` datetime NOT NULL COMMENT '最近更新时间',
