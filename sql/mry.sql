@@ -16,6 +16,7 @@ CREATE TABLE `mry_basic_shop` (
   `biz_time_start` datetime NOT NULL COMMENT '日常营业开始时间',
   `biz_time_end` datetime NOT NULL COMMENT '日常营业结束时间',
   `remark` varchar(2048) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci default '' COMMENT '备注说明',
+  `open_time` datetime NOT NULL COMMENT '开店日期',
 
   `create_time` datetime NOT NULL COMMENT '创建时间',
   `update_time` datetime NOT NULL COMMENT '最近更新时间',

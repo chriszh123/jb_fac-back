@@ -1065,6 +1065,66 @@ public class MryShopExample {
             return (Criteria) this;
         }
 
+        public Criteria andOpenTimeIsNull() {
+            addCriterion("open_time is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andOpenTimeIsNotNull() {
+            addCriterion("open_time is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andOpenTimeEqualTo(Date value) {
+            addCriterion("open_time =", value, "openTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andOpenTimeNotEqualTo(Date value) {
+            addCriterion("open_time <>", value, "openTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andOpenTimeGreaterThan(Date value) {
+            addCriterion("open_time >", value, "openTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andOpenTimeGreaterThanOrEqualTo(Date value) {
+            addCriterion("open_time >=", value, "openTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andOpenTimeLessThan(Date value) {
+            addCriterion("open_time <", value, "openTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andOpenTimeLessThanOrEqualTo(Date value) {
+            addCriterion("open_time <=", value, "openTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andOpenTimeIn(List<Date> values) {
+            addCriterion("open_time in", values, "openTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andOpenTimeNotIn(List<Date> values) {
+            addCriterion("open_time not in", values, "openTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andOpenTimeBetween(Date value1, Date value2) {
+            addCriterion("open_time between", value1, value2, "openTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andOpenTimeNotBetween(Date value1, Date value2) {
+            addCriterion("open_time not between", value1, value2, "openTime");
+            return (Criteria) this;
+        }
+
         public Criteria andCreateTimeIsNull() {
             addCriterion("create_time is null");
             return (Criteria) this;

@@ -66,6 +66,14 @@
         </div>
 
         <div class="form-group form-inline">
+            <label class="col-sm-3 control-label product-lable">开店日期：</label>
+            <div class="col-sm-3 input-group date" style="margin-left: 15px;"><span class="input-group-addon"><i
+                    class="fa fa-calendar"></i></span>
+                <input type="text" class="form-control" id="openTime" name="openTime" value="" placeholder="选择日期">
+            </div>
+        </div>
+
+        <div class="form-group form-inline">
             <label class="col-sm-3 control-label product-lable">日常营业开始时间：</label>
             <div class="col-sm-3 input-group date" style="margin-left: 15px;"><span class="input-group-addon"><i
                     class="fa fa-calendar"></i></span>
@@ -93,7 +101,7 @@
             <div class="col-sm-9" style="margin-bottom: 30px;">
                 <button type="button" class="btn btn-success" onclick="addShop()">确定</button>
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                <button type="button" class="btn btn-default" onclick="closeCurrentTab('1')">取消</button>
+                <button type="button" class="btn btn-default" onclick="closeCurrentTabMry('1')">取消</button>
             </div>
         </div>
     </form>
@@ -102,10 +110,7 @@
 <div th:include="include::footer"></div>
 <script th:src="@{/ajax/libs//datapicker/bootstrap-datetimepicker.min.js}"></script>
 <script th:src="@{/ajax/libs//datapicker/bootstrap-datetimepicker.zh-CN.js}"></script>
-<script th:src="@{/ajax/libs//ckeditor/ckeditor.js}"></script>
 <script th:src="@{/mry/mry_common.js}"></script>
-<script th:src="@{/ajax/libs//fileinput/js/fileinput.min.js}"></script>
-<script th:src="@{/ajax/libs//fileinput/js/locales/zh.js}"></script>
 <script>
     var prefix = ctx + "mry/shop";
     $(".input-group.date").datetimepicker({
@@ -128,6 +133,12 @@
             address: {
                 required: true,
                 maxlength: 1512
+            },
+            shopMngt: {
+                required: true
+            },
+            shopMngtPhone: {
+                required: true
             }
         }
     });
@@ -147,7 +158,7 @@
                         // 重新加载店面主页面数据
                         refreshParentIFramePageMry(DATA_ID.SHOP);
                         // 关闭当前TAB页面
-                        closeCurrentTab("");
+                        closeCurrentTabMry("");
                     }
                 };
                 $.ajax(config);

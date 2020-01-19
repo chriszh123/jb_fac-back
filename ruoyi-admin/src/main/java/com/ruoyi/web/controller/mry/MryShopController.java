@@ -144,7 +144,8 @@ public class MryShopController extends BaseController {
     @ResponseBody
     public AjaxResult remove(String ids) {
         try {
-            return toAjax(shopService.deleteShopByIds(ids));
+            SysUser user = ShiroUtils.getSysUser();
+            return toAjax(shopService.deleteShopByIds(ids, user));
         } catch (Exception ex) {
             return error(ex.getMessage());
         }

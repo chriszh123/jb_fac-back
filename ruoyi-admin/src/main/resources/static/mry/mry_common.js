@@ -356,7 +356,7 @@ var initFileInput = function (id, uploadUrl, maxFilesNum) {
 }
 
 // 关闭选项卡菜单:从iFrame内部调用
-var closeCurrentTab = function (tip) {
+var closeCurrentTabMry = function (tip) {
     if (tip && tip == "1") {
         $.modal.confirm("确定要关闭当前tab页面吗？", function () {
             parent.window.$(".tabCloseCurrent").click();

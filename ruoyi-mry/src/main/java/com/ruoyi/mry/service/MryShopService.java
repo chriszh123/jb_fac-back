@@ -8,6 +8,7 @@ package com.ruoyi.mry.service;
 
 import com.ruoyi.mry.exception.MryException;
 import com.ruoyi.mry.model.MryShop;
+import com.ruoyi.system.domain.SysUser;
 
 import java.util.List;
 
@@ -26,5 +27,5 @@ public interface MryShopService {
 
     int updateShop(MryShop shop) throws MryException;
 
-    int deleteShopByIds(String ids) throws MryException;
+    int deleteShopByIds(String ids, SysUser user) throws MryException;
 }

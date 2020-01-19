@@ -56,7 +56,7 @@
             updateUrl: prefix + "/edit/{id}",
             removeUrl: prefix + "/remove",
             exportUrl: prefix + "/export",
-            modalName: "商品",
+            modalName: "店面",
             search: false,
             showExport: true,
             columns: [{
@@ -87,7 +87,7 @@
                         } else if (value == 2) {
                             return "<span style='color: red;font-weight:bold;'>休业整顿<span>";
                         } else {
-                            return "<span style='font-weight:bold;'>待定<span>";
+                            return "<span style='color: orange;font-weight:bold;'>待定<span>";
                         }
                     }
                 },
@@ -112,8 +112,18 @@
                     sortable: false
                 },
                 {
-                    field: 'createTime',
+                    field: 'openTime',
                     title: '开店日期',
+                    sortable: false
+                },
+                {
+                    field: 'createTime',
+                    title: '创建时间',
+                    sortable: false
+                },
+                {
+                    field: 'operatorName',
+                    title: '操作人',
                     sortable: false
                 },
                 {
