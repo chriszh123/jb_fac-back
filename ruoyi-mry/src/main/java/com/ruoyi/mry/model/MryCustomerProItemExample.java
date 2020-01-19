@@ -376,6 +376,66 @@ public class MryCustomerProItemExample {
             return (Criteria) this;
         }
 
+        public Criteria andCardIdIsNull() {
+            addCriterion("card_id is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCardIdIsNotNull() {
+            addCriterion("card_id is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCardIdEqualTo(Long value) {
+            addCriterion("card_id =", value, "cardId");
+            return (Criteria) this;
+        }
+
+        public Criteria andCardIdNotEqualTo(Long value) {
+            addCriterion("card_id <>", value, "cardId");
+            return (Criteria) this;
+        }
+
+        public Criteria andCardIdGreaterThan(Long value) {
+            addCriterion("card_id >", value, "cardId");
+            return (Criteria) this;
+        }
+
+        public Criteria andCardIdGreaterThanOrEqualTo(Long value) {
+            addCriterion("card_id >=", value, "cardId");
+            return (Criteria) this;
+        }
+
+        public Criteria andCardIdLessThan(Long value) {
+            addCriterion("card_id <", value, "cardId");
+            return (Criteria) this;
+        }
+
+        public Criteria andCardIdLessThanOrEqualTo(Long value) {
+            addCriterion("card_id <=", value, "cardId");
+            return (Criteria) this;
+        }
+
+        public Criteria andCardIdIn(List<Long> values) {
+            addCriterion("card_id in", values, "cardId");
+            return (Criteria) this;
+        }
+
+        public Criteria andCardIdNotIn(List<Long> values) {
+            addCriterion("card_id not in", values, "cardId");
+            return (Criteria) this;
+        }
+
+        public Criteria andCardIdBetween(Long value1, Long value2) {
+            addCriterion("card_id between", value1, value2, "cardId");
+            return (Criteria) this;
+        }
+
+        public Criteria andCardIdNotBetween(Long value1, Long value2) {
+            addCriterion("card_id not between", value1, value2, "cardId");
+            return (Criteria) this;
+        }
+
         public Criteria andProIdIsNull() {
             addCriterion("pro_id is null");
             return (Criteria) this;
@@ -433,6 +493,66 @@ public class MryCustomerProItemExample {
 
         public Criteria andProIdNotBetween(Short value1, Short value2) {
             addCriterion("pro_id not between", value1, value2, "proId");
+            return (Criteria) this;
+        }
+
+        public Criteria andCustomeTypeIsNull() {
+            addCriterion("custome_type is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCustomeTypeIsNotNull() {
+            addCriterion("custome_type is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCustomeTypeEqualTo(Byte value) {
+            addCriterion("custome_type =", value, "customeType");
+            return (Criteria) this;
+        }
+
+        public Criteria andCustomeTypeNotEqualTo(Byte value) {
+            addCriterion("custome_type <>", value, "customeType");
+            return (Criteria) this;
+        }
+
+        public Criteria andCustomeTypeGreaterThan(Byte value) {
+            addCriterion("custome_type >", value, "customeType");
+            return (Criteria) this;
+        }
+
+        public Criteria andCustomeTypeGreaterThanOrEqualTo(Byte value) {
+            addCriterion("custome_type >=", value, "customeType");
+            return (Criteria) this;
+        }
+
+        public Criteria andCustomeTypeLessThan(Byte value) {
+            addCriterion("custome_type <", value, "customeType");
+            return (Criteria) this;
+        }
+
+        public Criteria andCustomeTypeLessThanOrEqualTo(Byte value) {
+            addCriterion("custome_type <=", value, "customeType");
+            return (Criteria) this;
+        }
+
+        public Criteria andCustomeTypeIn(List<Byte> values) {
+            addCriterion("custome_type in", values, "customeType");
+            return (Criteria) this;
+        }
+
+        public Criteria andCustomeTypeNotIn(List<Byte> values) {
+            addCriterion("custome_type not in", values, "customeType");
+            return (Criteria) this;
+        }
+
+        public Criteria andCustomeTypeBetween(Byte value1, Byte value2) {
+            addCriterion("custome_type between", value1, value2, "customeType");
+            return (Criteria) this;
+        }
+
+        public Criteria andCustomeTypeNotBetween(Byte value1, Byte value2) {
+            addCriterion("custome_type not between", value1, value2, "customeType");
             return (Criteria) this;
         }
 
@@ -736,6 +856,126 @@ public class MryCustomerProItemExample {
             return (Criteria) this;
         }
 
+        public Criteria andCustomPriceIsNull() {
+            addCriterion("custom_price is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCustomPriceIsNotNull() {
+            addCriterion("custom_price is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCustomPriceEqualTo(BigDecimal value) {
+            addCriterion("custom_price =", value, "customPrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andCustomPriceNotEqualTo(BigDecimal value) {
+            addCriterion("custom_price <>", value, "customPrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andCustomPriceGreaterThan(BigDecimal value) {
+            addCriterion("custom_price >", value, "customPrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andCustomPriceGreaterThanOrEqualTo(BigDecimal value) {
+            addCriterion("custom_price >=", value, "customPrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andCustomPriceLessThan(BigDecimal value) {
+            addCriterion("custom_price <", value, "customPrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andCustomPriceLessThanOrEqualTo(BigDecimal value) {
+            addCriterion("custom_price <=", value, "customPrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andCustomPriceIn(List<BigDecimal> values) {
+            addCriterion("custom_price in", values, "customPrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andCustomPriceNotIn(List<BigDecimal> values) {
+            addCriterion("custom_price not in", values, "customPrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andCustomPriceBetween(BigDecimal value1, BigDecimal value2) {
+            addCriterion("custom_price between", value1, value2, "customPrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andCustomPriceNotBetween(BigDecimal value1, BigDecimal value2) {
+            addCriterion("custom_price not between", value1, value2, "customPrice");
+            return (Criteria) this;
+        }
+
+        public Criteria andCustomePointsIsNull() {
+            addCriterion("custome_points is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCustomePointsIsNotNull() {
+            addCriterion("custome_points is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCustomePointsEqualTo(Short value) {
+            addCriterion("custome_points =", value, "customePoints");
+            return (Criteria) this;
+        }
+
+        public Criteria andCustomePointsNotEqualTo(Short value) {
+            addCriterion("custome_points <>", value, "customePoints");
+            return (Criteria) this;
+        }
+
+        public Criteria andCustomePointsGreaterThan(Short value) {
+            addCriterion("custome_points >", value, "customePoints");
+            return (Criteria) this;
+        }
+
+        public Criteria andCustomePointsGreaterThanOrEqualTo(Short value) {
+            addCriterion("custome_points >=", value, "customePoints");
+            return (Criteria) this;
+        }
+
+        public Criteria andCustomePointsLessThan(Short value) {
+            addCriterion("custome_points <", value, "customePoints");
+            return (Criteria) this;
+        }
+
+        public Criteria andCustomePointsLessThanOrEqualTo(Short value) {
+            addCriterion("custome_points <=", value, "customePoints");
+            return (Criteria) this;
+        }
+
+        public Criteria andCustomePointsIn(List<Short> values) {
+            addCriterion("custome_points in", values, "customePoints");
+            return (Criteria) this;
+        }
+
+        public Criteria andCustomePointsNotIn(List<Short> values) {
+            addCriterion("custome_points not in", values, "customePoints");
+            return (Criteria) this;
+        }
+
+        public Criteria andCustomePointsBetween(Short value1, Short value2) {
+            addCriterion("custome_points between", value1, value2, "customePoints");
+            return (Criteria) this;
+        }
+
+        public Criteria andCustomePointsNotBetween(Short value1, Short value2) {
+            addCriterion("custome_points not between", value1, value2, "customePoints");
+            return (Criteria) this;
+        }
+
         public Criteria andCustomerRemarkIsNull() {
             addCriterion("customer_remark is null");
             return (Criteria) this;
@@ -873,66 +1113,6 @@ public class MryCustomerProItemExample {
 
         public Criteria andStaffRemarkNotBetween(String value1, String value2) {
             addCriterion("staff_remark not between", value1, value2, "staffRemark");
-            return (Criteria) this;
-        }
-
-        public Criteria andCustomPriceIsNull() {
-            addCriterion("custom_price is null");
-            return (Criteria) this;
-        }
-
-        public Criteria andCustomPriceIsNotNull() {
-            addCriterion("custom_price is not null");
-            return (Criteria) this;
-        }
-
-        public Criteria andCustomPriceEqualTo(BigDecimal value) {
-            addCriterion("custom_price =", value, "customPrice");
-            return (Criteria) this;
-        }
-
-        public Criteria andCustomPriceNotEqualTo(BigDecimal value) {
-            addCriterion("custom_price <>", value, "customPrice");
-            return (Criteria) this;
-        }
-
-        public Criteria andCustomPriceGreaterThan(BigDecimal value) {
-            addCriterion("custom_price >", value, "customPrice");
-            return (Criteria) this;
-        }
-
-        public Criteria andCustomPriceGreaterThanOrEqualTo(BigDecimal value) {
-            addCriterion("custom_price >=", value, "customPrice");
-            return (Criteria) this;
-        }
-
-        public Criteria andCustomPriceLessThan(BigDecimal value) {
-            addCriterion("custom_price <", value, "customPrice");
-            return (Criteria) this;
-        }
-
-        public Criteria andCustomPriceLessThanOrEqualTo(BigDecimal value) {
-            addCriterion("custom_price <=", value, "customPrice");
-            return (Criteria) this;
-        }
-
-        public Criteria andCustomPriceIn(List<BigDecimal> values) {
-            addCriterion("custom_price in", values, "customPrice");
-            return (Criteria) this;
-        }
-
-        public Criteria andCustomPriceNotIn(List<BigDecimal> values) {
-            addCriterion("custom_price not in", values, "customPrice");
-            return (Criteria) this;
-        }
-
-        public Criteria andCustomPriceBetween(BigDecimal value1, BigDecimal value2) {
-            addCriterion("custom_price between", value1, value2, "customPrice");
-            return (Criteria) this;
-        }
-
-        public Criteria andCustomPriceNotBetween(BigDecimal value1, BigDecimal value2) {
-            addCriterion("custom_price not between", value1, value2, "customPrice");
             return (Criteria) this;
         }
 
