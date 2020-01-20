@@ -15,4 +15,8 @@ package com.ruoyi.mry.constant;
 public class MryConstant {
 
     public static final String DEFAULT_ORDER_CLAUSE = "create_time desc";
+
+    public static String NODE_FIELD_TYPE_SHOP = "shop";
+
+    public static String NODE_FIELD_TYPE_STAFF = "staff";
 }

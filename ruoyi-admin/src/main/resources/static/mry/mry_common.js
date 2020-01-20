@@ -2,7 +2,8 @@ var TIP_DEALING = "正在处理中，请稍后...";
 //各页面对应的data_id
 var DATA_ID = {
     "SHOP": '/mry/shop',
-    "STAFF": '/mry/staff'
+    "STAFF": '/mry/staff',
+    "SERVICEPRO": '/mry/servicepro'
 };
 
 // 各对象预置数量
