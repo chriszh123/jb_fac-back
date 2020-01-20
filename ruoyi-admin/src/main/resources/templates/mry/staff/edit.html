@@ -1,0 +1,179 @@
+<!DOCTYPE HTML>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<link th:href="@{/ajax/libs/datapicker/bootstrap-datetimepicker.min.css}" rel="stylesheet"/>
+<link th:href="@{/ajax/libs/fileinput/css/fileinput.min.css}" rel="stylesheet"/>
+<link th:href="@{/mry/mry.css}" rel="stylesheet"/>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+    <form class="form-horizontal m" id="mry-staff-edit" th:object="${staff}">
+        <input id="id" name="id" th:field="*{id}" type="hidden">
+        <div class="form-group">
+            <label class="col-sm-3 control-label product-lable">员工名称：</label>
+            <div class="col-sm-9">
+                <input id="name" name="name" class="form-control" type="text" th:field="*{name}">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label product-lable">所属店面：</label>
+            <div class="col-sm-9">
+                <select id="shopId" name="shopId" class="form-control m-b"
+                        th:with="shops=${@mpcs.getShops()}">
+                    <option value="">请选择...</option>
+                    <option th:each="shop : ${shops}" th:text="${shop.name}" th:value="${shop.id}"></option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label product-lable">员工性别：</label>
+            <div class="col-sm-9">
+                <select id="sex" name="sex" class="form-control m-b" th:field="*{sex}">
+                    <option value="">请选择...</option>
+                    <option value="0">女</option>
+                    <option value="1">男</option>
+                    <option value="2">未知</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label product-lable">生日：</label>
+            <div class="col-sm-9">
+                <input id="birthday" name="birthday" class="form-control" type="text" th:field="*{birthday}">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label product-lable">住址：</label>
+            <div class="col-sm-9">
+                <input id="address" name="address" class="form-control" type="text" th:field="*{address}">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label product-lable">手机号码：</label>
+            <div class="col-sm-9">
+                <input id="phoneNumber" name="phoneNumber" class="form-control" type="text" th:field="*{phoneNumber}">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label product-lable">员工状态：</label>
+            <div class="col-sm-9">
+                <select id="status" name="status" class="form-control m-b" th:field="*{status}">
+                    <option value="">请选择...</option>
+                    <option value="1">在职</option>
+                    <option value="2">离职</option>
+                    <option value="3">待入职</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group form-inline">
+            <label class="col-sm-3 control-label product-lable">入职时间：</label>
+            <div class="col-sm-3 input-group date" style="margin-left: 15px;"><span class="input-group-addon"><i
+                    class="fa fa-calendar"></i></span>
+                <input type="text" class="form-control" id="joinTime" name="joinTime"  th:field="*{joinTimeStr}" value="" placeholder="选择日期">
+            </div>
+        </div>
+
+        <div class="form-group form-inline">
+            <label class="col-sm-3 control-label product-lable">离职时间：</label>
+            <div class="col-sm-3 input-group date" style="margin-left: 15px;"><span class="input-group-addon"><i
+                    class="fa fa-calendar"></i></span>
+                <input type="text" class="form-control" id="goTime" name="goTime" th:field="*{goTimeStr}" value="" placeholder="选择日期">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label product-lable">备注：</label>
+            <div class="col-sm-9">
+                <textarea cols="80" id="remark" name="remark" rows="12" style="width: 100%;" th:field="*{remark}"></textarea>
+            </div>
+        </div>
+
+        <div class="form-group" style="text-align: center;">
+            <label class="col-sm-3 control-label" style="margin-bottom: 30px;"></label>
+            <div class="col-sm-9" style="margin-bottom: 30px;">
+                <button type="button" class="btn btn-success" onclick="editStaff()">确定</button>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <button type="button" class="btn btn-default" onclick="closeCurrentTabMry('1')">取消</button>
+            </div>
+        </div>
+    </form>
+</div>
+<div th:include="include::footer"></div>
+<script th:src="@{/ajax/libs//datapicker/bootstrap-datetimepicker.min.js}"></script>
+<script th:src="@{/ajax/libs//datapicker/bootstrap-datetimepicker.zh-CN.js}"></script>
+<script th:src="@{/mry/mry_common.js}"></script>
+<script type="text/javascript">
+    var prefix = ctx + "mry/staff"
+    $(".input-group.date").datetimepicker({
+        format: 'yyyy-mm-dd hh:ii',
+        todayBtn: "linked",
+        keyboardNavigation: !1,
+        forceParse: !1,
+        calendarWeeks: !0,
+        autoclose: !0,
+        initialDate: new Date(),
+        language: "zh-CN"
+    });
+
+    $("#mry-staff-edit").validate({
+        rules: {
+            name: {
+                required: true,
+                maxlength: 500
+            },
+            address: {
+                required: true,
+                maxlength: 1512
+            },
+            phoneNumber: {
+                required: true
+            },
+            birthday: {
+                required: true
+            },
+            joinTime: {
+                required: true
+            }
+        }
+    });
+
+
+    function editStaff() {
+        if ($.validate.form()) {
+            $.modal.confirm("确认保存当前员工信息吗？", function () {
+                var url = prefix + "/edit";
+                var data = $('#mry-staff-edit').serialize();
+                var config = {
+                    url: url,
+                    type: "post",
+                    dataType: "json",
+                    data: data,
+                    success: function (result) {
+                        if (result.code != 0) {
+                            $.modal.alertWarning(result.msg);
+                        } else {
+                            // 重新加载商品主页面数据
+                            refreshParentIFramePageMry(DATA_ID.STAFF);
+                            // 关闭当前TAB页面
+                            closeCurrentTabMry("");
+                        }
+                    }
+                };
+                $.ajax(config);
+            });
+        }
+    }
+
+    $(function () {
+
+    });
+</script>
+</body>
+</html>
