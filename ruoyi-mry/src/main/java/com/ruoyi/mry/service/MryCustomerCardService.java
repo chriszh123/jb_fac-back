@@ -6,10 +6,7 @@
  */
 package com.ruoyi.mry.service;
 
-import com.ruoyi.mry.model.MryCustomer;
-import com.ruoyi.mry.model.MryCustomerCard;
-import com.ruoyi.mry.model.MryServicePro;
-import com.ruoyi.mry.model.MryShopCard;
+import com.ruoyi.mry.model.*;
 import com.ruoyi.system.domain.SysUser;
 
 import java.util.List;
@@ -36,4 +33,6 @@ public interface MryCustomerCardService {
     List<MryShopCard> getShopCardsByShopId(MryCustomerCard customerCard);
 
     List<MryServicePro> getServiceProsByShopId(MryCustomerCard customerCard);
+
+    List<MryStaff> getStaffsByShopId(MryCustomerCard customerCard);
 }

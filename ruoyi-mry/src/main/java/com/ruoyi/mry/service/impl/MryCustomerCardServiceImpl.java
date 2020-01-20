@@ -41,6 +41,9 @@ public class MryCustomerCardServiceImpl implements MryCustomerCardService {
     @Autowired
     private MryShopCardMapper shopCardMapper;
 
+    @Autowired
+    private MryStaffMapper staffMapper;
+
     @Override
     public List<MryCustomerCard> selectCustomerCards(MryCustomerCard customerCard) {
         MryCustomerCardExample example = new MryCustomerCardExample();
@@ -53,14 +56,16 @@ public class MryCustomerCardServiceImpl implements MryCustomerCardService {
         if (customerCard.getShopId() != null) {
             customerCri.andShopIdEqualTo(customerCard.getShopId());
         }
-        if (StringUtils.isNotBlank(customerCard.getCustomerName())) {
+        if (StringUtils.isNotBlank(customerCard.getCustomerName()) && StringUtils.isNotBlank(customerCard.getCustomerName().trim())) {
             customerCri.andNameLike("%" + customerCard.getCustomerName() + "%");
         }
         List<MryCustomer> customers = this.customerMapper.selectByExample(customerExample);
         Map<Long, MryCustomer> customerMap = new HashMap<>();
         if (CollectionUtils.isNotEmpty(customers)) {
-            List<Long> customerIds = customers.stream().map(MryCustomer::getId).collect(Collectors.toList());
-            criteria.andCustomerIdIn(customerIds);
+            if (StringUtils.isNotBlank(customerCard.getCustomerName()) && StringUtils.isNotBlank(customerCard.getCustomerName().trim())) {
+                List<Long> customerIds = customers.stream().map(MryCustomer::getId).collect(Collectors.toList());
+                criteria.andCustomerIdIn(customerIds);
+            }
 
             customers.forEach(item -> {
                 customerMap.putIfAbsent(item.getId(), item);
@@ -216,5 +221,16 @@ public class MryCustomerCardServiceImpl implements MryCustomerCardService {
         List<MryServicePro> servicePros = this.serviceProMapper.selectByExample(example);
 
         return servicePros;
+    }
+
+    @Override
+    public List<MryStaff> getStaffsByShopId(MryCustomerCard customerCard) {
+        MryStaffExample example = new MryStaffExample();
+        example.createCriteria().andIsDeletedEqualTo(false).andShopIdEqualTo(customerCard.getShopId());
+        example.setOrderByClause(MryConstant.DEFAULT_ORDER_CLAUSE);
+
+        List<MryStaff> staffList = this.staffMapper.selectByExample(example);
+
+        return staffList;
     }
 }
