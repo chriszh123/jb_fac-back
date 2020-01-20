@@ -12,7 +12,6 @@ import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.page.TableDataInfo;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.fac.constant.FacConstant;
-import com.ruoyi.fac.domain.Buyer;
 import com.ruoyi.framework.util.ShiroUtils;
 import com.ruoyi.framework.web.base.BaseController;
 import com.ruoyi.mry.exception.MryException;
@@ -48,7 +47,7 @@ public class MryServiceProController extends BaseController {
 
     @RequiresPermissions("mry:servicepro:view")
     @GetMapping()
-    public String shop() {
+    public String servicepro() {
         return prefix + "/servicepro";
     }
 

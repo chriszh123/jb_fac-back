@@ -3,7 +3,8 @@ var TIP_DEALING = "正在处理中，请稍后...";
 var DATA_ID = {
     "SHOP": '/mry/shop',
     "STAFF": '/mry/staff',
-    "SERVICEPRO": '/mry/servicepro'
+    "SERVICEPRO": '/mry/servicepro',
+    "SHOPCARD": '/mry/shopcard'
 };
 
 // 各对象预置数量

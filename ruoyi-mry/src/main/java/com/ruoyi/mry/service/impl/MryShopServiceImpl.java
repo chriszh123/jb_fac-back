@@ -126,8 +126,8 @@ public class MryShopServiceImpl implements MryShopService {
                 update.setOperatorId(user.getUserId());
                 update.setOperatorName(user.getUserName());
             }
-            this.shopMapper.updateByExampleSelective(update, shopExample);
+            return this.shopMapper.updateByExampleSelective(update, shopExample);
         }
-        return 1;
+        return 0;
     }
 }
