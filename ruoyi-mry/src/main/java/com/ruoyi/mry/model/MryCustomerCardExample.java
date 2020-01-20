@@ -766,52 +766,52 @@ public class MryCustomerCardExample {
             return (Criteria) this;
         }
 
-        public Criteria andTotalPointsEqualTo(Short value) {
+        public Criteria andTotalPointsEqualTo(Long value) {
             addCriterion("total_points =", value, "totalPoints");
             return (Criteria) this;
         }
 
-        public Criteria andTotalPointsNotEqualTo(Short value) {
+        public Criteria andTotalPointsNotEqualTo(Long value) {
             addCriterion("total_points <>", value, "totalPoints");
             return (Criteria) this;
         }
 
-        public Criteria andTotalPointsGreaterThan(Short value) {
+        public Criteria andTotalPointsGreaterThan(Long value) {
             addCriterion("total_points >", value, "totalPoints");
             return (Criteria) this;
         }
 
-        public Criteria andTotalPointsGreaterThanOrEqualTo(Short value) {
+        public Criteria andTotalPointsGreaterThanOrEqualTo(Long value) {
             addCriterion("total_points >=", value, "totalPoints");
             return (Criteria) this;
         }
 
-        public Criteria andTotalPointsLessThan(Short value) {
+        public Criteria andTotalPointsLessThan(Long value) {
             addCriterion("total_points <", value, "totalPoints");
             return (Criteria) this;
         }
 
-        public Criteria andTotalPointsLessThanOrEqualTo(Short value) {
+        public Criteria andTotalPointsLessThanOrEqualTo(Long value) {
             addCriterion("total_points <=", value, "totalPoints");
             return (Criteria) this;
         }
 
-        public Criteria andTotalPointsIn(List<Short> values) {
+        public Criteria andTotalPointsIn(List<Long> values) {
             addCriterion("total_points in", values, "totalPoints");
             return (Criteria) this;
         }
 
-        public Criteria andTotalPointsNotIn(List<Short> values) {
+        public Criteria andTotalPointsNotIn(List<Long> values) {
             addCriterion("total_points not in", values, "totalPoints");
             return (Criteria) this;
         }
 
-        public Criteria andTotalPointsBetween(Short value1, Short value2) {
+        public Criteria andTotalPointsBetween(Long value1, Long value2) {
             addCriterion("total_points between", value1, value2, "totalPoints");
             return (Criteria) this;
         }
 
-        public Criteria andTotalPointsNotBetween(Short value1, Short value2) {
+        public Criteria andTotalPointsNotBetween(Long value1, Long value2) {
             addCriterion("total_points not between", value1, value2, "totalPoints");
             return (Criteria) this;
         }
@@ -826,52 +826,52 @@ public class MryCustomerCardExample {
             return (Criteria) this;
         }
 
-        public Criteria andLeftPointsEqualTo(Short value) {
+        public Criteria andLeftPointsEqualTo(Long value) {
             addCriterion("left_points =", value, "leftPoints");
             return (Criteria) this;
         }
 
-        public Criteria andLeftPointsNotEqualTo(Short value) {
+        public Criteria andLeftPointsNotEqualTo(Long value) {
             addCriterion("left_points <>", value, "leftPoints");
             return (Criteria) this;
         }
 
-        public Criteria andLeftPointsGreaterThan(Short value) {
+        public Criteria andLeftPointsGreaterThan(Long value) {
             addCriterion("left_points >", value, "leftPoints");
             return (Criteria) this;
         }
 
-        public Criteria andLeftPointsGreaterThanOrEqualTo(Short value) {
+        public Criteria andLeftPointsGreaterThanOrEqualTo(Long value) {
             addCriterion("left_points >=", value, "leftPoints");
             return (Criteria) this;
         }
 
-        public Criteria andLeftPointsLessThan(Short value) {
+        public Criteria andLeftPointsLessThan(Long value) {
             addCriterion("left_points <", value, "leftPoints");
             return (Criteria) this;
         }
 
-        public Criteria andLeftPointsLessThanOrEqualTo(Short value) {
+        public Criteria andLeftPointsLessThanOrEqualTo(Long value) {
             addCriterion("left_points <=", value, "leftPoints");
             return (Criteria) this;
         }
 
-        public Criteria andLeftPointsIn(List<Short> values) {
+        public Criteria andLeftPointsIn(List<Long> values) {
             addCriterion("left_points in", values, "leftPoints");
             return (Criteria) this;
         }
 
-        public Criteria andLeftPointsNotIn(List<Short> values) {
+        public Criteria andLeftPointsNotIn(List<Long> values) {
             addCriterion("left_points not in", values, "leftPoints");
             return (Criteria) this;
         }
 
-        public Criteria andLeftPointsBetween(Short value1, Short value2) {
+        public Criteria andLeftPointsBetween(Long value1, Long value2) {
             addCriterion("left_points between", value1, value2, "leftPoints");
             return (Criteria) this;
         }
 
-        public Criteria andLeftPointsNotBetween(Short value1, Short value2) {
+        public Criteria andLeftPointsNotBetween(Long value1, Long value2) {
             addCriterion("left_points not between", value1, value2, "leftPoints");
             return (Criteria) this;
         }

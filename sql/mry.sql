@@ -189,8 +189,8 @@ CREATE TABLE `mry_customer_card` (
   `price` decimal(8,2) DEFAULT '0.0' COMMENT '客户初始办卡充值金额',
   `custome_type` tinyint(2) NOT NULL DEFAULT '0' COMMENT '消费类型：0-积分制，1-消费次数',
 
-  `total_points` smallint default 0 COMMENT '总积分',
-  `left_points` smallint default 0 COMMENT '剩余积分',
+  `total_points` bigint(20) default 0 COMMENT '总积分',
+  `left_points` bigint(20) default 0 COMMENT '剩余积分',
 
   `total_times` smallint default 0 COMMENT '消费总次数',
   `left_times` smallint default 0 COMMENT '剩余消费次数',

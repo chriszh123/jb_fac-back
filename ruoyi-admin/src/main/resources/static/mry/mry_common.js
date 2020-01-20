@@ -5,7 +5,8 @@ var DATA_ID = {
     "STAFF": '/mry/staff',
     "SERVICEPRO": '/mry/servicepro',
     "SHOPCARD": '/mry/shopcard',
-    "CUSTOMER": '/mry/customer'
+    "CUSTOMER": '/mry/customer',
+    "CUSTOMERCARD": '/mry/customercard'
 };
 
 // 各对象预置数量

@@ -95,7 +95,7 @@ public class MryCustomerCardController extends BaseController {
     @GetMapping("/edit/{id}")
     public String edit(@PathVariable("id") Long id, ModelMap mmap) {
         MryCustomerCard customerCard = customerCardService.selectCustomerCardById(id);
-        mmap.put("customerCard", customerCard);
+        mmap.put("customercard", customerCard);
         return prefix + "/edit";
     }
 
@@ -147,7 +147,7 @@ public class MryCustomerCardController extends BaseController {
         return shopCards;
     }
 
-    @PostMapping("/getShopCardsByShopId")
+    @PostMapping("/getServiceProsByShopId")
     @ResponseBody
     public List<MryServicePro> getServiceProsByShopId(MryCustomerCard customerCard) {
         List<MryServicePro> servicePros = this.customerCardService.getServiceProsByShopId(customerCard);

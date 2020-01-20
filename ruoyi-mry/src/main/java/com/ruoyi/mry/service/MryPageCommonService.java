@@ -7,9 +7,9 @@
 package com.ruoyi.mry.service;
 
 import com.ruoyi.mry.constant.MryConstant;
+import com.ruoyi.mry.mapper.MryServiceProMapper;
 import com.ruoyi.mry.mapper.MryShopMapper;
-import com.ruoyi.mry.model.MryShop;
-import com.ruoyi.mry.model.MryShopExample;
+import com.ruoyi.mry.model.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
