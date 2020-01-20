@@ -496,6 +496,76 @@ public class MryCustomerCardExample {
             return (Criteria) this;
         }
 
+        public Criteria andShopStaffNameIsNull() {
+            addCriterion("shop_staff_Name is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andShopStaffNameIsNotNull() {
+            addCriterion("shop_staff_Name is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andShopStaffNameEqualTo(String value) {
+            addCriterion("shop_staff_Name =", value, "shopStaffName");
+            return (Criteria) this;
+        }
+
+        public Criteria andShopStaffNameNotEqualTo(String value) {
+            addCriterion("shop_staff_Name <>", value, "shopStaffName");
+            return (Criteria) this;
+        }
+
+        public Criteria andShopStaffNameGreaterThan(String value) {
+            addCriterion("shop_staff_Name >", value, "shopStaffName");
+            return (Criteria) this;
+        }
+
+        public Criteria andShopStaffNameGreaterThanOrEqualTo(String value) {
+            addCriterion("shop_staff_Name >=", value, "shopStaffName");
+            return (Criteria) this;
+        }
+
+        public Criteria andShopStaffNameLessThan(String value) {
+            addCriterion("shop_staff_Name <", value, "shopStaffName");
+            return (Criteria) this;
+        }
+
+        public Criteria andShopStaffNameLessThanOrEqualTo(String value) {
+            addCriterion("shop_staff_Name <=", value, "shopStaffName");
+            return (Criteria) this;
+        }
+
+        public Criteria andShopStaffNameLike(String value) {
+            addCriterion("shop_staff_Name like", value, "shopStaffName");
+            return (Criteria) this;
+        }
+
+        public Criteria andShopStaffNameNotLike(String value) {
+            addCriterion("shop_staff_Name not like", value, "shopStaffName");
+            return (Criteria) this;
+        }
+
+        public Criteria andShopStaffNameIn(List<String> values) {
+            addCriterion("shop_staff_Name in", values, "shopStaffName");
+            return (Criteria) this;
+        }
+
+        public Criteria andShopStaffNameNotIn(List<String> values) {
+            addCriterion("shop_staff_Name not in", values, "shopStaffName");
+            return (Criteria) this;
+        }
+
+        public Criteria andShopStaffNameBetween(String value1, String value2) {
+            addCriterion("shop_staff_Name between", value1, value2, "shopStaffName");
+            return (Criteria) this;
+        }
+
+        public Criteria andShopStaffNameNotBetween(String value1, String value2) {
+            addCriterion("shop_staff_Name not between", value1, value2, "shopStaffName");
+            return (Criteria) this;
+        }
+
         public Criteria andInitProIdsIsNull() {
             addCriterion("init_pro_ids is null");
             return (Criteria) this;
@@ -623,6 +693,66 @@ public class MryCustomerCardExample {
 
         public Criteria andPriceNotBetween(BigDecimal value1, BigDecimal value2) {
             addCriterion("price not between", value1, value2, "price");
+            return (Criteria) this;
+        }
+
+        public Criteria andCustomeTypeIsNull() {
+            addCriterion("custome_type is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCustomeTypeIsNotNull() {
+            addCriterion("custome_type is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCustomeTypeEqualTo(Byte value) {
+            addCriterion("custome_type =", value, "customeType");
+            return (Criteria) this;
+        }
+
+        public Criteria andCustomeTypeNotEqualTo(Byte value) {
+            addCriterion("custome_type <>", value, "customeType");
+            return (Criteria) this;
+        }
+
+        public Criteria andCustomeTypeGreaterThan(Byte value) {
+            addCriterion("custome_type >", value, "customeType");
+            return (Criteria) this;
+        }
+
+        public Criteria andCustomeTypeGreaterThanOrEqualTo(Byte value) {
+            addCriterion("custome_type >=", value, "customeType");
+            return (Criteria) this;
+        }
+
+        public Criteria andCustomeTypeLessThan(Byte value) {
+            addCriterion("custome_type <", value, "customeType");
+            return (Criteria) this;
+        }
+
+        public Criteria andCustomeTypeLessThanOrEqualTo(Byte value) {
+            addCriterion("custome_type <=", value, "customeType");
+            return (Criteria) this;
+        }
+
+        public Criteria andCustomeTypeIn(List<Byte> values) {
+            addCriterion("custome_type in", values, "customeType");
+            return (Criteria) this;
+        }
+
+        public Criteria andCustomeTypeNotIn(List<Byte> values) {
+            addCriterion("custome_type not in", values, "customeType");
+            return (Criteria) this;
+        }
+
+        public Criteria andCustomeTypeBetween(Byte value1, Byte value2) {
+            addCriterion("custome_type between", value1, value2, "customeType");
+            return (Criteria) this;
+        }
+
+        public Criteria andCustomeTypeNotBetween(Byte value1, Byte value2) {
+            addCriterion("custome_type not between", value1, value2, "customeType");
             return (Criteria) this;
         }
 

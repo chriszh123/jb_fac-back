@@ -184,8 +184,10 @@ CREATE TABLE `mry_customer_card` (
   `customer_id` bigint(20) NOT NULL COMMENT '客户ID',
   `card_id` smallint NOT NULL COMMENT '消费卡ID',
   `shop_staff_id` bigint(20) DEFAULT NULL COMMENT '店面办卡员工id',
+  `shop_staff_Name` varchar(512) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT '' COMMENT '店面办卡员工名称',
   `init_pro_ids` varchar(512) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT '' COMMENT '客户初始化项目',
   `price` decimal(8,2) DEFAULT '0.0' COMMENT '客户初始办卡充值金额',
+  `custome_type` tinyint(2) NOT NULL DEFAULT '0' COMMENT '消费类型：0-积分制，1-消费次数',
 
   `total_points` smallint default 0 COMMENT '总积分',
   `left_points` smallint default 0 COMMENT '剩余积分',

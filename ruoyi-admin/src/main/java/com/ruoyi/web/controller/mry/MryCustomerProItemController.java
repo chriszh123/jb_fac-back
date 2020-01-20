@@ -17,5 +17,5 @@ import org.springframework.web.bind.annotation.RequestMapping;
  **/
 @Controller
 @RequestMapping("/mry/customerpro")
-public class MryCustomerProController extends BaseController {
+public class MryCustomerProItemController extends BaseController {
 }
