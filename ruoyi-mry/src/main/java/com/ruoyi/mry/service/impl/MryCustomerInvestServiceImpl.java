@@ -94,9 +94,17 @@ public class MryCustomerInvestServiceImpl implements MryCustomerInvestService {
             totalCustomePoints = totalCustomePoints + customerInvest.getCustomePoints();
             customer.setTotalCustomePoints(totalCustomePoints);
 
+            Long leftPoints = customer.getLeftPoints();
+            leftPoints = leftPoints + customerInvest.getCustomePoints();
+            customer.setLeftPoints(leftPoints);
+
             Short totalCustomeTimes = customer.getTotalCustomeTimes();
             Integer totalCustomeTimesI = totalCustomeTimes + customerInvest.getCustomeTimes();
             customer.setTotalCustomeTimes(totalCustomeTimesI.shortValue());
+
+            Short leftTimes = customer.getLeftTimes();
+            Integer leftTimesI = leftTimes + customerInvest.getCustomeTimes();
+            customer.setLeftTimes(leftTimesI.shortValue());
 
             customer.setUpdateTime(nowDate);
             customer.setOperatorId(customerInvest.getOperatorId());

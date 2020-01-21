@@ -7,6 +7,7 @@
 package com.ruoyi.mry.service.impl;
 
 import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.mry.constant.MryConstant;
 import com.ruoyi.mry.exception.MryException;
 import com.ruoyi.mry.mapper.MryCustomerMapper;
 import com.ruoyi.mry.mapper.MryShopMapper;
@@ -52,6 +53,7 @@ public class MryCustomerServiceImpl implements MryCustomerService {
         if (StringUtils.isNotBlank(customer.getName()) && StringUtils.isNotBlank(customer.getName().trim())) {
             criteria.andNameLike("%" + customer.getName().trim() + "%");
         }
+        example.setOrderByClause(MryConstant.DEFAULT_ORDER_CLAUSE);
         List<MryCustomer> customers = this.customerMapper.selectByExample(example);
 
         if (CollectionUtils.isNotEmpty(customers)) {

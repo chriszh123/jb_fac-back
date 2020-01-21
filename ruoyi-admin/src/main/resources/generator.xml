@@ -300,14 +300,14 @@
             <!--<generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />-->
         <!--</table>-->
 
-        <!--<table tableName="mry_staff_leave" domainObjectName="MryStaffLeave"-->
-               <!--enableInsert="true" enableSelectByPrimaryKey="true"-->
-               <!--enableSelectByExample="true" enableUpdateByPrimaryKey="true"-->
-               <!--enableDeleteByPrimaryKey="true" enableDeleteByExample="true"-->
-               <!--enableCountByExample="true" enableUpdateByExample="true"-->
-               <!--selectByExampleQueryId="true">-->
-            <!--<generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />-->
-        <!--</table>-->
+        <table tableName="mry_staff_leave" domainObjectName="MryStaffLeave"
+               enableInsert="true" enableSelectByPrimaryKey="true"
+               enableSelectByExample="true" enableUpdateByPrimaryKey="true"
+               enableDeleteByPrimaryKey="true" enableDeleteByExample="true"
+               enableCountByExample="true" enableUpdateByExample="true"
+               selectByExampleQueryId="true">
+            <generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />
+        </table>
 
         <!--<table tableName="mry_customer_invest" domainObjectName="MryCustomerInvest"-->
                <!--enableInsert="true" enableSelectByPrimaryKey="true"-->
