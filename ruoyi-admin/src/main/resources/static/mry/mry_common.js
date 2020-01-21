@@ -7,7 +7,8 @@ var DATA_ID = {
     "SHOPCARD": '/mry/shopcard',
     "CUSTOMER": '/mry/customer',
     "CUSTOMERCARD": '/mry/customercard',
-    "CUSTOMERPROITEM": '/mry/customerproitem'
+    "CUSTOMERPROITEM": '/mry/customerproitem',
+    "CUSTOMERINVEST": '/mry/customerinvest'
 };
 
 // 各对象预置数量

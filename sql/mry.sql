@@ -230,3 +230,26 @@ CREATE TABLE `mry_staff_leave` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='员工休假管理';
 
+drop table if exists `mry_customer_invest`;
+CREATE TABLE `mry_customer_invest` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `shop_id` smallint NOT NULL COMMENT '所属店面',
+  `customer_id` bigint(20) NOT NULL COMMENT '客户ID',
+  `card_id` bigint(20) NOT NULL COMMENT '当前消费卡ID',
+
+  `invest_price` decimal(8,2) DEFAULT '0.0' COMMENT '当前客户充值金额',
+
+  `custome_points` bigint(20) default 0 COMMENT '当前充值金额对应积分',
+
+  `custome_times` smallint default 0 COMMENT '当前充值金额对应消费次数',
+
+  `remark` varchar(2048) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci default '' COMMENT '备注',
+
+  `create_time` datetime NOT NULL COMMENT '充值日期',
+  `update_time` datetime NOT NULL COMMENT '最近更新时间',
+  `operator_id` bigint(20) DEFAULT NULL COMMENT '操作者ID',
+  `operator_name` varchar(60) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL COMMENT '操作者姓名',
+  `is_deleted` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否删除',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='客户充值记录明细';
+

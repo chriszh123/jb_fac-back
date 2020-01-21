@@ -70,6 +70,8 @@ public class MryCustomerCardServiceImpl implements MryCustomerCardService {
             customers.forEach(item -> {
                 customerMap.putIfAbsent(item.getId(), item);
             });
+        } else {
+            return new ArrayList<>();
         }
 
         example.setOrderByClause(MryConstant.DEFAULT_ORDER_CLAUSE);

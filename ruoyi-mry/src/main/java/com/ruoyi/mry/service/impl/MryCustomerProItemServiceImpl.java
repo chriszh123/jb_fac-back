@@ -69,6 +69,8 @@ public class MryCustomerProItemServiceImpl implements MryCustomerProItemService 
             customers.forEach(item -> {
                 customerMap.putIfAbsent(item.getId(), item);
             });
+        } else {
+            return new ArrayList<>();
         }
 
         proItemExample.setOrderByClause(MryConstant.DEFAULT_ORDER_CLAUSE);
