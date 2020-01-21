@@ -50,14 +50,14 @@
         <div class="form-group">
             <label class="col-sm-3 control-label product-lable">客户初始办卡充值金额：</label>
             <div class="col-sm-9">
-                <input id="price" name="price" class="form-control" type="text" th:field="*{price}">
+                <input id="price" name="price" class="form-control" type="text" th:field="*{price}" disabled="disabled">
             </div>
         </div>
 
         <div class="form-group">
             <label class="col-sm-3 control-label product-lable">消费类型：</label>
             <div class="col-sm-9">
-                <select id="customeType" name="customeType" class="form-control m-b" th:field="*{customeType}">
+                <select id="customeType" name="customeType" class="form-control m-b" th:field="*{customeType}"  disabled="disabled">
                     <option value="">请选择...</option>
                     <option value="0">积分制</option>
                     <option value="1">消费次数</option>
@@ -68,14 +68,14 @@
         <div class="form-group">
             <label class="col-sm-3 control-label product-lable">总积分：</label>
             <div class="col-sm-9">
-                <input id="totalPoints" name="totalPoints" class="form-control" type="text" th:field="*{totalPoints}">
+                <input id="totalPoints" name="totalPoints" class="form-control" type="text" th:field="*{totalPoints}" disabled="disabled">
             </div>
         </div>
 
         <div class="form-group">
             <label class="col-sm-3 control-label product-lable">消费总次数：</label>
             <div class="col-sm-9">
-                <input id="totalTimes" name="totalTimes" class="form-control" type="text" th:field="*{totalTimes}">
+                <input id="totalTimes" name="totalTimes" class="form-control" type="text" th:field="*{totalTimes}" disabled="disabled">
             </div>
         </div>
 

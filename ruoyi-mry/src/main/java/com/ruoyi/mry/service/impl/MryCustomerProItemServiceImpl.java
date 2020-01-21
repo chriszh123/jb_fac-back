@@ -8,6 +8,7 @@ package com.ruoyi.mry.service.impl;
 
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.mry.constant.MryConstant;
+import com.ruoyi.mry.enums.CustomeType;
 import com.ruoyi.mry.exception.MryException;
 import com.ruoyi.mry.mapper.*;
 import com.ruoyi.mry.model.*;
@@ -117,6 +118,31 @@ public class MryCustomerProItemServiceImpl implements MryCustomerProItemService 
         customerProItem.setCreateTime(nowDate);
         customerProItem.setUpdateTime(nowDate);
 
+        // 减少当前客户对应的积分数、消费次数
+        MryCustomer customer = this.customerMapper.selectByPrimaryKey(customerProItem.getCustomerId());
+        if (customer != null) {
+            if (customerProItem.getCustomeType().equals(CustomeType.POINTS.getValue())) {
+                Long leftPoints = customer.getLeftPoints();
+                if (leftPoints.equals(0L)) {
+                    leftPoints = customer.getTotalCustomePoints();
+                }
+                leftPoints = leftPoints - customerProItem.getCustomePoints();
+                customer.setLeftPoints(leftPoints);
+            } else if (customerProItem.getCustomeType().equals(CustomeType.TIMES.getValue())) {
+                Short leftTimes = customer.getLeftTimes();
+                if (leftTimes.equals(Short.valueOf("0"))) {
+                    leftTimes = customer.getTotalCustomeTimes();
+                }
+                Integer leftTimesI = leftTimes - 1;
+                customer.setLeftTimes(leftTimesI.shortValue());
+            }
+
+            customer.setUpdateTime(nowDate);
+            customer.setOperatorId(customerProItem.getOperatorId());
+            customer.setOperatorName(customerProItem.getOperatorName());
+            this.customerMapper.updateByPrimaryKeySelective(customer);
+        }
+
         return this.customerProItemMapper.insertSelective(customerProItem);
     }
 
@@ -162,12 +188,43 @@ public class MryCustomerProItemServiceImpl implements MryCustomerProItemService 
             }
             idsLongs.add(Long.valueOf(id));
         }
+        Date nowDate = new Date();
         if (CollectionUtils.isNotEmpty(idsLongs)) {
             MryCustomerProItemExample example = new MryCustomerProItemExample();
             example.createCriteria().andIsDeletedEqualTo(false).andIdIn(idsLongs);
+            List<MryCustomerProItem> customerProItems = this.customerProItemMapper.selectByExample(example);
+            if (CollectionUtils.isNotEmpty(customerProItems)) {
+                for (MryCustomerProItem customerProItem : customerProItems) {
+                    // 增加当前客户对应的积分数、消费次数
+                    MryCustomer customer = this.customerMapper.selectByPrimaryKey(customerProItem.getCustomerId());
+                    if (customer != null) {
+                        if (customerProItem.getCustomeType().equals(CustomeType.POINTS.getValue())) {
+                            Long leftPoints = customer.getLeftPoints();
+                            if (leftPoints.equals(0L)) {
+                                leftPoints = customer.getTotalCustomePoints();
+                            }
+                            leftPoints = leftPoints + customerProItem.getCustomePoints();
+                            customer.setLeftPoints(leftPoints);
+                        } else if (customerProItem.getCustomeType().equals(CustomeType.TIMES.getValue())) {
+                            Short leftTimes = customer.getLeftTimes();
+                            if (leftTimes.equals(Short.valueOf("0"))) {
+                                leftTimes = customer.getTotalCustomeTimes();
+                            }
+                            Integer leftTimesI = leftTimes + 1;
+                            customer.setLeftTimes(leftTimesI.shortValue());
+                        }
+
+                        customer.setUpdateTime(nowDate);
+                        customer.setOperatorId(customerProItem.getOperatorId());
+                        customer.setOperatorName(customerProItem.getOperatorName());
+                        this.customerMapper.updateByPrimaryKeySelective(customer);
+                    }
+                }
+            }
+
             MryCustomerProItem update = new MryCustomerProItem();
             update.setIsDeleted(true);
-            update.setUpdateTime(new Date());
+            update.setUpdateTime(nowDate);
             if (user != null) {
                 update.setOperatorId(user.getUserId());
                 update.setOperatorName(user.getUserName());

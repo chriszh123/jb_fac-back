@@ -146,6 +146,23 @@ public class MryCustomerCardServiceImpl implements MryCustomerCardService {
         customerCard.setShopStaffId(customerCard.getOperatorId());
         customerCard.setShopStaffName(customerCard.getOperatorName());
 
+        // 新增当前客户对应的积分数、消费次数
+        MryCustomer customer = this.customerMapper.selectByPrimaryKey(customerCard.getCustomerId());
+        if (customer != null) {
+            Long totalCustomePoints = customer.getTotalCustomePoints();
+            totalCustomePoints = totalCustomePoints + customerCard.getTotalPoints();
+            customer.setTotalCustomePoints(totalCustomePoints);
+
+            Short totalCustomeTimes = customer.getTotalCustomeTimes();
+            Integer totalCustomeTimesI = totalCustomeTimes + customerCard.getTotalTimes();
+            customer.setTotalCustomeTimes(totalCustomeTimesI.shortValue());
+
+            customer.setUpdateTime(nowDate);
+            customer.setOperatorId(customerCard.getOperatorId());
+            customer.setOperatorName(customerCard.getOperatorName());
+            this.customerMapper.updateByPrimaryKeySelective(customer);
+        }
+
         return this.customerCardMapper.insertSelective(customerCard);
     }
 
@@ -177,12 +194,36 @@ public class MryCustomerCardServiceImpl implements MryCustomerCardService {
             }
             idsLongs.add(Long.valueOf(id));
         }
+        Date nowDate = new Date();
         if (CollectionUtils.isNotEmpty(idsLongs)) {
             MryCustomerCardExample example = new MryCustomerCardExample();
             example.createCriteria().andIsDeletedEqualTo(false).andIdIn(idsLongs);
+
+            List<MryCustomerCard> customerCards = this.customerCardMapper.selectByExample(example);
+            if (CollectionUtils.isNotEmpty(customerCards)) {
+                for (MryCustomerCard card : customerCards) {
+                    // 减少当前客户对应的积分数、消费次数
+                    MryCustomer customer = this.customerMapper.selectByPrimaryKey(card.getCustomerId());
+                    if (customer != null) {
+                        Long totalCustomePoints = customer.getTotalCustomePoints();
+                        totalCustomePoints = totalCustomePoints - card.getTotalPoints();
+                        customer.setTotalCustomePoints(totalCustomePoints);
+
+                        Short totalCustomeTimes = customer.getTotalCustomeTimes();
+                        Integer totalCustomeTimesI = totalCustomeTimes - card.getTotalTimes();
+                        customer.setTotalCustomeTimes(totalCustomeTimesI.shortValue());
+
+                        customer.setUpdateTime(nowDate);
+                        customer.setOperatorId(user.getUserId());
+                        customer.setOperatorName(user.getUserName());
+                        this.customerMapper.updateByPrimaryKeySelective(customer);
+                    }
+                }
+            }
+
             MryCustomerCard update = new MryCustomerCard();
             update.setIsDeleted(true);
-            update.setUpdateTime(new Date());
+            update.setUpdateTime(nowDate);
             if (user != null) {
                 update.setOperatorId(user.getUserId());
                 update.setOperatorName(user.getUserName());

@@ -1114,6 +1114,246 @@ public class MryCustomerExample {
             addCriterion("is_deleted not between", value1, value2, "isDeleted");
             return (Criteria) this;
         }
+
+        public Criteria andTotalCustomePointsIsNull() {
+            addCriterion("total_custome_points is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andTotalCustomePointsIsNotNull() {
+            addCriterion("total_custome_points is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andTotalCustomePointsEqualTo(Long value) {
+            addCriterion("total_custome_points =", value, "totalCustomePoints");
+            return (Criteria) this;
+        }
+
+        public Criteria andTotalCustomePointsNotEqualTo(Long value) {
+            addCriterion("total_custome_points <>", value, "totalCustomePoints");
+            return (Criteria) this;
+        }
+
+        public Criteria andTotalCustomePointsGreaterThan(Long value) {
+            addCriterion("total_custome_points >", value, "totalCustomePoints");
+            return (Criteria) this;
+        }
+
+        public Criteria andTotalCustomePointsGreaterThanOrEqualTo(Long value) {
+            addCriterion("total_custome_points >=", value, "totalCustomePoints");
+            return (Criteria) this;
+        }
+
+        public Criteria andTotalCustomePointsLessThan(Long value) {
+            addCriterion("total_custome_points <", value, "totalCustomePoints");
+            return (Criteria) this;
+        }
+
+        public Criteria andTotalCustomePointsLessThanOrEqualTo(Long value) {
+            addCriterion("total_custome_points <=", value, "totalCustomePoints");
+            return (Criteria) this;
+        }
+
+        public Criteria andTotalCustomePointsIn(List<Long> values) {
+            addCriterion("total_custome_points in", values, "totalCustomePoints");
+            return (Criteria) this;
+        }
+
+        public Criteria andTotalCustomePointsNotIn(List<Long> values) {
+            addCriterion("total_custome_points not in", values, "totalCustomePoints");
+            return (Criteria) this;
+        }
+
+        public Criteria andTotalCustomePointsBetween(Long value1, Long value2) {
+            addCriterion("total_custome_points between", value1, value2, "totalCustomePoints");
+            return (Criteria) this;
+        }
+
+        public Criteria andTotalCustomePointsNotBetween(Long value1, Long value2) {
+            addCriterion("total_custome_points not between", value1, value2, "totalCustomePoints");
+            return (Criteria) this;
+        }
+
+        public Criteria andLeftPointsIsNull() {
+            addCriterion("left_points is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andLeftPointsIsNotNull() {
+            addCriterion("left_points is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andLeftPointsEqualTo(Long value) {
+            addCriterion("left_points =", value, "leftPoints");
+            return (Criteria) this;
+        }
+
+        public Criteria andLeftPointsNotEqualTo(Long value) {
+            addCriterion("left_points <>", value, "leftPoints");
+            return (Criteria) this;
+        }
+
+        public Criteria andLeftPointsGreaterThan(Long value) {
+            addCriterion("left_points >", value, "leftPoints");
+            return (Criteria) this;
+        }
+
+        public Criteria andLeftPointsGreaterThanOrEqualTo(Long value) {
+            addCriterion("left_points >=", value, "leftPoints");
+            return (Criteria) this;
+        }
+
+        public Criteria andLeftPointsLessThan(Long value) {
+            addCriterion("left_points <", value, "leftPoints");
+            return (Criteria) this;
+        }
+
+        public Criteria andLeftPointsLessThanOrEqualTo(Long value) {
+            addCriterion("left_points <=", value, "leftPoints");
+            return (Criteria) this;
+        }
+
+        public Criteria andLeftPointsIn(List<Long> values) {
+            addCriterion("left_points in", values, "leftPoints");
+            return (Criteria) this;
+        }
+
+        public Criteria andLeftPointsNotIn(List<Long> values) {
+            addCriterion("left_points not in", values, "leftPoints");
+            return (Criteria) this;
+        }
+
+        public Criteria andLeftPointsBetween(Long value1, Long value2) {
+            addCriterion("left_points between", value1, value2, "leftPoints");
+            return (Criteria) this;
+        }
+
+        public Criteria andLeftPointsNotBetween(Long value1, Long value2) {
+            addCriterion("left_points not between", value1, value2, "leftPoints");
+            return (Criteria) this;
+        }
+
+        public Criteria andTotalCustomeTimesIsNull() {
+            addCriterion("total_custome_times is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andTotalCustomeTimesIsNotNull() {
+            addCriterion("total_custome_times is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andTotalCustomeTimesEqualTo(Short value) {
+            addCriterion("total_custome_times =", value, "totalCustomeTimes");
+            return (Criteria) this;
+        }
+
+        public Criteria andTotalCustomeTimesNotEqualTo(Short value) {
+            addCriterion("total_custome_times <>", value, "totalCustomeTimes");
+            return (Criteria) this;
+        }
+
+        public Criteria andTotalCustomeTimesGreaterThan(Short value) {
+            addCriterion("total_custome_times >", value, "totalCustomeTimes");
+            return (Criteria) this;
+        }
+
+        public Criteria andTotalCustomeTimesGreaterThanOrEqualTo(Short value) {
+            addCriterion("total_custome_times >=", value, "totalCustomeTimes");
+            return (Criteria) this;
+        }
+
+        public Criteria andTotalCustomeTimesLessThan(Short value) {
+            addCriterion("total_custome_times <", value, "totalCustomeTimes");
+            return (Criteria) this;
+        }
+
+        public Criteria andTotalCustomeTimesLessThanOrEqualTo(Short value) {
+            addCriterion("total_custome_times <=", value, "totalCustomeTimes");
+            return (Criteria) this;
+        }
+
+        public Criteria andTotalCustomeTimesIn(List<Short> values) {
+            addCriterion("total_custome_times in", values, "totalCustomeTimes");
+            return (Criteria) this;
+        }
+
+        public Criteria andTotalCustomeTimesNotIn(List<Short> values) {
+            addCriterion("total_custome_times not in", values, "totalCustomeTimes");
+            return (Criteria) this;
+        }
+
+        public Criteria andTotalCustomeTimesBetween(Short value1, Short value2) {
+            addCriterion("total_custome_times between", value1, value2, "totalCustomeTimes");
+            return (Criteria) this;
+        }
+
+        public Criteria andTotalCustomeTimesNotBetween(Short value1, Short value2) {
+            addCriterion("total_custome_times not between", value1, value2, "totalCustomeTimes");
+            return (Criteria) this;
+        }
+
+        public Criteria andLeftTimesIsNull() {
+            addCriterion("left_times is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andLeftTimesIsNotNull() {
+            addCriterion("left_times is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andLeftTimesEqualTo(Short value) {
+            addCriterion("left_times =", value, "leftTimes");
+            return (Criteria) this;
+        }
+
+        public Criteria andLeftTimesNotEqualTo(Short value) {
+            addCriterion("left_times <>", value, "leftTimes");
+            return (Criteria) this;
+        }
+
+        public Criteria andLeftTimesGreaterThan(Short value) {
+            addCriterion("left_times >", value, "leftTimes");
+            return (Criteria) this;
+        }
+
+        public Criteria andLeftTimesGreaterThanOrEqualTo(Short value) {
+            addCriterion("left_times >=", value, "leftTimes");
+            return (Criteria) this;
+        }
+
+        public Criteria andLeftTimesLessThan(Short value) {
+            addCriterion("left_times <", value, "leftTimes");
+            return (Criteria) this;
+        }
+
+        public Criteria andLeftTimesLessThanOrEqualTo(Short value) {
+            addCriterion("left_times <=", value, "leftTimes");
+            return (Criteria) this;
+        }
+
+        public Criteria andLeftTimesIn(List<Short> values) {
+            addCriterion("left_times in", values, "leftTimes");
+            return (Criteria) this;
+        }
+
+        public Criteria andLeftTimesNotIn(List<Short> values) {
+            addCriterion("left_times not in", values, "leftTimes");
+            return (Criteria) this;
+        }
+
+        public Criteria andLeftTimesBetween(Short value1, Short value2) {
+            addCriterion("left_times between", value1, value2, "leftTimes");
+            return (Criteria) this;
+        }
+
+        public Criteria andLeftTimesNotBetween(Short value1, Short value2) {
+            addCriterion("left_times not between", value1, value2, "leftTimes");
+            return (Criteria) this;
+        }
     }
 
     /**

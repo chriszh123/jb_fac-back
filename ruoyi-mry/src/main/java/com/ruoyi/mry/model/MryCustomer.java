@@ -34,6 +34,18 @@ public class MryCustomer {
     @Excel(name = "职业")
     private String work;
 
+    @Excel(name = "当前拥有总积分")
+    private Long totalCustomePoints;
+
+    @Excel(name = "当前剩余积分")
+    private Long leftPoints;
+
+    @Excel(name = "当前拥有消费次数")
+    private Short totalCustomeTimes;
+
+    @Excel(name = "当前剩余消费次数")
+    private Short leftTimes;
+
     @Excel(name = "备注")
     private String remark;
 

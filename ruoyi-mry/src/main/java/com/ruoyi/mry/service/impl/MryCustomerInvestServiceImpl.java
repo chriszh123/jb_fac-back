@@ -87,6 +87,23 @@ public class MryCustomerInvestServiceImpl implements MryCustomerInvestService {
         customerInvest.setCreateTime(nowDate);
         customerInvest.setUpdateTime(nowDate);
 
+        // 新增当前客户对应的积分数、消费次数
+        MryCustomer customer = this.customerMapper.selectByPrimaryKey(customerInvest.getCustomerId());
+        if (customer != null) {
+            Long totalCustomePoints = customer.getTotalCustomePoints();
+            totalCustomePoints = totalCustomePoints + customerInvest.getCustomePoints();
+            customer.setTotalCustomePoints(totalCustomePoints);
+
+            Short totalCustomeTimes = customer.getTotalCustomeTimes();
+            Integer totalCustomeTimesI = totalCustomeTimes + customerInvest.getCustomeTimes();
+            customer.setTotalCustomeTimes(totalCustomeTimesI.shortValue());
+
+            customer.setUpdateTime(nowDate);
+            customer.setOperatorId(customerInvest.getOperatorId());
+            customer.setOperatorName(customerInvest.getOperatorName());
+            this.customerMapper.updateByPrimaryKeySelective(customer);
+        }
+
         return this.customerInvestMapper.insertSelective(customerInvest);
     }
 
@@ -118,12 +135,37 @@ public class MryCustomerInvestServiceImpl implements MryCustomerInvestService {
             }
             idsLongs.add(Long.valueOf(id));
         }
+        Date nowDate = new Date();
         if (CollectionUtils.isNotEmpty(idsLongs)) {
             MryCustomerInvestExample example = new MryCustomerInvestExample();
             example.createCriteria().andIsDeletedEqualTo(false).andIdIn(idsLongs);
+
+            List<MryCustomerInvest> invests = this.customerInvestMapper.selectByExample(example);
+            if (CollectionUtils.isNotEmpty(invests)) {
+                for (MryCustomerInvest invest : invests) {
+                    // 减少当前客户对应的积分数、消费次数
+                    MryCustomer customer = this.customerMapper.selectByPrimaryKey(invest.getCustomerId());
+                    if (customer != null) {
+                        // 积分
+                        Long totalCustomePoints = customer.getLeftPoints();
+                        totalCustomePoints = totalCustomePoints - invest.getCustomePoints();
+                        customer.setTotalCustomePoints(totalCustomePoints);
+                        // 消费次数
+                        Short totalCustomeTimes = customer.getTotalCustomeTimes();
+                        Integer totalCustomeTimesI = totalCustomeTimes - invest.getCustomeTimes();
+                        customer.setTotalCustomeTimes(totalCustomeTimesI.shortValue());
+
+                        customer.setUpdateTime(nowDate);
+                        customer.setOperatorId(user.getUserId());
+                        customer.setOperatorName(user.getUserName());
+                        this.customerMapper.updateByPrimaryKeySelective(customer);
+                    }
+                }
+            }
+
             MryCustomerInvest update = new MryCustomerInvest();
             update.setIsDeleted(true);
-            update.setUpdateTime(new Date());
+            update.setUpdateTime(nowDate);
             if (user != null) {
                 update.setOperatorId(user.getUserId());
                 update.setOperatorName(user.getUserName());

@@ -60,6 +60,12 @@ CREATE TABLE `mry_customer` (
   `address` varchar(1512) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci default '' COMMENT '家庭住址',
   `phone_number` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci  default '' COMMENT '联系电话',
   `work` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci default '' COMMENT '职业',
+
+  `total_custome_points` bigint(20) default 0 COMMENT '当前拥有总积分'
+  `left_points` bigint(20) default 0 COMMENT '当前剩余积分',
+  `total_custome_times` bigint(20) default 0 COMMENT '当前拥有消费次数'
+  `left_times` smallint default 0 COMMENT '当前剩余消费次数',
+
   `remark` varchar(2048) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci default '' COMMENT '备注说明',
 
   `create_time` datetime NOT NULL COMMENT '创建时间',

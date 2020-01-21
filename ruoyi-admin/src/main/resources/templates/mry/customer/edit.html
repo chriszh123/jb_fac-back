@@ -66,6 +66,34 @@
         </div>
 
         <div class="form-group">
+            <label class="col-sm-3 control-label product-lable">当前拥有总积分：</label>
+            <div class="col-sm-9">
+                <input id="totalCustomePoints" name="totalCustomePoints" class="form-control" type="text" th:field="*{totalCustomePoints}" disabled="disabled">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label product-lable">当前剩余积分：</label>
+            <div class="col-sm-9">
+                <input id="leftPoints" name="leftPoints" class="form-control" type="text" th:field="*{leftPoints}" disabled="disabled">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label product-lable">当前拥有消费次数：</label>
+            <div class="col-sm-9">
+                <input id="totalCustomeTimes" name="totalCustomeTimes" class="form-control" type="text" th:field="*{totalCustomeTimes}" disabled="disabled">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label product-lable">当前剩余消费次数：</label>
+            <div class="col-sm-9">
+                <input id="leftTimes" name="leftTimes" class="form-control" type="text" th:field="*{leftTimes}" disabled="disabled">
+            </div>
+        </div>
+
+        <div class="form-group">
             <label class="col-sm-3 control-label product-lable">备注：</label>
             <div class="col-sm-9">
                 <textarea cols="80" id="remark" name="remark" rows="5" style="width: 100%;" th:field="*{remark}"></textarea>
