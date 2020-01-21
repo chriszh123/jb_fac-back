@@ -2,8 +2,10 @@ package com.ruoyi.mry.mapper;
 
 import com.ruoyi.mry.model.MryCustomerInvest;
 import com.ruoyi.mry.model.MryCustomerInvestExample;
-import java.util.List;
+import com.ruoyi.mry.vo.MryQueryVo;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 public interface MryCustomerInvestMapper {
     /**
@@ -93,4 +95,6 @@ public interface MryCustomerInvestMapper {
      * @mbggenerated
      */
     int updateByPrimaryKey(MryCustomerInvest record);
+
+    List<MryCustomerInvest> queryRecentShopMoneyInfo(MryQueryVo queryVo);
 }

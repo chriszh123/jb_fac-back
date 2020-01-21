@@ -3,6 +3,8 @@ package com.ruoyi.mry.mapper;
 import com.ruoyi.mry.model.MryCustomerProItem;
 import com.ruoyi.mry.model.MryCustomerProItemExample;
 import java.util.List;
+
+import com.ruoyi.mry.vo.MryQueryVo;
 import org.apache.ibatis.annotations.Param;
 
 public interface MryCustomerProItemMapper {
@@ -93,4 +95,6 @@ public interface MryCustomerProItemMapper {
      * @mbggenerated
      */
     int updateByPrimaryKey(MryCustomerProItem record);
+
+    List<MryCustomerProItem> queryRecentCustomerInfo(MryQueryVo queryVo);
 }

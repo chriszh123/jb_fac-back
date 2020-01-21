@@ -1,0 +1,93 @@
+<!DOCTYPE HTML>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="gray-bg">
+
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="queryArea">
+                <div class="select-list">
+                    <li>
+                        <li>
+                            <label>店面： </label>
+                            <select id="shopId" name="shopId"
+                                    th:with="shops=${@mpcs.getShops()}" onchange="changeShop(this)">
+                                <option value="">请选择...</option>
+                                <option th:each="shop : ${shops}" th:text="${shop.name}" th:value="${shop.id}"></option>
+                            </select>
+                        </li>
+                        <li class="select-time">
+                            <label>新增客户时间： </label>
+                            <input type="text" class="time-input" id="startDate" placeholder="开始时间" name="startDate"/>
+                            <span>-</span>
+                            <input type="text" class="time-input" id="endDate" placeholder="结束时间" name="endDate"/>
+                        </li>
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" href="javascript:void(0);"
+                               onclick="searchData()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset();"><i
+                                    class="fa fa-refresh"></i>&nbsp;重置</a>
+                            <span style="color: red; font-weight: bold">提醒：请先选择"店面"，再搜索，日期不选默认为最近一周</span>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <div class="col-sm-12 select-table table-striped" style="width: 100%;height:80%;">
+            <div id="newcustomer" style="width: 100%;height:100%;"></div>
+        </div>
+    </div>
+</div>
+<div th:include="include :: footer"></div>
+<script th:src="@{/mry/mry_common.js}"></script>
+<script th:src="@{/echarts/echarts.min.js}"></script>
+<script th:inline="javascript">
+    var prefix = ctx + "mry/dataanalysis";
+    var url = prefix + "/queryRecentNewCustomerInfo";
+
+    // 初始化图表
+    var initEChart = function (data) {
+        var xAxisData = data.xaxisData;
+        var seriesCustomerData = data.seriesCustomerData;
+        userOption.xAxis[0].data = xAxisData;
+        userOption.series[0].data = seriesCustomerData;
+
+        // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(document.getElementById('newcustomer'));
+        // 使用刚指定的配置项和数据显示图表。
+        myChart.setOption(userOption);
+    }
+
+    // 搜索接口
+    var searchData = function () {
+        var shopId = $("#shopId").val();
+        if (shopId == '') {
+            return;
+        }
+        var data = {
+            "shopId" : shopId,
+            "startDate": $("#startDate").val(),
+            "endDate": $("#endDate").val()
+        }
+        var config = {
+            url: url,
+            type: "post",
+            dataType: "json",
+            data: data,
+            success: function (result) {
+                initEChart(result);
+            }
+        };
+        $.ajax(config);
+    }
+
+    $(function () {
+        // 客户统计相关数据展示
+        searchData();
+    });
+</script>
+</body>
+</html>

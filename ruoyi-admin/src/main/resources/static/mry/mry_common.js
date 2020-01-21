@@ -229,10 +229,10 @@ var orderOption = {
     ]
 };
 
-// 新增用户统计
-var userOption = {
+// 客户消费记录明细
+var customerProItemOption = {
     title: {
-        text: '每日新增用户统计'
+        text: '每日客户消费次数统计'
     },
     tooltip: {
         trigger: 'axis',
@@ -255,7 +255,7 @@ var userOption = {
         }
     },
     legend: {
-        data: ['新增用户']
+        data: ['新增消费记录次数']
     },
     grid: {
         left: '3%',
@@ -274,7 +274,166 @@ var userOption = {
         type: 'value'
     },
     series: [{
-        name: '新增用户',
+        name: '新增消费记录次数',
+        data: [],
+        type: 'line',
+        smooth: true,
+        areaStyle: {}
+    }]
+};
+
+// 新增用户统计
+var userOption = {
+    title: {
+        text: '每日新增客户统计'
+    },
+    tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+            type: 'cross',
+            label: {
+                backgroundColor: '#6a7985'
+            }
+        }
+    },
+    toolbox: {
+        show: true,
+        top: 10,
+        right: 10,
+        feature: {
+            mark: {show: true},
+            magicType: {show: true, type: ['line', 'bar']},
+            restore: {show: true},
+            saveAsImage: {show: true}
+        }
+    },
+    legend: {
+        data: ['新增客户']
+    },
+    grid: {
+        left: '3%',
+        right: '4%',
+        bottom: '3%',
+        containLabel: true
+    },
+    xAxis: [
+        {
+            type: 'category',
+            boundaryGap: false,
+            data: []
+        }
+    ],
+    yAxis: {
+        type: 'value'
+    },
+    series: [{
+        name: '新增客户',
+        data: [],
+        type: 'line',
+        smooth: true,
+        areaStyle: {}
+    }]
+};
+
+// 每日店面新增收入金额统计
+var shopMoneyOption = {
+    title: {
+        text: '店面每日新增收入金额统计'
+    },
+    tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+            type: 'cross',
+            label: {
+                backgroundColor: '#6a7985'
+            }
+        }
+    },
+    toolbox: {
+        show: true,
+        top: 10,
+        right: 10,
+        feature: {
+            mark: {show: true},
+            magicType: {show: true, type: ['line', 'bar']},
+            restore: {show: true},
+            saveAsImage: {show: true}
+        }
+    },
+    legend: {
+        data: ['店面每日新增收入金额']
+    },
+    grid: {
+        left: '3%',
+        right: '4%',
+        bottom: '3%',
+        containLabel: true
+    },
+    xAxis: [
+        {
+            type: 'category',
+            boundaryGap: false,
+            data: []
+        }
+    ],
+    yAxis: {
+        type: 'value'
+    },
+    series: [{
+        name: '店面每日新增收入金额',
+        data: [],
+        type: 'line',
+        smooth: true,
+        areaStyle: {}
+    }]
+};
+
+// 指定客户日常充值金额统计
+var customerMoneyOption = {
+    title: {
+        text: '客户日常充值金额统计'
+    },
+    tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+            type: 'cross',
+            label: {
+                backgroundColor: '#6a7985'
+            }
+        }
+    },
+    toolbox: {
+        show: true,
+        top: 10,
+        right: 10,
+        feature: {
+            mark: {show: true},
+            magicType: {show: true, type: ['line', 'bar']},
+            restore: {show: true},
+            saveAsImage: {show: true}
+        }
+    },
+    legend: {
+        data: ['客户日常充值金额']
+    },
+    grid: {
+        left: '3%',
+        right: '4%',
+        bottom: '3%',
+        containLabel: true
+    },
+    xAxis: [
+        {
+            type: 'category',
+            boundaryGap: false,
+            data: []
+        }
+    ],
+    yAxis: {
+        type: 'value'
+    },
+    series: [{
+        name: '客户日常充值金额',
         data: [],
         type: 'line',
         smooth: true,

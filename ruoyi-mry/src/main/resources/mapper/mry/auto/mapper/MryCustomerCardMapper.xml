@@ -521,4 +521,15 @@
       is_deleted = #{isDeleted,jdbcType=BIT}
     where id = #{id,jdbcType=BIGINT}
   </update>
+
+  <select id="queryRecentShopMoneyInfo1" resultMap="BaseResultMap">
+    select id, create_time,price
+    from mry_customer_card
+    where is_deleted = 0 and shop_id = #{shopId}
+    <if test="customerId != null and customerId != 0">
+      and customer_id = #{customerId}
+    </if>
+    and DATE_FORMAT(#{endDate},'%Y-%m-%d') &gt;= DATE_FORMAT(create_time,'%Y-%m-%d')
+    and DATE_FORMAT(#{startDate},'%Y-%m-%d') &lt;= DATE_FORMAT(create_time,'%Y-%m-%d')
+  </select>
 </mapper>
