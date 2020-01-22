@@ -150,11 +150,11 @@ public class MryCustomerCardServiceImpl implements MryCustomerCardService {
         MryCustomer customer = this.customerMapper.selectByPrimaryKey(customerCard.getCustomerId());
         if (customer != null) {
             Long totalCustomePoints = customer.getTotalCustomePoints();
-            totalCustomePoints = totalCustomePoints + customerCard.getTotalPoints();
+            totalCustomePoints = totalCustomePoints + (customerCard.getTotalPoints() != null ? customerCard.getTotalPoints() : 0L);
             customer.setTotalCustomePoints(totalCustomePoints);
 
             Short totalCustomeTimes = customer.getTotalCustomeTimes();
-            Integer totalCustomeTimesI = totalCustomeTimes + customerCard.getTotalTimes();
+            Integer totalCustomeTimesI = totalCustomeTimes + (customerCard.getTotalTimes() != null ? customerCard.getTotalTimes() : 0);
             customer.setTotalCustomeTimes(totalCustomeTimesI.shortValue());
 
             customer.setUpdateTime(nowDate);

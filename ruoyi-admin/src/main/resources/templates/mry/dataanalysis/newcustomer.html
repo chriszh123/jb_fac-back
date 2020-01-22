@@ -13,7 +13,7 @@
                         <li>
                             <label>店面： </label>
                             <select id="shopId" name="shopId"
-                                    th:with="shops=${@mpcs.getShops()}" onchange="changeShop(this)">
+                                    th:with="shops=${@mpcs.getShops()}">
                                 <option value="">请选择...</option>
                                 <option th:each="shop : ${shops}" th:text="${shop.name}" th:value="${shop.id}"></option>
                             </select>
