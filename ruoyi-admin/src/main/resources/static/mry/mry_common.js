@@ -561,7 +561,7 @@ var initFileInputWithImgData = function (id, uploadUrl, maxFilesNum, imgPaths, c
         overwriteInitial: false, //不覆盖已存在的图片
         maxFilesNum: maxFilesNum,//上传最大的文件数量
         removeFromPreviewOnError: true, //当选择的文件不符合规则时，例如不是指定后缀文件、大小超出配置等，选择的文件不会出现在预览框中，只会显示错误信息
-        maxFileCount: 5,
+        maxFileCount: maxFilesNum,
         maxFileSize: 1024 * 500,
         allowedFileExtensions: FILEINPUTEXTENDTION,
         previewFileIcon: "<i class='glyphicon glyphicon-king'></i>",
