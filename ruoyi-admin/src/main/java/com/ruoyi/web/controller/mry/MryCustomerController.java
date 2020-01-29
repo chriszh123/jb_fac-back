@@ -12,11 +12,14 @@ import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.page.TableDataInfo;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.fac.constant.FacConstant;
+import com.ruoyi.fac.domain.Product;
+import com.ruoyi.fac.vo.ProductImgVo;
 import com.ruoyi.framework.util.ShiroUtils;
 import com.ruoyi.framework.web.base.BaseController;
 import com.ruoyi.mry.exception.MryException;
 import com.ruoyi.mry.model.MryCustomer;
 import com.ruoyi.mry.service.MryCustomerService;
+import com.ruoyi.mry.vo.CustomerImgVo;
 import com.ruoyi.system.domain.SysUser;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -116,6 +119,27 @@ public class MryCustomerController extends BaseController {
         }
     }
 
+    @RequiresPermissions("mry:customer:editpicture")
+    @Log(title = "客户图片资料", businessType = BusinessType.UPDATE)
+    @PostMapping("/editpicture")
+    @ResponseBody
+    public AjaxResult editpicture(MryCustomer customer) {
+        SysUser user = ShiroUtils.getSysUser();
+        if (user != null) {
+            customer.setOperatorId(user.getUserId());
+            customer.setOperatorName(user.getUserName());
+        } else {
+            return AjaxResult.error(FacConstant.ERROR_MSG_LOGIN_USER_NULL);
+        }
+        try {
+            return toAjax(customerService.editpicture(customer));
+        } catch (MryException me) {
+            return AjaxResult.error(me.getMessage());
+        } catch (Exception ex) {
+            return AjaxResult.error();
+        }
+    }
+
     @RequiresPermissions("mry:customer:remove")
     @Log(title = "客户基本资料", businessType = BusinessType.DELETE)
     @PostMapping("/remove")
@@ -127,5 +151,30 @@ public class MryCustomerController extends BaseController {
         } catch (Exception ex) {
             return error(ex.getMessage());
         }
+    }
+
+    @GetMapping("/gotoPictures/{id}")
+    public String gotoPictures(@PathVariable("id") Long id, ModelMap mmap) {
+        MryCustomer customer = customerService.selectCustomerById(id);
+        mmap.put("customer", customer);
+        return prefix + "/pictures";
+    }
+
+    @PostMapping("/getCustomerImgs")
+    @ResponseBody
+    public CustomerImgVo getProductImgs(MryCustomer customer) {
+        CustomerImgVo vo = this.customerService.getCustomerImgs(customer);
+        return vo;
+    }
+
+    /**
+     * 删除单个已经存在的图片
+     */
+    @Log(title = "客户", businessType = BusinessType.DELETE)
+    @PostMapping("/gotoPictures/deletePic")
+    @ResponseBody
+    public AjaxResult deletePic(String key) {
+        SysUser user = ShiroUtils.getSysUser();
+        return toAjax(customerService.deletePic(key, user));
     }
 }

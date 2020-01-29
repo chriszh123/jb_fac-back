@@ -2,7 +2,11 @@ package com.ruoyi.common.utils.file;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
+import com.ruoyi.common.utils.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import com.ruoyi.common.config.Global;
 import com.ruoyi.common.exception.file.FileNameLengthLimitExceededException;
@@ -36,6 +40,8 @@ public class FileUploadUtils {
      */
     public static final String IMAGE_JPG_EXTENSION = ".jpg";
 
+    public static final String DEFAULT_DATE_TIME_FORMAT_HH_MM = "yyyy-MM-dd-HH_mm_ss";
+
     private static int counter = 0;
 
     public static void setDefaultBaseDir(String defaultBaseDir) {
@@ -56,6 +62,14 @@ public class FileUploadUtils {
     public static final String upload(MultipartFile file, String basePath) throws IOException {
         try {
             return upload(basePath, file, FileUploadUtils.IMAGE_JPG_EXTENSION);
+        } catch (Exception e) {
+            throw new IOException(e.getMessage(), e);
+        }
+    }
+
+    public static final String upload(MultipartFile file, String basePath, String module, String index) throws IOException {
+        try {
+            return upload(basePath, file, FileUploadUtils.IMAGE_JPG_EXTENSION, module, index);
         } catch (Exception e) {
             throw new IOException(e.getMessage(), e);
         }
@@ -103,6 +117,58 @@ public class FileUploadUtils {
         File desc = getAbsoluteFile(baseDir, baseDir + fileName);
         file.transferTo(desc);
         return fileName;
+    }
+
+    public static final String upload(String baseDir, MultipartFile file, String extension, String module, String index)
+            throws FileSizeLimitExceededException, IOException, FileNameLengthLimitExceededException {
+
+        int fileNamelength = file.getOriginalFilename().length();
+        if (fileNamelength > FileUploadUtils.DEFAULT_FILE_NAME_LENGTH) {
+            throw new FileNameLengthLimitExceededException(FileUploadUtils.DEFAULT_FILE_NAME_LENGTH);
+        }
+
+        assertAllowed(file);
+
+        String fileName = extractFilename(file, extension);
+        if (StringUtils.equals("mry", module)) {
+            // mry模块的图片名称格式为:yyyy-MM-dd-HH_mm_ss-SSS
+            String[] pictureArr = file.getOriginalFilename().split("\\.");
+            String pictureName = pictureArr[pictureArr.length - 2];
+            boolean dataFrt = checkDateValid(pictureName, DEFAULT_DATE_TIME_FORMAT_HH_MM);
+            if (dataFrt) {
+                return file.getOriginalFilename();
+            }
+
+            Date nowDate = new Date();
+            fileName = DateUtils.datePath() + "/" + new SimpleDateFormat(DEFAULT_DATE_TIME_FORMAT_HH_MM).format(nowDate) + "-" + index + FileUploadUtils.IMAGE_JPG_EXTENSION;
+        }
+
+        File desc = getAbsoluteFile(baseDir, baseDir + fileName);
+        file.transferTo(desc);
+        return fileName;
+    }
+
+    /**
+     * 校验指定日期值是否满足指定日期格式
+     *
+     * @param dateValue 当前日期值
+     * @param regExp    指定日期格式
+     * @return true/false
+     */
+    public static Boolean checkDateValid(String dateValue, String regExp) {
+        if (StringUtils.isBlank(dateValue) || StringUtils.isBlank(dateValue.trim())) {
+            return true;
+        }
+        boolean convertSuccess = true;
+        SimpleDateFormat format = new SimpleDateFormat(regExp);
+        try {
+            // 设置lenient为false. 否则SimpleDateFormat会比较宽松地验证日期，比如2007/02/29会被接受，并转换成2007/03/01
+            format.setLenient(false);
+            format.parse(dateValue);
+        } catch (ParseException e) {
+            convertSuccess = false;
+        }
+        return convertSuccess;
     }
 
     public static final String extractFilename(MultipartFile file, String extension) {

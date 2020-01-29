@@ -19,4 +19,17 @@ public class MryConstant {
     public static String NODE_FIELD_TYPE_SHOP = "shop";
 
     public static String NODE_FIELD_TYPE_STAFF = "staff";
+
+    /**
+     * ajax请求响应码：请求失败
+     */
+    public static String AJAX_CODE_FAIL = "-1";
+    /**
+     * ajax请求响应码：请求成功
+     */
+    public static String AJAX_CODE_SUCCESS = "0";
+    /**
+     * 分隔符：+
+     */
+    public static String SEPARATOR_SEMICOLON = ";";
 }

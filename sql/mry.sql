@@ -259,3 +259,20 @@ CREATE TABLE `mry_customer_invest` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='客户充值记录明细';
 
+
+drop table if exists `mry_customer_picture`;
+CREATE TABLE `mry_customer_picture` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `shop_id` smallint NOT NULL COMMENT '所属店面',
+  `customer_id` bigint(20) NOT NULL COMMENT '客户ID',
+  `file_name` varchar(512) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT '' COMMENT '图片名称',
+  `picture` varchar(1536) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT '' COMMENT '单个图片地址',
+
+  `create_time` datetime NOT NULL COMMENT '充值日期',
+  `update_time` datetime NOT NULL COMMENT '最近更新时间',
+  `operator_id` bigint(20) DEFAULT NULL COMMENT '操作者ID',
+  `operator_name` varchar(60) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL COMMENT '操作者姓名',
+  `is_deleted` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否删除',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='客户图片库';
+

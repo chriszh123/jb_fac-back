@@ -58,4 +58,11 @@ public class MryCustomer {
     private String operatorName;
 
     private Boolean isDeleted;
+
+    /**
+     * 客户图片
+     */
+    private String picture;
+
+    private String imgPath;
 }

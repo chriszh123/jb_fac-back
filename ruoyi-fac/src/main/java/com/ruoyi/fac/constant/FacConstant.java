@@ -53,4 +53,9 @@ public class FacConstant {
      * 用户签到领取的随机积分：最小值
      */
     public static  int USER_SIGN_POINT_MIN= 1;
+
+    /**M
+     * 伊诺丽尔模块涉及到的文件大小:1
+     */
+    public static int FILE_SIZE_YNLE = 1024 * 1024;
 }

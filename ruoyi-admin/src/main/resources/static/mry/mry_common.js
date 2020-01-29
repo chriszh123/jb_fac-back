@@ -25,8 +25,7 @@ var LEAVE_STATUS = {
 
 // 各对象预置数量
 var OBJECT_COUNT = {
-    "PRODUCT_IMG": 5,
-    "PRODUCT_IMG_CATEGORY": 1
+    "CUSTOMER_IMG": 50
 };
 
 // 订单状态
@@ -475,10 +474,10 @@ var initFileInput = function (id, uploadUrl, maxFilesNum) {
         }
     }).on('filepreupload', function (event, data, previewId, index) {     //上传中
         var form = data.form, files = data.files, extra = data.extra, response = data.response, reader = data.reader;
-        console.log('文件正在上传');
+        console.log('文件正在上传。。。。。pictures');
     }).on("fileuploaded", function (event, data, previewId, index) {    //一个文件上传成功
         // 异步上传图片时，用fileuploaded事件处理回调
-        console.log('fileuploaded：文件上传成功！index = ' + index);
+        console.log('fileuploaded：文件上传成功！。。。。。pictures! index = ' + index);
         if (index == 0) {
             // 只要上传的索引又是从一个0开始，证明用户又做了新一次的上传，以最新这次上传的图片数据为准
             $('#picture').val("");
