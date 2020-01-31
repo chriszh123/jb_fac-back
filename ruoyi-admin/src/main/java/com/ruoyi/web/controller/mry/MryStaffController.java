@@ -46,7 +46,7 @@ public class MryStaffController extends BaseController {
 
     @RequiresPermissions("mry:staff:view")
     @GetMapping()
-    public String shop() {
+    public String staff() {
         return prefix + "/staff";
     }
 

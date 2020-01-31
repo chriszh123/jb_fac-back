@@ -10,11 +10,9 @@ import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.mry.constant.MryConstant;
 import com.ruoyi.mry.exception.MryException;
 import com.ruoyi.mry.mapper.MryShopMapper;
+import com.ruoyi.mry.mapper.MryStaffLeaveMapper;
 import com.ruoyi.mry.mapper.MryStaffMapper;
-import com.ruoyi.mry.model.MryShop;
-import com.ruoyi.mry.model.MryShopExample;
-import com.ruoyi.mry.model.MryStaff;
-import com.ruoyi.mry.model.MryStaffExample;
+import com.ruoyi.mry.model.*;
 import com.ruoyi.mry.service.MryStaffService;
 import com.ruoyi.mry.util.MryTimeUtils;
 import com.ruoyi.system.domain.SysUser;
@@ -44,6 +42,9 @@ public class MryStaffServiceImpl implements MryStaffService {
 
     @Autowired
     private MryShopMapper shopMapper;
+
+    @Autowired
+    private MryStaffLeaveMapper staffLeaveMapper;
 
     @Override
     public List<MryStaff> selectStaffs(MryStaff staff) {
@@ -136,5 +137,120 @@ public class MryStaffServiceImpl implements MryStaffService {
         }
 
         return 0;
+    }
+
+    @Override
+    public List<MryStaffLeave> selectStaffLeaves(MryStaffLeave staffLeave) {
+        MryStaffLeaveExample staffLeaveExample = new MryStaffLeaveExample();
+        MryStaffLeaveExample.Criteria criteria = staffLeaveExample.createCriteria();
+        criteria.andIsDeletedEqualTo(false);
+        if (StringUtils.isNotBlank(staffLeave.getStaffName()) && StringUtils.isNotBlank(staffLeave.getStaffName().trim())) {
+            criteria.andStaffNameLike("%" + staffLeave.getStaffName().trim() + "%");
+        }
+        if (staffLeave.getRecordType() != null) {
+            criteria.andRecordTypeEqualTo(staffLeave.getRecordType());
+        }
+        staffLeaveExample.setOrderByClause(MryConstant.DEFAULT_ORDER_CLAUSE);
+        List<MryStaffLeave> staffLeaves = this.staffLeaveMapper.selectByExample(staffLeaveExample);
+        if (CollectionUtils.isNotEmpty(staffLeaves)) {
+            Map<Short, MryShop> shopMap = new HashMap<>();
+            for (MryStaffLeave item : staffLeaves ) {
+                if (!shopMap.containsKey(item.getShopId())) {
+                    MryShop shop = this.shopMapper.selectByPrimaryKey(item.getShopId());
+                    shopMap.put(item.getShopId(), shop);
+                }
+                item.setShopName(shopMap.get(item.getShopId()).getName().trim());
+            }
+        }
+
+        return staffLeaves;
+    }
+
+    @Override
+    public int insertStaffLeave(MryStaffLeave staffLeave) {
+        Date nowDate = new Date();
+        staffLeave.setCreateTime(nowDate);
+        staffLeave.setUpdateTime(nowDate);
+        staffLeave.setIsDeleted(false);
+
+        MryStaff staff = this.staffMapper.selectByPrimaryKey(staffLeave.getStaffId());
+        if (staff != null) {
+            staffLeave.setStaffName(staff.getName());
+        }
+
+        return this.staffLeaveMapper.insertSelective(staffLeave);
+    }
+
+    @Override
+    public MryStaffLeave selectStaffLeaveById(Long id) {
+
+        MryStaffLeave staffLeave = this.staffLeaveMapper.selectByPrimaryKey(id);
+        if (staffLeave != null && staffLeave.getServiceStart() != null) {
+            staffLeave.setServiceStartStr(MryTimeUtils.date2Str(staffLeave.getServiceStart(), MryTimeUtils.DEFAULT_DATE_TIME_FORMAT_HH_MM));
+        }
+        if (staffLeave != null && staffLeave.getServiceEnd() != null) {
+            staffLeave.setServiceEndStr(MryTimeUtils.date2Str(staffLeave.getServiceEnd(), MryTimeUtils.DEFAULT_DATE_TIME_FORMAT_HH_MM));
+        }
+
+        return staffLeave;
+    }
+
+    @Override
+    public int updateStaffLeave(MryStaffLeave staffLeave) {
+        Date nowDate = new Date();
+        staffLeave.setUpdateTime(nowDate);
+
+        if (StringUtils.isNotBlank(staffLeave.getServiceStartStr())) {
+            staffLeave.setServiceStart(MryTimeUtils.parseTime(staffLeave.getServiceStartStr(), MryTimeUtils.DEFAULT_DATE_TIME_FORMAT_HH_MM));
+        }
+        if (StringUtils.isNotBlank(staffLeave.getServiceEndStr())) {
+            staffLeave.setServiceEnd(MryTimeUtils.parseTime(staffLeave.getServiceEndStr(), MryTimeUtils.DEFAULT_DATE_TIME_FORMAT_HH_MM));
+        }
+
+        return this.staffLeaveMapper.updateByPrimaryKeySelective(staffLeave);
+    }
+
+    @Override
+    public int deleteStaffLeaveByIds(String ids, SysUser user) {
+        if (StringUtils.isBlank(ids)) {
+            throw new MryException("主键id不能为空");
+        }
+        List<String> idsList = Arrays.asList(ids.split(","));
+        List<Long> idsLongs = new ArrayList<>();
+        for (String id : idsList) {
+            if (StringUtils.isBlank(id)) {
+                continue;
+            }
+            idsLongs.add(Long.valueOf(id));
+        }
+        if (CollectionUtils.isNotEmpty(idsLongs)) {
+            MryStaffLeaveExample staffLeaveExample = new MryStaffLeaveExample();
+            staffLeaveExample.createCriteria().andIsDeletedEqualTo(false).andIdIn(idsLongs);
+            MryStaffLeave update = new MryStaffLeave();
+            update.setIsDeleted(true);
+            update.setUpdateTime(new Date());
+            if (user != null) {
+                update.setOperatorId(user.getUserId());
+                update.setOperatorName(user.getUserName());
+            }
+
+            return this.staffLeaveMapper.updateByExampleSelective(update, staffLeaveExample);
+        }
+
+        return 0;
+    }
+
+    @Override
+    public List<MryStaff> getStaffsByShopId(MryStaffLeave staffLeave) {
+        MryStaffExample staffExample = new MryStaffExample();
+        MryStaffExample.Criteria criteria = staffExample.createCriteria();
+        criteria.andIsDeletedEqualTo(false);
+        if (staffLeave.getShopId() != null) {
+            criteria.andShopIdEqualTo(staffLeave.getShopId());
+        }
+        staffExample.setOrderByClause(MryConstant.DEFAULT_ORDER_CLAUSE);
+        List<MryStaff> staffList = this.staffMapper.selectByExample(staffExample);
+
+        return staffList;
     }
 }

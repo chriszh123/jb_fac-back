@@ -7,6 +7,7 @@
 package com.ruoyi.mry.service;
 
 import com.ruoyi.mry.model.MryStaff;
+import com.ruoyi.mry.model.MryStaffLeave;
 import com.ruoyi.system.domain.SysUser;
 
 import java.util.List;
@@ -27,4 +28,16 @@ public interface MryStaffService {
     int updateStaff(MryStaff staff);
 
     int deleteStaffByIds(String ids, SysUser user);
+
+    List<MryStaffLeave> selectStaffLeaves(MryStaffLeave staffLeave);
+
+    int insertStaffLeave(MryStaffLeave staffLeave);
+
+    MryStaffLeave selectStaffLeaveById(Long id);
+
+    int updateStaffLeave(MryStaffLeave staffLeave);
+
+    int deleteStaffLeaveByIds(String ids, SysUser user);
+
+    List<MryStaff> getStaffsByShopId(MryStaffLeave staffLeave);
 }

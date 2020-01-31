@@ -216,17 +216,19 @@ CREATE TABLE `mry_customer_card` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='客户消费卡管理';
 
 -- --------------------------
--- 10、员工休假管理
+-- 10、员工考勤管理
 -- --------------------------
 drop table if exists `mry_staff_leave`;
 CREATE TABLE `mry_staff_leave` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `shop_id` smallint NOT NULL COMMENT '所属店面',
   `staff_id` bigint(20) NOT NULL COMMENT '员工ID',
-  `service_start` datetime COMMENT '卡片消费开始时间',
-  `service_end` datetime COMMENT '卡片消费结束时间',
-  `reason` varchar(1512) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci default '' COMMENT '请假原因',
+  `staff_name` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci default '' COMMENT '员工名称 ',
+  `service_start` datetime COMMENT '开始时间',
+  `service_end` datetime COMMENT '结束时间',
   `need_days` tinyint(2) default 0 COMMENT '当前月天数',
+  `record_type` tinyint(2) DEFAULT '0' COMMENT '记录类型:1-正常上班,2-事假,3-病假,4-其它',
+  `remark` varchar(2048) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci default '' COMMENT '备注',
 
   `create_time` datetime NOT NULL COMMENT '创建时间',
   `update_time` datetime NOT NULL COMMENT '最近更新时间',
@@ -234,7 +236,7 @@ CREATE TABLE `mry_staff_leave` (
   `operator_name` varchar(60) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL COMMENT '操作者姓名',
   `is_deleted` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否删除',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='员工休假管理';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='员工考勤管理';
 
 drop table if exists `mry_customer_invest`;
 CREATE TABLE `mry_customer_invest` (

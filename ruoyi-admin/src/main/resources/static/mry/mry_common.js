@@ -8,7 +8,8 @@ var DATA_ID = {
     "CUSTOMER": '/mry/customer',
     "CUSTOMERCARD": '/mry/customercard',
     "CUSTOMERPROITEM": '/mry/customerproitem',
-    "CUSTOMERINVEST": '/mry/customerinvest'
+    "CUSTOMERINVEST": '/mry/customerinvest',
+    "STAFFLEAVE": '/mry/staffleave'
 };
 
 // 各对象预置数量
@@ -36,6 +37,14 @@ var ORDER_STATUS = {
     3: "已完成",
     4: "已取消",
     5: "商家待核销"
+};
+
+// 美容师考勤状态
+var STAFF_LEAVE_STATUS = {
+    1: "正常上班",
+    2: "事假",
+    3: "病假",
+    4: "其它"
 };
 
 // 商品核销状态

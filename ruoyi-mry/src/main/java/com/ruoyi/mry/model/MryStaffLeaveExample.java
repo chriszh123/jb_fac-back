@@ -375,6 +375,76 @@ public class MryStaffLeaveExample {
             return (Criteria) this;
         }
 
+        public Criteria andStaffNameIsNull() {
+            addCriterion("staff_name is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andStaffNameIsNotNull() {
+            addCriterion("staff_name is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andStaffNameEqualTo(String value) {
+            addCriterion("staff_name =", value, "staffName");
+            return (Criteria) this;
+        }
+
+        public Criteria andStaffNameNotEqualTo(String value) {
+            addCriterion("staff_name <>", value, "staffName");
+            return (Criteria) this;
+        }
+
+        public Criteria andStaffNameGreaterThan(String value) {
+            addCriterion("staff_name >", value, "staffName");
+            return (Criteria) this;
+        }
+
+        public Criteria andStaffNameGreaterThanOrEqualTo(String value) {
+            addCriterion("staff_name >=", value, "staffName");
+            return (Criteria) this;
+        }
+
+        public Criteria andStaffNameLessThan(String value) {
+            addCriterion("staff_name <", value, "staffName");
+            return (Criteria) this;
+        }
+
+        public Criteria andStaffNameLessThanOrEqualTo(String value) {
+            addCriterion("staff_name <=", value, "staffName");
+            return (Criteria) this;
+        }
+
+        public Criteria andStaffNameLike(String value) {
+            addCriterion("staff_name like", value, "staffName");
+            return (Criteria) this;
+        }
+
+        public Criteria andStaffNameNotLike(String value) {
+            addCriterion("staff_name not like", value, "staffName");
+            return (Criteria) this;
+        }
+
+        public Criteria andStaffNameIn(List<String> values) {
+            addCriterion("staff_name in", values, "staffName");
+            return (Criteria) this;
+        }
+
+        public Criteria andStaffNameNotIn(List<String> values) {
+            addCriterion("staff_name not in", values, "staffName");
+            return (Criteria) this;
+        }
+
+        public Criteria andStaffNameBetween(String value1, String value2) {
+            addCriterion("staff_name between", value1, value2, "staffName");
+            return (Criteria) this;
+        }
+
+        public Criteria andStaffNameNotBetween(String value1, String value2) {
+            addCriterion("staff_name not between", value1, value2, "staffName");
+            return (Criteria) this;
+        }
+
         public Criteria andServiceStartIsNull() {
             addCriterion("service_start is null");
             return (Criteria) this;
@@ -495,76 +565,6 @@ public class MryStaffLeaveExample {
             return (Criteria) this;
         }
 
-        public Criteria andReasonIsNull() {
-            addCriterion("reason is null");
-            return (Criteria) this;
-        }
-
-        public Criteria andReasonIsNotNull() {
-            addCriterion("reason is not null");
-            return (Criteria) this;
-        }
-
-        public Criteria andReasonEqualTo(String value) {
-            addCriterion("reason =", value, "reason");
-            return (Criteria) this;
-        }
-
-        public Criteria andReasonNotEqualTo(String value) {
-            addCriterion("reason <>", value, "reason");
-            return (Criteria) this;
-        }
-
-        public Criteria andReasonGreaterThan(String value) {
-            addCriterion("reason >", value, "reason");
-            return (Criteria) this;
-        }
-
-        public Criteria andReasonGreaterThanOrEqualTo(String value) {
-            addCriterion("reason >=", value, "reason");
-            return (Criteria) this;
-        }
-
-        public Criteria andReasonLessThan(String value) {
-            addCriterion("reason <", value, "reason");
-            return (Criteria) this;
-        }
-
-        public Criteria andReasonLessThanOrEqualTo(String value) {
-            addCriterion("reason <=", value, "reason");
-            return (Criteria) this;
-        }
-
-        public Criteria andReasonLike(String value) {
-            addCriterion("reason like", value, "reason");
-            return (Criteria) this;
-        }
-
-        public Criteria andReasonNotLike(String value) {
-            addCriterion("reason not like", value, "reason");
-            return (Criteria) this;
-        }
-
-        public Criteria andReasonIn(List<String> values) {
-            addCriterion("reason in", values, "reason");
-            return (Criteria) this;
-        }
-
-        public Criteria andReasonNotIn(List<String> values) {
-            addCriterion("reason not in", values, "reason");
-            return (Criteria) this;
-        }
-
-        public Criteria andReasonBetween(String value1, String value2) {
-            addCriterion("reason between", value1, value2, "reason");
-            return (Criteria) this;
-        }
-
-        public Criteria andReasonNotBetween(String value1, String value2) {
-            addCriterion("reason not between", value1, value2, "reason");
-            return (Criteria) this;
-        }
-
         public Criteria andNeedDaysIsNull() {
             addCriterion("need_days is null");
             return (Criteria) this;
@@ -622,6 +622,136 @@ public class MryStaffLeaveExample {
 
         public Criteria andNeedDaysNotBetween(Byte value1, Byte value2) {
             addCriterion("need_days not between", value1, value2, "needDays");
+            return (Criteria) this;
+        }
+
+        public Criteria andRecordTypeIsNull() {
+            addCriterion("record_type is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andRecordTypeIsNotNull() {
+            addCriterion("record_type is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andRecordTypeEqualTo(Byte value) {
+            addCriterion("record_type =", value, "recordType");
+            return (Criteria) this;
+        }
+
+        public Criteria andRecordTypeNotEqualTo(Byte value) {
+            addCriterion("record_type <>", value, "recordType");
+            return (Criteria) this;
+        }
+
+        public Criteria andRecordTypeGreaterThan(Byte value) {
+            addCriterion("record_type >", value, "recordType");
+            return (Criteria) this;
+        }
+
+        public Criteria andRecordTypeGreaterThanOrEqualTo(Byte value) {
+            addCriterion("record_type >=", value, "recordType");
+            return (Criteria) this;
+        }
+
+        public Criteria andRecordTypeLessThan(Byte value) {
+            addCriterion("record_type <", value, "recordType");
+            return (Criteria) this;
+        }
+
+        public Criteria andRecordTypeLessThanOrEqualTo(Byte value) {
+            addCriterion("record_type <=", value, "recordType");
+            return (Criteria) this;
+        }
+
+        public Criteria andRecordTypeIn(List<Byte> values) {
+            addCriterion("record_type in", values, "recordType");
+            return (Criteria) this;
+        }
+
+        public Criteria andRecordTypeNotIn(List<Byte> values) {
+            addCriterion("record_type not in", values, "recordType");
+            return (Criteria) this;
+        }
+
+        public Criteria andRecordTypeBetween(Byte value1, Byte value2) {
+            addCriterion("record_type between", value1, value2, "recordType");
+            return (Criteria) this;
+        }
+
+        public Criteria andRecordTypeNotBetween(Byte value1, Byte value2) {
+            addCriterion("record_type not between", value1, value2, "recordType");
+            return (Criteria) this;
+        }
+
+        public Criteria andRemarkIsNull() {
+            addCriterion("remark is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andRemarkIsNotNull() {
+            addCriterion("remark is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andRemarkEqualTo(String value) {
+            addCriterion("remark =", value, "remark");
+            return (Criteria) this;
+        }
+
+        public Criteria andRemarkNotEqualTo(String value) {
+            addCriterion("remark <>", value, "remark");
+            return (Criteria) this;
+        }
+
+        public Criteria andRemarkGreaterThan(String value) {
+            addCriterion("remark >", value, "remark");
+            return (Criteria) this;
+        }
+
+        public Criteria andRemarkGreaterThanOrEqualTo(String value) {
+            addCriterion("remark >=", value, "remark");
+            return (Criteria) this;
+        }
+
+        public Criteria andRemarkLessThan(String value) {
+            addCriterion("remark <", value, "remark");
+            return (Criteria) this;
+        }
+
+        public Criteria andRemarkLessThanOrEqualTo(String value) {
+            addCriterion("remark <=", value, "remark");
+            return (Criteria) this;
+        }
+
+        public Criteria andRemarkLike(String value) {
+            addCriterion("remark like", value, "remark");
+            return (Criteria) this;
+        }
+
+        public Criteria andRemarkNotLike(String value) {
+            addCriterion("remark not like", value, "remark");
+            return (Criteria) this;
+        }
+
+        public Criteria andRemarkIn(List<String> values) {
+            addCriterion("remark in", values, "remark");
+            return (Criteria) this;
+        }
+
+        public Criteria andRemarkNotIn(List<String> values) {
+            addCriterion("remark not in", values, "remark");
+            return (Criteria) this;
+        }
+
+        public Criteria andRemarkBetween(String value1, String value2) {
+            addCriterion("remark between", value1, value2, "remark");
+            return (Criteria) this;
+        }
+
+        public Criteria andRemarkNotBetween(String value1, String value2) {
+            addCriterion("remark not between", value1, value2, "remark");
             return (Criteria) this;
         }
 
