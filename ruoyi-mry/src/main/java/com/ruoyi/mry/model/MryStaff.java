@@ -7,12 +7,12 @@ import java.util.Date;
 
 @Data
 public class MryStaff {
-    @Excel(name = "员工ID")
+    @Excel(name = "美容师ID")
     private Long id;
 
     private Short shopId;
 
-    @Excel(name = "员工名称")
+    @Excel(name = "美容师名称")
     private String name;
 
     @Excel(name = "性别", readConverterExp = "0=女,1=男,2=未知")

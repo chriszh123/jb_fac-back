@@ -65,7 +65,7 @@ public class MryStaffLeaveController extends BaseController {
     public AjaxResult export(MryStaffLeave staffLeave) {
         List<MryStaffLeave> list = staffService.selectStaffLeaves(staffLeave);
         ExcelUtil<MryStaffLeave> util = new ExcelUtil<>(MryStaffLeave.class);
-        return util.exportExcel(list, "员工考勤");
+        return util.exportExcel(list, "美容师考勤");
     }
 
     @GetMapping("/add")
@@ -74,7 +74,7 @@ public class MryStaffLeaveController extends BaseController {
     }
 
     @RequiresPermissions("mry:staffleave:add")
-    @Log(title = "员工", businessType = BusinessType.INSERT)
+    @Log(title = "美容师", businessType = BusinessType.INSERT)
     @PostMapping("/add")
     @ResponseBody
     public AjaxResult addSave(MryStaffLeave staffLeave) {
@@ -96,7 +96,7 @@ public class MryStaffLeaveController extends BaseController {
     }
 
     @RequiresPermissions("mry:staffleave:edit")
-    @Log(title = "员工", businessType = BusinessType.UPDATE)
+    @Log(title = "美容师", businessType = BusinessType.UPDATE)
     @PostMapping("/edit")
     @ResponseBody
     public AjaxResult editSave(MryStaffLeave staffLeave) {
@@ -117,7 +117,7 @@ public class MryStaffLeaveController extends BaseController {
     }
 
     @RequiresPermissions("mry:staffleave:remove")
-    @Log(title = "员工", businessType = BusinessType.DELETE)
+    @Log(title = "美容师", businessType = BusinessType.DELETE)
     @PostMapping("/remove")
     @ResponseBody
     public AjaxResult remove(String ids) {

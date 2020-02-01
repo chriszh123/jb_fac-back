@@ -55,7 +55,7 @@ public class MryCustomerProItem {
     @Excel(name = "客户反馈意见")
     private String customerRemark;
 
-    @Excel(name = "员工反馈意见")
+    @Excel(name = "美容师反馈意见")
     private String staffRemark;
 
     @Excel(name = "备注")

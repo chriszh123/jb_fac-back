@@ -49,7 +49,7 @@ public class MryCustomerCard {
     @Excel(name = "剩余消费次数")
     private Short leftTimes;
 
-    @Excel(name = "办卡员工")
+    @Excel(name = "办卡美容师")
     private String shopStaffName;
 
     @Excel(name = "办卡日期", dateFormat = "yyyy-MM-dd HH:mm")
