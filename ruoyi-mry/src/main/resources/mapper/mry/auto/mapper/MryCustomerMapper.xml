@@ -501,10 +501,10 @@
       AND name like #{name}
     </if>
     <if test="startDate != null">
-      AND birthday_time &gt;= #{startDate}
+      AND DATE_FORMAT(birthday_time,'%m-%d') &gt;= DATE_FORMAT(#{startDate},'%m-%d')
     </if>
     <if test="endDate != null">
-      AND birthday_time &lt;= #{endDate}
+      AND DATE_FORMAT(birthday_time,'%m-%d') &lt;= DATE_FORMAT(#{endDate},'%m-%d')
     </if>
 
     order BY create_time desc
