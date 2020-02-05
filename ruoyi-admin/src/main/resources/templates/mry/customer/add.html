@@ -3,6 +3,7 @@
 <meta charset="utf-8">
 <head th:include="include :: header"></head>
 <link th:href="@{/mry/mry.css}" rel="stylesheet"/>
+<link th:href="@{/ajax/libs/datapicker/bootstrap-datetimepicker.min.css}" rel="stylesheet"/>
 <body class="white-bg">
 <div class="wrapper wrapper-content animated fadeInRight ibox-content">
     <form class="form-horizontal m" id="mry-customer-add">
@@ -38,8 +39,10 @@
 
         <div class="form-group">
             <label class="col-sm-3 control-label product-lable">生日：</label>
-            <div class="col-sm-9">
-                <input id="birthday" name="birthday" class="form-control" type="text">
+            <div class="col-sm-3 input-group date" style="margin-left: 15px;"><span class="input-group-addon"><i
+                    class="fa fa-calendar"></i></span>
+                <input type="text" class="form-control" id="birthdayTime" name="birthdayTime" value=""
+                       placeholder="选择日期">
             </div>
         </div>
 
@@ -83,9 +86,24 @@
 
 </div>
 <div th:include="include::footer"></div>
+<script th:src="@{/ajax/libs//datapicker/bootstrap-datetimepicker.min.js}"></script>
+<script th:src="@{/ajax/libs//datapicker/bootstrap-datetimepicker.zh-CN.js}"></script>
 <script th:src="@{/mry/mry_common.js}"></script>
 <script>
     var prefix = ctx + "mry/customer";
+
+    $(".input-group.date").datetimepicker({
+        minView: "month",//设置只显示到月份,不显示时分秒
+        format: 'yyyy-mm-dd',
+        todayBtn: "linked",
+        keyboardNavigation: !1,
+        forceParse: !1,
+        calendarWeeks: !0,
+        autoclose: !0,
+        initialDate: new Date(),
+        language: "zh-CN"
+    });
+
     $("#mry-customer-add").validate({
         rules: {
             name: {

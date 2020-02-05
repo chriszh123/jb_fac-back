@@ -166,8 +166,12 @@ public class MryTimeUtils {
         }
     }
 
-    public static final Date parseTime(Date date, String format) throws ParseException {
-        return new SimpleDateFormat(format).parse(date2Str(date, format));
+    public static final Date parseTime(Date date, String format) {
+        try {
+            return new SimpleDateFormat(format).parse(date2Str(date, format));
+        } catch (Exception ex) {
+            throw new MryException("日期格式转换异常");
+        }
     }
 
     public static final String getTimeStr(Date date, String format) {

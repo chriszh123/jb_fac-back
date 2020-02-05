@@ -97,4 +97,6 @@ public interface MryCustomerMapper {
     int updateByPrimaryKey(MryCustomer record);
 
     List<MryCustomer> queryRecentNewCustomerInfo(MryQueryVo queryVo);
+
+    List<MryCustomer> selectByCustomers(MryQueryVo queryVo);
 }

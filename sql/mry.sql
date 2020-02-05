@@ -57,6 +57,7 @@ CREATE TABLE `mry_customer` (
   `name` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci default '' COMMENT '名称 ',
   `sex` varchar(1) DEFAULT '0' COMMENT '性别：0-女,1-男,2-未知',
   `birthday` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci default '' COMMENT '生日：yyyy-mm-dd',
+  `birthday_time` datetime NOT NULL COMMENT '生日',
   `address` varchar(1512) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci default '' COMMENT '家庭住址',
   `phone_number` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci  default '' COMMENT '联系电话',
   `work` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci default '' COMMENT '职业',

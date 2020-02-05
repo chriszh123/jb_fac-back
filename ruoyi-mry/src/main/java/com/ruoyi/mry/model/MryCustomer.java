@@ -31,6 +31,8 @@ public class MryCustomer {
     @Excel(name = "生日")
     private String birthday;
 
+    private Date birthdayTime;
+
     @Excel(name = "职业")
     private String work;
 
@@ -65,4 +67,11 @@ public class MryCustomer {
     private String picture;
 
     private String imgPath;
+
+    /**
+     * 离生日还剩天数
+     */
+    private Integer leftBirthdaysStart;
+
+    private Integer leftBirthdaysEnd;
 }

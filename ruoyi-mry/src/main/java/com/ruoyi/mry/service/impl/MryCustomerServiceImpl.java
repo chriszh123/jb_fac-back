@@ -16,7 +16,9 @@ import com.ruoyi.mry.mapper.MryShopMapper;
 import com.ruoyi.mry.model.*;
 import com.ruoyi.mry.service.MryCustomerService;
 import com.ruoyi.mry.util.MryFileUtils;
+import com.ruoyi.mry.util.MryTimeUtils;
 import com.ruoyi.mry.vo.CustomerImgVo;
+import com.ruoyi.mry.vo.MryQueryVo;
 import com.ruoyi.system.domain.SysUser;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -49,14 +51,21 @@ public class MryCustomerServiceImpl implements MryCustomerService {
 
     @Override
     public List<MryCustomer> selectCustomers(MryCustomer customer) {
-        MryCustomerExample example = new MryCustomerExample();
-        MryCustomerExample.Criteria criteria = example.createCriteria();
-        criteria.andIsDeletedEqualTo(false);
+        MryQueryVo queryVo = new MryQueryVo();
         if (StringUtils.isNotBlank(customer.getName()) && StringUtils.isNotBlank(customer.getName().trim())) {
-            criteria.andNameLike("%" + customer.getName().trim() + "%");
+            queryVo.setName("%" + customer.getName().trim() + "%");
         }
-        example.setOrderByClause(MryConstant.DEFAULT_ORDER_CLAUSE);
-        List<MryCustomer> customers = this.customerMapper.selectByExample(example);
+        Date nowDate = new Date();
+        nowDate = MryTimeUtils.parseTime(nowDate, MryTimeUtils.DEFAULT_DATE_TIME_FORMAT_00_00_00);
+        if (customer.getLeftBirthdaysStart() != null) {
+            Date startDate = MryTimeUtils.getDateByHours(nowDate, customer.getLeftBirthdaysStart().intValue() * 24);
+            queryVo.setStartDate(startDate);
+        }
+        if (customer.getLeftBirthdaysEnd() != null) {
+            Date endDate = MryTimeUtils.getDateByHours(nowDate, customer.getLeftBirthdaysEnd().intValue() * 24);
+            queryVo.setEndDate(endDate);
+        }
+        List<MryCustomer> customers = this.customerMapper.selectByCustomers(queryVo);
 
         if (CollectionUtils.isNotEmpty(customers)) {
             Map<Short, MryShop> shopMap = new HashMap<>();
@@ -78,6 +87,9 @@ public class MryCustomerServiceImpl implements MryCustomerService {
         customer.setIsDeleted(false);
         customer.setCreateTime(nowDate);
         customer.setUpdateTime(nowDate);
+        if (customer.getBirthdayTime() != null) {
+            customer.setBirthday(MryTimeUtils.date2Str(customer.getBirthdayTime(), ""));
+        }
 
         return this.customerMapper.insertSelective(customer);
     }
@@ -108,6 +120,10 @@ public class MryCustomerServiceImpl implements MryCustomerService {
     public int updateCustomer(MryCustomer customer) {
         Date nowDate = new Date();
         customer.setUpdateTime(nowDate);
+        if (StringUtils.isNotBlank(customer.getBirthday())) {
+            Date birthdayTime = MryTimeUtils.parseTime(customer.getBirthday(), MryTimeUtils.DEFAULT_DATE_FORMAT);
+            customer.setBirthdayTime(birthdayTime);
+        }
 
         return this.customerMapper.updateByPrimaryKeySelective(customer);
     }
