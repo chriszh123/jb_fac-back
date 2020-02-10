@@ -84,7 +84,7 @@ drop table if exists `mry_worklog`;
 CREATE TABLE `mry_worklog` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `shop_id` smallint NOT NULL COMMENT '所属店面',
-  `content` varchar(2048) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci default '' COMMENT '日志内容',
+  `content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '日志内容',
   `type` tinyint(2) DEFAULT 1 COMMENT '类型：1-日常工作日志，2-需要完成的事情',
   `status` tinyint(2) DEFAULT 1 COMMENT '类型：1-待完成，2-已完成，3-日常工作日志',
   `remark` varchar(1512) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci default '' COMMENT '备注说明',
