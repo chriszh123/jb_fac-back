@@ -9,7 +9,8 @@ var DATA_ID = {
     "CUSTOMERCARD": '/mry/customercard',
     "CUSTOMERPROITEM": '/mry/customerproitem',
     "CUSTOMERINVEST": '/mry/customerinvest',
-    "STAFFLEAVE": '/mry/staffleave'
+    "STAFFLEAVE": '/mry/staffleave',
+    "WORKLOG": '/mry/worklog'
 };
 
 // 各对象预置数量
@@ -45,6 +46,12 @@ var STAFF_LEAVE_STATUS = {
     2: "事假",
     3: "病假",
     4: "其它"
+};
+
+//工作日志类型
+var WORKLOG_TYPE = {
+    1: "日常工作日志",
+    2: "需要完成的事情"
 };
 
 // 商品核销状态

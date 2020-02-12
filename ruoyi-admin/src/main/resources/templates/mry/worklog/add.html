@@ -1,0 +1,123 @@
+<!DOCTYPE HTML>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<link th:href="@{/mry/mry.css}" rel="stylesheet"/>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+    <form class="form-horizontal m" id="mry-worklog-add">
+        <input type="hidden" id="content" name="content"/>
+        <div class="form-group">
+            <label class="col-sm-3 control-label product-lable">所属店面：</label>
+            <div class="col-sm-9">
+                <select id="shopId" name="shopId" class="form-control m-b"
+                        th:with="shops=${@mpcs.getShops()}">
+                    <option value="">请选择...</option>
+                    <option th:each="shop : ${shops}" th:text="${shop.name}" th:value="${shop.id}"></option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label product-lable">类型：</label>
+            <div class="col-sm-9">
+                <select id="type" name="type" class="form-control m-b">
+                    <option value="">请选择...</option>
+                    <option value="1">日常工作日志</option>
+                    <option value="2">需要完成的事情</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- 日志内容 -->
+        <div class="form-group">
+            <label class="col-sm-3 control-label product-lable">日志内容：</label>
+            <div class="col-sm-9">
+                <textarea cols="80" id="contentText" name="contentText" rows="250"
+                          style="width: 100%;height: 120%;"></textarea>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label product-lable">备注：</label>
+            <div class="col-sm-9">
+                <textarea cols="80" id="remark" name="remark" rows="5" style="width: 100%;"></textarea>
+            </div>
+        </div>
+
+        <div class="form-group" style="text-align: center;">
+            <label class="col-sm-3 control-label product-lable" style="margin-bottom: 30px;"></label>
+            <div class="col-sm-9" style="margin-bottom: 30px;">
+                <button type="button" class="btn btn-success" onclick="addworklog()">确定</button>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <button type="button" class="btn btn-default" onclick="closeCurrentTabMry('1')">取消</button>
+            </div>
+        </div>
+    </form>
+
+</div>
+<div th:include="include::footer"></div>
+<script th:src="@{/mry/mry_common.js}"></script>
+<script th:src="@{/ajax/libs//ckeditor/ckeditor.js}"></script>
+<script>
+    var prefix = ctx + "mry/worklog";
+
+    $("#mry-worklog-add").validate({
+        rules: {
+            shopId: {
+                required: true
+            },
+            type: {
+                required: true
+            }
+        }
+    });
+
+    function addworklog() {
+        var content = CKEDITOR.instances.contentText.getData();
+        if (content == undefined || content == "") {
+            $.modal.alertError("请先填写工作日志内容再提交！");
+            return;
+        }
+        $("#content").val(content);
+
+        if ($.validate.form()) {
+            $.modal.confirm("确认保存当前工作日志信息吗？", function () {
+                var url = prefix + "/add";
+                var data = $('#mry-worklog-add').serialize();
+                var config = {
+                    url: url,
+                    type: "post",
+                    dataType: "json",
+                    data: data,
+                    success: function (result) {
+                        // 重新加载员工主页面数据
+                        refreshParentIFramePageMry(DATA_ID.WORKLOG);
+                        // 关闭当前TAB页面
+                        closeCurrentTabMry("");
+                    }
+                };
+                $.ajax(config);
+            });
+        }
+    }
+
+    $(function () {
+        // 初始化日志内容ekeditor组件
+        CKEDITOR.config.extraPlugins = 'selectall,notification,notificationaggregator,widgetselection,filetools,lineutils,widget,uploadwidget,uploadimage';
+        CKEDITOR.replace('contentText', {
+            toolbar: null,
+            toolbarGroups: null,
+            removeButtons: null,
+            height: 300
+        });
+
+        var ckEditorUploadUrl = ctx + "image/uploadImg";
+        CKEDITOR.config.filebrowserImageUploadUrl = ckEditorUploadUrl; // 图片上传路径
+        CKEDITOR.config.removeDialogTabs = 'image:advanced;image:Link'; // 移除图片上传页面的'高级','链接'页签
+        CKEDITOR.config.uploadImgSupportedTypes = '/image\\/(jpeg|jpg|bmp|gif|png)/';
+        CKEDITOR.config.image_previewText = "";
+    });
+</script>
+</body>
+</html>
