@@ -1,0 +1,151 @@
+<!DOCTYPE HTML>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <!--查询区域-->
+        <div class="col-sm-12 search-collapse">
+            <form id="queryArea">
+                <div class="select-list">
+                    <ul>
+                        <li>
+                            客户名称：<input type="text" name="name"/>
+                        </li>
+                        <li>
+                            离生日还剩天数(<span style="color: red;">请输入整数</span>)：<input type="text" name="leftBirthdaysStart" style="width: 100px;"/>
+                            &nbsp;&nbsp;~&nbsp;&nbsp;
+                            <input type="text" name="leftBirthdaysEnd" style="width: 100px;"/>
+                        </li>
+                        <li>
+                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i
+                                    class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i
+                                    class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <!--按钮区域-->
+        <div class="btn-group-sm hidden-xs" id="toolbar" role="group">
+            <a class="btn btn-success" onclick="toAddCustomer()" shiro:hasPermission="mry:customer:add">
+                <i class="fa fa-plus"></i> 添加
+            </a>
+            <a class="btn btn-danger btn-del btn-del disabled" onclick="$.operate.removeAll()"
+               shiro:hasPermission="mry:customer:remove">
+                <i class="fa fa-remove"></i> 删除
+            </a>
+            <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="mry:customer:export">
+                <i class="fa fa-download"></i> 导出
+            </a>
+        </div>
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table" data-mobile-responsive="true"></table>
+        </div>
+    </div>
+</div>
+<div th:include="include :: footer"></div>
+<script th:inline="javascript">
+    var editFlag = [[${@permission.hasPermi('mry:customer:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('mry:customer:remove')}]];
+    var prefix = ctx + "mry/customer";
+
+    $(function () {
+        var options = {
+            url: prefix + "/list",
+            createUrl: prefix + "/add",
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove",
+            exportUrl: prefix + "/export",
+            modalName: "客户基本资料",
+            search: false,
+            showExport: true,
+            columns: [{
+                checkbox: true
+            },
+                {
+                    field: 'id',
+                    title: '客户ID',
+                    visible: true
+                },
+                {
+                    field: 'name',
+                    title: '客户名称',
+                    sortable: false
+                },
+                {
+                    field: 'shopName',
+                    title: '所属店面',
+                    sortable: false
+                },
+                {
+                    field: 'sex',
+                    title: '性别',
+                    sortable: false,
+                    formatter: function (value, row, index) {
+                        if (value == '0') {
+                            return "<span style='color: green;font-weight:bold;'>女<span>";
+                        } else if (value == '1') {
+                            return "<span style='color: red;font-weight:bold;'>男<span>";
+                        } else {
+                            return "<span style='color: orange;font-weight:bold;'>未知<span>";
+                        }
+                    }
+                },
+                {
+                    field: 'address',
+                    title: '家庭住址',
+                    sortable: false
+                },
+                {
+                    field: 'phoneNumber',
+                    title: '联系电话',
+                    sortable: false
+                },
+                {
+                    field: 'birthday',
+                    title: '生日',
+                    sortable: false
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    sortable: false,
+                    formatter: function (value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="#" onclick="toEditCustomer(\'' + row.id +
+                            '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        actions.push('<a class="btn btn-success btn-xs" href="#" onclick="toCustomerPictures(\'' + row.id +
+                            '\')"><i class="fa fa-edit"></i>图片库</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="#" onclick="$.operate.remove(\'' + row.id + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }]
+        };
+        $.table.init(options);
+    });
+
+    var toAddCustomer = function () {
+        var url = prefix + "/add";
+        var menuName = "添加客户资料";
+        createMenuItem(url, menuName);
+    }
+
+    var toEditCustomer = function (id) {
+        var url = prefix + "/edit/" + id;
+        var menuName = "修改客户资料";
+        createMenuItem(url, menuName);
+    }
+
+    var toCustomerPictures = function (id) {
+        var url = prefix + "/gotoPictures/" + id;
+        var menuName = "客户图片库";
+        createMenuItem(url, menuName);
+    }
+
+</script>
+</body>
+</html>

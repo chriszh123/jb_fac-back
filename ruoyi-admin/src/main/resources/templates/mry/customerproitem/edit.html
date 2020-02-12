@@ -1,0 +1,357 @@
+<!DOCTYPE HTML>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<link th:href="@{/ajax/libs/datapicker/bootstrap-datetimepicker.min.css}" rel="stylesheet"/>
+<link th:href="@{/mry/mry.css}" rel="stylesheet"/>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+    <form class="form-horizontal m" id="mry-customerproitem-edit" th:object="${customerproitem}">
+        <input id="id" name="id" th:field="*{id}" type="hidden">
+        <input id="customerId2" name="customerId2" type="hidden" th:field="*{customerId}">
+        <input id="cardId2" name="cardId2" type="hidden" th:field="*{cardId}">
+        <input id="proId2" name="proId2" type="hidden" th:field="*{proId}">
+        <input id="staff1Id2" name="staff1Id2" type="hidden" th:field="*{staff1Id}">
+        <div class="form-group">
+            <label class="col-sm-3 control-label product-lable">所属店面：</label>
+            <div class="col-sm-9">
+                <select id="shopId" name="shopId" class="form-control m-b"
+                        th:with="shops=${@mpcs.getShops()}" onchange="changeShop(this)" th:field="*{shopId}">
+                    <option value="">请选择...</option>
+                    <option th:each="shop : ${shops}" th:text="${shop.name}" th:value="${shop.id}"></option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label product-lable">客户：</label>
+            <div class="col-sm-9">
+                <select id="customerId" name="customerId" class="form-control m-b" th:field="*{customerId}">
+                    <option value="">请选择...</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label product-lable">可供消费卡：</label>
+            <div class="col-sm-9">
+                <select id="cardId" name="cardId" class="form-control m-b" th:field="*{cardId}">
+                    <option value="">请选择...</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label product-lable">可选服务项目：</label>
+            <div class="col-sm-9">
+                <select id="proId" name="proId" class="form-control m-b" th:field="*{proId}">
+                    <option value="">请选择...</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label product-lable">当前消费项目服务美容师：</label>
+            <div class="col-sm-9">
+                <select id="staff1Id" name="staff1Id" class="form-control m-b" th:field="*{staff1Id}">
+                    <option value="">请选择...</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label product-lable">消费类型：</label>
+            <div class="col-sm-9">
+                <select id="customeType" name="customeType" class="form-control m-b" th:field="*{customeType}">
+                    <option value="">请选择...</option>
+                    <option value="0">积分制</option>
+                    <option value="1">消费次数</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group form-inline">
+            <label class="col-sm-3 control-label product-lable">当前服务当次开始时间：</label>
+            <div class="col-sm-3 input-group date" style="margin-left: 15px;"><span class="input-group-addon"><i
+                    class="fa fa-calendar"></i></span>
+                <input type="text" class="form-control" id="serviceStart" name="serviceStart" value=""
+                       placeholder="选择日期" th:field="*{serviceStartStr}">
+            </div>
+        </div>
+
+        <div class="form-group form-inline">
+            <label class="col-sm-3 control-label product-lable">当前服务当次结束时间：</label>
+            <div class="col-sm-3 input-group date" style="margin-left: 15px;"><span class="input-group-addon"><i
+                    class="fa fa-calendar"></i></span>
+                <input type="text" class="form-control" id="serviceEnd" name="serviceEnd" value=""
+                       placeholder="选择日期" th:field="*{serviceEndStr}">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label product-lable">当前服务当次消费金额：</label>
+            <div class="col-sm-9">
+                <input id="customPrice" name="customPrice" class="form-control" type="text" th:field="*{customPrice}">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label product-lable">当前服务消费积分：</label>
+            <div class="col-sm-9">
+                <input id="customePoints" name="customePoints" class="form-control" type="text" th:field="*{customePoints}">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label product-lable">希望改善的问题：</label>
+            <div class="col-sm-9">
+                <textarea cols="80" id="customerRemark" name="customerRemark" rows="5" style="width: 100%;" th:field="*{customerRemark}"></textarea>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label product-lable">美容师建议：</label>
+            <div class="col-sm-9">
+                <textarea cols="80" id="staffRemark" name="staffRemark" rows="5" style="width: 100%;" th:field="*{staffRemark}"></textarea>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label product-lable">备注：</label>
+            <div class="col-sm-9">
+                <textarea cols="80" id="remark" name="remark" rows="5" style="width: 100%;" th:field="*{remark}"></textarea>
+            </div>
+        </div>
+
+        <div class="form-group" style="text-align: center;">
+            <label class="col-sm-3 control-label product-lable" style="margin-bottom: 30px;"></label>
+            <div class="col-sm-9" style="margin-bottom: 30px;">
+                <button type="button" class="btn btn-success" onclick="editCustomerProItem()">确定</button>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <button type="button" class="btn btn-default" onclick="closeCurrentTabMry('1')">取消</button>
+            </div>
+        </div>
+    </form>
+
+</div>
+<div th:include="include::footer"></div>
+<script th:src="@{/ajax/libs//datapicker/bootstrap-datetimepicker.min.js}"></script>
+<script th:src="@{/ajax/libs//datapicker/bootstrap-datetimepicker.zh-CN.js}"></script>
+<script th:src="@{/mry/mry_common.js}"></script>
+<script>
+    var prefix = ctx + "mry/customerproitem";
+
+    $(".input-group.date").datetimepicker({
+        format: 'yyyy-mm-dd hh:ii',
+        todayBtn: "linked",
+        keyboardNavigation: !1,
+        forceParse: !1,
+        calendarWeeks: !0,
+        autoclose: !0,
+        initialDate: new Date(),
+        language: "zh-CN"
+    });
+
+    $("#mry-customerproitem-edit").validate({
+        rules: {
+            shopId: {
+                required: true
+            },
+            customerId: {
+                required: true
+            },
+            cardId: {
+                required: true
+            },
+            proId: {
+                required: true
+            },
+            customeType: {
+                required: true
+            },
+            serviceStart: {
+                required: true
+            },
+            serviceEnd: {
+                required: true
+            },
+            staff1Id: {
+                required: true
+            }
+        }
+    });
+
+    function editCustomerProItem() {
+        if ($.validate.form()) {
+            $.modal.confirm("确认保存当前客户消费记录信息吗？", function () {
+                var url = prefix + "/edit";
+                var data = getPageData();
+                var config = {
+                    url: url,
+                    type: "post",
+                    dataType: "json",
+                    data: data,
+                    success: function (result) {
+                        refreshParentIFramePageMry(DATA_ID.CUSTOMERPROITEM);
+                        // 关闭当前TAB页面
+                        closeCurrentTabMry("");
+                    }
+                };
+                $.ajax(config);
+            });
+        }
+    }
+    
+    var getPageData = function () {
+        var data = {
+            "id": $("#id").val(),
+            "shopId": $("#shopId").val(),
+            "customerId": $("#customerId").val(),
+            "cardId": $("#cardId").val(),
+            "proId": $("#proId").val(),
+            "customeType": $("#customeType").val(),
+            "serviceStart": $("#serviceStart").val(),
+            "serviceEnd": $("#serviceEnd").val(),
+            "staff1Id": $("#staff1Id").val(),
+            "customPrice": $("#customPrice").val(),
+            "customePoints": $("#customePoints").val(),
+            "customerRemark": $("#customerRemark").val(),
+            "staffRemark": $("#staffRemark").val(),
+            "remark": $("#remark").val()
+        };
+
+        return data;
+    }
+
+    var changeShop = function (obj) {
+        var shopId = obj.value;
+        if (shopId && shopId != '') {
+            // 1.查询选择店面下的客户
+            var data = {
+                "shopId" : shopId
+            };
+            var url = prefix + "/getCustomersByShopId";
+            var config = {
+                url: url,
+                type: "post",
+                dataType: "json",
+                data: data,
+                success: function (result) {
+                    var options = '<option value="">请选择...</option>';
+                    $("#customerId").html(options);
+                    var selectedId = $("#customerId2").val();
+                    if (result && result.length > 0) {
+                        for (var i = 0; i < result.length; i++) {
+                            var customer = result[i];
+                            var selected = customer.id == selectedId;
+                            if (selected) {
+                                options = options + '<option value="' + customer.id + '" selected="selected">' + customer.name + '</option>';
+                            } else {
+                                options = options + '<option value="' + customer.id + '">' + customer.name + '</option>';
+                            }
+
+                        }
+                        $("#customerId").html(options);
+                    }
+                }
+            };
+            $.ajax(config);
+
+            // 2.查询选择店面下的消费卡
+            url = prefix + "/getShopCardsByShopId";
+            config = {
+                url: url,
+                type: "post",
+                dataType: "json",
+                data: data,
+                success: function (result) {
+                    var options = '<option value="">请选择...</option>';
+                    $("#cardId").html(options);
+                    var selectedId = $("#cardId2").val();
+                    if (result && result.length > 0) {
+                        for (var i = 0; i < result.length; i++) {
+                            var shopCard = result[i];
+                            var selected = shopCard.id == selectedId;
+                            if (selected) {
+                                options = options + '<option value="' + shopCard.id + '" selected="selected">' + shopCard.name + '</option>';
+                            } else {
+                                options = options + '<option value="' + shopCard.id + '">' + shopCard.name + '</option>';
+                            }
+
+                        }
+                        $("#cardId").html(options);
+                    }
+                }
+            };
+            $.ajax(config);
+
+            // 3.查询选择店面下的服务项目
+            url = prefix + "/getServiceProsByShopId";
+            config = {
+                url: url,
+                type: "post",
+                dataType: "json",
+                data: data,
+                success: function (result) {
+                    var options = '<option value="">请选择...</option>';
+                    $("#proId").html(options);
+                    var selectedId = $("#proId2").val();
+                    if (result && result.length > 0) {
+                        for (var i = 0; i < result.length; i++) {
+                            var pro = result[i];
+                            var selected = pro.id == selectedId;
+                            if (selected) {
+                                options = options + '<option value="' + pro.id + '" selected="selected">' + pro.name + '</option>';
+                            } else {
+                                options = options + '<option value="' + pro.id + '">' + pro.name + '</option>';
+                            }
+
+                        }
+                        $("#proId").html(options);
+                    }
+                }
+            };
+            $.ajax(config);
+
+            // 员工
+            url = prefix + "/getStaffsByShopId";
+            config = {
+                url: url,
+                type: "post",
+                dataType: "json",
+                data: data,
+                success: function (result) {
+                    var options = '<option value="">请选择...</option>';
+                    $("#staff1Id").html(options);staff1Id2
+                    if (result && result.length > 0) {
+                        var selectedId = $("#staff1Id2").val();
+                        for (var i = 0; i < result.length; i++) {
+                            var staff = result[i];
+                            var selected = staff.id == selectedId;
+                            if (selected) {
+                                options = options + '<option value="' + staff.id + '" selected="selected">' + staff.name + '</option>';
+                            } else {
+                                options = options + '<option value="' + staff.id + '">' + staff.name + '</option>';
+                            }
+
+                        }
+                        $("#staff1Id").html(options);
+                    }
+                }
+            };
+            $.ajax(config);
+        }
+    };
+
+    $(function () {
+        var shopIdCtl = $("#shopId");
+        shopIdCtl.trigger('change', changeShop(shopIdCtl));
+
+//        $("#customerId").val($("#customerId2").val());
+//        $("#cardId").val($("#cardId2").val());
+//        $("#proId").val($("#proId2").val());
+//        $("#staff1Id").val($("#staff1Id2").val());
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,141 @@
+<!DOCTYPE HTML>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<link th:href="@{/ajax/libs/fileinput/css/fileinput.min.css}" rel="stylesheet"/>
+<link th:href="@{/ajax/libs/jquery-ztree/3.5/css/metro/zTreeStyle.css}" rel="stylesheet"/>
+<link th:href="@{/mry/mry.css}" rel="stylesheet"/>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+    <form class="form-horizontal m" id="mry-servicepro-edit" th:object="${servicepro}">
+        <input id="id" name="id" th:field="*{id}" type="hidden">
+        <input id="staffId" name="staffId" type="hidden">
+        <div class="form-group">
+            <label class="col-sm-3 control-label product-lable">项目名称：</label>
+            <div class="col-sm-9">
+                <input id="name" name="name" class="form-control" type="text" th:field="*{name}">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label product-lable">所属店面：</label>
+            <div class="col-sm-9">
+                <select id="shopId" name="shopId" class="form-control m-b"  th:field="*{shopId}"
+                        th:with="shops=${@mpcs.getShops()}">
+                    <option value="">请选择...</option>
+                    <option th:each="shop : ${shops}" th:text="${shop.name}" th:value="${shop.id}"></option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label product-lable">项目服务周期：</label>
+            <div class="col-sm-9">
+                <input id="serviceCircle" name="serviceCircle" class="form-control" type="text" th:field="*{serviceCircle}">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label product-lable">项目简单功效描述：</label>
+            <div class="col-sm-9">
+                <textarea cols="80" id="proDesc" name="proDesc" rows="5" style="width: 100%;" th:field="*{proDesc}"></textarea>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label product-lable">备注：</label>
+            <div class="col-sm-9">
+                <textarea cols="80" id="remark" name="remark" rows="5" style="width: 100%;" th:field="*{remark}"></textarea>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label product-lable">可提供服务美容师：</label>
+            <div class="col-sm-8">
+                <div id="staffTrees" class="ztree"></div>
+            </div>
+        </div>
+
+        <div class="form-group" style="text-align: center;">
+            <label class="col-sm-3 control-label" style="margin-bottom: 30px;"></label>
+            <div class="col-sm-9" style="margin-bottom: 30px;">
+                <button type="button" class="btn btn-success" onclick="editServicePro()">确定</button>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <button type="button" class="btn btn-default" onclick="closeCurrentTabMry('1')">取消</button>
+            </div>
+        </div>
+    </form>
+</div>
+<div th:include="include::footer"></div>
+<script th:src="@{/ajax/libs/jquery-ztree/3.5/js/jquery.ztree.all-3.5.js}"></script>
+<script th:src="@{/mry/mry_common.js}"></script>
+<script type="text/javascript">
+    var prefix = ctx + "mry/servicepro"
+    $("#mry-servicepro-edit").validate({
+        rules: {
+            name: {
+                required: true,
+                maxlength: 500
+            },
+            proDesc: {
+                maxlength: 1512
+            }
+        }
+    });
+
+    // 获取当前被勾选指定节点类型的节点集合:[nodeType-id-pId]
+    function getCheckedNodes(column, nodeTypeField, nodeTypeValue) {
+        var _column = $.common.isEmpty(column) ? "id" : column;
+        var nodes = $._tree.getCheckedNodes(true);
+        return $.map(nodes, function (row) {
+            if (nodeTypeValue == row[nodeTypeField]) {
+                return (nodeTypeValue + "-" + row[_column] + "-" + row["pId"]);
+            } else {
+                return row[_column];
+            }
+        }).join();
+    }
+
+    function editServicePro() {
+        if ($.validate.form()) {
+            $.modal.confirm("确认保存当前服务项目信息吗？", function () {
+                var url = prefix + "/edit";
+                // [nodeType-id-pId,...]
+                var staffIds = getCheckedNodes("id", "type", "staff");
+                $("#staffId").val(staffIds);
+
+                var data = $('#mry-servicepro-edit').serialize();
+                var config = {
+                    url: url,
+                    type: "post",
+                    dataType: "json",
+                    data: data,
+                    success: function (result) {
+                        if (result.code != 0) {
+                            $.modal.alertWarning(result.msg);
+                        } else {
+                            // 重新加载商品主页面数据
+                            refreshParentIFramePageMry(DATA_ID.SERVICEPRO);
+                            // 关闭当前TAB页面
+                            closeCurrentTabMry("");
+                        }
+                    }
+                };
+                $.ajax(config);
+            });
+        }
+    }
+
+    $(function () {
+        var url = ctx + "mry/servicepro/staffTreeData/" + $("#id").val();
+        var options = {
+            id: "staffTrees",
+            url: url,
+            check: {enable: true, nocheckInherit: true, chkboxType: {"Y": "ps", "N": "ps"}},
+            expandLevel: 0
+        };
+        $.tree.init(options);
+    });
+</script>
+</body>
+</html>

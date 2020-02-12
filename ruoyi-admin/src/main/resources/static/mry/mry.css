@@ -1,0 +1,30 @@
+.ui-upload {
+    height: 30px;
+    width: 90px;
+    background-color: #00abff;
+    font-size: 14px;
+    line-height: 30px;
+    cursor: pointer;
+    display: inline-block;
+    text-align: center;
+    color: #fff;
+    border-radius: 3px;
+    border: 0px;
+    margin-left: 20px;
+}
+
+.product-lable {
+    width: 16%;
+}
+
+.kanjia-min-max {
+    width: 130px;
+    background: #FFFFFF none;
+    border: 1px solid #e5e6e7;
+    border-radius: 1px;
+    color: inherit;
+    padding: 6px 12px;
+    -webkit-transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
+    transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
+    font-size: 14px
+}

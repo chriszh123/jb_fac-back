@@ -199,4 +199,44 @@ public class CommonController {
         }
         return filename;
     }
+
+    @RequestMapping("/mry/picture/batchUploadFocusMap")
+    @ResponseBody
+    public ProductImgVo commonBatchUploadFocusMap(HttpServletRequest request, HttpServletResponse response, @RequestParam("file") MultipartFile[] file) throws Exception {
+        ProductImgVo vo = new ProductImgVo();
+        vo.setCode(FacConstant.AJAX_CODE_FAIL);
+        if (file != null && file.length > 0) {
+            List<String> fileNames = new ArrayList<>();
+            List<String> imgPaths = new ArrayList<>();
+            try {
+                for (int i = 0; i < file.length; i++) {
+                    if (!file[i].isEmpty()) {
+                        // 图片大小不能超过1024K
+                        if (file[i].getSize() > FacConstant.FILE_SIZE_YNLE) {
+                            vo.setMsg("图片大小不能超过1024K");
+                            break;
+                        }
+                        String fileName = FileUploadUtils.upload(file[i], imagesUploadPath, "mry", i + "");
+                        // 存储在数据库中的图片完整路径
+                        String imgUrl = domain + imageReturnPrePath + fileName;
+                        fileNames.add(fileName);
+                        imgPaths.add(imgUrl);
+                    }
+                }
+                //上传成功
+                if (!CollectionUtils.isEmpty(fileNames)) {
+                    vo.setCode(FacConstant.AJAX_CODE_SUCCESS);
+                    vo.setFileName(StringUtils.join(fileNames, ","));
+                    vo.setImgPath(StringUtils.join(imgPaths, ","));
+                }
+            } catch (Exception e) {
+                log.error("[batchUploadFocusMap] 上传出现异常！异常出现在：class.CommonController.batchUploadFocusMap()！", e);
+                vo.setMsg("上传出现异常！");
+            }
+        } else {
+            vo.setMsg("没有检测到文件！");
+        }
+
+        return vo;
+    }
 }

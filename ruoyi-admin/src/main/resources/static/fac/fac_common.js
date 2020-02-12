@@ -10,6 +10,12 @@ var GENDER = {
     "2": "女"
 };
 
+// 用户留言状态
+var LEAVE_STATUS = {
+    false: "未回复",
+    true: "已回复"
+};
+
 // 各对象预置数量
 var OBJECT_COUNT = {
     "PRODUCT_IMG": 5,
@@ -352,7 +358,7 @@ var initFileInput = function (id, uploadUrl, maxFilesNum) {
 // 关闭选项卡菜单:从iFrame内部调用
 var closeCurrentTab = function (tip) {
     if (tip && tip == "1") {
-        $.modal.confirm("确定要关闭当前tab页面吗？", function () {
+        $.modal.confirm("确定要关闭当前页面吗？", function () {
             parent.window.$(".tabCloseCurrent").click();
         });
     } else {

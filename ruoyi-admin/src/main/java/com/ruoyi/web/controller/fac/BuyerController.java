@@ -9,6 +9,7 @@ import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.fac.constant.FacConstant;
 import com.ruoyi.fac.domain.Buyer;
 import com.ruoyi.fac.model.FacBuyerAddress;
+import com.ruoyi.fac.model.FacLeaveMessage;
 import com.ruoyi.fac.service.IBuyerService;
 import com.ruoyi.fac.vo.UserDiagramVo;
 import com.ruoyi.framework.util.ShiroUtils;
@@ -35,6 +36,7 @@ import java.util.Map;
 public class BuyerController extends BaseController {
     private String prefix = "fac/buyer";
     private String prefix_analysis = "fac/dataAnalysis";
+    private String prefix_message = "fac/leavemessage";
 
     @Autowired
     private IBuyerService buyerService;
@@ -201,5 +203,27 @@ public class BuyerController extends BaseController {
             return AjaxResult.error(FacConstant.ERROR_MSG_LOGIN_USER_NULL);
         }
         return toAjax(buyerService.editAddress(address));
+    }
+
+    @RequiresPermissions("fac:buyer:viewleavemessage")
+    @GetMapping("/toLeaveMessage")
+    public String leaveMessage() {
+        return prefix_message + "/leavemessage";
+    }
+
+    @RequiresPermissions("fac:buyer:listLeaveMessage")
+    @PostMapping("/listLeaveMessage")
+    @ResponseBody
+    public TableDataInfo listLeaveMessage(FacLeaveMessage message) {
+        startPage();
+        List<FacLeaveMessage> list = this.buyerService.selectLeaveMessages(message);
+        return getDataTable(list);
+    }
+
+    @GetMapping("/toEditLeaveMessage/{id}")
+    public String toEditLeaveMessage(@PathVariable("id") Long id, ModelMap mmap) {
+        final FacLeaveMessage message = this.buyerService.selectLeaveMessage(id);
+        mmap.put("message", message);
+        return prefix_message + "/editleavemessage";
     }
 }

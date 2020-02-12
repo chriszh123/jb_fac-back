@@ -1,0 +1,100 @@
+<!DOCTYPE HTML>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<link th:href="@{/ajax/libs/jquery-ztree/3.5/css/metro/zTreeStyle.css}" rel="stylesheet"/>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+    <form class="form-horizontal m" id="form-address-edit" th:object="${message}">
+        <input id="id" name="id" th:field="*{id}" type="hidden">
+        <div class="form-group">
+            <label class="col-sm-3 control-label">记录ID：</label>
+            <div class="col-sm-8">
+                <input id="recordId" name="recordId" th:field="*{id}" class="form-control" type="text" disabled="true">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">用户ID：</label>
+            <div class="col-sm-8">
+                <input id="buyerId" name="buyerId" th:field="*{buyerId}" class="form-control" type="text" disabled="true">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">地址：</label>
+            <div class="col-sm-8">
+                <input class="form-control" type="text" th:field="*{address}">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">联系人：</label>
+            <div class="col-sm-8">
+                <input id="nickName" name="nickName" th:field="*{linkman}" class="form-control" type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">手机号码：</label>
+            <div class="col-sm-8">
+                <input id="phoneNumber" name="phoneNumber" th:field="*{phoneNumber}" class="form-control" type="text">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label product-lable">是否为默认地址：</label>
+            <div class="col-sm-9">
+                <div class="onoffswitch">
+                    <input type="checkbox" th:checked="${address.isDefault}"
+                           class="onoffswitch-checkbox" value="true" id="isDefault"
+                           name="isDefault">
+                    <label class="onoffswitch-label" for="isDefault">
+                        <span class="onoffswitch-inner"></span>
+                        <span class="onoffswitch-switch"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+    </form>
+</div>
+<div th:include="include::footer"></div>
+<script type="text/javascript">
+    $("#form-address-edit").validate({
+        rules: {
+            address: {
+                required: true
+            },
+            linkman: {
+                required: true
+            },
+            phoneNumber: {
+                required: true
+            },
+        }
+    });
+
+    var editAddress = function () {
+        var data = $('#form-address-edit').serialize();
+        $.ajax({
+            cache: true,
+            type: "POST",
+            url: ctx + "fac/buyer/editAddress",
+            data: data,
+            async: false,
+            error: function () {
+                $.modal.alertError("系统错误");
+            },
+            success: function (data) {
+                $.operate.successCallback(data);
+            }
+        });
+    }
+
+    function submitHandler() {
+        if ($.validate.form()) {
+            $.modal.confirm("确定要修改当前用户地址信息吗？", function () {
+                editAddress();
+            });
+        }
+    }
+</script>
+</body>
+</html>

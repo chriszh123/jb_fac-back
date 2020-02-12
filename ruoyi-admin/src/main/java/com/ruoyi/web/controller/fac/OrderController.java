@@ -35,7 +35,7 @@ import java.util.List;
 public class OrderController extends BaseController {
     private static final Logger log = LoggerFactory.getLogger(OrderController.class);
     private String prefix = "fac/order";
-    private String prefix_analysis = "fac/dataAnalysis";
+    private String prefix_analysis = "fac/dataanalysis";
 
     @Autowired
     private IOrderService orderService;

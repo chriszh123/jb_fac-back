@@ -1,0 +1,123 @@
+<!DOCTYPE HTML>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<link th:href="@{/mry/mry.css}" rel="stylesheet"/>
+<link th:href="@{/ajax/libs/fileinput/css/fileinput.min.css}" rel="stylesheet"/>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+    <form class="form-horizontal m" id="mry-customer-editpicture" th:object="${customer}">
+        <input id="id" name="id" th:field="*{id}" type="hidden">
+        <input id="shopId" name="shopId" th:field="*{shopId}" type="hidden">
+        <input type="hidden" id="imgPath" name="imgPath" th:field="*{imgPath}"/>
+        <input type="hidden" id="picture" name="picture" th:field="*{picture}"/>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label product-lable">客户名称：</label>
+            <div class="col-sm-9">
+                <input id="name" name="name" class="form-control" type="text" th:field="*{name}" disabled="disabled">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label product-lable">以往服务效果图片：</label>
+            <div class="col-sm-9">
+                <div class="row form-group">
+                    <div class="panel panel-primary" style="margin-left: 16px;margin-right: 13px;">
+                        <div class="panel-heading" align="center">
+                            <label style="text-align: center;font-size: 18px;"></label>
+                        </div>
+                        <div class="panel-body">
+                            <div class="col-sm-12">
+                                <input id="customerImgInput" name="file" multiple type="file" data-show-caption="true">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group" style="text-align: center;">
+            <label class="col-sm-3 control-label" style="margin-bottom: 30px;"></label>
+            <div class="col-sm-9" style="margin-bottom: 30px;">
+                <button type="button" class="btn btn-success" onclick="editCustomerPic()">确定</button>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <button type="button" class="btn btn-default" onclick="closeCurrentTabMry('1')">取消</button>
+            </div>
+        </div>
+    </form>
+</div>
+<div th:include="include::footer"></div>
+<script th:src="@{/ajax/libs//fileinput/js/fileinput.js}"></script>
+<script th:src="@{/ajax/libs//fileinput/js/locales/zh.js}"></script>
+<script th:src="@{/mry/mry_common.js}"></script>
+<script type="text/javascript">
+    var prefix = ctx + "mry/customer"
+
+    function editCustomerPic() {
+        // 客户图片
+        var picture = $("#picture").val();
+        if (picture == undefined || picture == "") {
+            // $.modal.alertError("请确认已经选择了客户图片并已上传！");
+            // return;
+        }
+        // $("#picture").val(",https://www.jbfac.xyz/images/201907/f29ff78d3e80279a858e534728b71be0.jpg");
+
+        if ($.validate.form()) {
+            $.modal.confirm("确认保存当前客户图片信息吗？", function () {
+                var url = prefix + "/editpicture";
+
+                var data = $('#mry-customer-editpicture').serialize();
+                var config = {
+                    url: url,
+                    type: "post",
+                    dataType: "json",
+                    data: data,
+                    success: function (result) {
+                        if (result.code != 0) {
+                            $.modal.alertWarning(result.msg);
+                        } else {
+                            // 重新加载主页面数据
+                            refreshParentIFramePageMry(DATA_ID.CUSTOMER);
+                            // 关闭当前TAB页面
+                            closeCurrentTabMry("");
+                        }
+                    }
+                };
+                $.ajax(config);
+            });
+        }
+    }
+
+    // 初始化图片上传组件
+    function initFileInputData() {
+        var url = prefix + "/getCustomerImgs";
+        var data = {"id": $("#id").val()};
+        var config = {
+            url: url,
+            type: "post",
+            dataType: "json",
+            data: data,
+            success: function (res) {
+                if (res && res.code && res.code == "0") {
+                    $("#customerImgInput").fileinput('destroy');
+
+                    var imgPaths = res.imgPaths, cfg = res.cfg;
+                    var uploadUrl = ctx + "mry/picture/batchUploadFocusMap";
+                    initFileInputWithImgData("customerImgInput", uploadUrl, OBJECT_COUNT.CUSTOMER_IMG, imgPaths, cfg);
+                }
+            }
+        };
+        $.ajax(config)
+    }
+
+    $(function () {
+        // 初始化图片上传组件
+        var uploadUrl = ctx + "mry/picture/batchUploadFocusMap";
+        initFileInput("customerImgInput", uploadUrl, OBJECT_COUNT.CUSTOMER_IMG);
+        // 初始化图片上传组件图片数据
+        initFileInputData();
+    });
+</script>
+</body>
+</html>
