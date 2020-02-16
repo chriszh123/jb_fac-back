@@ -299,3 +299,20 @@ CREATE TABLE `mry_staff_leave_test` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='员工考勤管理';
 
+drop table if exists `mry_shop_cost`;
+CREATE TABLE `mry_shop_cost` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `shop_id` smallint NOT NULL COMMENT '所属店面',
+  `shop_name` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci default '' COMMENT '店面名称',
+  `cost_time` datetime COMMENT '花费时间',
+  `amount` decimal(8,2) DEFAULT '0.00' COMMENT '花费金额',
+  `remark` varchar(2048) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci default '' COMMENT '备注',
+
+  `create_time` datetime NOT NULL COMMENT '创建时间',
+  `update_time` datetime NOT NULL COMMENT '最近更新时间',
+  `operator_id` bigint(20) DEFAULT NULL COMMENT '操作者ID',
+  `operator_name` varchar(60) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL COMMENT '操作者姓名',
+  `is_deleted` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否删除',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='店面消费记录';
+
