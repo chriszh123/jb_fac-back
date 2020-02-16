@@ -10,7 +10,8 @@ var DATA_ID = {
     "CUSTOMERPROITEM": '/mry/customerproitem',
     "CUSTOMERINVEST": '/mry/customerinvest',
     "STAFFLEAVE": '/mry/staffleave',
-    "WORKLOG": '/mry/worklog'
+    "WORKLOG": '/mry/worklog',
+    "SHOPCOST": '/mry/shopcost'
 };
 
 // 各对象预置数量

@@ -1,0 +1,111 @@
+<!DOCTYPE HTML>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<link th:href="@{/ajax/libs/datapicker/bootstrap-datetimepicker.min.css}" rel="stylesheet"/>
+<link th:href="@{/mry/mry.css}" rel="stylesheet"/>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+    <form class="form-horizontal m" id="mry-shopcost-add">
+        <div class="form-group">
+            <label class="col-sm-3 control-label product-lable">所属店面：</label>
+            <div class="col-sm-9">
+                <select id="shopId" name="shopId" class="form-control m-b"
+                        th:with="shops=${@mpcs.getShops()}">
+                    <option value="">请选择...</option>
+                    <option th:each="shop : ${shops}" th:text="${shop.name}" th:value="${shop.id}"></option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label product-lable">消费金额：</label>
+            <div class="col-sm-9">
+                <input id="amount" name="amount" class="form-control" type="text">
+            </div>
+        </div>
+
+        <div class="form-group form-inline">
+            <label class="col-sm-3 control-label product-lable">消费时间：</label>
+            <div class="col-sm-3 input-group date" style="margin-left: 15px;"><span class="input-group-addon"><i
+                    class="fa fa-calendar"></i></span>
+                <input type="text" class="form-control" id="costTime" name="costTime" value="" placeholder="选择日期">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-3 control-label product-lable">备注：</label>
+            <div class="col-sm-9">
+                <textarea cols="80" id="remark" name="remark" rows="12" style="width: 100%;"></textarea>
+            </div>
+        </div>
+
+        <div class="form-group" style="text-align: center;">
+            <label class="col-sm-3 control-label product-lable" style="margin-bottom: 30px;"></label>
+            <div class="col-sm-9" style="margin-bottom: 30px;">
+                <button type="button" class="btn btn-success" onclick="addShopCost()">确定</button>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <button type="button" class="btn btn-default" onclick="closeCurrentTabMry('1')">取消</button>
+            </div>
+        </div>
+    </form>
+
+</div>
+<div th:include="include::footer"></div>
+<script th:src="@{/ajax/libs//datapicker/bootstrap-datetimepicker.min.js}"></script>
+<script th:src="@{/ajax/libs//datapicker/bootstrap-datetimepicker.zh-CN.js}"></script>
+<script th:src="@{/mry/mry_common.js}"></script>
+<script>
+    var prefix = ctx + "mry/shopcost";
+    $(".input-group.date").datetimepicker({
+        format: 'yyyy-mm-dd hh:ii',
+        todayBtn: "linked",
+        keyboardNavigation: !1,
+        forceParse: !1,
+        calendarWeeks: !0,
+        autoclose: !0,
+        initialDate: new Date(),
+        language: "zh-CN"
+    });
+
+    $("#mry-shopcost-add").validate({
+        rules: {
+            shopId: {
+                required: true
+            },
+            amount: {
+                required: true
+            },
+            costTime: {
+                required: true
+            }
+        }
+    });
+
+
+    function addShopCost() {
+        if ($.validate.form()) {
+            $.modal.confirm("确认保存当前信息吗？", function () {
+                var url = prefix + "/add";
+                var data = $('#mry-shopcost-add').serialize();
+                var config = {
+                    url: url,
+                    type: "post",
+                    dataType: "json",
+                    data: data,
+                    success: function (result) {
+                        refreshParentIFramePageMry(DATA_ID.SHOPCOST);
+                        closeCurrentTabMry("");
+                    }
+                };
+                $.ajax(config);
+            });
+        }
+    }
+
+    $(function () {
+
+    });
+</script>
+</body>
+</html>
