@@ -9,7 +9,7 @@
     <version>3.1</version>
 
     <name>ruoyi</name>
-    <description>南京江北便利站</description>
+    <description>生活记录</description>
 
     <properties>
         <ruoyi.version>3.1</ruoyi.version>
@@ -26,6 +26,7 @@
         <pagehelper.boot.version>1.2.5</pagehelper.boot.version>
         <oshi.version>3.9.1</oshi.version>
         <commons.beanutils.version>1.9.3</commons.beanutils.version>
+        <knife4j.version>1.9.6</knife4j.version>
     </properties>
 
     <dependencyManagement>
@@ -105,6 +106,12 @@
             <!--<classifier>jdk15</classifier>-->
         <!--</dependency>-->
 
+        <dependency>
+            <groupId>com.github.xiaoymin</groupId>
+            <artifactId>knife4j-spring-boot-starter</artifactId>
+            <version>${knife4j.version}</version>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -117,6 +124,10 @@
                     <target>${java.version}</target>
                     <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
         </plugins>
     </build>

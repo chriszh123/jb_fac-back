@@ -1,5 +1,7 @@
 package com.ruoyi.web.controller.mry;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.base.AjaxResult;
 import com.ruoyi.common.enums.BusinessType;
@@ -12,7 +14,10 @@ import com.ruoyi.mry.exception.MryException;
 import com.ruoyi.mry.model.MryShopCost;
 import com.ruoyi.mry.service.MryShopCostService;
 import com.ruoyi.system.domain.SysUser;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -23,6 +28,7 @@ import java.util.List;
 @Controller
 @RequestMapping("/mry/shopcost")
 public class MryShopCostController extends BaseController {
+    private static final Logger log = LoggerFactory.getLogger(MryShopCostController.class);
 
     private String prefix = "mry/shopcost";
 
@@ -39,8 +45,19 @@ public class MryShopCostController extends BaseController {
     @PostMapping("/list")
     @ResponseBody
     public TableDataInfo list(MryShopCost shopCost) {
-        startPage();
+        // 这里偷懒了，不分页去查当前条件下的数据金额总和
+        String totalAmount = "-";
         List<MryShopCost> list = shopCostService.selectShopCosts(shopCost);
+        if (CollectionUtils.isNotEmpty(list)) {
+            totalAmount = list.get(0).getTotalAmount();
+        }
+        log.info(String.format("-----------------[list] totalAmount:%s, shopCost:%s", totalAmount, JSONObject.toJSONString(shopCost)));
+        // 下面是分页的结果
+        startPage();
+        list = shopCostService.selectShopCosts(shopCost);
+        if (CollectionUtils.isNotEmpty(list)) {
+            list.get(0).setTotalAmount(totalAmount);
+        }
         return getDataTable(list);
     }
 
