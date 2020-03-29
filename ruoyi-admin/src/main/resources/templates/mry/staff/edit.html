@@ -19,7 +19,7 @@
         <div class="form-group">
             <label class="col-sm-3 control-label product-lable">所属店面：</label>
             <div class="col-sm-9">
-                <select id="shopId" name="shopId" class="form-control m-b"
+                <select id="shopId" name="shopId" class="form-control m-b" th:field="*{shopId}"
                         th:with="shops=${@mpcs.getShops()}">
                     <option value="">请选择...</option>
                     <option th:each="shop : ${shops}" th:text="${shop.name}" th:value="${shop.id}"></option>
