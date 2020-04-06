@@ -71,7 +71,19 @@
 <script th:src="@{/ajax/libs//datapicker/bootstrap-datetimepicker.zh-CN.js}"></script>
 <script th:src="@{/mry/mry_common.js}"></script>
 <script type="text/javascript">
-    var prefix = ctx + "mry/shopcard"
+    var prefix = ctx + "mry/shopcard";
+
+    $(".input-group.date").datetimepicker({
+        format: 'yyyy-mm-dd hh:ii',
+        todayBtn: "linked",
+        keyboardNavigation: !1,
+        forceParse: !1,
+        calendarWeeks: !0,
+        autoclose: !0,
+        initialDate: new Date(),
+        language: "zh-CN"
+    });
+
     $("#mry-shopcard-edit").validate({
         rules: {
             name: {
