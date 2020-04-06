@@ -12,6 +12,7 @@ import com.ruoyi.mry.exception.MryException;
 import com.ruoyi.mry.mapper.*;
 import com.ruoyi.mry.model.*;
 import com.ruoyi.mry.service.MryCustomerCardService;
+import com.ruoyi.mry.util.MryTimeUtils;
 import com.ruoyi.system.domain.SysUser;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -170,6 +171,12 @@ public class MryCustomerCardServiceImpl implements MryCustomerCardService {
     public MryCustomerCard selectCustomerCardById(Long id) {
         MryCustomerCard customerCard = this.customerCardMapper.selectByPrimaryKey(id);
 
+        if (customerCard.getServiceStart() != null) {
+            customerCard.setServiceStartStr(MryTimeUtils.date2Str(customerCard.getServiceStart(), MryTimeUtils.DEFAULT_DATE_TIME_FORMAT_HH_MM));
+        }
+        if (customerCard.getServiceEnd() != null) {
+            customerCard.setServiceEndStr(MryTimeUtils.date2Str(customerCard.getServiceEnd(), MryTimeUtils.DEFAULT_DATE_TIME_FORMAT_HH_MM));
+        }
         return customerCard;
     }
 
@@ -177,6 +184,13 @@ public class MryCustomerCardServiceImpl implements MryCustomerCardService {
     public int updateMryCustomerCard(MryCustomerCard customerCard) {
         Date nowDate = new Date();
         customerCard.setUpdateTime(nowDate);
+
+        if (StringUtils.isNotBlank(customerCard.getServiceStartStr())) {
+            customerCard.setServiceStart(MryTimeUtils.parseTime(customerCard.getServiceStartStr(), MryTimeUtils.DEFAULT_DATE_TIME_FORMAT_HH_MM));
+        }
+        if (StringUtils.isNotBlank(customerCard.getServiceEndStr())) {
+            customerCard.setServiceEnd(MryTimeUtils.parseTime(customerCard.getServiceEndStr(), MryTimeUtils.DEFAULT_DATE_TIME_FORMAT_HH_MM));
+        }
 
         return this.customerCardMapper.updateByPrimaryKeySelective(customerCard);
     }

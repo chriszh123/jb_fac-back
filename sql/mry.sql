@@ -316,3 +316,9 @@ CREATE TABLE `mry_shop_cost` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='店面消费记录';
 
+
+--20200406
+ALTER TABLE mry_customer_card ADD COLUMN service_start datetime DEFAULT NULL COMMENT '卡片消费开始时间' after card_id;
+ALTER TABLE mry_customer_card ADD COLUMN service_end datetime DEFAULT NULL COMMENT '卡片消费结束时间' after service_start;
+
+

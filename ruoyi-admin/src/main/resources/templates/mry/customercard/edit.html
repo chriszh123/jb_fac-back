@@ -2,6 +2,7 @@
 <html lang="zh" xmlns:th="http://www.thymeleaf.org">
 <meta charset="utf-8">
 <head th:include="include :: header"></head>
+<link th:href="@{/ajax/libs/datapicker/bootstrap-datetimepicker.min.css}" rel="stylesheet"/>
 <link th:href="@{/mry/mry.css}" rel="stylesheet"/>
 <body class="white-bg">
 <div class="wrapper wrapper-content animated fadeInRight ibox-content">
@@ -36,6 +37,22 @@
                 <select id="cardId" name="cardId" class="form-control m-b" th:field="*{cardId}">
                     <option value="">请选择...</option>
                 </select>
+            </div>
+        </div>
+
+        <div class="form-group form-inline">
+            <label class="col-sm-3 control-label product-lable">卡片消费有效期开始时间：</label>
+            <div class="col-sm-3 input-group date" style="margin-left: 15px;"><span class="input-group-addon"><i
+                    class="fa fa-calendar"></i></span>
+                <input type="text" class="form-control" id="serviceStart" name="serviceStart" value="" th:field="*{serviceStartStr}" placeholder="选择日期">
+            </div>
+        </div>
+
+        <div class="form-group form-inline">
+            <label class="col-sm-3 control-label product-lable">卡片消费有效期结束时间：</label>
+            <div class="col-sm-3 input-group date" style="margin-left: 15px;"><span class="input-group-addon"><i
+                    class="fa fa-calendar"></i></span>
+                <input type="text" class="form-control" id="serviceEnd" name="serviceEnd" value="" th:field="*{serviceEndStr}" placeholder="选择日期">
             </div>
         </div>
 
@@ -112,8 +129,21 @@
 </div>
 <div th:include="include::footer"></div>
 <script th:src="@{/mry/mry_common.js}"></script>
+<script th:src="@{/ajax/libs//datapicker/bootstrap-datetimepicker.min.js}"></script>
+<script th:src="@{/ajax/libs//datapicker/bootstrap-datetimepicker.zh-CN.js}"></script>
 <script type="text/javascript">
-    var prefix = ctx + "mry/customercard"
+    var prefix = ctx + "mry/customercard";
+    $(".input-group.date").datetimepicker({
+        format: 'yyyy-mm-dd hh:ii',
+        todayBtn: "linked",
+        keyboardNavigation: !1,
+        forceParse: !1,
+        calendarWeeks: !0,
+        autoclose: !0,
+        initialDate: new Date(),
+        language: "zh-CN"
+    });
+
     $("#mry-customercard-edit").validate({
         rules: {
             shopId: {

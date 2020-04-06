@@ -24,6 +24,14 @@ public class MryCustomerCard {
     @Excel(name = "消费卡ID")
     private Short cardId;
 
+    @Excel(name = "卡片消费有效期开始时间", dateFormat = "yyyy-MM-dd HH:mm")
+    private Date serviceStart;
+    private String serviceStartStr;
+
+    @Excel(name = "卡片消费有效期结束时间", dateFormat = "yyyy-MM-dd HH:mm")
+    private Date serviceEnd;
+    private String serviceEndStr;
+
     @Excel(name = "客户初始化项目")
     private String initProNames;
 
