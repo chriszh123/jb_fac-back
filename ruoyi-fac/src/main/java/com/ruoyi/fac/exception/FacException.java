@@ -7,12 +7,12 @@
 package com.ruoyi.fac.exception;
 
 /**
- * Facc异常信息
+ * Fac异常信息
  *
  * @author zhangguifeng
  * @create 2019-03-22 10:59
  **/
-public class FacException extends Exception {
+public class FacException extends RuntimeException {
 
     public FacException(String msg) {
         super(msg);
