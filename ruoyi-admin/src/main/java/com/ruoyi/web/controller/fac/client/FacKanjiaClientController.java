@@ -18,8 +18,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequestMapping("/fac/client/kanjia")
-public class KanjiaClientController extends BaseController {
-    private static final Logger log = LoggerFactory.getLogger(KanjiaClientController.class);
+public class FacKanjiaClientController extends BaseController {
+    private static final Logger log = LoggerFactory.getLogger(FacKanjiaClientController.class);
 
     @Autowired
     private IFacKanjiaJoinerService facKanjiaJoinerService;
