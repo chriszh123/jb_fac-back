@@ -165,8 +165,28 @@
         if ($.validate.form()) {
             $.modal.confirm("确认保存当前客户办卡信息吗？", function () {
                 var url = prefix + "/edit";
+                var initPros = '';
                 var initProIds = $.form.selectCheckeds("servicePro");
-                $("#initProIds").val(initProIds);
+                // 处理选中的服务项目对应的总次数和消费次数
+                if (initProIds != undefined && initProIds != '') {
+                    var selectedProIds = initProIds.split(',');
+                    for (var i = 0, size = selectedProIds.length; i < size; i++) {
+                        var proId = selectedProIds[i];
+                        var serviceTotalCount = $("#serviceTotalCount" + proId).val();
+                        var consumeTotalCount = $("#consumeTotalCount" + proId).val();
+                        if (serviceTotalCount == undefined || serviceTotalCount == '' || consumeTotalCount == undefined || consumeTotalCount == '') {
+                            $.modal.alertError("请完善选中项目后面的总次数或者消费次数");
+                            return;
+                        }
+                        if (Number(serviceTotalCount) < Number(consumeTotalCount)) {
+                            $.modal.alertError("选中项目存在后面的总次数小于消费次数，请核对后再保存");
+                            return;
+                        }
+                        // 拼凑选中的每个项目对应的总次数和已经消费次数
+                        initPros = proId + "-" + serviceTotalCount + "-" + consumeTotalCount;
+                    }
+                }
+                $("#initProIds").val(initPros);
 
                 var data = $('#mry-customercard-edit').serialize();
                 var config = {
@@ -252,14 +272,20 @@
                     var options = '';
                     $("#lblServicePros").html(options);
                     if (result && result.length > 0) {
+                        // 每个项目对应的项目id、总次数、已经消费次数
                         var initProIds = $("#initProIds").val();
                         for (var i = 0; i < result.length; i++) {
                             var pro = result[i];
                             var checked = false;
+                            var serviceTotalCount = '0', consumeTotalCount = '0';
                             if (initProIds && initProIds != "") {
                                 var initProIdsArr = initProIds.split(',');
                                 for (var j = 0; j < initProIdsArr.length; j++) {
-                                    if (pro.id == initProIdsArr[j]) {
+                                    var proInfoArr = initProIdsArr[j].split("-");
+                                    var proId = proInfoArr[0];
+                                    serviceTotalCount = proInfoArr[1];
+                                    consumeTotalCount = proInfoArr[2];
+                                    if (pro.id == proId) {
                                         checked = true;
                                     }
                                 }
@@ -269,7 +295,10 @@
                             } else {
                                 options = options + '<input name="servicePro" type="checkbox" value="'+ pro.id + '"/>' + pro.name;
                             }
-
+                            //  当前项目对应的总次数
+                            options = options + '<input type="input" id="serviceTotalCount'+ pro.id + '"/>';
+                            // 当前项目对应的当前已经消费次数
+                            options = options + '<input type="input" id="consumeTotalCount'+ pro.id + '"/>';
                             options = options + "&nbsp;&nbsp;&nbsp;";
                         }
                         $("#lblServicePros").html(options);
