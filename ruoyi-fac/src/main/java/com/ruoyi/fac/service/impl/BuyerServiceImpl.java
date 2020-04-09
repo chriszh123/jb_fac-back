@@ -1,5 +1,6 @@
 package com.ruoyi.fac.service.impl;
 
+import cn.hutool.core.util.StrUtil;
 import com.ruoyi.common.support.Convert;
 import com.ruoyi.fac.cache.BuyerCache;
 import com.ruoyi.fac.constant.FacConstant;
@@ -566,11 +567,13 @@ public class BuyerServiceImpl implements IBuyerService {
         final FacLeaveMessageExample messageExample = new FacLeaveMessageExample();
         FacLeaveMessageExample.Criteria criteria = messageExample.createCriteria();
         criteria.andIsDeletedEqualTo(false).andTokenEqualTo(req.getToken());
+        String orderBy = "create_time desc";
         if (req.getPage() != null && req.getSize() != null) {
-            messageExample.setStartRow(req.getPage() * req.getSize());
-            messageExample.setPageSize(req.getSize());
+            int limitStart = req.getPage() * req.getSize();
+            int limitSize = req.getSize();
+            orderBy = StrUtil.format(" create_time desc limit {},{}", limitStart, limitSize);
         }
-        messageExample.setOrderByClause(" create_time desc");
+        messageExample.setOrderByClause(orderBy);
         List<FacLeaveMessage> leaveMessages = this.leaveMessageMapper.selectByExample(messageExample);
         return leaveMessages;
     }
@@ -618,9 +621,6 @@ public class BuyerServiceImpl implements IBuyerService {
         criteria.andIsDeletedEqualTo(false);
         if (StringUtils.isNotBlank(message.getRemark()) && StringUtils.isNotBlank(message.getRemark().trim())) {
             criteria.andRemarkLike("%" + message.getRemark().trim() + "%");
-        }
-        if (message.getStatus() != null) {
-            criteria.andStatusEqualTo(message.getStatus());
         }
         if (StringUtils.isNotBlank(message.getMngtRemark()) && StringUtils.isNotBlank(message.getMngtRemark().trim())) {
             criteria.andMngtRemarkLike("%" + message.getMngtRemark().trim() + "%");

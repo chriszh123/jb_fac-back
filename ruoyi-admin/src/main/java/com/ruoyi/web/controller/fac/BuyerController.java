@@ -204,26 +204,4 @@ public class BuyerController extends BaseController {
         }
         return toAjax(buyerService.editAddress(address));
     }
-
-    @RequiresPermissions("fac:buyer:viewleavemessage")
-    @GetMapping("/toLeaveMessage")
-    public String leaveMessage() {
-        return prefix_message + "/leavemessage";
-    }
-
-    @RequiresPermissions("fac:buyer:listLeaveMessage")
-    @PostMapping("/listLeaveMessage")
-    @ResponseBody
-    public TableDataInfo listLeaveMessage(FacLeaveMessage message) {
-        startPage();
-        List<FacLeaveMessage> list = this.buyerService.selectLeaveMessages(message);
-        return getDataTable(list);
-    }
-
-    @GetMapping("/toEditLeaveMessage/{id}")
-    public String toEditLeaveMessage(@PathVariable("id") Long id, ModelMap mmap) {
-        final FacLeaveMessage message = this.buyerService.selectLeaveMessage(id);
-        mmap.put("message", message);
-        return prefix_message + "/editleavemessage";
-    }
 }

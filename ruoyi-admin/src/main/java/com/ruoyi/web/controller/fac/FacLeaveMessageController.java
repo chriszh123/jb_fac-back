@@ -28,7 +28,6 @@ import java.util.List;
 @RequestMapping("/fac/leavemessage")
 public class FacLeaveMessageController extends BaseController {
     private static final Logger log = LoggerFactory.getLogger(FacLeaveMessageController.class);
-
     private String prefix = "fac/leavemessage";
 
     @Resource
@@ -58,11 +57,11 @@ public class FacLeaveMessageController extends BaseController {
         return util.exportExcel(list, "用户留言信息");
     }
 
-    @GetMapping("/reply/{leaveMsgWid}")
-    public String replyLeaveMessage(@PathVariable("leaveMsgWid") String leaveMsgWid, ModelMap mmap) {
+    @GetMapping("/reply/{leaveMsgId}")
+    public String replyLeaveMessage(@PathVariable("leaveMsgId") String leaveMsgId, ModelMap mmap) {
         final LeaveMessageVo leaveMessageVo = new LeaveMessageVo();
-        leaveMessageVo.setLeaveMsgWid(leaveMsgWid);
-        mmap.put("leavemessage", null);
+        leaveMessageVo.setLeaveMsgId(leaveMsgId);
+        mmap.put("leavemessage", leaveMessageVo);
 
         return prefix + "/reply";
     }

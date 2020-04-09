@@ -12,5 +12,5 @@ public class LeaveMessageVo implements Serializable{
     /**
      * 用户留言记录数据wid
      */
-    private String leaveMsgWid;
+    private String leaveMsgId;
 }

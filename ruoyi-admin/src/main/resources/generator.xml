@@ -3,8 +3,8 @@
 <generatorConfiguration>
 
     <!-- 本地数据库驱动程序jar包的全路径 -->
-    <classPathEntry location="F:\\tools\\mysql\\mysql-connector-java-8.0.13.jar"/>
-    <!--<classPathEntry location="D:\\tools\\mysql\\mysql-connector-java-8.0.13.jar"/>-->
+    <!--<classPathEntry location="F:\\tools\\mysql\\mysql-connector-java-8.0.13.jar"/>-->
+    <classPathEntry location="D:\\tools\\mysql\\mysql-connector-java-8.0.13.jar"/>
     <context id="context" targetRuntime="MyBatis3">
         <commentGenerator>
             <property name="suppressAllComments" value="false"/>
@@ -14,7 +14,7 @@
         <!-- 数据库的相关配置 -->
         <jdbcConnection
                 driverClass="com.mysql.jdbc.Driver"
-                connectionURL="jdbc:mysql://localhost:3306/ry-pin?serverTimezone=GMT"
+                connectionURL="jdbc:mysql://localhost:3306/ry?serverTimezone=GMT"
                 userId="root"
                 password="123456">
                 <!--识别主键,生成****ByPrimaryKey****方法-->
@@ -27,8 +27,8 @@
 
         <!-- 实体类生成的位置 -->
         <javaModelGenerator
-                targetPackage="com.ruoyi.mry.model"
-                targetProject="..\ruoyi-mry\src\main\java">
+                targetPackage="com.ruoyi.fac.model"
+                targetProject="..\ruoyi-fac\src\main\java">
             <property name="enableSubPackages" value="false"/>
             <property name="trimStrings" value="true"/>
         </javaModelGenerator>
@@ -36,19 +36,19 @@
         <!-- *Mapper.xml 文件的位置  sqlMapGenerator-->
         <sqlMapGenerator
                 targetPackage="auto.mapper"
-                targetProject="..\ruoyi-mry\src\main\resources\mapper\mry">
+                targetProject="..\ruoyi-fac\src\main\resources\mapper\fac">
             <property name="enableSubPackages" value="true"/>
         </sqlMapGenerator>
 
         <!-- Mapper接口文件的位置 -->
         <javaClientGenerator type="XMLMAPPER"
-                             targetPackage="com.ruoyi.mry.mapper"
-                             targetProject="..\ruoyi-mry\src\main\java">
+                             targetPackage="com.ruoyi.fac.mapper"
+                             targetProject="..\ruoyi-fac\src\main\java">
             <property name="enableSubPackages" value="false"/>
         </javaClientGenerator>
 
         <!-- 相关表的配置 -->
-        <!--<table tableName="mry_product" domainObjectName="mryProduct"-->
+        <!--<table tableName="fac_product" domainObjectName="facProduct"-->
                <!--enableInsert="true" enableSelectByPrimaryKey="true"-->
                <!--enableSelectByExample="true" enableUpdateByPrimaryKey="true"-->
                <!--enableDeleteByPrimaryKey="true" enableDeleteByExample="true"-->
@@ -57,7 +57,7 @@
             <!--<generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />-->
         <!--</table>-->
 
-        <!--<table tableName="mry_product_category" domainObjectName="mryProductCategory"-->
+        <!--<table tableName="fac_product_category" domainObjectName="facProductCategory"-->
                <!--enableInsert="true" enableSelectByPrimaryKey="true"-->
                <!--enableSelectByExample="true" enableUpdateByPrimaryKey="true"-->
                <!--enableDeleteByPrimaryKey="true" enableDeleteByExample="true"-->
@@ -66,7 +66,7 @@
             <!--<generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />-->
         <!--</table>-->
 
-        <!--<table tableName="mry_product_writeoff" domainObjectName="mryProductWriteOffBean"-->
+        <!--<table tableName="fac_product_writeoff" domainObjectName="facProductWriteOffBean"-->
                <!--enableInsert="true" enableSelectByPrimaryKey="true"-->
                <!--enableSelectByExample="true" enableUpdateByPrimaryKey="true"-->
                <!--enableDeleteByPrimaryKey="true" enableDeleteByExample="true"-->
@@ -75,7 +75,7 @@
             <!--<generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />-->
         <!--</table>-->
 
-        <!--<table tableName="mry_order" domainObjectName="mryOrder"-->
+        <!--<table tableName="fac_order" domainObjectName="facOrder"-->
                <!--enableInsert="true" enableSelectByPrimaryKey="true"-->
                <!--enableSelectByExample="true" enableUpdateByPrimaryKey="true"-->
                <!--enableDeleteByPrimaryKey="true" enableDeleteByExample="true"-->
@@ -84,7 +84,7 @@
             <!--<generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />-->
         <!--</table>-->
 
-        <!--<table tableName="mry_business" domainObjectName="mryBusiness"-->
+        <!--<table tableName="fac_business" domainObjectName="facBusiness"-->
                <!--enableInsert="true" enableSelectByPrimaryKey="true"-->
                <!--enableSelectByExample="true" enableUpdateByPrimaryKey="true"-->
                <!--enableDeleteByPrimaryKey="true" enableDeleteByExample="true"-->
@@ -93,7 +93,7 @@
             <!--<generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />-->
         <!--</table>-->
 
-        <!--<table tableName="mry_channel" domainObjectName="mryChannel"-->
+        <!--<table tableName="fac_channel" domainObjectName="facChannel"-->
                <!--enableInsert="true" enableSelectByPrimaryKey="true"-->
                <!--enableSelectByExample="true" enableUpdateByPrimaryKey="true"-->
                <!--enableDeleteByPrimaryKey="true" enableDeleteByExample="true"-->
@@ -102,7 +102,7 @@
             <!--<generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />-->
         <!--</table>-->
 
-        <!--<table tableName="mry_buyer" domainObjectName="mryBuyer"-->
+        <!--<table tableName="fac_buyer" domainObjectName="facBuyer"-->
                <!--enableInsert="true" enableSelectByPrimaryKey="true"-->
                <!--enableSelectByExample="true" enableUpdateByPrimaryKey="true"-->
                <!--enableDeleteByPrimaryKey="true" enableDeleteByExample="true"-->
@@ -111,7 +111,7 @@
             <!--<generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />-->
         <!--</table>-->
 
-        <!--<table tableName="mry_buyer_business" domainObjectName="mryBuyerBusiness"-->
+        <!--<table tableName="fac_buyer_business" domainObjectName="facBuyerBusiness"-->
                <!--enableInsert="true" enableSelectByPrimaryKey="true"-->
                <!--enableSelectByExample="true" enableUpdateByPrimaryKey="true"-->
                <!--enableDeleteByPrimaryKey="true" enableDeleteByExample="true"-->
@@ -120,7 +120,7 @@
             <!--<generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />-->
         <!--</table>-->
 
-        <!--<table tableName="mry_cash" domainObjectName="mryCash"-->
+        <!--<table tableName="fac_cash" domainObjectName="facCash"-->
                <!--enableInsert="true" enableSelectByPrimaryKey="true"-->
                <!--enableSelectByExample="true" enableUpdateByPrimaryKey="true"-->
                <!--enableDeleteByPrimaryKey="true" enableDeleteByExample="true"-->
@@ -129,7 +129,7 @@
             <!--<generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />-->
         <!--</table>-->
 
-        <!--<table tableName="mry_focus_map" domainObjectName="mryFocusMap"-->
+        <!--<table tableName="fac_focus_map" domainObjectName="facFocusMap"-->
                <!--enableInsert="true" enableSelectByPrimaryKey="true"-->
                <!--enableSelectByExample="true" enableUpdateByPrimaryKey="true"-->
                <!--enableDeleteByPrimaryKey="true" enableDeleteByExample="true"-->
@@ -138,7 +138,7 @@
             <!--<generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />-->
         <!--</table>-->
 
-        <!--<table tableName="mry_menu" domainObjectName="mryMenu"-->
+        <!--<table tableName="fac_menu" domainObjectName="facMenu"-->
                <!--enableInsert="true" enableSelectByPrimaryKey="true"-->
                <!--enableSelectByExample="true" enableUpdateByPrimaryKey="true"-->
                <!--enableDeleteByPrimaryKey="true" enableDeleteByExample="true"-->
@@ -147,7 +147,7 @@
             <!--<generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />-->
         <!--</table>-->
 
-        <!--<table tableName="mry_buyer_address" domainObjectName="mryBuyerAddress"-->
+        <!--<table tableName="fac_buyer_address" domainObjectName="facBuyerAddress"-->
                <!--enableInsert="true" enableSelectByPrimaryKey="true"-->
                <!--enableSelectByExample="true" enableUpdateByPrimaryKey="true"-->
                <!--enableDeleteByPrimaryKey="true" enableDeleteByExample="true"-->
@@ -156,7 +156,7 @@
             <!--<generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />-->
         <!--</table>-->
 
-        <!--<table tableName="mry_buyer_sign" domainObjectName="mryBuyerSign"-->
+        <!--<table tableName="fac_buyer_sign" domainObjectName="facBuyerSign"-->
                <!--enableInsert="true" enableSelectByPrimaryKey="true"-->
                <!--enableSelectByExample="true" enableUpdateByPrimaryKey="true"-->
                <!--enableDeleteByPrimaryKey="true" enableDeleteByExample="true"-->
@@ -165,7 +165,7 @@
             <!--<generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />-->
         <!--</table>-->
 
-        <!--<table tableName="mry_order_product" domainObjectName="mryOrderProduct"-->
+        <!--<table tableName="fac_order_product" domainObjectName="facOrderProduct"-->
                <!--enableInsert="true" enableSelectByPrimaryKey="true"-->
                <!--enableSelectByExample="true" enableUpdateByPrimaryKey="true"-->
                <!--enableDeleteByPrimaryKey="true" enableDeleteByExample="true"-->
@@ -174,7 +174,7 @@
             <!--<generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />-->
         <!--</table>-->
 
-        <!--<table tableName="mry_kanjia" domainObjectName="mryKanjia"-->
+        <!--<table tableName="fac_kanjia" domainObjectName="facKanjia"-->
                <!--enableInsert="true" enableSelectByPrimaryKey="true"-->
                <!--enableSelectByExample="true" enableUpdateByPrimaryKey="true"-->
                <!--enableDeleteByPrimaryKey="true" enableDeleteByExample="true"-->
@@ -183,7 +183,7 @@
             <!--<generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />-->
         <!--</table>-->
 
-        <!--<table tableName="mry_kanjia_joiner" domainObjectName="mryKanjiaJoiner"-->
+        <!--<table tableName="fac_kanjia_joiner" domainObjectName="facKanjiaJoiner"-->
                <!--enableInsert="true" enableSelectByPrimaryKey="true"-->
                <!--enableSelectByExample="true" enableUpdateByPrimaryKey="true"-->
                <!--enableDeleteByPrimaryKey="true" enableDeleteByExample="true"-->
@@ -192,7 +192,7 @@
             <!--<generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />-->
         <!--</table>-->
 
-        <!--<table tableName="mry_kanjia_helper" domainObjectName="mryKanjiaHelper"-->
+        <!--<table tableName="fac_kanjia_helper" domainObjectName="facKanjiaHelper"-->
                <!--enableInsert="true" enableSelectByPrimaryKey="true"-->
                <!--enableSelectByExample="true" enableUpdateByPrimaryKey="true"-->
                <!--enableDeleteByPrimaryKey="true" enableDeleteByExample="true"-->
@@ -201,7 +201,7 @@
             <!--<generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />-->
         <!--</table>-->
 
-        <!--<table tableName="mry_leave_message" domainObjectName="mryLeaveMessage"-->
+        <!--<table tableName="fac_leave_message" domainObjectName="facLeaveMessage"-->
                <!--enableInsert="true" enableSelectByPrimaryKey="true"-->
                <!--enableSelectByExample="true" enableUpdateByPrimaryKey="true"-->
                <!--enableDeleteByPrimaryKey="true" enableDeleteByExample="true"-->
@@ -210,7 +210,7 @@
             <!--<generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />-->
         <!--</table>-->
 
-        <!--<table tableName="mry_leave_message_reply" domainObjectName="mryLeaveMessageReply"-->
+        <!--<table tableName="fac_leave_message_reply" domainObjectName="facLeaveMessageReply"-->
                <!--enableInsert="true" enableSelectByPrimaryKey="true"-->
                <!--enableSelectByExample="true" enableUpdateByPrimaryKey="true"-->
                <!--enableDeleteByPrimaryKey="true" enableDeleteByExample="true"-->
@@ -219,7 +219,7 @@
             <!--<generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />-->
         <!--</table>-->
 
-        <!--<table tableName="mry_basic_shop" domainObjectName="MryShop"-->
+        <!--<table tableName="fac_basic_shop" domainObjectName="facShop"-->
                <!--enableInsert="true" enableSelectByPrimaryKey="true"-->
                <!--enableSelectByExample="true" enableUpdateByPrimaryKey="true"-->
                <!--enableDeleteByPrimaryKey="true" enableDeleteByExample="true"-->
@@ -228,7 +228,7 @@
             <!--<generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />-->
         <!--</table>-->
 
-        <!--<table tableName="mry_basic_service_pro" domainObjectName="MryServicePro"-->
+        <!--<table tableName="fac_basic_service_pro" domainObjectName="facServicePro"-->
                <!--enableInsert="true" enableSelectByPrimaryKey="true"-->
                <!--enableSelectByExample="true" enableUpdateByPrimaryKey="true"-->
                <!--enableDeleteByPrimaryKey="true" enableDeleteByExample="true"-->
@@ -237,7 +237,7 @@
             <!--<generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />-->
         <!--</table>-->
 
-        <!--<table tableName="mry_customer" domainObjectName="MryCustomer"-->
+        <!--<table tableName="fac_customer" domainObjectName="facCustomer"-->
                <!--enableInsert="true" enableSelectByPrimaryKey="true"-->
                <!--enableSelectByExample="true" enableUpdateByPrimaryKey="true"-->
                <!--enableDeleteByPrimaryKey="true" enableDeleteByExample="true"-->
@@ -246,7 +246,7 @@
             <!--<generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />-->
         <!--</table>-->
 
-        <!--<table tableName="mry_worklog" domainObjectName="MryWorklog"-->
+        <!--<table tableName="fac_worklog" domainObjectName="facWorklog"-->
                <!--enableInsert="true" enableSelectByPrimaryKey="true"-->
                <!--enableSelectByExample="true" enableUpdateByPrimaryKey="true"-->
                <!--enableDeleteByPrimaryKey="true" enableDeleteByExample="true"-->
@@ -255,7 +255,7 @@
             <!--<generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />-->
         <!--</table>-->
 
-        <!--<table tableName="mry_staff" domainObjectName="MryStaff"-->
+        <!--<table tableName="fac_staff" domainObjectName="facStaff"-->
                <!--enableInsert="true" enableSelectByPrimaryKey="true"-->
                <!--enableSelectByExample="true" enableUpdateByPrimaryKey="true"-->
                <!--enableDeleteByPrimaryKey="true" enableDeleteByExample="true"-->
@@ -264,7 +264,7 @@
             <!--<generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />-->
         <!--</table>-->
 
-        <!--<table tableName="mry_customer_pro" domainObjectName="MryCustomerPro"-->
+        <!--<table tableName="fac_customer_pro" domainObjectName="facCustomerPro"-->
                <!--enableInsert="true" enableSelectByPrimaryKey="true"-->
                <!--enableSelectByExample="true" enableUpdateByPrimaryKey="true"-->
                <!--enableDeleteByPrimaryKey="true" enableDeleteByExample="true"-->
@@ -273,7 +273,7 @@
             <!--<generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />-->
         <!--</table>-->
 
-        <!--<table tableName="mry_customer_pro_item" domainObjectName="MryCustomerProItem"-->
+        <!--<table tableName="fac_customer_pro_item" domainObjectName="facCustomerProItem"-->
             <!--enableInsert="true" enableSelectByPrimaryKey="true"-->
             <!--enableSelectByExample="true" enableUpdateByPrimaryKey="true"-->
             <!--enableDeleteByPrimaryKey="true" enableDeleteByExample="true"-->
@@ -282,7 +282,7 @@
             <!--<generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />-->
         <!--</table>-->
 
-        <!--<table tableName="mry_basic_shop_card" domainObjectName="MryShopCard"-->
+        <!--<table tableName="fac_basic_shop_card" domainObjectName="facShopCard"-->
                <!--enableInsert="true" enableSelectByPrimaryKey="true"-->
                <!--enableSelectByExample="true" enableUpdateByPrimaryKey="true"-->
                <!--enableDeleteByPrimaryKey="true" enableDeleteByExample="true"-->
@@ -291,7 +291,7 @@
             <!--<generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />-->
         <!--</table>-->
 
-        <!--<table tableName="mry_customer_card" domainObjectName="MryCustomerCard"-->
+        <!--<table tableName="fac_customer_card" domainObjectName="facCustomerCard"-->
                <!--enableInsert="true" enableSelectByPrimaryKey="true"-->
                <!--enableSelectByExample="true" enableUpdateByPrimaryKey="true"-->
                <!--enableDeleteByPrimaryKey="true" enableDeleteByExample="true"-->
@@ -300,7 +300,7 @@
             <!--<generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />-->
         <!--</table>-->
 
-        <!--<table tableName="mry_staff_leave" domainObjectName="MryStaffLeave"-->
+        <!--<table tableName="fac_staff_leave" domainObjectName="facStaffLeave"-->
                <!--enableInsert="true" enableSelectByPrimaryKey="true"-->
                <!--enableSelectByExample="true" enableUpdateByPrimaryKey="true"-->
                <!--enableDeleteByPrimaryKey="true" enableDeleteByExample="true"-->
@@ -309,7 +309,7 @@
             <!--<generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />-->
         <!--</table>-->
 
-        <!--<table tableName="mry_customer_invest" domainObjectName="MryCustomerInvest"-->
+        <!--<table tableName="fac_customer_invest" domainObjectName="facCustomerInvest"-->
                <!--enableInsert="true" enableSelectByPrimaryKey="true"-->
                <!--enableSelectByExample="true" enableUpdateByPrimaryKey="true"-->
                <!--enableDeleteByPrimaryKey="true" enableDeleteByExample="true"-->
@@ -318,7 +318,7 @@
             <!--<generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />-->
         <!--</table>-->
 
-        <!--<table tableName="mry_customer_picture" domainObjectName="MryCustomerPicture"-->
+        <!--<table tableName="fac_customer_picture" domainObjectName="facCustomerPicture"-->
         <!--enableInsert="true" enableSelectByPrimaryKey="true"-->
         <!--enableSelectByExample="true" enableUpdateByPrimaryKey="true"-->
         <!--enableDeleteByPrimaryKey="true" enableDeleteByExample="true"-->
@@ -327,7 +327,7 @@
         <!--<generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />-->
         <!--</table>-->
 
-        <!--<table tableName="mry_shop_cost" domainObjectName="MryShopCost"-->
+        <!--<table tableName="fac_shop_cost" domainObjectName="facShopCost"-->
         <!--enableInsert="true" enableSelectByPrimaryKey="true"-->
         <!--enableSelectByExample="true" enableUpdateByPrimaryKey="true"-->
         <!--enableDeleteByPrimaryKey="true" enableDeleteByExample="true"-->
@@ -336,14 +336,14 @@
         <!--<generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />-->
         <!--</table>-->
 
-        <table tableName="mry_staff_leave_test" domainObjectName="MryStaffLeaveTest"
-        enableInsert="true" enableSelectByPrimaryKey="true"
-        enableSelectByExample="true" enableUpdateByPrimaryKey="true"
-        enableDeleteByPrimaryKey="true" enableDeleteByExample="true"
-        enableCountByExample="true" enableUpdateByExample="true"
-        selectByExampleQueryId="true">
-        <generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />
-        </table>
+        <!--<table tableName="fac_leave_message" domainObjectName="FacLeaveMessage"-->
+        <!--enableInsert="true" enableSelectByPrimaryKey="true"-->
+        <!--enableSelectByExample="true" enableUpdateByPrimaryKey="true"-->
+        <!--enableDeleteByPrimaryKey="true" enableDeleteByExample="true"-->
+        <!--enableCountByExample="true" enableUpdateByExample="true"-->
+        <!--selectByExampleQueryId="true">-->
+        <!--<generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />-->
+        <!--</table>-->
 
     </context>
 </generatorConfiguration>

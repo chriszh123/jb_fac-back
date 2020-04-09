@@ -31,9 +31,10 @@ public class FacLeaveMessage {
     @Excel(name = "回复时间", dateFormat = "yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
 
-    private Long operatorId;
-
+    @Excel(name = "操作人")
     private String operatorName;
+
+    private Long operatorId;
 
     @Excel(name = "数据状态", readConverterExp ="0=正常,1=删除")
     private Boolean isDeleted;
