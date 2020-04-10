@@ -67,14 +67,14 @@
         <div class="form-group">
             <label class="col-sm-3 control-label product-lable">客户初始办卡充值金额：</label>
             <div class="col-sm-9">
-                <input id="price" name="price" class="form-control" type="text" th:field="*{price}" disabled="disabled">
+                <input id="price" name="price" class="form-control" type="text" th:field="*{price}">
             </div>
         </div>
 
         <div class="form-group">
             <label class="col-sm-3 control-label product-lable">消费类型：</label>
             <div class="col-sm-9">
-                <select id="customeType" name="customeType" class="form-control m-b" th:field="*{customeType}"  disabled="disabled">
+                <select id="customeType" name="customeType" class="form-control m-b" th:field="*{customeType}">
                     <option value="">请选择...</option>
                     <option value="0">积分制</option>
                     <option value="1">消费次数</option>
@@ -85,14 +85,14 @@
         <div class="form-group">
             <label class="col-sm-3 control-label product-lable">总积分：</label>
             <div class="col-sm-9">
-                <input id="totalPoints" name="totalPoints" class="form-control" type="text" th:field="*{totalPoints}" disabled="disabled">
+                <input id="totalPoints" name="totalPoints" class="form-control" type="text" th:field="*{totalPoints}">
             </div>
         </div>
 
         <div class="form-group">
             <label class="col-sm-3 control-label product-lable">消费总次数：</label>
             <div class="col-sm-9">
-                <input id="totalTimes" name="totalTimes" class="form-control" type="text" th:field="*{totalTimes}" disabled="disabled">
+                <input id="totalTimes" name="totalTimes" class="form-control" type="text" th:field="*{totalTimes}">
             </div>
         </div>
 
@@ -183,7 +183,10 @@
                             return;
                         }
                         // 拼凑选中的每个项目对应的总次数和已经消费次数
-                        initPros = proId + "-" + serviceTotalCount + "-" + consumeTotalCount;
+                        initPros = initPros + (proId + "-" + serviceTotalCount + "-" + consumeTotalCount);
+                        if (i != (size - 1)) {
+                            initPros = initPros + ",";
+                        }
                     }
                 }
                 $("#initProIds").val(initPros);
@@ -283,26 +286,32 @@
                                 for (var j = 0; j < initProIdsArr.length; j++) {
                                     var proInfoArr = initProIdsArr[j].split("-");
                                     var proId = proInfoArr[0];
-                                    serviceTotalCount = proInfoArr[1];
-                                    consumeTotalCount = proInfoArr[2];
                                     if (pro.id == proId) {
                                         checked = true;
+                                        serviceTotalCount = proInfoArr[1];
+                                        consumeTotalCount = proInfoArr[2];
                                     }
                                 }
                             }
                             if (checked) {
-                                options = options + '<input name="servicePro" type="checkbox" value="'+ pro.id + '" checked="' + checked + '"/>' + pro.name;
+                                options = options + '<input name="servicePro" type="checkbox" value="'+ pro.id + '" checked="' + checked + '"/>' + pro.name + "&nbsp;";
+                                //  当前项目对应的总次数
+                                options = options + '<input type="input" style="width: 45px;" value="' + serviceTotalCount + '" id="serviceTotalCount'+ pro.id + '"/>';
+                                options = options + "-";
+                                // 当前项目对应的当前已经消费次数
+                                options = options + '<input type="input" style="width: 45px;" value="' + consumeTotalCount + '" id="consumeTotalCount'+ pro.id + '"/>';
                             } else {
-                                options = options + '<input name="servicePro" type="checkbox" value="'+ pro.id + '"/>' + pro.name;
+                                options = options + '<input name="servicePro" type="checkbox" value="'+ pro.id + '"/>' + pro.name + "&nbsp;";
+                                //  当前项目对应的总次数
+                                options = options + '<input type="input" style="width: 45px;" id="serviceTotalCount'+ pro.id + '"/>';
+                                options = options + "-";
+                                // 当前项目对应的当前已经消费次数
+                                options = options + '<input type="input" style="width: 45px;" id="consumeTotalCount'+ pro.id + '"/>';
                             }
-                            //  当前项目对应的总次数
-                            options = options + '<input type="input" id="serviceTotalCount'+ pro.id + '"/>';
-                            // 当前项目对应的当前已经消费次数
-                            options = options + '<input type="input" id="consumeTotalCount'+ pro.id + '"/>';
                             options = options + "&nbsp;&nbsp;&nbsp;";
                             // 指定特定个数个服务项目换行显示
-                            if (i != 0 && i % 5 == 0) {
-                                options = options + '</br>';
+                            if (i != 0 && i % 3 == 0) {
+                                options = options + '</br></br>';
                             }
                         }
                         $("#lblServicePros").html(options);

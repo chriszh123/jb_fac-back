@@ -18,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -103,7 +104,11 @@ public class MryCustomerCardServiceImpl implements MryCustomerCardService {
                 // 客户初始化服务项目id
                 if (StringUtils.isNotBlank(item.getInitProIds())) {
                     List<String> initProIds = Arrays.asList(item.getInitProIds().split(","));
-                    initProIds.forEach(proId->{serviceProIds.add(Short.valueOf(proId));});
+                    initProIds.forEach(proInfo -> {
+                        // proId + "-" + serviceTotalCount + "-" + consumeTotalCount;
+                        String proId = proInfo.split("-")[0];
+                        serviceProIds.add(Short.valueOf(proId));
+                    });
                 }
             }
 
@@ -119,7 +124,9 @@ public class MryCustomerCardServiceImpl implements MryCustomerCardService {
                         if (StringUtils.isNotBlank(item.getInitProIds())) {
                             StringBuilder initProIdsSB = new StringBuilder();
                             List<String> initProIds = Arrays.asList(item.getInitProIds().split(","));
-                            for (String proId : initProIds) {
+                            for (String proInfo : initProIds) {
+                                // proId + "-" + serviceTotalCount + "-" + consumeTotalCount;
+                                String proId = proInfo.split("-")[0];
                                 if (serviceProMap.containsKey(Short.valueOf(proId))) {
                                     initProIdsSB.append(serviceProMap.get(Short.valueOf(proId)).getName()).append(",");
                                 }
@@ -139,6 +146,7 @@ public class MryCustomerCardServiceImpl implements MryCustomerCardService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public int insertMryCustomerCard(MryCustomerCard customerCard) {
         Date nowDate = new Date();
         customerCard.setIsDeleted(false);
@@ -181,6 +189,7 @@ public class MryCustomerCardServiceImpl implements MryCustomerCardService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public int updateMryCustomerCard(MryCustomerCard customerCard) {
         Date nowDate = new Date();
         customerCard.setUpdateTime(nowDate);
