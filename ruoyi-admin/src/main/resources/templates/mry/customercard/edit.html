@@ -300,6 +300,10 @@
                             // 当前项目对应的当前已经消费次数
                             options = options + '<input type="input" id="consumeTotalCount'+ pro.id + '"/>';
                             options = options + "&nbsp;&nbsp;&nbsp;";
+                            // 指定特定个数个服务项目换行显示
+                            if (i != 0 && i % 5 == 0) {
+                                options = options + '</br>';
+                            }
                         }
                         $("#lblServicePros").html(options);
                     }
