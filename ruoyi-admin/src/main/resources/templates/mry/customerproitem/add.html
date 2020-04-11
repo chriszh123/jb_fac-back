@@ -21,14 +21,14 @@
         <div class="form-group">
             <label class="col-sm-3 control-label product-lable">客户：</label>
             <div class="col-sm-9">
-                <select id="customerId" name="customerId" class="form-control m-b">
+                <select id="customerId" name="customerId" class="form-control m-b" onchange="changeCustomer(this)">
                     <option value="">请选择...</option>
                 </select>
             </div>
         </div>
 
         <div class="form-group">
-            <label class="col-sm-3 control-label product-lable">可供消费卡：</label>
+            <label class="col-sm-3 control-label product-lable">客户办理的消费卡号：</label>
             <div class="col-sm-9">
                 <select id="cardId" name="cardId" class="form-control m-b">
                     <option value="">请选择...</option>
@@ -197,6 +197,36 @@
         }
     }
 
+    var changeCustomer = function (obj) {
+        var customerId = obj.value;
+        var shopId = $("#shopId").val();
+        if (shopId && shopId !== '' && customerId && customerId !== '') {
+            url = prefix + "/getCustomerCardsByShopCustomer";
+            var data = {
+                "shopId" : shopId,
+                "customerId" : customerId
+            };
+            var config = {
+                url: url,
+                type: "post",
+                dataType: "json",
+                data: data,
+                success: function (result) {
+                    var options = '<option value="">请选择...</option>';
+                    $("#cardId").html(options);
+                    if (result && result.length > 0) {
+                        for (var i = 0; i < result.length; i++) {
+                            var customerCard = result[i];
+                            options = options + '<option value="' + customerCard.id + '">' + customerCard.id + '</option>';
+                        }
+                        $("#cardId").html(options);
+                    }
+                }
+            };
+            $.ajax(config);
+        }
+    };
+
     var changeShop = function (obj) {
         var shopId = obj.value;
         if (shopId && shopId != '') {
@@ -224,28 +254,7 @@
             };
             $.ajax(config);
 
-            // 2.查询选择店面下的消费卡
-            url = prefix + "/getShopCardsByShopId";
-            config = {
-                url: url,
-                type: "post",
-                dataType: "json",
-                data: data,
-                success: function (result) {
-                    var options = '<option value="">请选择...</option>';
-                    $("#cardId").html(options);
-                    if (result && result.length > 0) {
-                        for (var i = 0; i < result.length; i++) {
-                            var shopCard = result[i];
-                            options = options + '<option value="' + shopCard.id + '">' + shopCard.name + '</option>';
-                        }
-                        $("#cardId").html(options);
-                    }
-                }
-            };
-            $.ajax(config);
-
-            // 3.查询选择店面下的服务项目
+            // 2.查询选择店面下的服务项目
             url = prefix + "/getServiceProsByShopId";
             config = {
                 url: url,
@@ -255,10 +264,17 @@
                 success: function (result) {
                     var options = '<option value="">请选择...</option>';
                     $("#proId").html(options);
+                    var selectedId = $("#proId2").val();
                     if (result && result.length > 0) {
                         for (var i = 0; i < result.length; i++) {
                             var pro = result[i];
-                            options = options + '<option value="' + pro.id + '">' + pro.name + '</option>';
+                            var selected = pro.id === Number(selectedId) ;
+                            if (selected) {
+                                options = options + '<option value="' + pro.id + '" selected="selected">' + pro.name + '</option>';
+                            } else {
+                                options = options + '<option value="' + pro.id + '">' + pro.name + '</option>';
+                            }
+
                         }
                         $("#proId").html(options);
                     }
@@ -266,7 +282,7 @@
             };
             $.ajax(config);
 
-            // 员工
+            // 3.员工
             url = prefix + "/getStaffsByShopId";
             config = {
                 url: url,

@@ -23,16 +23,16 @@
         <div class="form-group">
             <label class="col-sm-3 control-label product-lable">客户：</label>
             <div class="col-sm-9">
-                <select id="customerId" name="customerId" class="form-control m-b" th:field="*{customerId}">
+                <select id="customerId" name="customerId" class="form-control m-b" th:field="*{customerId}" onchange="changeCustomer(this)">
                     <option value="">请选择...</option>
                 </select>
             </div>
         </div>
 
         <div class="form-group">
-            <label class="col-sm-3 control-label product-lable">可供消费卡：</label>
+            <label class="col-sm-3 control-label product-lable">用户办理的消费卡号：</label>
             <div class="col-sm-9">
-                <select id="cardId" name="cardId" class="form-control m-b" th:field="*{cardId}">
+                <select id="cardId" name="cardId" class="form-control m-b" th:field="*{cardId}" onchange="changeCard(this);">
                     <option value="">请选择...</option>
                 </select>
             </div>
@@ -41,21 +41,21 @@
         <div class="form-group">
             <label class="col-sm-3 control-label product-lable">客户充值金额：</label>
             <div class="col-sm-9">
-                <input id="investPrice" name="investPrice" class="form-control" type="text" th:field="*{investPrice}" disabled="disabled">
+                <input id="investPrice" name="investPrice" class="form-control" type="text" th:field="*{investPrice}">
             </div>
         </div>
 
         <div class="form-group">
             <label class="col-sm-3 control-label product-lable">充值金额对应积分：</label>
             <div class="col-sm-9">
-                <input id="customePoints" name="customePoints" class="form-control" type="text" th:field="*{customePoints}" disabled="disabled">
+                <input id="customePoints" name="customePoints" class="form-control" type="text" th:field="*{customePoints}">
             </div>
         </div>
 
         <div class="form-group">
             <label class="col-sm-3 control-label product-lable">充值金额对应消费次数：</label>
             <div class="col-sm-9">
-                <input id="customeTimes" name="customeTimes" class="form-control" type="text" th:field="*{customeTimes}" disabled="disabled">
+                <input id="customeTimes" name="customeTimes" class="form-control" type="text" th:field="*{customeTimes}">
             </div>
         </div>
 
@@ -120,11 +120,54 @@
                 $.ajax(config);
             });
         }
-    }
+    };
+    
+    var changeCard = function (obj) {
+      var selectedCardId = obj.value;
+      $("#cardId2").val(selectedCardId);
+      var customerIdCtrl = $("#customerId");
+      changeCustomer(customerIdCtrl);
+    };
+
+    var changeCustomer = function (obj) {
+        var customerId = obj.value;
+        var shopId = $('#shopId').val();
+        if (shopId && shopId !== '' && customerId && customerId !== '') {
+            url = prefix + "/getCustomerCardsByShopCustomer";
+            var data = {
+                "shopId" : shopId,
+                "customerId" : customerId
+            };
+            config = {
+                url: url,
+                type: "post",
+                dataType: "json",
+                data: data,
+                success: function (result) {
+                    var options = '<option value="">请选择...</option>';
+                    $('#cardId').html(options);
+                    var selectedId = $("#cardId2").val();
+                    if (result && result.length > 0) {
+                        for (var i = 0; i < result.length; i++) {
+                            var customerCard = result[i];
+                            var selected = customerCard.id === Number(selectedId);
+                            if (selected) {
+                                options = options + '<option value="' + customerCard.id + '" selected="' + selected + '">' + customerCard.id + '</option>';
+                            } else {
+                                options = options + '<option value="' + customerCard.id + '">' + customerCard.id + '</option>';
+                            }
+                        }
+                        $('#cardId').html(options);
+                    }
+                }
+            };
+            $.ajax(config);
+        }
+    };
 
     var changeShop = function (obj) {
         var shopId = obj.value;
-        if (shopId && shopId != '') {
+        if (shopId && shopId !== '') {
             // 1.查询选择店面下的客户
             var data = {
                 "shopId" : shopId
@@ -137,39 +180,19 @@
                 data: data,
                 success: function (result) {
                     var options = '<option value="">请选择...</option>';
-                    $("#customerId").html(options);
+                    var customerIdCtl = $("#customerId");
+                    customerIdCtl.html(options);
                     var selectedId = $("#customerId2").val();
                     if (result && result.length > 0) {
                         for (var i = 0; i < result.length; i++) {
                             var customer = result[i];
-                            var selected = customer.id == selectedId;
+                            var selected = customer.id === Number(selectedId);
                             options = options + '<option value="' + customer.id + '" selected="' + selected + '">' + customer.name + '</option>';
                         }
-                        $("#customerId").html(options);
+                        customerIdCtl.html(options);
                     }
-                }
-            };
-            $.ajax(config);
-
-            // 2.查询选择店面下的消费卡
-            url = prefix + "/getShopCardsByShopId";
-            config = {
-                url: url,
-                type: "post",
-                dataType: "json",
-                data: data,
-                success: function (result) {
-                    var options = '<option value="">请选择...</option>';
-                    $("#cardId").html(options);
-                    var selectedId = $("#cardId2").val();
-                    if (result && result.length > 0) {
-                        for (var i = 0; i < result.length; i++) {
-                            var shopCard = result[i];
-                            var selected = shopCard.id == selectedId;
-                            options = options + '<option value="' + shopCard.id + '" selected="' + selected + '">' + shopCard.name + '</option>';
-                        }
-                        $("#cardId").html(options);
-                    }
+                    // 触发选中客户办的卡
+                    customerIdCtl.trigger('change', changeCustomer(customerIdCtl));
                 }
             };
             $.ajax(config);

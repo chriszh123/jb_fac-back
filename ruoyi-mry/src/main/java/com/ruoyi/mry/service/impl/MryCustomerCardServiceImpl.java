@@ -269,14 +269,14 @@ public class MryCustomerCardServiceImpl implements MryCustomerCardService {
     }
 
     @Override
-    public List<MryShopCard> getShopCardsByShopId(MryCustomerCard customerCard) {
-        MryShopCardExample cardExample = new MryShopCardExample();
-        cardExample.createCriteria().andIsDeletedEqualTo(false).andShopIdEqualTo(customerCard.getShopId());
-        cardExample.setOrderByClause(MryConstant.DEFAULT_ORDER_CLAUSE);
+    public List<MryCustomerCard> getCustomerCardsByShopCustomer(MryCustomerCard customerCard) {
+        final MryCustomerCardExample customerCardExample = new MryCustomerCardExample();
+        customerCardExample.createCriteria().andIsDeletedEqualTo(false).andShopIdEqualTo(customerCard.getShopId())
+                .andCustomerIdEqualTo(customerCard.getCustomerId());
+        customerCardExample.setOrderByClause(MryConstant.DEFAULT_ORDER_CLAUSE);
+        final List<MryCustomerCard> customerCards = this.customerCardMapper.selectByExample(customerCardExample);
 
-        List<MryShopCard> shopCards = this.shopCardMapper.selectByExample(cardExample);
-
-        return shopCards;
+        return customerCards;
     }
 
     @Override
@@ -298,5 +298,15 @@ public class MryCustomerCardServiceImpl implements MryCustomerCardService {
         List<MryStaff> staffList = this.staffMapper.selectByExample(example);
 
         return staffList;
+    }
+
+    @Override
+    public List<MryShopCard> getShopCardsByShopId(MryCustomerCard customerCard) {
+        final MryShopCardExample cardExample = new MryShopCardExample();
+        cardExample.createCriteria().andIsDeletedEqualTo(false).andShopIdEqualTo(customerCard.getShopId());
+        cardExample.setOrderByClause(MryConstant.DEFAULT_ORDER_CLAUSE);
+
+        final List<MryShopCard> shopCards = this.shopCardMapper.selectByExample(cardExample);
+        return shopCards;
     }
 }

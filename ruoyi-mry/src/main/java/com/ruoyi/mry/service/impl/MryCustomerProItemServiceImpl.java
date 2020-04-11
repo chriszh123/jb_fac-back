@@ -6,6 +6,9 @@
  */
 package com.ruoyi.mry.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.convert.Convert;
+import cn.hutool.core.util.StrUtil;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.mry.constant.MryConstant;
 import com.ruoyi.mry.enums.CustomeType;
@@ -19,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -112,6 +116,7 @@ public class MryCustomerProItemServiceImpl implements MryCustomerProItemService 
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public int insertCustomerProItem(MryCustomerProItem customerProItem) {
         Date nowDate = new Date();
         customerProItem.setIsDeleted(false);
@@ -142,6 +147,43 @@ public class MryCustomerProItemServiceImpl implements MryCustomerProItemService 
             customer.setOperatorName(customerProItem.getOperatorName());
             this.customerMapper.updateByPrimaryKeySelective(customer);
         }
+
+        // 客户消费一次需要同步更新当前客人对应当前消费卡中，当前消费项目对应得消费次数
+        final MryCustomerCardExample customerCardExample = new MryCustomerCardExample();
+        customerCardExample.createCriteria().andIsDeletedEqualTo(false).andShopIdEqualTo(customerProItem.getShopId())
+                .andCustomerIdEqualTo(customerProItem.getCustomerId()).andIdEqualTo(customerProItem.getCardId());
+        final List<MryCustomerCard>  customerCards = this.customerCardMapper.selectByExample(customerCardExample);
+        if (CollUtil.isNotEmpty(customerCards)) {
+            final MryCustomerCard customerCard = customerCards.get(0);
+            // [服务项目id - 总次数 - 当前消费次数]
+            final String proInfo = customerCard.getInitProIds();
+            String[] proInfoArr = proInfo.split(StrUtil.COMMA);
+            StringBuilder proInfoStr = new StringBuilder();
+            for (String proInfoItem : proInfoArr) {
+                String[] proInfoItemArr = proInfoItem.split("-");
+                if (StrUtil.equals(proInfoItemArr[0], customerProItem.getProId().toString())) {
+                    int counsumeCount = Convert.toInt(proInfoItemArr[2], 0) + 1;
+                    String newProInfoItem = proInfoItemArr[0] + "-" + proInfoItemArr[1] + "-" + counsumeCount;
+                    proInfoStr.append(newProInfoItem).append(StrUtil.COMMA);
+                } else {
+                    proInfoStr.append(proInfoItem).append(StrUtil.COMMA);
+                }
+            }
+            if (StrUtil.isNotBlank(proInfoStr.toString())) {
+                proInfoStr = proInfoStr.deleteCharAt(proInfoStr.toString().length() - 1);
+            }
+            customerCard.setInitProIds(proInfoStr.toString());
+            customerCard.setUpdateTime(nowDate);
+            customerCard.setOperatorId(customerProItem.getOperatorId());
+            customerCard.setOperatorName(customerProItem.getOperatorName());
+            int rows = this.customerCardMapper.updateByPrimaryKeySelective(customerCard);
+            if (rows > 0) {
+                log.info(StrUtil.format("================[更新用户办卡中选择的服务项目当前消费次数] success, customerCard:{}", customerCard));
+            } else {
+                log.info(StrUtil.format("================[更新用户办卡中选择的服务项目当前消费次数] fail, customerCard:{}", customerCard));
+            }
+        }
+
 
         return this.customerProItemMapper.insertSelective(customerProItem);
     }

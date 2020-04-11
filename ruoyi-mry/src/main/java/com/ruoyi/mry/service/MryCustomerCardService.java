@@ -30,9 +30,11 @@ public interface MryCustomerCardService {
 
     List<MryCustomer> getCustomersByShopId(MryCustomerCard customerCard);
 
-    List<MryShopCard> getShopCardsByShopId(MryCustomerCard customerCard);
+    List<MryCustomerCard> getCustomerCardsByShopCustomer(MryCustomerCard customerCard);
 
     List<MryServicePro> getServiceProsByShopId(MryCustomerCard customerCard);
 
     List<MryStaff> getStaffsByShopId(MryCustomerCard customerCard);
+
+    List<MryShopCard> getShopCardsByShopId(MryCustomerCard customerCard);
 }
