@@ -3,8 +3,8 @@
 <generatorConfiguration>
 
     <!-- 本地数据库驱动程序jar包的全路径 -->
-    <!--<classPathEntry location="F:\\tools\\mysql\\mysql-connector-java-8.0.13.jar"/>-->
-    <classPathEntry location="D:\\tools\\mysql\\mysql-connector-java-8.0.13.jar"/>
+    <classPathEntry location="F:\\tools\\mysql\\mysql-connector-java-8.0.13.jar"/>
+    <!--<classPathEntry location="D:\\tools\\mysql\\mysql-connector-java-8.0.13.jar"/>-->
     <context id="context" targetRuntime="MyBatis3">
         <commentGenerator>
             <property name="suppressAllComments" value="false"/>
@@ -14,7 +14,7 @@
         <!-- 数据库的相关配置 -->
         <jdbcConnection
                 driverClass="com.mysql.jdbc.Driver"
-                connectionURL="jdbc:mysql://localhost:3306/ry?serverTimezone=GMT"
+                connectionURL="jdbc:mysql://localhost:3306/ry-pin?serverTimezone=GMT"
                 userId="root"
                 password="123456">
                 <!--识别主键,生成****ByPrimaryKey****方法-->
@@ -336,14 +336,14 @@
         <!--<generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />-->
         <!--</table>-->
 
-        <!--<table tableName="fac_leave_message" domainObjectName="FacLeaveMessage"-->
-        <!--enableInsert="true" enableSelectByPrimaryKey="true"-->
-        <!--enableSelectByExample="true" enableUpdateByPrimaryKey="true"-->
-        <!--enableDeleteByPrimaryKey="true" enableDeleteByExample="true"-->
-        <!--enableCountByExample="true" enableUpdateByExample="true"-->
-        <!--selectByExampleQueryId="true">-->
-        <!--<generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />-->
-        <!--</table>-->
+        <table tableName="fac_leave_message_test" domainObjectName="FacLeaveMessageTest"
+        enableInsert="true" enableSelectByPrimaryKey="true"
+        enableSelectByExample="true" enableUpdateByPrimaryKey="true"
+        enableDeleteByPrimaryKey="true" enableDeleteByExample="true"
+        enableCountByExample="true" enableUpdateByExample="true"
+        selectByExampleQueryId="true">
+        <generatedKey column="id" sqlStatement="Mysql" identity="true" type="post" />
+        </table>
 
     </context>
 </generatorConfiguration>
