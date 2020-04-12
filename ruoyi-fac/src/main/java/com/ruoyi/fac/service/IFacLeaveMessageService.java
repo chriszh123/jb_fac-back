@@ -20,4 +20,6 @@ public interface IFacLeaveMessageService {
      * @return 影响数据条数
      */
     int replyLeaveMessage(FacLeaveMessage leaveMessage, SysUser user);
+
+    FacLeaveMessage getLeaveMessageById(String id);
 }

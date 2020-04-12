@@ -22,12 +22,10 @@ import com.ruoyi.fac.vo.client.UserDetailVo;
 import com.ruoyi.fac.vo.client.req.QuestionReq;
 import com.ruoyi.fac.vo.client.req.UserInfo;
 import com.ruoyi.system.domain.SysUser;
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.NoUniqueBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -588,7 +586,12 @@ public class BuyerServiceImpl implements IBuyerService {
         vo.setOperatorName(vo.getToken());
         vo.setMngtRemark("");
 
-        this.leaveMessageMapper.insert(vo);
+        final FacBuyer buyer = this.buyerCache.getBuyerCache(vo.getToken());
+        if (buyer != null) {
+            vo.setNickName(buyer.getNickName());
+        }
+
+        this.leaveMessageMapper.insertSelective(vo);
     }
 
     /**

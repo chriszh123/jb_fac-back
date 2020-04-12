@@ -7,7 +7,6 @@ import com.ruoyi.common.page.TableDataInfo;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.fac.model.FacLeaveMessage;
 import com.ruoyi.fac.service.IFacLeaveMessageService;
-import com.ruoyi.fac.vo.leavemessage.LeaveMessageVo;
 import com.ruoyi.framework.util.ShiroUtils;
 import com.ruoyi.framework.web.base.BaseController;
 import com.ruoyi.system.domain.SysUser;
@@ -59,9 +58,8 @@ public class FacLeaveMessageController extends BaseController {
 
     @GetMapping("/reply/{leaveMsgId}")
     public String replyLeaveMessage(@PathVariable("leaveMsgId") String leaveMsgId, ModelMap mmap) {
-        final LeaveMessageVo leaveMessageVo = new LeaveMessageVo();
-        leaveMessageVo.setLeaveMsgId(leaveMsgId);
-        mmap.put("leavemessage", leaveMessageVo);
+        final FacLeaveMessage leaveMessage = this.leaveMessageService.getLeaveMessageById(leaveMsgId);
+        mmap.put("leavemessage", leaveMessage);
 
         return prefix + "/reply";
     }

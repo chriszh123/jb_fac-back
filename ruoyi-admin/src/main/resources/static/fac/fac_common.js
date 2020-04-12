@@ -32,12 +32,6 @@ var ORDER_STATUS = {
     5: "商家待核销"
 };
 
-// 数据状态
-var DATA_STATUS = {
-    0: "正常",
-    1: "删除"
-};
-
 // 商品核销状态
 var WRITE_OFF_STATUS = {
     1: "已核销",

@@ -28,7 +28,9 @@
 
     function submitHandler() {
         if ($.validate.form()) {
-            $.operate.save(ctx + "fac/order/cancel", $('#form-order-cancel').serialize());
+            $.modal.confirm("确定取消当前订单吗？", function () {
+                $.operate.save(ctx + "fac/order/cancel", $('#form-order-cancel').serialize());
+            });
         }
     }
 </script>

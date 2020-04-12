@@ -76,7 +76,9 @@
 
     function submitHandler() {
         if ($.validate.form()) {
-            $.operate.save(prefix + "/edit", $('#form-order-edit').serialize());
+            $.modal.confirm("确定修改当前订单数据吗？", function () {
+                $.operate.save(prefix + "/edit", $('#form-order-edit').serialize());
+            });
         }
     }
 </script>

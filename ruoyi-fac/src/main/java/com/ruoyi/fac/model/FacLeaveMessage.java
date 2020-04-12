@@ -12,7 +12,7 @@ public class FacLeaveMessage {
 
     private String token;
 
-    @Excel(name = "留言用户")
+    @Excel(name = "留言用户昵称")
     private String nickName;
 
     @Excel(name = "留言时间", dateFormat = "yyyy-MM-dd HH:mm:ss")

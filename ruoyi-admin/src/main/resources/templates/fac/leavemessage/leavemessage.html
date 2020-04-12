@@ -11,7 +11,18 @@
                 <div class="select-list">
                     <ul>
                         <li>
+                            用户昵称：<input type="text" name="nickName"/>
+                        </li>
+                        <li>
                             用户留言：<input type="text" name="remark"/>
+                        </li>
+                        <li>
+                            是否已经回复：
+                            <select id="status" name="status">
+                                <option value="">请选择...</option>
+                                <option value="true">是</option>
+                                <option value="false">否</option>
+                            </select>
                         </li>
                         <li>
                             留言回复：<input type="text" name="mngtRemark"/>
@@ -58,7 +69,7 @@
                 },
                 {
                     field: 'nickName',
-                    title: '留言用户',
+                    title: '用户昵称',
                     sortable: true
                 },
                 {
@@ -92,7 +103,10 @@
                     title: '数据状态',
                     sortable: true,
                     formatter: function (value, row, index) {
-                        return DATA_STATUS[value];
+                        if (value) {
+                            return "删除";
+                        }
+                        return "正常";
                     }
                 },
                 {
