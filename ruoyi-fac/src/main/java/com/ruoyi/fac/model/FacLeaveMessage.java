@@ -36,6 +36,6 @@ public class FacLeaveMessage {
 
     private Long operatorId;
 
-    @Excel(name = "数据状态", readConverterExp ="0=正常,1=删除")
+    @Excel(name = "数据状态", readConverterExp ="false=正常,true=删除")
     private Boolean isDeleted;
 }

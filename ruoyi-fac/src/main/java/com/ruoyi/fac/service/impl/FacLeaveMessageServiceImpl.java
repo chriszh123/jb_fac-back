@@ -40,6 +40,9 @@ public class FacLeaveMessageServiceImpl implements IFacLeaveMessageService {
         if (leaveMessage.getStatus() != null) {
             criteria.andStatusEqualTo(leaveMessage.getStatus());
         }
+        if (leaveMessage.getIsDeleted() != null) {
+            criteria.andIsDeletedEqualTo(leaveMessage.getIsDeleted());
+        }
 
         leaveMessageExample.setOrderByClause("create_time asc");
         final List<FacLeaveMessage> leaveMessages = this.leaveMessageMapper.selectByExample(leaveMessageExample);
