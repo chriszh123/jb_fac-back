@@ -2,6 +2,7 @@
 <html lang="zh" xmlns:th="http://www.thymeleaf.org">
 <meta charset="utf-8">
 <head th:include="include :: header"></head>
+<link th:href="@{/ajax/libs/datapicker/bootstrap-datetimepicker.min.css}" rel="stylesheet"/>
 <link th:href="@{/mry/mry.css}" rel="stylesheet"/>
 <body class="white-bg">
 <div class="wrapper wrapper-content animated fadeInRight ibox-content">
@@ -39,8 +40,24 @@
             </div>
         </div>
 
+        <div class="form-group form-inline">
+            <label class="col-sm-3 control-label product-lable">卡片消费有效期开始时间：</label>
+            <div class="col-sm-3 input-group date" style="margin-left: 15px;"><span class="input-group-addon"><i
+                    class="fa fa-calendar"></i></span>
+                <input type="text" class="form-control" id="serviceStart" name="serviceStart" value="" th:field="*{serviceStartStr}" placeholder="选择日期">
+            </div>
+        </div>
+
+        <div class="form-group form-inline">
+            <label class="col-sm-3 control-label product-lable">卡片消费有效期结束时间：</label>
+            <div class="col-sm-3 input-group date" style="margin-left: 15px;"><span class="input-group-addon"><i
+                    class="fa fa-calendar"></i></span>
+                <input type="text" class="form-control" id="serviceEnd" name="serviceEnd" value="" th:field="*{serviceEndStr}" placeholder="选择日期">
+            </div>
+        </div>
+
         <div class="form-group">
-            <label class="col-sm-3 control-label product-lable">可选服务项目：</label>
+            <label class="col-sm-3 control-label product-lable">可选服务项目[总次数-已经消费次数]：</label>
             <div class="col-xs-10">
                 <label class="check-box" id="lblServicePros">
                 </label>
@@ -50,14 +67,14 @@
         <div class="form-group">
             <label class="col-sm-3 control-label product-lable">客户初始办卡充值金额：</label>
             <div class="col-sm-9">
-                <input id="price" name="price" class="form-control" type="text" th:field="*{price}" disabled="disabled">
+                <input id="price" name="price" class="form-control" type="text" th:field="*{price}">
             </div>
         </div>
 
         <div class="form-group">
             <label class="col-sm-3 control-label product-lable">消费类型：</label>
             <div class="col-sm-9">
-                <select id="customeType" name="customeType" class="form-control m-b" th:field="*{customeType}"  disabled="disabled">
+                <select id="customeType" name="customeType" class="form-control m-b" th:field="*{customeType}">
                     <option value="">请选择...</option>
                     <option value="0">积分制</option>
                     <option value="1">消费次数</option>
@@ -68,14 +85,14 @@
         <div class="form-group">
             <label class="col-sm-3 control-label product-lable">总积分：</label>
             <div class="col-sm-9">
-                <input id="totalPoints" name="totalPoints" class="form-control" type="text" th:field="*{totalPoints}" disabled="disabled">
+                <input id="totalPoints" name="totalPoints" class="form-control" type="text" th:field="*{totalPoints}">
             </div>
         </div>
 
         <div class="form-group">
             <label class="col-sm-3 control-label product-lable">消费总次数：</label>
             <div class="col-sm-9">
-                <input id="totalTimes" name="totalTimes" class="form-control" type="text" th:field="*{totalTimes}" disabled="disabled">
+                <input id="totalTimes" name="totalTimes" class="form-control" type="text" th:field="*{totalTimes}">
             </div>
         </div>
 
@@ -112,8 +129,21 @@
 </div>
 <div th:include="include::footer"></div>
 <script th:src="@{/mry/mry_common.js}"></script>
+<script th:src="@{/ajax/libs//datapicker/bootstrap-datetimepicker.min.js}"></script>
+<script th:src="@{/ajax/libs//datapicker/bootstrap-datetimepicker.zh-CN.js}"></script>
 <script type="text/javascript">
-    var prefix = ctx + "mry/customercard"
+    var prefix = ctx + "mry/customercard";
+    $(".input-group.date").datetimepicker({
+        format: 'yyyy-mm-dd hh:ii',
+        todayBtn: "linked",
+        keyboardNavigation: !1,
+        forceParse: !1,
+        calendarWeeks: !0,
+        autoclose: !0,
+        initialDate: new Date(),
+        language: "zh-CN"
+    });
+
     $("#mry-customercard-edit").validate({
         rules: {
             shopId: {
@@ -135,8 +165,31 @@
         if ($.validate.form()) {
             $.modal.confirm("确认保存当前客户办卡信息吗？", function () {
                 var url = prefix + "/edit";
+                var initPros = '';
                 var initProIds = $.form.selectCheckeds("servicePro");
-                $("#initProIds").val(initProIds);
+                // 处理选中的服务项目对应的总次数和消费次数
+                if (initProIds != undefined && initProIds != '') {
+                    var selectedProIds = initProIds.split(',');
+                    for (var i = 0, size = selectedProIds.length; i < size; i++) {
+                        var proId = selectedProIds[i];
+                        var serviceTotalCount = $("#serviceTotalCount" + proId).val();
+                        var consumeTotalCount = $("#consumeTotalCount" + proId).val();
+                        if (serviceTotalCount == undefined || serviceTotalCount == '' || consumeTotalCount == undefined || consumeTotalCount == '') {
+                            $.modal.alertError("请完善选中项目后面的总次数或者消费次数");
+                            return;
+                        }
+                        if (Number(serviceTotalCount) < Number(consumeTotalCount)) {
+                            $.modal.alertError("选中项目存在后面的总次数小于消费次数，请核对后再保存");
+                            return;
+                        }
+                        // 拼凑选中的每个项目对应的总次数和已经消费次数
+                        initPros = initPros + (proId + "-" + serviceTotalCount + "-" + consumeTotalCount);
+                        if (i != (size - 1)) {
+                            initPros = initPros + ",";
+                        }
+                    }
+                }
+                $("#initProIds").val(initPros);
 
                 var data = $('#mry-customercard-edit').serialize();
                 var config = {
@@ -222,25 +275,44 @@
                     var options = '';
                     $("#lblServicePros").html(options);
                     if (result && result.length > 0) {
+                        // 每个项目对应的项目id、总次数、已经消费次数
                         var initProIds = $("#initProIds").val();
                         for (var i = 0; i < result.length; i++) {
                             var pro = result[i];
                             var checked = false;
+                            var serviceTotalCount = '0', consumeTotalCount = '0';
                             if (initProIds && initProIds != "") {
                                 var initProIdsArr = initProIds.split(',');
                                 for (var j = 0; j < initProIdsArr.length; j++) {
-                                    if (pro.id == initProIdsArr[j]) {
+                                    var proInfoArr = initProIdsArr[j].split("-");
+                                    var proId = proInfoArr[0];
+                                    if (pro.id == proId) {
                                         checked = true;
+                                        serviceTotalCount = proInfoArr[1];
+                                        consumeTotalCount = proInfoArr[2];
                                     }
                                 }
                             }
                             if (checked) {
-                                options = options + '<input name="servicePro" type="checkbox" value="'+ pro.id + '" checked="' + checked + '"/>' + pro.name;
+                                options = options + '<input name="servicePro" type="checkbox" value="'+ pro.id + '" checked="' + checked + '"/>' + pro.name + "&nbsp;";
+                                //  当前项目对应的总次数
+                                options = options + '<input type="input" style="width: 45px;" value="' + serviceTotalCount + '" id="serviceTotalCount'+ pro.id + '"/>';
+                                options = options + "-";
+                                // 当前项目对应的当前已经消费次数
+                                options = options + '<input type="input" style="width: 45px;" value="' + consumeTotalCount + '" id="consumeTotalCount'+ pro.id + '"/>';
                             } else {
-                                options = options + '<input name="servicePro" type="checkbox" value="'+ pro.id + '"/>' + pro.name;
+                                options = options + '<input name="servicePro" type="checkbox" value="'+ pro.id + '"/>' + pro.name + "&nbsp;";
+                                //  当前项目对应的总次数
+                                options = options + '<input type="input" style="width: 45px;" id="serviceTotalCount'+ pro.id + '"/>';
+                                options = options + "-";
+                                // 当前项目对应的当前已经消费次数
+                                options = options + '<input type="input" style="width: 45px;" id="consumeTotalCount'+ pro.id + '"/>';
                             }
-
                             options = options + "&nbsp;&nbsp;&nbsp;";
+                            // 指定特定个数个服务项目换行显示
+                            if (i != 0 && i % 3 == 0) {
+                                options = options + '</br></br>';
+                            }
                         }
                         $("#lblServicePros").html(options);
                     }

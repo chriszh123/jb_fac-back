@@ -12,11 +12,13 @@ import com.ruoyi.mry.exception.MryException;
 import com.ruoyi.mry.mapper.*;
 import com.ruoyi.mry.model.*;
 import com.ruoyi.mry.service.MryCustomerCardService;
+import com.ruoyi.mry.util.MryTimeUtils;
 import com.ruoyi.system.domain.SysUser;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -102,7 +104,11 @@ public class MryCustomerCardServiceImpl implements MryCustomerCardService {
                 // 客户初始化服务项目id
                 if (StringUtils.isNotBlank(item.getInitProIds())) {
                     List<String> initProIds = Arrays.asList(item.getInitProIds().split(","));
-                    initProIds.forEach(proId->{serviceProIds.add(Short.valueOf(proId));});
+                    initProIds.forEach(proInfo -> {
+                        // proId + "-" + serviceTotalCount + "-" + consumeTotalCount;
+                        String proId = proInfo.split("-")[0];
+                        serviceProIds.add(Short.valueOf(proId));
+                    });
                 }
             }
 
@@ -118,7 +124,9 @@ public class MryCustomerCardServiceImpl implements MryCustomerCardService {
                         if (StringUtils.isNotBlank(item.getInitProIds())) {
                             StringBuilder initProIdsSB = new StringBuilder();
                             List<String> initProIds = Arrays.asList(item.getInitProIds().split(","));
-                            for (String proId : initProIds) {
+                            for (String proInfo : initProIds) {
+                                // proId + "-" + serviceTotalCount + "-" + consumeTotalCount;
+                                String proId = proInfo.split("-")[0];
                                 if (serviceProMap.containsKey(Short.valueOf(proId))) {
                                     initProIdsSB.append(serviceProMap.get(Short.valueOf(proId)).getName()).append(",");
                                 }
@@ -138,6 +146,7 @@ public class MryCustomerCardServiceImpl implements MryCustomerCardService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public int insertMryCustomerCard(MryCustomerCard customerCard) {
         Date nowDate = new Date();
         customerCard.setIsDeleted(false);
@@ -170,13 +179,27 @@ public class MryCustomerCardServiceImpl implements MryCustomerCardService {
     public MryCustomerCard selectCustomerCardById(Long id) {
         MryCustomerCard customerCard = this.customerCardMapper.selectByPrimaryKey(id);
 
+        if (customerCard.getServiceStart() != null) {
+            customerCard.setServiceStartStr(MryTimeUtils.date2Str(customerCard.getServiceStart(), MryTimeUtils.DEFAULT_DATE_TIME_FORMAT_HH_MM));
+        }
+        if (customerCard.getServiceEnd() != null) {
+            customerCard.setServiceEndStr(MryTimeUtils.date2Str(customerCard.getServiceEnd(), MryTimeUtils.DEFAULT_DATE_TIME_FORMAT_HH_MM));
+        }
         return customerCard;
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public int updateMryCustomerCard(MryCustomerCard customerCard) {
         Date nowDate = new Date();
         customerCard.setUpdateTime(nowDate);
+
+        if (StringUtils.isNotBlank(customerCard.getServiceStartStr())) {
+            customerCard.setServiceStart(MryTimeUtils.parseTime(customerCard.getServiceStartStr(), MryTimeUtils.DEFAULT_DATE_TIME_FORMAT_HH_MM));
+        }
+        if (StringUtils.isNotBlank(customerCard.getServiceEndStr())) {
+            customerCard.setServiceEnd(MryTimeUtils.parseTime(customerCard.getServiceEndStr(), MryTimeUtils.DEFAULT_DATE_TIME_FORMAT_HH_MM));
+        }
 
         return this.customerCardMapper.updateByPrimaryKeySelective(customerCard);
     }
@@ -246,14 +269,14 @@ public class MryCustomerCardServiceImpl implements MryCustomerCardService {
     }
 
     @Override
-    public List<MryShopCard> getShopCardsByShopId(MryCustomerCard customerCard) {
-        MryShopCardExample cardExample = new MryShopCardExample();
-        cardExample.createCriteria().andIsDeletedEqualTo(false).andShopIdEqualTo(customerCard.getShopId());
-        cardExample.setOrderByClause(MryConstant.DEFAULT_ORDER_CLAUSE);
+    public List<MryCustomerCard> getCustomerCardsByShopCustomer(MryCustomerCard customerCard) {
+        final MryCustomerCardExample customerCardExample = new MryCustomerCardExample();
+        customerCardExample.createCriteria().andIsDeletedEqualTo(false).andShopIdEqualTo(customerCard.getShopId())
+                .andCustomerIdEqualTo(customerCard.getCustomerId());
+        customerCardExample.setOrderByClause(MryConstant.DEFAULT_ORDER_CLAUSE);
+        final List<MryCustomerCard> customerCards = this.customerCardMapper.selectByExample(customerCardExample);
 
-        List<MryShopCard> shopCards = this.shopCardMapper.selectByExample(cardExample);
-
-        return shopCards;
+        return customerCards;
     }
 
     @Override
@@ -275,5 +298,15 @@ public class MryCustomerCardServiceImpl implements MryCustomerCardService {
         List<MryStaff> staffList = this.staffMapper.selectByExample(example);
 
         return staffList;
+    }
+
+    @Override
+    public List<MryShopCard> getShopCardsByShopId(MryCustomerCard customerCard) {
+        final MryShopCardExample cardExample = new MryShopCardExample();
+        cardExample.createCriteria().andIsDeletedEqualTo(false).andShopIdEqualTo(customerCard.getShopId());
+        cardExample.setOrderByClause(MryConstant.DEFAULT_ORDER_CLAUSE);
+
+        final List<MryShopCard> shopCards = this.shopCardMapper.selectByExample(cardExample);
+        return shopCards;
     }
 }

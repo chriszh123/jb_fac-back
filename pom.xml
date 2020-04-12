@@ -112,6 +112,12 @@
             <version>${knife4j.version}</version>
         </dependency>
 
+        <!--大批量util共通工具库-->
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>5.2.0</version>
+        </dependency>
     </dependencies>
 
     <build>

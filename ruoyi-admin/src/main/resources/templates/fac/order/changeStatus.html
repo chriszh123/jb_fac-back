@@ -46,7 +46,9 @@
 
     function submitHandler() {
         if ($.validate.form()) {
-            $.operate.save(ctx + "fac/order/changeStatus", $('#form-order-changestatus').serialize());
+            $.modal.confirm("确定修改当前订单状态吗？", function () {
+                $.operate.save(ctx + "fac/order/changeStatus", $('#form-order-changestatus').serialize());
+            });
         }
     }
 </script>

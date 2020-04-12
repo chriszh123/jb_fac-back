@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+	<form class="form-horizontal m" id="leaveMessageReplyForm">
+		<input name="id"  type="hidden"  th:value="${leavemessage.id}" />
+		<div class="form-group">
+			<label class="col-sm-3 control-label ">留言回复：</label>
+			<div class="col-sm-8">
+				<textarea name="mngtRemark" autocomplete="off" maxlength="500" class="form-control" rows="5">
+					[[*{leavemessage.mngtRemark}]]
+				</textarea>
+			</div>
+		</div>
+
+	</form>
+</div>
+<div th:include="include :: footer"></div>
+<script type="text/javascript">
+    $("#leaveMessageReplyForm").validate({
+        rules:{
+            id:{
+                required:true,
+            },
+            mngtRemark:{
+                required:true,
+            }
+        },
+        focusCleanup: true
+    });
+
+    function submitHandler() {
+        if ($.validate.form()) {
+            $.modal.confirm("确认回复当前用户留言信息吗？", function () {
+                $.operate.save(ctx + "fac/leavemessage/reply", $('#leaveMessageReplyForm').serialize());
+            });
+        }
+    }
+</script>
+</body>
+
+</html>

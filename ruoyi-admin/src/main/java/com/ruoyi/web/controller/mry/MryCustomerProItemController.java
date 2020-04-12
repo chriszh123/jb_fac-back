@@ -134,11 +134,11 @@ public class MryCustomerProItemController extends BaseController {
         return customers;
     }
 
-    @PostMapping("/getShopCardsByShopId")
+    @PostMapping("/getCustomerCardsByShopCustomer")
     @ResponseBody
-    public List<MryShopCard> getShopCardsByShopId(MryCustomerCard customerCard) {
-        List<MryShopCard> shopCards = this.customerCardService.getShopCardsByShopId(customerCard);
-        return shopCards;
+    public List<MryCustomerCard> getCustomerCardsByShopCustomer(MryCustomerCard customerCard) {
+        List<MryCustomerCard> customerCards = this.customerCardService.getCustomerCardsByShopCustomer(customerCard);
+        return customerCards;
     }
 
     @PostMapping("/getServiceProsByShopId")

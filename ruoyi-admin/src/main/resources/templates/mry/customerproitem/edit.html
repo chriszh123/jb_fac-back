@@ -16,7 +16,7 @@
             <label class="col-sm-3 control-label product-lable">所属店面：</label>
             <div class="col-sm-9">
                 <select id="shopId" name="shopId" class="form-control m-b"
-                        th:with="shops=${@mpcs.getShops()}" onchange="changeShop(this)" th:field="*{shopId}">
+                        th:with="shops=${@mpcs.getShops()}" onchange="changeShop(this);" th:field="*{shopId}">
                     <option value="">请选择...</option>
                     <option th:each="shop : ${shops}" th:text="${shop.name}" th:value="${shop.id}"></option>
                 </select>
@@ -26,14 +26,14 @@
         <div class="form-group">
             <label class="col-sm-3 control-label product-lable">客户：</label>
             <div class="col-sm-9">
-                <select id="customerId" name="customerId" class="form-control m-b" th:field="*{customerId}">
+                <select id="customerId" name="customerId" class="form-control m-b" th:field="*{customerId}" onchange="changeCustomer(this);">
                     <option value="">请选择...</option>
                 </select>
             </div>
         </div>
 
         <div class="form-group">
-            <label class="col-sm-3 control-label product-lable">可供消费卡：</label>
+            <label class="col-sm-3 control-label product-lable">用户办理的消费卡号：</label>
             <div class="col-sm-9">
                 <select id="cardId" name="cardId" class="form-control m-b" th:field="*{cardId}">
                     <option value="">请选择...</option>
@@ -221,11 +221,48 @@
         };
 
         return data;
-    }
+    };
+
+    var changeCustomer = function (obj) {
+        var customerId = obj.value;
+        var shopId = $("#shopId").val();
+        if (shopId && shopId !== '' && customerId && customerId !== '') {
+            // 查询选择店面下的消费卡
+            url = prefix + "/getCustomerCardsByShopCustomer";
+            var data = {
+                "shopId" : shopId,
+                "customerId" : customerId
+            };
+            var config = {
+                url: url,
+                type: "post",
+                dataType: "json",
+                data: data,
+                success: function (result) {
+                    var options = '<option value="">请选择...</option>';
+                    $("#cardId").html(options);
+                    var selectedId = $("#cardId2").val();
+                    if (result && result.length > 0) {
+                        for (var i = 0; i < result.length; i++) {
+                            var customerCard = result[i];
+                            var selected = customerCard.id === Number(selectedId);
+                            if (selected) {
+                                options = options + '<option value="' + customerCard.id + '" selected="selected">' + customerCard.id + '</option>';
+                            } else {
+                                options = options + '<option value="' + customerCard.id + '">' + customerCard.id + '</option>';
+                            }
+                        }
+                        $("#cardId").html(options);
+                    }
+                }
+            };
+            $.ajax(config);
+        }
+    };
 
     var changeShop = function (obj) {
         var shopId = obj.value;
-        if (shopId && shopId != '') {
+        if (shopId && shopId !== '') {
             // 1.查询选择店面下的客户
             var data = {
                 "shopId" : shopId
@@ -238,12 +275,13 @@
                 data: data,
                 success: function (result) {
                     var options = '<option value="">请选择...</option>';
-                    $("#customerId").html(options);
+                    var customerIdCtl = $("#customerId");
+                    customerIdCtl.html(options);
                     var selectedId = $("#customerId2").val();
                     if (result && result.length > 0) {
                         for (var i = 0; i < result.length; i++) {
                             var customer = result[i];
-                            var selected = customer.id == selectedId;
+                            var selected = customer.id === Number(selectedId);
                             if (selected) {
                                 options = options + '<option value="' + customer.id + '" selected="selected">' + customer.name + '</option>';
                             } else {
@@ -251,41 +289,15 @@
                             }
 
                         }
-                        $("#customerId").html(options);
+                        customerIdCtl.html(options);
                     }
+                    // 触发选中客户办的卡
+                    customerIdCtl.trigger('change', changeCustomer(customerIdCtl));
                 }
             };
             $.ajax(config);
 
-            // 2.查询选择店面下的消费卡
-            url = prefix + "/getShopCardsByShopId";
-            config = {
-                url: url,
-                type: "post",
-                dataType: "json",
-                data: data,
-                success: function (result) {
-                    var options = '<option value="">请选择...</option>';
-                    $("#cardId").html(options);
-                    var selectedId = $("#cardId2").val();
-                    if (result && result.length > 0) {
-                        for (var i = 0; i < result.length; i++) {
-                            var shopCard = result[i];
-                            var selected = shopCard.id == selectedId;
-                            if (selected) {
-                                options = options + '<option value="' + shopCard.id + '" selected="selected">' + shopCard.name + '</option>';
-                            } else {
-                                options = options + '<option value="' + shopCard.id + '">' + shopCard.name + '</option>';
-                            }
-
-                        }
-                        $("#cardId").html(options);
-                    }
-                }
-            };
-            $.ajax(config);
-
-            // 3.查询选择店面下的服务项目
+            // 2.查询选择店面下的服务项目
             url = prefix + "/getServiceProsByShopId";
             config = {
                 url: url,

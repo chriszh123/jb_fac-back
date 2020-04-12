@@ -436,6 +436,126 @@ public class MryCustomerCardExample {
             return (Criteria) this;
         }
 
+        public Criteria andServiceStartIsNull() {
+            addCriterion("service_start is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andServiceStartIsNotNull() {
+            addCriterion("service_start is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andServiceStartEqualTo(Date value) {
+            addCriterion("service_start =", value, "serviceStart");
+            return (Criteria) this;
+        }
+
+        public Criteria andServiceStartNotEqualTo(Date value) {
+            addCriterion("service_start <>", value, "serviceStart");
+            return (Criteria) this;
+        }
+
+        public Criteria andServiceStartGreaterThan(Date value) {
+            addCriterion("service_start >", value, "serviceStart");
+            return (Criteria) this;
+        }
+
+        public Criteria andServiceStartGreaterThanOrEqualTo(Date value) {
+            addCriterion("service_start >=", value, "serviceStart");
+            return (Criteria) this;
+        }
+
+        public Criteria andServiceStartLessThan(Date value) {
+            addCriterion("service_start <", value, "serviceStart");
+            return (Criteria) this;
+        }
+
+        public Criteria andServiceStartLessThanOrEqualTo(Date value) {
+            addCriterion("service_start <=", value, "serviceStart");
+            return (Criteria) this;
+        }
+
+        public Criteria andServiceStartIn(List<Date> values) {
+            addCriterion("service_start in", values, "serviceStart");
+            return (Criteria) this;
+        }
+
+        public Criteria andServiceStartNotIn(List<Date> values) {
+            addCriterion("service_start not in", values, "serviceStart");
+            return (Criteria) this;
+        }
+
+        public Criteria andServiceStartBetween(Date value1, Date value2) {
+            addCriterion("service_start between", value1, value2, "serviceStart");
+            return (Criteria) this;
+        }
+
+        public Criteria andServiceStartNotBetween(Date value1, Date value2) {
+            addCriterion("service_start not between", value1, value2, "serviceStart");
+            return (Criteria) this;
+        }
+
+        public Criteria andServiceEndIsNull() {
+            addCriterion("service_end is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andServiceEndIsNotNull() {
+            addCriterion("service_end is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andServiceEndEqualTo(Date value) {
+            addCriterion("service_end =", value, "serviceEnd");
+            return (Criteria) this;
+        }
+
+        public Criteria andServiceEndNotEqualTo(Date value) {
+            addCriterion("service_end <>", value, "serviceEnd");
+            return (Criteria) this;
+        }
+
+        public Criteria andServiceEndGreaterThan(Date value) {
+            addCriterion("service_end >", value, "serviceEnd");
+            return (Criteria) this;
+        }
+
+        public Criteria andServiceEndGreaterThanOrEqualTo(Date value) {
+            addCriterion("service_end >=", value, "serviceEnd");
+            return (Criteria) this;
+        }
+
+        public Criteria andServiceEndLessThan(Date value) {
+            addCriterion("service_end <", value, "serviceEnd");
+            return (Criteria) this;
+        }
+
+        public Criteria andServiceEndLessThanOrEqualTo(Date value) {
+            addCriterion("service_end <=", value, "serviceEnd");
+            return (Criteria) this;
+        }
+
+        public Criteria andServiceEndIn(List<Date> values) {
+            addCriterion("service_end in", values, "serviceEnd");
+            return (Criteria) this;
+        }
+
+        public Criteria andServiceEndNotIn(List<Date> values) {
+            addCriterion("service_end not in", values, "serviceEnd");
+            return (Criteria) this;
+        }
+
+        public Criteria andServiceEndBetween(Date value1, Date value2) {
+            addCriterion("service_end between", value1, value2, "serviceEnd");
+            return (Criteria) this;
+        }
+
+        public Criteria andServiceEndNotBetween(Date value1, Date value2) {
+            addCriterion("service_end not between", value1, value2, "serviceEnd");
+            return (Criteria) this;
+        }
+
         public Criteria andShopStaffIdIsNull() {
             addCriterion("shop_staff_id is null");
             return (Criteria) this;

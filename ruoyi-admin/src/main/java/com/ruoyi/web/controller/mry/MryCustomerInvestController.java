@@ -136,4 +136,11 @@ public class MryCustomerInvestController extends BaseController{
         List<MryShopCard> shopCards = this.customerCardService.getShopCardsByShopId(customerCard);
         return shopCards;
     }
+
+    @PostMapping("/getCustomerCardsByShopCustomer")
+    @ResponseBody
+    public List<MryCustomerCard> getCustomerCardsByShopCustomer(MryCustomerCard customerCard) {
+        List<MryCustomerCard> customerCards = this.customerCardService.getCustomerCardsByShopCustomer(customerCard);
+        return customerCards;
+    }
 }

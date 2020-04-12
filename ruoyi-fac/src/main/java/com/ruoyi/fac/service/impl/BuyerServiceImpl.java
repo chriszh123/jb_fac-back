@@ -1,5 +1,6 @@
 package com.ruoyi.fac.service.impl;
 
+import cn.hutool.core.util.StrUtil;
 import com.ruoyi.common.support.Convert;
 import com.ruoyi.fac.cache.BuyerCache;
 import com.ruoyi.fac.constant.FacConstant;
@@ -21,12 +22,10 @@ import com.ruoyi.fac.vo.client.UserDetailVo;
 import com.ruoyi.fac.vo.client.req.QuestionReq;
 import com.ruoyi.fac.vo.client.req.UserInfo;
 import com.ruoyi.system.domain.SysUser;
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.NoUniqueBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -566,11 +565,13 @@ public class BuyerServiceImpl implements IBuyerService {
         final FacLeaveMessageExample messageExample = new FacLeaveMessageExample();
         FacLeaveMessageExample.Criteria criteria = messageExample.createCriteria();
         criteria.andIsDeletedEqualTo(false).andTokenEqualTo(req.getToken());
+        String orderBy = "create_time desc";
         if (req.getPage() != null && req.getSize() != null) {
-            messageExample.setStartRow(req.getPage() * req.getSize());
-            messageExample.setPageSize(req.getSize());
+            int limitStart = req.getPage() * req.getSize();
+            int limitSize = req.getSize();
+            orderBy = StrUtil.format(" create_time desc limit {},{}", limitStart, limitSize);
         }
-        messageExample.setOrderByClause(" create_time desc");
+        messageExample.setOrderByClause(orderBy);
         List<FacLeaveMessage> leaveMessages = this.leaveMessageMapper.selectByExample(messageExample);
         return leaveMessages;
     }
@@ -585,7 +586,12 @@ public class BuyerServiceImpl implements IBuyerService {
         vo.setOperatorName(vo.getToken());
         vo.setMngtRemark("");
 
-        this.leaveMessageMapper.insert(vo);
+        final FacBuyer buyer = this.buyerCache.getBuyerCache(vo.getToken());
+        if (buyer != null) {
+            vo.setNickName(buyer.getNickName());
+        }
+
+        this.leaveMessageMapper.insertSelective(vo);
     }
 
     /**
@@ -618,9 +624,6 @@ public class BuyerServiceImpl implements IBuyerService {
         criteria.andIsDeletedEqualTo(false);
         if (StringUtils.isNotBlank(message.getRemark()) && StringUtils.isNotBlank(message.getRemark().trim())) {
             criteria.andRemarkLike("%" + message.getRemark().trim() + "%");
-        }
-        if (message.getStatus() != null) {
-            criteria.andStatusEqualTo(message.getStatus());
         }
         if (StringUtils.isNotBlank(message.getMngtRemark()) && StringUtils.isNotBlank(message.getMngtRemark().trim())) {
             criteria.andMngtRemarkLike("%" + message.getMngtRemark().trim() + "%");
