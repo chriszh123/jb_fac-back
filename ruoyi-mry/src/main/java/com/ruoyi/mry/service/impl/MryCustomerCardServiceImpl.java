@@ -6,6 +6,9 @@
  */
 package com.ruoyi.mry.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.map.MapUtil;
+import cn.hutool.core.util.StrUtil;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.mry.constant.MryConstant;
 import com.ruoyi.mry.exception.MryException;
@@ -47,46 +50,20 @@ public class MryCustomerCardServiceImpl implements MryCustomerCardService {
     private MryStaffMapper staffMapper;
 
     @Override
-    public List<MryCustomerCard> selectCustomerCards(MryCustomerCard customerCard) {
-        MryCustomerCardExample example = new MryCustomerCardExample();
-        MryCustomerCardExample.Criteria criteria = example.createCriteria();
-        criteria.andIsDeletedEqualTo(false);
-
-        MryCustomerExample customerExample = new MryCustomerExample();
-        MryCustomerExample.Criteria customerCri = customerExample.createCriteria();
-        customerCri.andIsDeletedEqualTo(false);
-        if (customerCard.getShopId() != null) {
-            customerCri.andShopIdEqualTo(customerCard.getShopId());
+    public List<MryCustomerCard> selectCustomerCards(MryCustomerCard customerCard, Map<Long, MryCustomer> customerMap, List<MryShop> shops, List<MryServicePro> servicePros) {
+        if (MapUtil.isEmpty(customerMap) || CollUtil.isEmpty(shops)) {
+            return CollUtil.newArrayList();
         }
-        if (StringUtils.isNotBlank(customerCard.getCustomerName()) && StringUtils.isNotBlank(customerCard.getCustomerName().trim())) {
-            customerCri.andNameLike("%" + customerCard.getCustomerName() + "%");
-        }
-        List<MryCustomer> customers = this.customerMapper.selectByExample(customerExample);
-        Map<Long, MryCustomer> customerMap = new HashMap<>();
-        if (CollectionUtils.isNotEmpty(customers)) {
-            if (StringUtils.isNotBlank(customerCard.getCustomerName()) && StringUtils.isNotBlank(customerCard.getCustomerName().trim())) {
-                List<Long> customerIds = customers.stream().map(MryCustomer::getId).collect(Collectors.toList());
-                criteria.andCustomerIdIn(customerIds);
-            }
-
-            customers.forEach(item -> {
-                customerMap.putIfAbsent(item.getId(), item);
-            });
-        } else {
-            return new ArrayList<>();
-        }
-
+        final MryCustomerCardExample example = new MryCustomerCardExample();
+        final MryCustomerCardExample.Criteria criteria = example.createCriteria();
+        criteria.andIsDeletedEqualTo(false).andCustomerIdIn(CollUtil.newArrayList(customerMap.keySet()));
         example.setOrderByClause(MryConstant.DEFAULT_ORDER_CLAUSE);
-        List<MryCustomerCard> customerCards = this.customerCardMapper.selectByExample(example);
+        final List<MryCustomerCard> customerCards = this.customerCardMapper.selectByExample(example);
         if (CollectionUtils.isNotEmpty(customerCards)) {
             // 所属店面
-            List<Short> shopIds = customerCards.stream().map(MryCustomerCard::getShopId).collect(Collectors.toList());
-            MryShopExample shopExample = new MryShopExample();
-            shopExample.createCriteria().andIsDeletedEqualTo(false).andIdIn(shopIds);
-            List<MryShop> shops = this.shopMapper.selectByExample(shopExample);
-            Map<Short, MryShop> shopMap = new HashMap<>();
+            final Map<Short, MryShop> shopMap = new HashMap<>();
             shops.forEach(item -> shopMap.putIfAbsent(item.getId(), item));
-            Set<Short> serviceProIds = new HashSet<>();
+            final Set<Short> serviceProIds = new HashSet<>();
             for (MryCustomerCard item : customerCards) {
                 // 剩余积分
                 if (item.getLeftPoints().equals(0L)) {
@@ -114,21 +91,18 @@ public class MryCustomerCardServiceImpl implements MryCustomerCardService {
 
             // 客户初始化服务项目名称
             if (CollectionUtils.isNotEmpty(serviceProIds)) {
-                MryServiceProExample serviceProExample = new MryServiceProExample();
-                serviceProExample.createCriteria().andIsDeletedEqualTo(false).andIdIn(new ArrayList<>(serviceProIds));
-                List<MryServicePro> servicePros = this.serviceProMapper.selectByExample(serviceProExample);
                 if (CollectionUtils.isNotEmpty(servicePros)) {
                     Map<Short, MryServicePro> serviceProMap = new HashMap<>();
                     servicePros.forEach(item -> serviceProMap.putIfAbsent(item.getId(), item));
                     for (MryCustomerCard item : customerCards) {
                         if (StringUtils.isNotBlank(item.getInitProIds())) {
                             StringBuilder initProIdsSB = new StringBuilder();
-                            List<String> initProIds = Arrays.asList(item.getInitProIds().split(","));
+                            List<String> initProIds = Arrays.asList(item.getInitProIds().split(StrUtil.COMMA));
                             for (String proInfo : initProIds) {
                                 // proId + "-" + serviceTotalCount + "-" + consumeTotalCount;
                                 String proId = proInfo.split("-")[0];
                                 if (serviceProMap.containsKey(Short.valueOf(proId))) {
-                                    initProIdsSB.append(serviceProMap.get(Short.valueOf(proId)).getName()).append(",");
+                                    initProIdsSB.append(serviceProMap.get(Short.valueOf(proId)).getName()).append(StrUtil.COMMA);
                                 }
                             }
                             if (StringUtils.isNotBlank(initProIdsSB.toString())) {
@@ -139,7 +113,6 @@ public class MryCustomerCardServiceImpl implements MryCustomerCardService {
                     }
                 }
             }
-
         }
 
         return customerCards;
@@ -308,5 +281,27 @@ public class MryCustomerCardServiceImpl implements MryCustomerCardService {
 
         final List<MryShopCard> shopCards = this.shopCardMapper.selectByExample(cardExample);
         return shopCards;
+    }
+
+    @Override
+    public Map<Long, MryCustomer> listCustomers(MryCustomerCard customerCard) {
+        final MryCustomerExample customerExample = new MryCustomerExample();
+        MryCustomerExample.Criteria customerCri = customerExample.createCriteria();
+        customerCri.andIsDeletedEqualTo(false);
+        if (customerCard.getShopId() != null) {
+            customerCri.andShopIdEqualTo(customerCard.getShopId());
+        }
+        if (StringUtils.isNotBlank(customerCard.getCustomerName()) && StringUtils.isNotBlank(customerCard.getCustomerName().trim())) {
+            customerCri.andNameLike("%" + customerCard.getCustomerName() + "%");
+        }
+        final List<MryCustomer> customers = this.customerMapper.selectByExample(customerExample);
+        final Map<Long, MryCustomer> customerMap = MapUtil.newHashMap();
+        if (CollectionUtils.isNotEmpty(customers)) {
+            customers.forEach(item -> {
+                customerMap.putIfAbsent(item.getId(), item);
+            });
+        }
+
+        return customerMap;
     }
 }

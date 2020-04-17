@@ -10,6 +10,7 @@ import com.ruoyi.mry.model.*;
 import com.ruoyi.system.domain.SysUser;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * MryCustomerCard
@@ -18,7 +19,8 @@ import java.util.List;
  **/
 public interface MryCustomerCardService {
 
-    List<MryCustomerCard> selectCustomerCards(MryCustomerCard customerCard);
+    List<MryCustomerCard> selectCustomerCards(MryCustomerCard customerCard, Map<Long, MryCustomer> customerMap, List<MryShop> shops
+            , List<MryServicePro> servicePros);
 
     int insertMryCustomerCard(MryCustomerCard customerCard);
 
@@ -37,4 +39,6 @@ public interface MryCustomerCardService {
     List<MryStaff> getStaffsByShopId(MryCustomerCard customerCard);
 
     List<MryShopCard> getShopCardsByShopId(MryCustomerCard customerCard);
+
+    Map<Long, MryCustomer> listCustomers(MryCustomerCard customerCard);
 }

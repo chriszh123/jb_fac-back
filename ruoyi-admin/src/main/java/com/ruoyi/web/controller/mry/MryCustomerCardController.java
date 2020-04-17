@@ -15,11 +15,10 @@ import com.ruoyi.fac.constant.FacConstant;
 import com.ruoyi.framework.util.ShiroUtils;
 import com.ruoyi.framework.web.base.BaseController;
 import com.ruoyi.mry.exception.MryException;
-import com.ruoyi.mry.model.MryCustomer;
-import com.ruoyi.mry.model.MryCustomerCard;
-import com.ruoyi.mry.model.MryServicePro;
-import com.ruoyi.mry.model.MryShopCard;
+import com.ruoyi.mry.model.*;
 import com.ruoyi.mry.service.MryCustomerCardService;
+import com.ruoyi.mry.service.MryServiceProService;
+import com.ruoyi.mry.service.MryShopService;
 import com.ruoyi.system.domain.SysUser;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +46,10 @@ public class MryCustomerCardController extends BaseController {
 
     @Autowired
     private MryCustomerCardService customerCardService;
+    @Autowired
+    private MryShopService shopService;
+    @Autowired
+    private MryServiceProService serviceProService;
 
     @RequiresPermissions("mry:customercard:view")
     @GetMapping()
@@ -58,8 +61,14 @@ public class MryCustomerCardController extends BaseController {
     @PostMapping("/list")
     @ResponseBody
     public TableDataInfo list(MryCustomerCard customerCard) {
+        final Map<Long, MryCustomer> customers = this.customerCardService.listCustomers(customerCard);
+        final MryShop shop = new MryShop();
+        final List<MryShop> shops = this.shopService.selectShops(shop);
+        final MryServicePro servicePro = new MryServicePro();
+        final List<MryServicePro> servicePros = this.serviceProService.selectMryServicePros(servicePro);
+
         startPage();
-        List<MryCustomerCard> list = customerCardService.selectCustomerCards(customerCard);
+        List<MryCustomerCard> list = customerCardService.selectCustomerCards(customerCard, customers, shops, servicePros);
         return getDataTable(list);
     }
 
@@ -67,7 +76,13 @@ public class MryCustomerCardController extends BaseController {
     @PostMapping("/export")
     @ResponseBody
     public AjaxResult export(MryCustomerCard customerCard) {
-        List<MryCustomerCard> list = customerCardService.selectCustomerCards(customerCard);
+        final Map<Long, MryCustomer> customers = this.customerCardService.listCustomers(customerCard);
+        final MryShop shop = new MryShop();
+        final List<MryShop> shops = this.shopService.selectShops(shop);
+        final MryServicePro servicePro = new MryServicePro();
+        final List<MryServicePro> servicePros = this.serviceProService.selectMryServicePros(servicePro);
+
+        List<MryCustomerCard> list = customerCardService.selectCustomerCards(customerCard, customers, shops, servicePros);
         ExcelUtil<MryCustomerCard> util = new ExcelUtil<>(MryCustomerCard.class);
         return util.exportExcel(list, "客户办卡资料");
     }
