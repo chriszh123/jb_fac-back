@@ -286,13 +286,13 @@ public class MryCustomerCardServiceImpl implements MryCustomerCardService {
     @Override
     public Map<Long, MryCustomer> listCustomers(MryCustomerCard customerCard) {
         final MryCustomerExample customerExample = new MryCustomerExample();
-        MryCustomerExample.Criteria customerCri = customerExample.createCriteria();
+        final MryCustomerExample.Criteria customerCri = customerExample.createCriteria();
         customerCri.andIsDeletedEqualTo(false);
         if (customerCard.getShopId() != null) {
             customerCri.andShopIdEqualTo(customerCard.getShopId());
         }
         if (StringUtils.isNotBlank(customerCard.getCustomerName()) && StringUtils.isNotBlank(customerCard.getCustomerName().trim())) {
-            customerCri.andNameLike("%" + customerCard.getCustomerName() + "%");
+            customerCri.andNameLike("%" + customerCard.getCustomerName().trim() + "%");
         }
         final List<MryCustomer> customers = this.customerMapper.selectByExample(customerExample);
         final Map<Long, MryCustomer> customerMap = MapUtil.newHashMap();
