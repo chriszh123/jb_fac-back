@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.mry.mapper.MryExtMapper">
+
+    <resultMap id="BaseResultMap" type="com.ruoyi.mry.model.MryCustomer">
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <result column="shop_id" jdbcType="SMALLINT" property="shopId" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="sex" jdbcType="VARCHAR" property="sex" />
+        <result column="birthday" jdbcType="VARCHAR" property="birthday" />
+        <result column="address" jdbcType="VARCHAR" property="address" />
+        <result column="phone_number" jdbcType="VARCHAR" property="phoneNumber" />
+        <result column="work" jdbcType="VARCHAR" property="work" />
+        <result column="remark" jdbcType="VARCHAR" property="remark" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+        <result column="operator_id" jdbcType="BIGINT" property="operatorId" />
+        <result column="operator_name" jdbcType="VARCHAR" property="operatorName" />
+        <result column="is_deleted" jdbcType="BIT" property="isDeleted" />
+        <result column="total_custome_points" jdbcType="BIGINT" property="totalCustomePoints" />
+        <result column="left_points" jdbcType="BIGINT" property="leftPoints" />
+        <result column="total_custome_times" jdbcType="SMALLINT" property="totalCustomeTimes" />
+        <result column="left_times" jdbcType="SMALLINT" property="leftTimes" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, shop_id, name, sex, birthday, birthday_time, address, phone_number, work, remark, create_time,
+        update_time, operator_id, operator_name, is_deleted, total_custome_points, left_points,
+        total_custome_times, left_times
+    </sql>
+
+    <select id="queryCustomers" resultType="com.ruoyi.mry.model.MryCustomer">
+        select
+        <include refid="Base_Column_List" />
+        from mry_customer
+        where is_deleted = 0
+        <if test="name != null and name != ''">
+           AND name like ${name}
+        </if>
+        <if test="shopId != null">
+            AND shopId = ${shopId}
+        </if>
+        ORDER by create_time DESC
+    </select>
+
+</mapper>
