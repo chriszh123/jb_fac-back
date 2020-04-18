@@ -227,15 +227,20 @@
                 data: data,
                 success: function (result) {
                     var options = '<option value="">请选择...</option>';
-                    $("#customerId").html(options);
+                    var customerCtrl = $("#customerId");
+                    customerCtrl.html(options);
                     var selectedId = $("#customerId2").val();
                     if (result && result.length > 0) {
                         for (var i = 0; i < result.length; i++) {
                             var customer = result[i];
-                            var selected = customer.id == selectedId;
-                            options = options + '<option value="' + customer.id + '" selected="' + selected + '">' + customer.name + '</option>';
+                            var selected = customer.id === Number(selectedId);
+                            if (selected) {
+                                options = options + '<option value="' + customer.id + '" selected="' + selected + '">' + customer.name + '</option>';
+                            } else {
+                                options = options + '<option value="' + customer.id + '">' + customer.name + '</option>';
+                            }
                         }
-                        $("#customerId").html(options);
+                        customerCtrl.html(options);
                     }
                 }
             };
@@ -250,15 +255,20 @@
                 data: data,
                 success: function (result) {
                     var options = '<option value="">请选择...</option>';
-                    $("#cardId").html(options);
+                    var cardIdCtrl = $("#cardId");
+                    cardIdCtrl.html(options);
                     var selectedId = $("#cardId2").val();
                     if (result && result.length > 0) {
                         for (var i = 0; i < result.length; i++) {
                             var shopCard = result[i];
-                            var selected = shopCard.id == selectedId;
-                            options = options + '<option value="' + shopCard.id + '" selected="' + selected + '">' + shopCard.name + '</option>';
+                            var selected = shopCard.id === Number(selectedId) ;
+                            if (selected) {
+                                options = options + '<option value="' + shopCard.id + '" selected="' + selected + '">' + shopCard.name + '</option>';
+                            } else {
+                                options = options + '<option value="' + shopCard.id + '">' + shopCard.name + '</option>';
+                            }
                         }
-                        $("#cardId").html(options);
+                        cardIdCtrl.html(options);
                     }
                 }
             };
@@ -273,7 +283,8 @@
                 data: data,
                 success: function (result) {
                     var options = '';
-                    $("#lblServicePros").html(options);
+                    var lblServiceProsCtrl = $("#lblServicePros");
+                    lblServiceProsCtrl.html(options);
                     if (result && result.length > 0) {
                         // 每个项目对应的项目id、总次数、已经消费次数
                         var initProIds = $("#initProIds").val();
@@ -314,7 +325,7 @@
                                 options = options + '</br></br>';
                             }
                         }
-                        $("#lblServicePros").html(options);
+                        lblServiceProsCtrl.html(options);
                     }
                 }
             };
