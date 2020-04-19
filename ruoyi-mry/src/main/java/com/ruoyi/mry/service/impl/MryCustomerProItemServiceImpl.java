@@ -231,10 +231,11 @@ public class MryCustomerProItemServiceImpl implements MryCustomerProItemService 
             idsLongs.add(Long.valueOf(id));
         }
         Date nowDate = new Date();
+        List<MryCustomerProItem> customerProItems = null;
         if (CollectionUtils.isNotEmpty(idsLongs)) {
-            MryCustomerProItemExample example = new MryCustomerProItemExample();
+            final MryCustomerProItemExample example = new MryCustomerProItemExample();
             example.createCriteria().andIsDeletedEqualTo(false).andIdIn(idsLongs);
-            List<MryCustomerProItem> customerProItems = this.customerProItemMapper.selectByExample(example);
+            customerProItems = this.customerProItemMapper.selectByExample(example);
             if (CollectionUtils.isNotEmpty(customerProItems)) {
                 for (MryCustomerProItem customerProItem : customerProItems) {
                     // 增加当前客户对应的积分数、消费次数
@@ -271,9 +272,50 @@ public class MryCustomerProItemServiceImpl implements MryCustomerProItemService 
                 update.setOperatorId(user.getUserId());
                 update.setOperatorName(user.getUserName());
             }
-            return this.customerProItemMapper.updateByExampleSelective(update, example);
+            int rows = this.customerProItemMapper.updateByExampleSelective(update, example);
+            log.info(StrUtil.format("========[deleteCustomerProItemByIds] updateByExampleSelective, rows:{}", rows));
         }
 
-        return 0;
+        // 删除客户一条消费记录需要同步更新当前客人对应当前消费卡中，减1，当前消费项目对应得消费次数
+        if (CollUtil.isNotEmpty(customerProItems)) {
+            for (MryCustomerProItem customerProItem : customerProItems) {
+                final MryCustomerCardExample customerCardExample = new MryCustomerCardExample();
+                customerCardExample.createCriteria().andIsDeletedEqualTo(false).andShopIdEqualTo(customerProItem.getShopId())
+                        .andCustomerIdEqualTo(customerProItem.getCustomerId()).andIdEqualTo(customerProItem.getCardId());
+                final List<MryCustomerCard>  customerCards = this.customerCardMapper.selectByExample(customerCardExample);
+                if (CollUtil.isNotEmpty(customerCards)) {
+                    final MryCustomerCard customerCard = customerCards.get(0);
+                    // [服务项目id - 总次数 - 当前消费次数]
+                    final String proInfo = customerCard.getInitProIds();
+                    String[] proInfoArr = proInfo.split(StrUtil.COMMA);
+                    StringBuilder proInfoStr = new StringBuilder();
+                    for (String proInfoItem : proInfoArr) {
+                        String[] proInfoItemArr = proInfoItem.split(StrUtil.DASHED);
+                        if (StrUtil.equals(proInfoItemArr[0], Convert.toStr(customerProItem.getProId()))) {
+                            int counsumeCount = Convert.toInt(proInfoItemArr[2], 0) - 1;
+                            String newProInfoItem = proInfoItemArr[0] + "-" + proInfoItemArr[1] + "-" + counsumeCount;
+                            proInfoStr.append(newProInfoItem).append(StrUtil.COMMA);
+                        } else {
+                            proInfoStr.append(proInfoItem).append(StrUtil.COMMA);
+                        }
+                    }
+                    if (StrUtil.isNotBlank(proInfoStr.toString())) {
+                        proInfoStr = proInfoStr.deleteCharAt(proInfoStr.toString().length() - 1);
+                    }
+                    customerCard.setInitProIds(proInfoStr.toString());
+                    customerCard.setUpdateTime(nowDate);
+                    customerCard.setOperatorId(customerProItem.getOperatorId());
+                    customerCard.setOperatorName(customerProItem.getOperatorName());
+                    int rows = this.customerCardMapper.updateByPrimaryKeySelective(customerCard);
+                    if (rows > 0) {
+                        log.info(StrUtil.format("================[更新用户办卡中选择的服务项目当前消费次数] success, customerCard:{}", customerCard));
+                    } else {
+                        log.info(StrUtil.format("================[更新用户办卡中选择的服务项目当前消费次数] fail, customerCard:{}", customerCard));
+                    }
+                }
+            }
+        }
+
+        return 1;
     }
 }

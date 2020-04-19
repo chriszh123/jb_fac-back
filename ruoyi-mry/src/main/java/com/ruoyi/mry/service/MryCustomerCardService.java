@@ -20,7 +20,7 @@ import java.util.Map;
 public interface MryCustomerCardService {
 
     List<MryCustomerCard> selectCustomerCards(MryCustomerCard customerCard, Map<Long, MryCustomer> customerMap, List<MryShop> shops
-            , List<MryServicePro> servicePros);
+            , List<MryServicePro> servicePros, List<MryShopCard> shopCards);
 
     int insertMryCustomerCard(MryCustomerCard customerCard);
 

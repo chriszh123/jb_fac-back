@@ -18,6 +18,7 @@ import com.ruoyi.mry.exception.MryException;
 import com.ruoyi.mry.model.*;
 import com.ruoyi.mry.service.MryCustomerCardService;
 import com.ruoyi.mry.service.MryServiceProService;
+import com.ruoyi.mry.service.MryShopCardService;
 import com.ruoyi.mry.service.MryShopService;
 import com.ruoyi.system.domain.SysUser;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -50,6 +51,8 @@ public class MryCustomerCardController extends BaseController {
     private MryShopService shopService;
     @Autowired
     private MryServiceProService serviceProService;
+    @Autowired
+    private MryShopCardService shopCardService;
 
     @RequiresPermissions("mry:customercard:view")
     @GetMapping()
@@ -66,9 +69,11 @@ public class MryCustomerCardController extends BaseController {
         final List<MryShop> shops = this.shopService.selectShops(shop);
         final MryServicePro servicePro = new MryServicePro();
         final List<MryServicePro> servicePros = this.serviceProService.selectMryServicePros(servicePro);
+        final MryShopCard shopCard = new MryShopCard();
+        final List<MryShopCard> shopCards = this.shopCardService.selectShopCards(shopCard);
 
         startPage();
-        List<MryCustomerCard> list = customerCardService.selectCustomerCards(customerCard, customers, shops, servicePros);
+        List<MryCustomerCard> list = customerCardService.selectCustomerCards(customerCard, customers, shops, servicePros, shopCards);
         return getDataTable(list);
     }
 
@@ -81,8 +86,10 @@ public class MryCustomerCardController extends BaseController {
         final List<MryShop> shops = this.shopService.selectShops(shop);
         final MryServicePro servicePro = new MryServicePro();
         final List<MryServicePro> servicePros = this.serviceProService.selectMryServicePros(servicePro);
+        final MryShopCard shopCard = new MryShopCard();
+        final List<MryShopCard> shopCards = this.shopCardService.selectShopCards(shopCard);
 
-        List<MryCustomerCard> list = customerCardService.selectCustomerCards(customerCard, customers, shops, servicePros);
+        List<MryCustomerCard> list = customerCardService.selectCustomerCards(customerCard, customers, shops, servicePros, shopCards);
         ExcelUtil<MryCustomerCard> util = new ExcelUtil<>(MryCustomerCard.class);
         return util.exportExcel(list, "客户办卡资料");
     }

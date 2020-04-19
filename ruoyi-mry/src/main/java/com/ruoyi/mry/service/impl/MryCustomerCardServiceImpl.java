@@ -7,6 +7,7 @@
 package com.ruoyi.mry.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.convert.Convert;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
 import com.ruoyi.common.utils.StringUtils;
@@ -50,7 +51,8 @@ public class MryCustomerCardServiceImpl implements MryCustomerCardService {
     private MryStaffMapper staffMapper;
 
     @Override
-    public List<MryCustomerCard> selectCustomerCards(MryCustomerCard customerCard, Map<Long, MryCustomer> customerMap, List<MryShop> shops, List<MryServicePro> servicePros) {
+    public List<MryCustomerCard> selectCustomerCards(MryCustomerCard customerCard, Map<Long, MryCustomer> customerMap, List<MryShop> shops
+            , List<MryServicePro> servicePros, List<MryShopCard> shopCards) {
         if (MapUtil.isEmpty(customerMap) || CollUtil.isEmpty(shops)) {
             return CollUtil.newArrayList();
         }
@@ -63,6 +65,11 @@ public class MryCustomerCardServiceImpl implements MryCustomerCardService {
             // 所属店面
             final Map<Short, MryShop> shopMap = new HashMap<>();
             shops.forEach(item -> shopMap.putIfAbsent(item.getId(), item));
+            // 消费卡
+            final Map<Short, MryShopCard> shopCardMap = MapUtil.newHashMap();
+            if (CollUtil.isNotEmpty(shopCards)) {
+                shopCards.stream().forEach(item -> shopCardMap.putIfAbsent(item.getId().shortValue(), item));
+            }
             final Set<Short> serviceProIds = new HashSet<>();
             for (MryCustomerCard item : customerCards) {
                 // 剩余积分
@@ -74,6 +81,12 @@ public class MryCustomerCardServiceImpl implements MryCustomerCardService {
                     item.setLeftTimes(item.getTotalTimes());
                 }
                 item.setShopName(shopMap.get(item.getShopId()).getName());
+                // 消费卡名称
+                if (shopCardMap.containsKey(item.getCardId())) {
+                    item.setCardName(MapUtil.get(shopCardMap, item.getCardId(), MryShopCard.class).getName());
+                } else {
+                    item.setCardName(Convert.toStr(item.getCardId(), StrUtil.DASHED));
+                }
                 // 客户名称
                 if (customerMap.containsKey(item.getCustomerId())) {
                     item.setCustomerName(customerMap.get(item.getCustomerId()).getName());

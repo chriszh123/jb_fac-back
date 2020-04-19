@@ -21,7 +21,7 @@ public class MryCustomerInvest {
     @Excel(name = "客户名称")
     private String customerName;
 
-    @Excel(name = "消费卡ID")
+    @Excel(name = "客户消费卡号")
     private Long cardId;
 
     @Excel(name = "客户充值金额")
