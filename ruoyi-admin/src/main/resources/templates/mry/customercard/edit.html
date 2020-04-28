@@ -220,7 +220,7 @@
             return;
         }
         var customerName = obj.value;
-        if (customerName) {
+        if (customerName && customerName != '') {
             searchCustomerAjax(customerName, shopId);
         }
     };
