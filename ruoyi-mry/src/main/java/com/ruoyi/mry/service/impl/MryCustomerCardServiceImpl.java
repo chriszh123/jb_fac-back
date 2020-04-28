@@ -247,6 +247,9 @@ public class MryCustomerCardServiceImpl implements MryCustomerCardService {
         MryCustomerExample customerExample = new MryCustomerExample();
         MryCustomerExample.Criteria customerCri = customerExample.createCriteria();
         customerCri.andIsDeletedEqualTo(false).andShopIdEqualTo(customerCard.getShopId());
+        if (StrUtil.isNotBlank(customerCard.getCustomerName()) && StrUtil.isNotBlank(customerCard.getCustomerName().trim())) {
+            customerCri.andNameLike("%" + customerCard.getCustomerName().trim() + "%");
+        }
         customerExample.setOrderByClause(MryConstant.DEFAULT_ORDER_CLAUSE);
 
         List<MryCustomer> customers = this.customerMapper.selectByExample(customerExample);

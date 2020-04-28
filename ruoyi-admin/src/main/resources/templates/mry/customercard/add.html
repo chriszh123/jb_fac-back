@@ -22,6 +22,7 @@
         <div class="form-group">
             <label class="col-sm-3 control-label product-lable">客户：</label>
             <div class="col-sm-9">
+                <input type="text" id="searchCustomer" width="100px;" placeholder="这里可以输入客户的部分姓名，去查找匹配的客户，显示到后面的下拉框中" onblur="searchCustomer(this)"/>
                 <select id="customerId" name="customerId" class="form-control m-b">
                     <option value="">请选择...</option>
                 </select>
@@ -205,6 +206,44 @@
             });
         }
     }
+
+    // 用户输入搜索客户
+    var searchCustomer = function (obj) {
+        var shopId = $("#shopId").val();
+        if (!shopId || shopId == '') {
+            return;
+        }
+        var customerName = obj.value;
+        if (customerName) {
+            searchCustomerAjax(customerName, shopId);
+        }
+    };
+
+    var searchCustomerAjax = function (customerName, shopId) {
+        var data = {
+            "shopId" : shopId,
+            "customerName" : customerName
+        };
+        var url = prefix + "/getCustomersByShopId";
+        var config = {
+            url: url,
+            type: "post",
+            dataType: "json",
+            data: data,
+            success: function (result) {
+                var options = '<option value="">请选择...</option>';
+                $("#customerId").html(options);
+                if (result && result.length > 0) {
+                    for (var i = 0; i < result.length; i++) {
+                        var customer = result[i];
+                        options = options + '<option value="' + customer.id + '">' + customer.name + '</option>';
+                    }
+                    $("#customerId").html(options);
+                }
+            }
+        };
+        $.ajax(config);
+    };
 
     var changeShop = function (obj) {
         var shopId = obj.value;
