@@ -21,8 +21,10 @@
 
         <div class="form-group">
             <label class="col-sm-3 control-label product-lable">客户：</label>
-            <div class="col-sm-9">
-                <input type="text" id="searchCustomer" width="100px;" placeholder="这里可以输入客户的部分姓名，去查找匹配的客户，显示到后面的下拉框中" onblur="searchCustomer(this)"/>
+            <div class="col-sm-3">
+                <input onblur="searchCustomer(this);" class="form-control" type="text" placeholder="请输入用户名称">
+            </div>
+            <div class="col-sm-6">
                 <select id="customerId" name="customerId" class="form-control m-b">
                     <option value="">请选择...</option>
                 </select>
@@ -211,12 +213,11 @@
     var searchCustomer = function (obj) {
         var shopId = $("#shopId").val();
         if (!shopId || shopId == '') {
+            $.modal.alertWarning("请先选择店面");
             return;
         }
         var customerName = obj.value;
-        if (customerName && customerName != '') {
-            searchCustomerAjax(customerName, shopId);
-        }
+        searchCustomerAjax(customerName, shopId);
     };
 
     var searchCustomerAjax = function (customerName, shopId) {
