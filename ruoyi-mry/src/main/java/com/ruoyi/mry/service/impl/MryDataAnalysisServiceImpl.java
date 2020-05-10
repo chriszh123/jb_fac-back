@@ -78,7 +78,7 @@ public class MryDataAnalysisServiceImpl implements MryDataAnalysisService {
             Date date;
             int tempCount = 0;
             for (MryCustomerProItem item : customerProItems) {
-                date = MryTimeUtils.parseTime(item.getCreateTime(), MryTimeUtils.DEFAULT_DATE_FORMAT);
+                date = MryTimeUtils.parseTime(item.getConsumeTime(), MryTimeUtils.DEFAULT_DATE_FORMAT);
                 if (!date2Count.containsKey(date)) {
                     date2Count.put(date, 0);
                 }

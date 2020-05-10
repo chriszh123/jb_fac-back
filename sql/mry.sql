@@ -321,4 +321,6 @@ CREATE TABLE `mry_shop_cost` (
 ALTER TABLE mry_customer_card ADD COLUMN service_start datetime DEFAULT NULL COMMENT '卡片消费开始时间' after card_id;
 ALTER TABLE mry_customer_card ADD COLUMN service_end datetime DEFAULT NULL COMMENT '卡片消费结束时间' after service_start;
 
+--20200510
+ALTER TABLE mry_customer_pro_item ADD COLUMN consume_time datetime DEFAULT NULL COMMENT '客人消费日期' after pro_id;
 

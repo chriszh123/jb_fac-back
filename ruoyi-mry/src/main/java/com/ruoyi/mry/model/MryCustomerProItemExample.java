@@ -496,6 +496,66 @@ public class MryCustomerProItemExample {
             return (Criteria) this;
         }
 
+        public Criteria andConsumeTimeIsNull() {
+            addCriterion("consume_time is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andConsumeTimeIsNotNull() {
+            addCriterion("consume_time is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andConsumeTimeEqualTo(Date value) {
+            addCriterion("consume_time =", value, "consumeTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andConsumeTimeNotEqualTo(Date value) {
+            addCriterion("consume_time <>", value, "consumeTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andConsumeTimeGreaterThan(Date value) {
+            addCriterion("consume_time >", value, "consumeTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andConsumeTimeGreaterThanOrEqualTo(Date value) {
+            addCriterion("consume_time >=", value, "consumeTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andConsumeTimeLessThan(Date value) {
+            addCriterion("consume_time <", value, "consumeTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andConsumeTimeLessThanOrEqualTo(Date value) {
+            addCriterion("consume_time <=", value, "consumeTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andConsumeTimeIn(List<Date> values) {
+            addCriterion("consume_time in", values, "consumeTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andConsumeTimeNotIn(List<Date> values) {
+            addCriterion("consume_time not in", values, "consumeTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andConsumeTimeBetween(Date value1, Date value2) {
+            addCriterion("consume_time between", value1, value2, "consumeTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andConsumeTimeNotBetween(Date value1, Date value2) {
+            addCriterion("consume_time not between", value1, value2, "consumeTime");
+            return (Criteria) this;
+        }
+
         public Criteria andCustomeTypeIsNull() {
             addCriterion("custome_type is null");
             return (Criteria) this;

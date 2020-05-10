@@ -29,6 +29,10 @@ public class MryCustomerProItem {
     @Excel(name = "消费项目")
     private String proName;
 
+    @Excel(name = "消费日期", dateFormat = "yyyy-MM-dd")
+    private Date consumeTime;
+    private String consumeTimeStr;
+
     @Excel(name = "消费类型", readConverterExp = "0=积分制,1=消费次数")
     private Byte customeType;
 

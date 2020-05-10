@@ -8,6 +8,8 @@ package com.ruoyi.mry.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
+import cn.hutool.core.date.DatePattern;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.mry.constant.MryConstant;
@@ -198,6 +200,9 @@ public class MryCustomerProItemServiceImpl implements MryCustomerProItemService 
         if (proItem.getServiceEnd() != null) {
             proItem.setServiceEndStr(MryTimeUtils.date2Str(proItem.getServiceEnd(), MryTimeUtils.DEFAULT_DATE_TIME_FORMAT_HH_MM));
         }
+        if (proItem.getConsumeTime() != null) {
+            proItem.setConsumeTimeStr(DateUtil.format(proItem.getConsumeTime(), DatePattern.NORM_DATE_PATTERN));
+        }
 
         return proItem;
     }
@@ -212,6 +217,9 @@ public class MryCustomerProItemServiceImpl implements MryCustomerProItemService 
         }
         if (StringUtils.isNotBlank(customerProItem.getServiceEndStr())) {
             customerProItem.setServiceEnd(MryTimeUtils.parseTime(customerProItem.getServiceEndStr(), MryTimeUtils.DEFAULT_DATE_TIME_FORMAT_HH_MM));
+        }
+        if (StrUtil.isNotBlank(customerProItem.getConsumeTimeStr())) {
+            customerProItem.setConsumeTime(DateUtil.parseTime(customerProItem.getConsumeTimeStr()));
         }
 
         return this.customerProItemMapper.updateByPrimaryKeySelective(customerProItem);

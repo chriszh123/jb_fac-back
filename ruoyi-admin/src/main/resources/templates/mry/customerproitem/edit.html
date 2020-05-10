@@ -74,6 +74,13 @@
         </div>
 
         <div class="form-group form-inline">
+            <label class="col-sm-3 control-label product-lable">消费日期：</label>
+            <div class="col-sm-9">
+                <input type="text" class="time-input" id="consumeTime" placeholder="请选择日期" name="consumeTime" th:field="*{consumeTimeStr}"/>
+            </div>
+        </div>
+
+        <div class="form-group form-inline">
             <label class="col-sm-3 control-label product-lable">当前服务当次开始时间：</label>
             <div class="col-sm-3 input-group date" style="margin-left: 15px;"><span class="input-group-addon"><i
                     class="fa fa-calendar"></i></span>
@@ -172,6 +179,9 @@
             customeType: {
                 required: true
             },
+            consumeTime: {
+                required: true
+            },
             serviceStart: {
                 required: true
             },
@@ -212,6 +222,7 @@
             "customerId": $("#customerId").val(),
             "cardId": $("#cardId").val(),
             "proId": $("#proId").val(),
+            "consumeTime": $("#consumeTime").val(),
             "customeType": $("#customeType").val(),
             "serviceStart": $("#serviceStart").val(),
             "serviceEnd": $("#serviceEnd").val(),
