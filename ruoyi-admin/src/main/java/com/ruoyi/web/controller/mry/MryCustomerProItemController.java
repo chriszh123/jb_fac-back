@@ -6,6 +6,8 @@
  */
 package com.ruoyi.web.controller.mry;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.map.MapUtil;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.base.AjaxResult;
 import com.ruoyi.common.enums.BusinessType;
@@ -62,6 +64,10 @@ public class MryCustomerProItemController extends BaseController {
     public TableDataInfo list(MryCustomerProItem customerProItem) {
         final MryShop shop = new MryShop();
         final List<MryShop> shops = this.shopService.selectShops(shop);
+        final MryServicePro servicePro = new MryServicePro();
+        servicePro.setShopId(customerProItem.getShopId());
+        final List<MryServicePro> servicePros = this.serviceProService.selectMryServicePros(servicePro);
+
         MryCustomerCard customerCard = new MryCustomerCard();
         if (customerProItem.getShopId() != null) {
             customerCard.setShopId(customerProItem.getShopId());
@@ -70,12 +76,11 @@ public class MryCustomerProItemController extends BaseController {
             customerCard.setCustomerName(customerProItem.getCustomerName());
         }
         final Map<Long, MryCustomer> customers = this.customerCardService.listCustomers(customerCard);
-        final MryServicePro servicePro = new MryServicePro();
-        servicePro.setShopId(customerProItem.getShopId());
-        final List<MryServicePro> servicePros = this.serviceProService.selectMryServicePros(servicePro);
-
+        List<MryCustomerProItem> list = CollUtil.newArrayList();
         startPage();
-        List<MryCustomerProItem> list = customerProItemService.selectCustomerProItems(customerProItem, shops, customers, servicePros);
+        if (MapUtil.isNotEmpty(customers)) {
+            list = customerProItemService.selectCustomerProItems(customerProItem, shops, customers, servicePros);
+        }
         return getDataTable(list);
     }
 
@@ -96,8 +101,10 @@ public class MryCustomerProItemController extends BaseController {
         final MryServicePro servicePro = new MryServicePro();
         servicePro.setShopId(customerProItem.getShopId());
         final List<MryServicePro> servicePros = this.serviceProService.selectMryServicePros(servicePro);
-
-        List<MryCustomerProItem> list = customerProItemService.selectCustomerProItems(customerProItem, shops, customers, servicePros);
+        List<MryCustomerProItem> list = CollUtil.newArrayList();
+        if (CollUtil.isNotEmpty(customers)) {
+            list = customerProItemService.selectCustomerProItems(customerProItem, shops, customers, servicePros);
+        }
         ExcelUtil<MryCustomerProItem> util = new ExcelUtil<>(MryCustomerProItem.class);
         return util.exportExcel(list, "客户消费明细资料");
     }

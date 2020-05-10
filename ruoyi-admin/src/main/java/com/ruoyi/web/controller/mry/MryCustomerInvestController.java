@@ -1,5 +1,7 @@
 package com.ruoyi.web.controller.mry;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.map.MapUtil;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.base.AjaxResult;
 import com.ruoyi.common.enums.BusinessType;
@@ -60,9 +62,11 @@ public class MryCustomerInvestController extends BaseController{
             customerCard.setCustomerName(customerInvest.getCustomerName());
         }
         final Map<Long, MryCustomer> customers = this.customerCardService.listCustomers(customerCard);
-
+        List<MryCustomerInvest> list = CollUtil.newArrayList();
         startPage();
-        List<MryCustomerInvest> list = customerInvestService.selectCustomerInvests(customerInvest, shops, customers);
+        if (MapUtil.isNotEmpty(customers)) {
+            list = customerInvestService.selectCustomerInvests(customerInvest, shops, customers);
+        }
         return getDataTable(list);
     }
 
@@ -80,8 +84,10 @@ public class MryCustomerInvestController extends BaseController{
             customerCard.setCustomerName(customerInvest.getCustomerName());
         }
         final Map<Long, MryCustomer> customers = this.customerCardService.listCustomers(customerCard);
-
-        List<MryCustomerInvest> list = customerInvestService.selectCustomerInvests(customerInvest, shops, customers);
+        List<MryCustomerInvest> list = CollUtil.newArrayList();
+        if (MapUtil.isNotEmpty(customers)) {
+            list = customerInvestService.selectCustomerInvests(customerInvest, shops, customers);
+        }
         ExcelUtil<MryCustomerInvest> util = new ExcelUtil<>(MryCustomerInvest.class);
         return util.exportExcel(list, "客户充值明细");
     }
