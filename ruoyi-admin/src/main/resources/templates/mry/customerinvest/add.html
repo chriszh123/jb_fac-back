@@ -30,6 +30,13 @@
             </div>
         </div>
 
+        <div class="form-group form-inline">
+            <label class="col-sm-3 control-label product-lable">充值日期：</label>
+            <div class="col-sm-9">
+                <input type="text" class="time-input" id="investTime" placeholder="请选择日期" name="investTime"/>
+            </div>
+        </div>
+
         <div class="form-group">
             <label class="col-sm-3 control-label product-lable">客户办理的消费卡号：</label>
             <div class="col-sm-9">
@@ -91,6 +98,9 @@
                 required: true
             },
             cardId: {
+                required: true
+            },
+            investTime: {
                 required: true
             },
             investPrice: {

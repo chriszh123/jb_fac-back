@@ -267,19 +267,18 @@ public class MryDataAnalysisServiceImpl implements MryDataAnalysisService {
             queryVo.setStartDate(startDate);
             queryVo.setEndDate(endDate);
             List<MryCustomerCard> customerCards = this.customerCardMapper.queryRecentShopMoneyInfo1(queryVo);
-            if (CollectionUtils.isEmpty(customerCards)) {
-                return vo;
-            }
             Map<Date, BigDecimal> date2Count = new HashMap<>(16);
             Date date;
             BigDecimal tempCount = MryDecimalUtils.getDefaultDecimal();
-            for (MryCustomerCard item : customerCards) {
-                date = MryTimeUtils.parseTime(item.getCreateTime(), MryTimeUtils.DEFAULT_DATE_FORMAT);
-                if (!date2Count.containsKey(date)) {
-                    date2Count.put(date, MryDecimalUtils.getDefaultDecimal());
+            if (CollectionUtils.isNotEmpty(customerCards)) {
+                for (MryCustomerCard item : customerCards) {
+                    date = MryTimeUtils.parseTime(item.getCreateTime(), MryTimeUtils.DEFAULT_DATE_FORMAT);
+                    if (!date2Count.containsKey(date)) {
+                        date2Count.put(date, MryDecimalUtils.getDefaultDecimal());
+                    }
+                    tempCount = date2Count.get(date);
+                    date2Count.put(date, MryDecimalUtils.add(tempCount, item.getPrice()));
                 }
-                tempCount = date2Count.get(date);
-                date2Count.put(date, MryDecimalUtils.add(tempCount, item.getPrice()));
             }
 
             // 2.客户后期继续充值
@@ -287,7 +286,7 @@ public class MryDataAnalysisServiceImpl implements MryDataAnalysisService {
             if (CollectionUtils.isNotEmpty(customerInvests)) {
                 tempCount = MryDecimalUtils.getDefaultDecimal();
                 for (MryCustomerInvest item : customerInvests) {
-                    date = MryTimeUtils.parseTime(item.getCreateTime(), MryTimeUtils.DEFAULT_DATE_FORMAT);
+                    date = MryTimeUtils.parseTime(item.getInvestTime(), MryTimeUtils.DEFAULT_DATE_FORMAT);
                     if (!date2Count.containsKey(date)) {
                         date2Count.put(date, MryDecimalUtils.getDefaultDecimal());
                     }

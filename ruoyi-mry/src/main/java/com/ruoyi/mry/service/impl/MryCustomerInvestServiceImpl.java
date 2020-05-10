@@ -1,5 +1,8 @@
 package com.ruoyi.mry.service.impl;
 
+import cn.hutool.core.date.DatePattern;
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.StrUtil;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.mry.constant.MryConstant;
 import com.ruoyi.mry.exception.MryException;
@@ -118,6 +121,9 @@ public class MryCustomerInvestServiceImpl implements MryCustomerInvestService {
     @Override
     public MryCustomerInvest selectCustomerInvest(Long id) {
         MryCustomerInvest customerInvest = this.customerInvestMapper.selectByPrimaryKey(id);
+        if (customerInvest != null && customerInvest.getInvestTime() != null) {
+            customerInvest.setInvestTimeStr(DateUtil.format(customerInvest.getInvestTime(), DatePattern.NORM_DATE_PATTERN));
+        }
 
         return customerInvest;
     }
@@ -126,6 +132,9 @@ public class MryCustomerInvestServiceImpl implements MryCustomerInvestService {
     public int updateCustomerInvest(MryCustomerInvest customerInvest) {
         Date nowDate = new Date();
         customerInvest.setUpdateTime(nowDate);
+        if (StrUtil.isNotBlank(customerInvest.getInvestTimeStr())) {
+            customerInvest.setInvestTime(DateUtil.parse(customerInvest.getInvestTimeStr(), DatePattern.NORM_DATE_PATTERN));
+        }
 
         return this.customerInvestMapper.updateByPrimaryKeySelective(customerInvest);
     }

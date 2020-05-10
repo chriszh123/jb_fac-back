@@ -436,6 +436,66 @@ public class MryCustomerInvestExample {
             return (Criteria) this;
         }
 
+        public Criteria andInvestTimeIsNull() {
+            addCriterion("invest_time is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andInvestTimeIsNotNull() {
+            addCriterion("invest_time is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andInvestTimeEqualTo(Date value) {
+            addCriterion("invest_time =", value, "investTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andInvestTimeNotEqualTo(Date value) {
+            addCriterion("invest_time <>", value, "investTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andInvestTimeGreaterThan(Date value) {
+            addCriterion("invest_time >", value, "investTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andInvestTimeGreaterThanOrEqualTo(Date value) {
+            addCriterion("invest_time >=", value, "investTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andInvestTimeLessThan(Date value) {
+            addCriterion("invest_time <", value, "investTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andInvestTimeLessThanOrEqualTo(Date value) {
+            addCriterion("invest_time <=", value, "investTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andInvestTimeIn(List<Date> values) {
+            addCriterion("invest_time in", values, "investTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andInvestTimeNotIn(List<Date> values) {
+            addCriterion("invest_time not in", values, "investTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andInvestTimeBetween(Date value1, Date value2) {
+            addCriterion("invest_time between", value1, value2, "investTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andInvestTimeNotBetween(Date value1, Date value2) {
+            addCriterion("invest_time not between", value1, value2, "investTime");
+            return (Criteria) this;
+        }
+
         public Criteria andInvestPriceIsNull() {
             addCriterion("invest_price is null");
             return (Criteria) this;

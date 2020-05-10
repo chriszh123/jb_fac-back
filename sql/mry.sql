@@ -323,4 +323,5 @@ ALTER TABLE mry_customer_card ADD COLUMN service_end datetime DEFAULT NULL COMME
 
 --20200510
 ALTER TABLE mry_customer_pro_item ADD COLUMN consume_time datetime DEFAULT NULL COMMENT '客人消费日期' after pro_id;
+ALTER TABLE mry_customer_invest ADD COLUMN invest_time datetime DEFAULT NULL COMMENT '客人消费日期' after card_id;
 

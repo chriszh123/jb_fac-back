@@ -24,6 +24,10 @@ public class MryCustomerInvest {
     @Excel(name = "客户消费卡号")
     private Long cardId;
 
+    @Excel(name = "充值日期", dateFormat = "yyyy-MM-dd")
+    private Date investTime;
+    private String investTimeStr;
+
     @Excel(name = "客户充值金额")
     private BigDecimal investPrice;
 
@@ -33,7 +37,6 @@ public class MryCustomerInvest {
     @Excel(name = "充值金额对应消费次数")
     private Short customeTimes;
 
-    @Excel(name = "充值日期", dateFormat = "yyyy-MM-dd HH:mm")
     private Date createTime;
 
     @Excel(name = "操作人")
