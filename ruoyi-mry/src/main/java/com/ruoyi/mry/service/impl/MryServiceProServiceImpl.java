@@ -53,6 +53,9 @@ public class MryServiceProServiceImpl implements MryServiceProService {
         MryServiceProExample example = new MryServiceProExample();
         MryServiceProExample.Criteria criteria = example.createCriteria();
         criteria.andIsDeletedEqualTo(false);
+        if (servicePro.getShopId() != null) {
+            criteria.andShopIdEqualTo(servicePro.getShopId());
+        }
         if (StringUtils.isNotBlank(servicePro.getName()) && StringUtils.isNotBlank(servicePro.getName().trim())) {
             criteria.andNameLike("%" + servicePro.getName().trim() + "%");
         }

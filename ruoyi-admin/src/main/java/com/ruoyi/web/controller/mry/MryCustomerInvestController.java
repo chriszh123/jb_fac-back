@@ -4,17 +4,16 @@ import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.base.AjaxResult;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.page.TableDataInfo;
+import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.fac.constant.FacConstant;
 import com.ruoyi.framework.util.ShiroUtils;
 import com.ruoyi.framework.web.base.BaseController;
 import com.ruoyi.mry.exception.MryException;
-import com.ruoyi.mry.model.MryCustomer;
-import com.ruoyi.mry.model.MryCustomerCard;
-import com.ruoyi.mry.model.MryCustomerInvest;
-import com.ruoyi.mry.model.MryShopCard;
+import com.ruoyi.mry.model.*;
 import com.ruoyi.mry.service.MryCustomerCardService;
 import com.ruoyi.mry.service.MryCustomerInvestService;
+import com.ruoyi.mry.service.MryShopService;
 import com.ruoyi.system.domain.SysUser;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +22,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 客户充值记录
@@ -37,6 +37,8 @@ public class MryCustomerInvestController extends BaseController{
     private MryCustomerInvestService customerInvestService;
     @Autowired
     private MryCustomerCardService customerCardService;
+    @Autowired
+    private MryShopService shopService;
 
     @RequiresPermissions("mry:customerinvest:view")
     @GetMapping()
@@ -48,8 +50,19 @@ public class MryCustomerInvestController extends BaseController{
     @PostMapping("/list")
     @ResponseBody
     public TableDataInfo list(MryCustomerInvest customerInvest) {
+        final MryShop shop = new MryShop();
+        final List<MryShop> shops = this.shopService.selectShops(shop);
+        MryCustomerCard customerCard = new MryCustomerCard();
+        if (customerInvest.getShopId() != null) {
+            customerCard.setShopId(customerInvest.getShopId());
+        }
+        if (StringUtils.isNotBlank(customerInvest.getCustomerName()) && StringUtils.isNotBlank(customerInvest.getCustomerName().trim())) {
+            customerCard.setCustomerName(customerInvest.getCustomerName());
+        }
+        final Map<Long, MryCustomer> customers = this.customerCardService.listCustomers(customerCard);
+
         startPage();
-        List<MryCustomerInvest> list = customerInvestService.selectCustomerInvests(customerInvest);
+        List<MryCustomerInvest> list = customerInvestService.selectCustomerInvests(customerInvest, shops, customers);
         return getDataTable(list);
     }
 
@@ -57,7 +70,18 @@ public class MryCustomerInvestController extends BaseController{
     @PostMapping("/export")
     @ResponseBody
     public AjaxResult export(MryCustomerInvest customerInvest) {
-        List<MryCustomerInvest> list = customerInvestService.selectCustomerInvests(customerInvest);
+        final MryShop shop = new MryShop();
+        final List<MryShop> shops = this.shopService.selectShops(shop);
+        MryCustomerCard customerCard = new MryCustomerCard();
+        if (customerInvest.getShopId() != null) {
+            customerCard.setShopId(customerInvest.getShopId());
+        }
+        if (StringUtils.isNotBlank(customerInvest.getCustomerName()) && StringUtils.isNotBlank(customerInvest.getCustomerName().trim())) {
+            customerCard.setCustomerName(customerInvest.getCustomerName());
+        }
+        final Map<Long, MryCustomer> customers = this.customerCardService.listCustomers(customerCard);
+
+        List<MryCustomerInvest> list = customerInvestService.selectCustomerInvests(customerInvest, shops, customers);
         ExcelUtil<MryCustomerInvest> util = new ExcelUtil<>(MryCustomerInvest.class);
         return util.exportExcel(list, "客户充值明细");
     }

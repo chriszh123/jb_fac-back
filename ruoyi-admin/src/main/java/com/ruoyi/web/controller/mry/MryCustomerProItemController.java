@@ -10,6 +10,7 @@ import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.base.AjaxResult;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.page.TableDataInfo;
+import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.fac.constant.FacConstant;
 import com.ruoyi.framework.util.ShiroUtils;
@@ -18,6 +19,8 @@ import com.ruoyi.mry.exception.MryException;
 import com.ruoyi.mry.model.*;
 import com.ruoyi.mry.service.MryCustomerCardService;
 import com.ruoyi.mry.service.MryCustomerProItemService;
+import com.ruoyi.mry.service.MryServiceProService;
+import com.ruoyi.mry.service.MryShopService;
 import com.ruoyi.system.domain.SysUser;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +29,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 客户服务项目消费管理
@@ -41,6 +45,10 @@ public class MryCustomerProItemController extends BaseController {
     private MryCustomerProItemService customerProItemService;
     @Autowired
     private MryCustomerCardService customerCardService;
+    @Autowired
+    private MryServiceProService serviceProService;
+    @Autowired
+    private MryShopService shopService;
 
     @RequiresPermissions("mry:customerproitem:view")
     @GetMapping()
@@ -52,8 +60,22 @@ public class MryCustomerProItemController extends BaseController {
     @PostMapping("/list")
     @ResponseBody
     public TableDataInfo list(MryCustomerProItem customerProItem) {
+        final MryShop shop = new MryShop();
+        final List<MryShop> shops = this.shopService.selectShops(shop);
+        MryCustomerCard customerCard = new MryCustomerCard();
+        if (customerProItem.getShopId() != null) {
+            customerCard.setShopId(customerProItem.getShopId());
+        }
+        if (StringUtils.isNotBlank(customerProItem.getCustomerName()) && StringUtils.isNotBlank(customerProItem.getCustomerName().trim())) {
+            customerCard.setCustomerName(customerProItem.getCustomerName());
+        }
+        final Map<Long, MryCustomer> customers = this.customerCardService.listCustomers(customerCard);
+        final MryServicePro servicePro = new MryServicePro();
+        servicePro.setShopId(customerProItem.getShopId());
+        final List<MryServicePro> servicePros = this.serviceProService.selectMryServicePros(servicePro);
+
         startPage();
-        List<MryCustomerProItem> list = customerProItemService.selectCustomerProItems(customerProItem);
+        List<MryCustomerProItem> list = customerProItemService.selectCustomerProItems(customerProItem, shops, customers, servicePros);
         return getDataTable(list);
     }
 
@@ -61,7 +83,21 @@ public class MryCustomerProItemController extends BaseController {
     @PostMapping("/export")
     @ResponseBody
     public AjaxResult export(MryCustomerProItem customerProItem) {
-        List<MryCustomerProItem> list = customerProItemService.selectCustomerProItems(customerProItem);
+        final MryShop shop = new MryShop();
+        final List<MryShop> shops = this.shopService.selectShops(shop);
+        MryCustomerCard customerCard = new MryCustomerCard();
+        if (customerProItem.getShopId() != null) {
+            customerCard.setShopId(customerProItem.getShopId());
+        }
+        if (StringUtils.isNotBlank(customerProItem.getCustomerName()) && StringUtils.isNotBlank(customerProItem.getCustomerName().trim())) {
+            customerCard.setCustomerName(customerProItem.getCustomerName());
+        }
+        final Map<Long, MryCustomer> customers = this.customerCardService.listCustomers(customerCard);
+        final MryServicePro servicePro = new MryServicePro();
+        servicePro.setShopId(customerProItem.getShopId());
+        final List<MryServicePro> servicePros = this.serviceProService.selectMryServicePros(servicePro);
+
+        List<MryCustomerProItem> list = customerProItemService.selectCustomerProItems(customerProItem, shops, customers, servicePros);
         ExcelUtil<MryCustomerProItem> util = new ExcelUtil<>(MryCustomerProItem.class);
         return util.exportExcel(list, "客户消费明细资料");
     }

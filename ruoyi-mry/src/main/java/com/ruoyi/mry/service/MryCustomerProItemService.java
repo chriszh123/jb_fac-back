@@ -6,10 +6,14 @@
  */
 package com.ruoyi.mry.service;
 
+import com.ruoyi.mry.model.MryCustomer;
 import com.ruoyi.mry.model.MryCustomerProItem;
+import com.ruoyi.mry.model.MryServicePro;
+import com.ruoyi.mry.model.MryShop;
 import com.ruoyi.system.domain.SysUser;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * MryCustomerPro
@@ -18,7 +22,8 @@ import java.util.List;
  **/
 public interface MryCustomerProItemService {
 
-    List<MryCustomerProItem> selectCustomerProItems(MryCustomerProItem customerProItem);
+    List<MryCustomerProItem> selectCustomerProItems(MryCustomerProItem customerProItem, List<MryShop> shops, Map<Long, MryCustomer> customers
+            , List<MryServicePro> servicePros);
 
     int insertCustomerProItem(MryCustomerProItem customerProItem);
 

@@ -202,7 +202,7 @@
                             var customerCard = result[i];
                             var selected = customerCard.id === Number(selectedId);
                             if (selected) {
-                                options = options + '<option value="' + customerCard.id + '" selected="' + selected + '">' + customerCard.id + '</option>';
+                                options = options + '<option value="' + customerCard.id + '" selected="selected">' + customerCard.id + '</option>';
                             } else {
                                 options = options + '<option value="' + customerCard.id + '">' + customerCard.id + '</option>';
                             }
@@ -237,7 +237,11 @@
                         for (var i = 0; i < result.length; i++) {
                             var customer = result[i];
                             var selected = customer.id === Number(selectedId);
-                            options = options + '<option value="' + customer.id + '" selected="' + selected + '">' + customer.name + '</option>';
+                            if (selected) {
+                                options = options + '<option value="' + customer.id + '" selected="selected">' + customer.name + '</option>';
+                            } else {
+                                options = options + '<option value="' + customer.id + '">' + customer.name + '</option>';
+                            }
                         }
                         customerIdCtl.html(options);
                     }

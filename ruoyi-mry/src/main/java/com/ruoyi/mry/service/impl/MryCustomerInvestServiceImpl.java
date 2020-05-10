@@ -2,6 +2,7 @@ package com.ruoyi.mry.service.impl;
 
 import cn.hutool.core.date.DatePattern;
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.mry.constant.MryConstant;
@@ -32,43 +33,17 @@ public class MryCustomerInvestServiceImpl implements MryCustomerInvestService {
     private MryShopMapper shopMapper;
 
     @Override
-    public List<MryCustomerInvest> selectCustomerInvests(MryCustomerInvest customerInvest) {
+    public List<MryCustomerInvest> selectCustomerInvests(MryCustomerInvest customerInvest, List<MryShop> shops, Map<Long, MryCustomer> customerMap) {
         MryCustomerInvestExample example = new MryCustomerInvestExample();
         MryCustomerInvestExample.Criteria criteria = example.createCriteria();
         criteria.andIsDeletedEqualTo(false);
-
-        MryCustomerExample customerExample = new MryCustomerExample();
-        MryCustomerExample.Criteria customerCri = customerExample.createCriteria();
-        customerCri.andIsDeletedEqualTo(false);
-        if (customerInvest.getShopId() != null) {
-            customerCri.andShopIdEqualTo(customerInvest.getShopId());
+        if (MapUtil.isNotEmpty(customerMap)) {
+            criteria.andCustomerIdIn(new ArrayList<>(customerMap.keySet()));
         }
-        if (StringUtils.isNotBlank(customerInvest.getCustomerName()) && StringUtils.isNotBlank(customerInvest.getCustomerName().trim())) {
-            customerCri.andNameLike("%" + customerInvest.getCustomerName() + "%");
-        }
-        List<MryCustomer> customers = this.customerMapper.selectByExample(customerExample);
-        Map<Long, MryCustomer> customerMap = new HashMap<>();
-        if (CollectionUtils.isNotEmpty(customers)) {
-            if (StringUtils.isNotBlank(customerInvest.getCustomerName()) && StringUtils.isNotBlank(customerInvest.getCustomerName().trim())) {
-                List<Long> customerIds = customers.stream().map(MryCustomer::getId).collect(Collectors.toList());
-                criteria.andCustomerIdIn(customerIds);
-            }
-
-            customers.forEach(item -> {
-                customerMap.putIfAbsent(item.getId(), item);
-            });
-        } else {
-            return new ArrayList<>();
-        }
-
         example.setOrderByClause(MryConstant.DEFAULT_ORDER_CLAUSE);
         List<MryCustomerInvest> customerInvests = this.customerInvestMapper.selectByExample(example);
         if (CollectionUtils.isNotEmpty(customerInvests)) {
             // 所属店面
-            List<Short> shopIds = customerInvests.stream().map(MryCustomerInvest::getShopId).collect(Collectors.toList());
-            MryShopExample shopExample = new MryShopExample();
-            shopExample.createCriteria().andIsDeletedEqualTo(false).andIdIn(shopIds);
-            List<MryShop> shops = this.shopMapper.selectByExample(shopExample);
             Map<Short, MryShop> shopMap = new HashMap<>();
             shops.forEach(item -> shopMap.putIfAbsent(item.getId(), item));
             for (MryCustomerInvest item : customerInvests) {

@@ -10,6 +10,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.date.DatePattern;
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.mry.constant.MryConstant;
@@ -52,57 +53,27 @@ public class MryCustomerProItemServiceImpl implements MryCustomerProItemService 
     private MryShopCardMapper shopCardMapper;
 
     @Override
-    public List<MryCustomerProItem> selectCustomerProItems(MryCustomerProItem customerProItem) {
+    public List<MryCustomerProItem> selectCustomerProItems(MryCustomerProItem customerProItem, List<MryShop> shops, Map<Long, MryCustomer> customerMap
+                , List<MryServicePro> servicePros) {
         MryCustomerProItemExample proItemExample = new MryCustomerProItemExample();
         MryCustomerProItemExample.Criteria criteria = proItemExample.createCriteria();
         criteria.andIsDeletedEqualTo(false);
-        MryCustomerExample customerExample = new MryCustomerExample();
-        MryCustomerExample.Criteria customerCri = customerExample.createCriteria();
-        customerCri.andIsDeletedEqualTo(false);
-        if (customerProItem.getShopId() != null) {
-            customerCri.andShopIdEqualTo(customerProItem.getShopId());
+        if (MapUtil.isNotEmpty(customerMap)) {
+            criteria.andCustomerIdIn(new ArrayList<>(customerMap.keySet()));
         }
-        if (StringUtils.isNotBlank(customerProItem.getCustomerName()) && StringUtils.isNotBlank(customerProItem.getCustomerName().trim())) {
-            customerCri.andNameLike("%" + customerProItem.getCustomerName() + "%");
-        }
-        List<MryCustomer> customers = this.customerMapper.selectByExample(customerExample);
-        Map<Long, MryCustomer> customerMap = new HashMap<>();
-        if (CollectionUtils.isNotEmpty(customers)) {
-            if (StringUtils.isNotBlank(customerProItem.getCustomerName()) && StringUtils.isNotBlank(customerProItem.getCustomerName().trim())) {
-                List<Long> customerIds = customers.stream().map(MryCustomer::getId).collect(Collectors.toList());
-                criteria.andCustomerIdIn(customerIds);
-            }
-
-            customers.forEach(item -> {
-                customerMap.putIfAbsent(item.getId(), item);
-            });
-        } else {
-            return new ArrayList<>();
-        }
-
         proItemExample.setOrderByClause(MryConstant.DEFAULT_ORDER_CLAUSE);
         List<MryCustomerProItem> proItems = this.customerProItemMapper.selectByExample(proItemExample);
         if (CollectionUtils.isNotEmpty(proItems)) {
             // 所属店面
-            List<Short> shopIds = proItems.stream().map(MryCustomerProItem::getShopId).collect(Collectors.toList());
-            MryShopExample shopExample = new MryShopExample();
-            shopExample.createCriteria().andIsDeletedEqualTo(false).andIdIn(shopIds);
-            List<MryShop> shops = this.shopMapper.selectByExample(shopExample);
             Map<Short, MryShop> shopMap = new HashMap<>();
             shops.forEach(item -> shopMap.putIfAbsent(item.getId(), item));
-            Set<Short> serviceProIds = new HashSet<>();
             for (MryCustomerProItem item : proItems) {
                 item.setShopName(shopMap.get(item.getShopId()).getName());
                 // 客户名称
                 if (customerMap.containsKey(item.getCustomerId())) {
                     item.setCustomerName(customerMap.get(item.getCustomerId()).getName());
                 }
-                serviceProIds.add(item.getProId());
             }
-
-            MryServiceProExample serviceProExample = new MryServiceProExample();
-            serviceProExample.createCriteria().andIsDeletedEqualTo(false).andIdIn(new ArrayList<>(serviceProIds));
-            List<MryServicePro> servicePros = this.serviceProMapper.selectByExample(serviceProExample);
             if (CollectionUtils.isNotEmpty(servicePros)) {
                 Map<Short, MryServicePro> serviceProMap = new HashMap<>();
                 servicePros.forEach(item -> serviceProMap.putIfAbsent(item.getId(), item));
