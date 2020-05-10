@@ -90,6 +90,7 @@ public class MryDataAnalysisServiceImpl implements MryDataAnalysisService {
                     seriesData[i] = date2Count.get(datesList.get(i)).toString();
                 }
             }
+
             vo.setSeriesCustomerData(seriesData);
         } catch (Exception ex) {
             log.info("[queryRecentCustomerInfo] error : " + ex.getMessage(), ex);
