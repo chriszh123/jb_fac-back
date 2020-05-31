@@ -12,6 +12,7 @@ import com.ruoyi.fac.enums.OrderStatus;
 import com.ruoyi.fac.mapper.*;
 import com.ruoyi.fac.model.*;
 import com.ruoyi.fac.service.IBuyerService;
+import com.ruoyi.fac.util.AudioPlayerUtil;
 import com.ruoyi.fac.util.DecimalUtils;
 import com.ruoyi.fac.util.TimeUtils;
 import com.ruoyi.fac.vo.QueryVo;
@@ -93,6 +94,8 @@ public class BuyerServiceImpl implements IBuyerService {
      */
     @Override
     public List<Buyer> selectBuyerList(Buyer buyer) {
+        // 测试提示音
+        AudioPlayerUtil.getInstance().play();
         buyer.setIsDeleted(0);
         List<Buyer> buyers = buyerMapper.selectBuyerList(buyer);
         if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(buyers)) {
