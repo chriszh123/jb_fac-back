@@ -18,8 +18,6 @@ public class RuoYiApplication
     {
         // System.setProperty("spring.devtools.restart.enabled", "false");
         SpringApplication.run(RuoYiApplication.class, args);
-
-        
         System.out.println("启动成功，tks！");
     }
 }
