@@ -29,6 +29,60 @@
 | 验证码 | Kaptcha | 2.3.2 |
 | 构建工具 | Maven | - |
 
+### 2.1 后台管理前端技术栈
+
+本项目后台管理端采用 **RuoYi 前后端不分离版本**，基于传统的服务端渲染模式，前端资源内嵌于 `ruoyi-admin/src/main/resources/` 下。
+
+**整体架构**：jQuery + Bootstrap + Thymeleaf
+
+| 技术 | 用途 | 说明 |
+|------|------|------|
+| **Thymeleaf** | 服务端模板引擎 | 页面通过 `th:fragment`、`th:href` 等标签服务端渲染 |
+| **Bootstrap** | CSS 框架 | 响应式布局与基础样式 |
+| **jQuery** | JavaScript 核心库 | DOM 操作与 AJAX 请求 |
+| **Bootstrap Table** | 数据表格插件 | 表格展示、分页、排序（含导出、固定列等扩展） |
+| **Bootstrap TreeTable** | 树形表格 | 树形结构数据展示 |
+| **Layui** | UI 组件库 | 弹层、表单等组件 |
+| **Layer** | 弹窗/对话框 | 基于 jQuery 的弹层组件 |
+| **jQuery Validate** | 表单验证 | 客户端表单校验 |
+| **iCheck** | 复选框/单选框美化 | 自定义复选框与单选框样式 |
+| **Select2** | 下拉选择框增强 | 可搜索、多选的下拉框 |
+| **BlockUI** | 遮罩层 | 页面加载遮罩与锁定 |
+| **ECharts** | 图表可视化 | 数据统计图表展示 |
+| **tableExport** | 表格导出 | 表格数据导出为 Excel/CSV 等 |
+| **Font Awesome** | 图标字体 | 页面图标 |
+| **Animate.css** | CSS 动画 | 页面过渡动画效果 |
+
+**前端资源目录结构**：
+
+```
+ruoyi-admin/src/main/resources/
+├── static/                     # 静态资源
+│   ├── ajax/libs/              # 第三方库 (Bootstrap Table, Validate, iCheck, Layer, Layui 等)
+│   ├── css/                    # 全局样式 (Bootstrap, Font Awesome, 自定义样式等)
+│   ├── echarts/                # ECharts 图表库
+│   ├── fac/                    # FAC 业务静态资源
+│   ├── file/                   # 文件资源
+│   ├── fonts/                  # 字体文件
+│   ├── img/                    # 图片资源
+│   ├── js/                     # 核心 JS (jQuery, Bootstrap)
+│   ├── mry/                    # MRY 业务静态资源
+│   └── ruoyi/                  # 若依框架前端 (ry-ui.css, common.js, ry-ui.js, index.js, login.js)
+└── templates/                  # Thymeleaf 模板页面
+    ├── include.html            # 公共头尾片段 (CSS/JS 引入)
+    ├── index.html              # 首页框架
+    ├── login.html              # 登录页
+    ├── main.html               # 主内容区
+    ├── error/                  # 错误页面
+    ├── fac/                    # FAC 业务页面 (19个)
+    ├── mry/                    # MRY 业务页面 (12个)
+    ├── monitor/                # 系统监控页面
+    ├── system/                 # 系统管理页面
+    └── tool/                   # 开发工具页面
+```
+
+> **注意**：面向 C 端用户的小程序前端为独立项目，不包含在本仓库中，通过 `/fac/client/*` RESTful API 与后端交互。
+
 ---
 
 ## 3. 项目结构
@@ -644,4 +698,4 @@ FAC 模块的营销功能之一，包含砍价算法和完整的砍价流程：
 - **营销工具丰富**：砍价活动、签到积分、拼团等
 - **美业专业功能**：客户档案、消费项目管理、客户对比图、数据分析
 - **若依框架完整功能**：用户权限、数据范围、操作日志、代码生成
-- **前后端分离**：后台管理使用Thymeleaf模板，小程序端提供RESTful API
+- **前后端架构**：后台管理采用 Thymeleaf + jQuery + Bootstrap 服务端渲染模式，C端小程序通过 RESTful API 交互
